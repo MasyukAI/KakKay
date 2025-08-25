@@ -15,6 +15,11 @@
             "env": {
                 "SITE_PATH": "/Users/Saiffil/Herd/kay"
             }
+        },
+        "context7": {
+            "type": "stdio",
+            "command": "npx",
+            "args": ["-y", "@upstash/context7-mcp", "--api-key", "ctx7sk-32c4aafc-cf6f-40aa-aa23-52da7d858a80"]
         }
     }
 }

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->string('order_number')->unique();
-            $table->foreignId('customer_id')->constrained()->onDelete('restrict');
+            $table->foreignId('cliend_id')->constrained()->onDelete('restrict');
 
             // snapshot shipping address
             $table->string('street')->nullable();
@@ -33,7 +33,7 @@ return new class extends Migration
             $table->integer('total_amount')->default(0); // cents
             $table->timestamps();
 
-            $table->index(['customer_id','status']);
+            $table->index(['client_id','status']);
         });
 
         Schema::create('order_status_histories', function (Blueprint $table) {
