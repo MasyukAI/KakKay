@@ -14,9 +14,11 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('description')->nullable();
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
-            $table->integer('price')->default(0); // cents
-            $table->boolean('is_active')->default(true);
+            $table->integer('price')->default(0);
+            $table->boolean('is_featured')->default(false);
+            $table->boolean('is_active')->default(false);
             $table->timestamps();
         });
     }

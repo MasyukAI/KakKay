@@ -25,14 +25,16 @@ class ProductForm
                     ->default(0)
                     ->prefix('RM'),
                 SpatieMediaLibraryFileUpload::make('main_image')
-                    ->disk('local')
-                    ->directory('product'),
+                    ->disk('public')
+                    ->collection('product-image-main'),
                 // SpatieMediaLibraryFileUpload::make('images')
                 //     ->directory('product')
                 //     ->disk('public')
                 //     ->label('Images')
                 //     ->multiple()
                 //     ->collection('product-images'),
+                Toggle::make('is_featured')
+                    ->required(),
                 Toggle::make('is_active')
                     ->required(),
             ]);

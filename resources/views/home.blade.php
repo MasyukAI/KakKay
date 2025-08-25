@@ -56,7 +56,7 @@ Kau tahu tak, wanita ni bukan sekadar pelengkap je… tapi dia boleh jadi punca 
         <div class="glow-wrap">
           <div class="glow" aria-hidden="true"></div>
           <div class="big-book">
-            <img src="{{ asset('storage/cara-bercinta.png') }}" alt="Book Cover" class="book-cover" />
+            <img src="{{ $featuredImageUrl }}" alt="Book Cover" class="book-cover" />
             <div class="spine" aria-hidden="true"></div>
           </div>
         </div>
@@ -81,8 +81,8 @@ Kau tahu tak, wanita ni bukan sekadar pelengkap je… tapi dia boleh jadi punca 
     <!-- BOOKS GALLERY -->
     <section id="books" class="section">
       <h3 style="font:900 clamp(1.2rem, 1.6vw + .6rem, 1.8rem) Montserrat, system-ui, sans-serif; margin:0 0 .6rem;">Book Showcase</h3>
-      <p style="margin:.2rem 0 1rem; color:#ffe9f5; opacity:.9;">Elegant, tactile covers presented in a premium scroller. Mobile‑friendly and fast to explore.</p>
-      <div class="scroller" aria-label="Book gallery scroller">
+      <p style="margin:.2rem 0 1rem; color:#ffe9f5; opacity:.9;">Elegant, tactile covers presented in a responsive grid. Mobile‑friendly and beautifully organized.</p>
+      <div class="books-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-top: 2rem;">
         <article class="card">
           <div class="cover" style="background:linear-gradient(135deg, var(--purple), var(--pink));">
             <img src="{{ asset('storage/perkara-tak-boleh-cakap.png') }}" alt="Cara Cakap Dengan Dia">

@@ -18,87 +18,49 @@ class BookSeeder extends Seeder
             'name' => 'Books'
         ]);
 
-        // Create 20 book products
         $books = [
             [
                 'name' => 'Macam Ni Rupanya Cara Nak Bercinta, Mudahnya Lahai!',
-                'price' => 5900,
+                'description' => 'Sebuah panduan lengkap untuk memahami seni bercinta.',
+                'price' => 5000,
+                'is_featured' => true,
+                'category_id' => $bookCategory->id
             ],
             [
-                'name' => 'To Kill a Mockingbird',
-                'price' => 3499, // RM 34.99
+                'name' => 'Diari Healing Yang Mendewasakan',
+                'description' => 'Sebuah catatan perjalanan penyembuhan yang mendalam.',
+                'price' => 3499,
+                'category_id' => $bookCategory->id
             ],
             [
-                'name' => '1984',
-                'price' => 2799, // RM 27.99
+                'name' => 'Kasihi Puteri: The Untold Story of Daughterhood',
+                'description' => 'Sebuah kisah yang menyentuh tentang hubungan antara ibu dan anak perempuan.',
+                'price' => 2799,
+                'category_id' => $bookCategory->id
             ],
             [
-                'name' => 'Pride and Prejudice',
-                'price' => 3199, // RM 31.99
+                'name' => 'Ini Rupanya Sebab Dia Terasa Dengan Kita, Senangnya Lahai Nak Baiki Lepas Tahu Cara Ni!',
+                'description' => 'Sebuah panduan untuk memahami perasaan dan emosi dalam hubungan.',
+                'price' => 3199,
+                'category_id' => $bookCategory->id
             ],
             [
-                'name' => 'The Catcher in the Rye',
-                'price' => 2899, // RM 28.99
+                'name' => 'Ini Rupanya Pekara Tak Boleh Buat Pada Anak Bila Ada Konflik Dengan Pasangan. Kenapalah Takde Orang Bagitahu Sebelum Ni?',
+                'description' => 'Sebuah panduan untuk mengelakkan kesilapan dalam mendidik anak semasa konflik.',
+                'price' => 2899,
+                'category_id' => $bookCategory->id
             ],
             [
-                'name' => 'Lord of the Flies',
-                'price' => 2699, // RM 26.99
+                'name' => 'Macam Ini Rupanya Cara Cakap Dengan Dia, Senangnya Lahai!',
+                'description' => 'Sebuah panduan untuk berkomunikasi dengan pasangan.',
+                'price' => 2699,
+                'category_id' => $bookCategory->id
             ],
             [
-                'name' => 'The Lord of the Rings',
-                'price' => 5999, // RM 59.99
-            ],
-            [
-                'name' => 'Harry Potter and the Philosopher\'s Stone',
-                'price' => 3999, // RM 39.99
-            ],
-            [
-                'name' => 'The Hobbit',
-                'price' => 3299, // RM 32.99
-            ],
-            [
-                'name' => 'Fahrenheit 451',
-                'price' => 2599, // RM 25.99
-            ],
-            [
-                'name' => 'Brave New World',
-                'price' => 2899, // RM 28.99
-            ],
-            [
-                'name' => 'The Chronicles of Narnia',
-                'price' => 4999, // RM 49.99
-            ],
-            [
-                'name' => 'Animal Farm',
-                'price' => 2199, // RM 21.99
-            ],
-            [
-                'name' => 'Of Mice and Men',
-                'price' => 2399, // RM 23.99
-            ],
-            [
-                'name' => 'The Kite Runner',
-                'price' => 3599, // RM 35.99
-            ],
-            [
-                'name' => 'Life of Pi',
-                'price' => 3299, // RM 32.99
-            ],
-            [
-                'name' => 'The Book Thief',
-                'price' => 3799, // RM 37.99
-            ],
-            [
-                'name' => 'One Hundred Years of Solitude',
-                'price' => 4199, // RM 41.99
-            ],
-            [
-                'name' => 'The Alchemist',
-                'price' => 2999, // RM 29.99
-            ],
-            [
-                'name' => 'Dune',
-                'price' => 4599, // RM 45.99
+                'name' => 'Kitab KKDI',
+                'description' => 'Sebuah panduan lengkap untuk memahami konsep KKDI.',
+                'price' => 5999,
+                'category_id' => $bookCategory->id
             ],
         ];
 
