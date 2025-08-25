@@ -3,16 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Product extends Model
+class Product extends Model implements HasMedia
 {
-    protected $fillable = [
-        'name',
-        'category_id',
-        'price',
-        'is_active',
-    ];
+    use InteractsWithMedia; 
 
     protected $casts = [
         'is_active' => 'boolean',
@@ -24,13 +21,23 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
 
-    public function getFormattedPriceAttribute(): string
+    // public function getFormattedPriceAttribute(): string
+    // {
+    //     return 'RM ' . number_format($this->price / 100, 2);
+    // }
+
+    // public function getPriceInDollarsAttribute(): float
+    // {
+    //     return $this->price / 100;
+    // }
+
+    public function images()
     {
-        return 'RM ' . number_format($this->price / 100, 2);
+        return $this->hasMany(ProductImage::class);
     }
 
-    public function getPriceInDollarsAttribute(): float
+    public function primaryImage()
     {
-        return $this->price / 100;
+        return $this->images()->where('is_primary', true)->first();
     }
 }

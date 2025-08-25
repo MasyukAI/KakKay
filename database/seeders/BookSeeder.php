@@ -21,8 +21,8 @@ class BookSeeder extends Seeder
         // Create 20 book products
         $books = [
             [
-                'name' => 'The Great Gatsby',
-                'price' => 2999, // RM 29.99
+                'name' => 'Macam Ni Rupanya Cara Nak Bercinta, Mudahnya Lahai!',
+                'price' => 5900,
             ],
             [
                 'name' => 'To Kill a Mockingbird',
