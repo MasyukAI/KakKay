@@ -1,5 +1,5 @@
-<div class="container">
-    <header>
+<div class="container" style="padding: 0 1rem;">
+    <header style="padding: 1.5rem 0;">
       <div class="brand">
         <div class="logo" aria-hidden="true"></div>
         <div>
@@ -7,17 +7,19 @@
           <div class="tagline">Counsellor • Therapist • KKDI Creator</div>
         </div>
       </div>
-      <nav>
-        <a class="pill" href="#featured" 
-           style="transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);"
-           onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(255,105,180,0.3)'; this.style.backgroundColor='rgba(255,105,180,0.1)';" 
-           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'; this.style.backgroundColor='';">KKDI Member</a>
-        {{-- <a class="pill" href="#books">All Books</a>
-        <a class="pill" href="#contact">Contact</a> --}}
-      </nav>
+      <div class="hidden sm:flex">
+        <nav>
+          <a class="pill" href="#featured" 
+            style="transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);"
+            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(255,105,180,0.3)'; this.style.backgroundColor='rgba(255,105,180,0.1)';" 
+            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'; this.style.backgroundColor='';">KKDI Member</a>
+          {{-- <a class="pill" href="#books">All Books</a>
+          <a class="pill" href="#contact">Contact</a> --}}
+        </nav>
+      </div>
     </header>
 
-    <section class="hero">
+    <section class="hero" style="padding: 2rem 0;">
       <div class="hero-inner">
         <div>
           {{-- <div class="eyebrow">Empowering Women</div> --}}
@@ -39,15 +41,15 @@ Kau tahu tak, wanita ni bukan sekadar pelengkap je… tapi dia boleh jadi punca 
         <div class="scene" aria-label="Hero visual with portrait and book stacks">
           <div class="ring" aria-hidden="true"></div>
           <img class="portrait" src="https://kay.test/storage/kakkayhero.png" alt="Confident portrait" style="width: clamp(220px, 36vw, 380px); aspect-ratio: 4/5; border-radius: calc(var(--radius) * 1.3); object-fit: cover; object-position: center 30%; box-shadow: var(--shadow-lg); position: relative; z-index: 1;">
-          <div class="book b1"><span>Hardcover Edition</span></div>
-          <div class="book b2"><span>Softcover Anthology</span></div>
-          <div class="book b3 only-desktop"><span>Collector’s Series</span></div>
+          <div class="book b1"><span>Empowering Women</span></div>
+          <div class="book b2"><span>Healing Youself</span></div>
+          <div class="book b3 only-desktop"><span>Calm Your Mind</span></div>
         </div>
       </div>
     </section>
 
     <!-- FEATURED BOOK SPOTLIGHT -->
-    <section id="featured" class="section">
+    <section id="featured" class="section" style="padding: 2rem 0;">
       <div class="feature">
         <div class="glow-wrap">
           <div class="glow" aria-hidden="true"></div>
@@ -62,7 +64,6 @@ Kau tahu tak, wanita ni bukan sekadar pelengkap je… tapi dia boleh jadi punca 
             {{ $featuredProductDescription }}
           </p>
           <div class="meta" style="margin:.6rem 0 1.1rem;">
-            <span class="chip">Softcover</span>
             <span class="chip">Bestseller</span>
             <span class="chip">New Release</span>
           </div>
@@ -81,7 +82,7 @@ Kau tahu tak, wanita ni bukan sekadar pelengkap je… tapi dia boleh jadi punca 
     </section>
 
     <!-- BOOKS GALLERY -->
-    <section id="books" class="section">
+    <section id="books" class="section" style="padding: 2rem 0;">
       <h3 style="font:900 clamp(1.2rem, 1.6vw + .6rem, 1.8rem) Montserrat, system-ui, sans-serif; margin:0 0 .6rem;">Karya Kak Kay</h3>
       <p style="margin:.2rem 0 1rem; color:#ffe9f5; opacity:.9;">Buku-buku ni best tau, ada yang sentuh hati sampai kita tersenyum, ada yang bagi semangat masa rasa nak give up, ada jugak yang macam bisik lembut suruh kita percaya dengan diri sendiri.</p>
       <div class="books-grid" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; margin-top: 2rem;">
@@ -100,13 +101,26 @@ Kau tahu tak, wanita ni bukan sekadar pelengkap je… tapi dia boleh jadi punca 
       </div>
     </section>
 
+    <div class="visible sm:hidden flex justify-center">
+        <nav class="text-center">
+          <a class="pill" href="#featured" 
+            style="transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);"
+            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(255,105,180,0.3)'; this.style.backgroundColor='rgba(255,105,180,0.1)';" 
+            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'; this.style.backgroundColor='';">KKDI Member</a>
+          {{-- <a class="pill" href="#books">All Books</a>
+          <a class="pill" href="#contact">Contact</a> --}}
+        </nav>
+    </div>
+
     <footer id="contact">
-      <div class="container">
-        <div style="display:flex; flex-wrap:wrap; gap:16px; align-items:center; justify-content:space-between;">
-          <div>
+      <div>
+        <div style="display:flex; flex-wrap:wrap; gap:24px; align-items:flex-start; justify-content:space-between; padding: 2rem 0;">
+          <div class="text-center sm:text-left w-full sm:w-auto">
             <strong style="font-family:Montserrat, system-ui, sans-serif;">Let's collaborate</strong>
-            <div>Speaking • Workshops • Consulting • Media</div>
-            <div style="margin-top: 12px; display: flex; gap: 12px; align-items: center;">
+            <div class="mt-2">Speaking • Workshops • Consulting • Media</div>
+          </div>
+          <div class="w-full sm:w-auto flex flex-col items-center sm:items-end gap-4">
+            <div style="display: flex; gap: 16px; align-items: center;">
               <a href="https://instagram.com/kamaliakamal" target="_blank" rel="noopener" 
                  style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #E1306C, #F77737); color: white; text-decoration: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);"
                  onmouseover="this.style.transform='translateY(-2px) scale(1.1)'; this.style.boxShadow='0 8px 25px rgba(225,48,108,0.4)';"
@@ -140,12 +154,12 @@ Kau tahu tak, wanita ni bukan sekadar pelengkap je… tapi dia boleh jadi punca 
                 </svg>
               </a> --}}
             </div>
+            <a class="btn primary" href="mailto:kakkaylovesme@gmail.com" 
+               style="transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);"
+               onmouseover="this.style.transform='translateY(-3px) scale(1.05)'; this.style.boxShadow='0 15px 35px rgba(255,105,180,0.4), 0 5px 15px rgba(0,0,0,0.3)'; this.style.filter='brightness(1.1)';" 
+               onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow=''; this.style.filter='brightness(1)';">kakkaylovesme@gmail.com
+            </a>
           </div>
-          <a class="btn primary" href="mailto:hello@example.com" 
-             style="transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);"
-             onmouseover="this.style.transform='translateY(-3px) scale(1.05)'; this.style.boxShadow='0 15px 35px rgba(255,105,180,0.4), 0 5px 15px rgba(0,0,0,0.3)'; this.style.filter='brightness(1.1)';" 
-             onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow=''; this.style.filter='brightness(1)';">kakkaylovesme@gmail.com
-          </a>
         </div>
       </div>
     </footer>
