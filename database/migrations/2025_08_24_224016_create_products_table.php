@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
-            $table->string('sku')->unique()->nullable();
             $table->integer('price')->default(0); // cents
             $table->boolean('is_active')->default(true);
             $table->timestamps();

@@ -379,6 +379,23 @@ avatar, badge, brand, breadcrumbs, button, callout, checkbox, dropdown, field, h
 ### Alpine
 - Alpine is now included with Livewire, don't manually include Alpine.js.
 - Plugins included with Alpine: persist, intersect, collapse, and focus.
+- When JavaScript interactivity is needed, prefer Alpine.js over vanilla JavaScript or other frameworks.
+- Alpine integrates seamlessly with Livewire components and doesn't conflict with wire: directives.
+- Use Alpine for client-side interactions like dropdowns, modals, form validation, animations, and UI state management.
+
+#### Alpine Usage Patterns
+- Use `x-data` to define component state and methods
+- Use `x-show`, `x-if` for conditional rendering
+- Use `x-on:click` (or `@click`) for event handling
+- Use `x-model` for two-way data binding
+- Use `x-init` for component initialization
+- Use `x-transition` for smooth animations
+
+#### Alpine with Livewire Integration
+- Alpine and Livewire can work together - Alpine handles UI interactions, Livewire handles server communication
+- Use `$wire` to access Livewire component methods and properties from Alpine
+- Combine `wire:model` with Alpine `x-model` when needed
+- Use Alpine for immediate UI feedback and Livewire for persistence
 
 ### Lifecycle Hooks
 - You can listen for `livewire:init` to hook into Livewire initialization, and `fail.status === 419` for the page expiring:
@@ -510,6 +527,138 @@ $delete = fn(Product $product) => $product->delete();
         <span wire:loading>Saving...</span>
     </flux:button>
 </code-snippet>
+
+
+=== alpinejs/core rules ===
+
+## Alpine.js
+
+### JavaScript Interactivity
+- Alpine.js is automatically included with Livewire - no need to manually include it.
+- Use Alpine.js for all client-side JavaScript interactions instead of vanilla JavaScript or other frameworks.
+- Alpine.js provides reactive, declarative JavaScript behavior directly in HTML.
+- Available plugins: persist, intersect, collapse, and focus.
+
+### Core Directives
+- `x-data="{ ... }"`: Define component state and methods
+- `x-show="condition"`: Toggle element visibility (keeps in DOM)
+- `x-if="condition"`: Conditionally render elements (removes from DOM)
+- `x-for="item in items"`: Loop through arrays or objects
+- `x-text="expression"`: Set text content
+- `x-html="expression"`: Set HTML content
+- `x-model="property"`: Two-way data binding for form inputs
+- `x-on:event="handler"` or `@event="handler"`: Event handling
+- `x-bind:attribute="value"` or `:attribute="value"`: Bind attributes
+- `x-init="expression"`: Run code when component initializes
+- `x-transition`: Add enter/leave transitions
+
+### Common Patterns
+
+#### Dropdown Menu
+<code-snippet name="Alpine Dropdown" lang="html">
+<div x-data="{ open: false }" class="relative">
+    <button @click="open = !open" class="flex items-center">
+        Menu
+    </button>
+    <div x-show="open" 
+         @click.away="open = false"
+         x-transition
+         class="absolute mt-2 bg-white shadow-lg">
+        <a href="#" class="block px-4 py-2">Item 1</a>
+        <a href="#" class="block px-4 py-2">Item 2</a>
+    </div>
+</div>
+</code-snippet>
+
+#### Modal Dialog
+<code-snippet name="Alpine Modal" lang="html">
+<div x-data="{ showModal: false }">
+    <button @click="showModal = true">Open Modal</button>
+    
+    <div x-show="showModal" 
+         x-transition.opacity
+         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div @click.away="showModal = false" 
+             x-transition
+             class="bg-white p-6 rounded-lg">
+            <h2>Modal Title</h2>
+            <p>Modal content...</p>
+            <button @click="showModal = false">Close</button>
+        </div>
+    </div>
+</div>
+</code-snippet>
+
+#### Form Validation
+<code-snippet name="Alpine Form Validation" lang="html">
+<form x-data="{ 
+    email: '', 
+    isValidEmail() { 
+        return /\S+@\S+\.\S+/.test(this.email) 
+    } 
+}">
+    <input x-model="email" 
+           type="email" 
+           placeholder="Enter email"
+           :class="email && !isValidEmail() ? 'border-red-500' : 'border-gray-300'">
+    <span x-show="email && !isValidEmail()" 
+          x-transition
+          class="text-red-500 text-sm">
+        Please enter a valid email
+    </span>
+</form>
+</code-snippet>
+
+#### Toggle States
+<code-snippet name="Alpine Toggle" lang="html">
+<div x-data="{ enabled: false }">
+    <button @click="enabled = !enabled" 
+            :class="enabled ? 'bg-green-500' : 'bg-gray-500'"
+            class="px-4 py-2 text-white rounded">
+        <span x-text="enabled ? 'Enabled' : 'Disabled'"></span>
+    </button>
+</div>
+</code-snippet>
+
+### Integration with Livewire
+- Use `$wire` to access Livewire component methods and properties from Alpine
+- Combine Alpine for immediate UI feedback with Livewire for server persistence
+- Alpine handles client-side interactions, Livewire handles server-side state
+
+#### Accessing Livewire from Alpine
+<code-snippet name="Alpine with Livewire" lang="html">
+<div x-data="{ 
+    search: @entangle('search').live,
+    loading: false 
+}">
+    <input x-model="search" 
+           @input="loading = true; $wire.search().then(() => loading = false)"
+           placeholder="Search...">
+    <div x-show="loading">Searching...</div>
+</div>
+</code-snippet>
+
+#### Alpine with Wire Loading States
+<code-snippet name="Alpine Loading States" lang="html">
+<div x-data="{ saving: false }">
+    <button @click="saving = true; $wire.save().then(() => saving = false)"
+            :disabled="saving"
+            :class="saving ? 'opacity-50' : ''"
+            class="px-4 py-2 bg-blue-500 text-white">
+        <span x-show="!saving">Save</span>
+        <span x-show="saving">Saving...</span>
+    </button>
+</div>
+</code-snippet>
+
+### Best Practices
+- Keep Alpine components small and focused on specific UI interactions
+- Use `x-cloak` to prevent flash of unstyled content
+- Prefer `x-show` over `x-if` for frequently toggled elements
+- Use `@click.away` for closing dropdowns and modals
+- Combine with Tailwind classes for styling
+- Use `x-transition` for smooth animations
+- Store complex state in Livewire, use Alpine for UI interactions
 
 
 === pint/core rules ===
