@@ -1,7 +1,12 @@
 @import 'tailwindcss';
 @source '../views/home.blade.php';
 
-:root{
+@theme {
+    --font-family-serif: "Playfair Display", Georgia, serif;
+}
+
+:root
+{
       /* Theme palette: purple, magenta, ruby, pink, maroon & white */
       --purple: #6A00F4;
       --magenta: #D100D1;
@@ -26,19 +31,6 @@
       --grad-card: linear-gradient(135deg, rgba(255,95,162,.12), rgba(224,17,95,.20));
       --grad-button: linear-gradient(135deg, var(--purple), var(--ruby));
       --grad-ring: conic-gradient(from 0deg, var(--pink), var(--magenta), var(--ruby), var(--purple), var(--pink));
-    }
-
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      color:var(--white);
-      background: #1a0d1a;
-      background-image: var(--grad-hero);
-      font-family:"Playfair Display", Georgia, serif; /* elegant serif for body */
-      line-height:1.5;
-      -webkit-font-smoothing:antialiased;
-      text-rendering:optimizeLegibility;
     }
 
     /* Layout */
