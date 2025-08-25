@@ -99,7 +99,7 @@ Kau tahu tak, wanita ni bukan sekadar pelengkap je… tapi dia boleh jadi punca 
         </article>
         <article class="card">
           <div class="cover" style="background:linear-gradient(135deg, var(--maroon), var(--ruby));">
-            <img src="{{ asset('storage/sebab-dia-terasa.png') }}" alt="Sebab Dia Terasa">
+            <img src="{{ asset('storage/kasihi-puteri.png') }}" alt="Sebab Dia Terasa">
             <div class="pages" aria-hidden="true"></div></div>
           <h4>Signals & Stories</h4>
           <div class="desc">A playbook for brand storytelling in an AI world.</div>
