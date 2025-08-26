@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>34 Teknik Bercinta — Long-Form Sales Page</title>
-  <meta name="description" content="Hidupkan semula rasa cinta dengan 34 teknik bercinta yang mudah, murah dan ikhlas oleh Kamalia Kamal. Long-form sales page tanpa menu dengan CTA Add to Cart." />
+  <meta name="description" content="Hidupkan semula rasa cinta dengan 34 teknik bercinta yang mudah, murah dan ikhlas oleh Kamalia Kamal. Long-form sales page dengan CTA" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
@@ -14,73 +14,252 @@
       theme: {
         extend: {
           colors: {
-            ruby: '#9b111e',
-            maroon: '#6b0f1a',
-            rose: '#e11d48',
-            blush: '#f472b6',
-            orchid: '#7c3aed',
-            mulberry: '#6d214f',
+            ruby: '#8b0000',
+            maroon: '#5c0a14',
+            rose: '#d1264f',
+            blush: '#ec4899',
+            orchid: '#6d28d9',
+            mulberry: '#581c54',
+            champagne: '#f7e7ce',
+            cream: '#fef9f3',
+            midnight: '#1e1b4b',
+            pearl: '#f8fafc',
           },
           fontFamily: {
             sans: ['Poppins', 'ui-sans-serif', 'system-ui'],
             display: ['Playfair Display', 'ui-serif', 'Georgia']
           },
           boxShadow: {
-            glow: '0 15px 45px rgba(155,17,30,.35)',
-            soft: '0 12px 36px rgba(124,58,237,.22)',
-            inset: 'inset 0 1px 0 rgba(255,255,255,.25), inset 0 -1px 0 rgba(0,0,0,.05)'
+            'glow': '0 20px 60px rgba(139,0,0,.4), 0 8px 25px rgba(139,0,0,.25)',
+            'soft': '0 16px 48px rgba(109,40,217,.2), 0 6px 20px rgba(109,40,217,.15)',
+            'inset': 'inset 0 1px 0 rgba(255,255,255,.3), inset 0 -1px 0 rgba(0,0,0,.08)',
+            'luxury': '0 25px 75px rgba(88,28,84,.3), 0 10px 30px rgba(88,28,84,.2)',
+            'elegant': '0 12px 40px rgba(92,10,20,.18), 0 4px 15px rgba(92,10,20,.12)',
+            'dreamy': '0 20px 65px rgba(236,72,153,.25), 0 8px 25px rgba(236,72,153,.15)'
+          },
+          backgroundImage: {
+            'royal-gradient': 'linear-gradient(135deg, #5c0a14 0%, #8b0000 25%, #d1264f 50%, #ec4899 75%, #6d28d9 100%)',
+            'luxury-gradient': 'linear-gradient(120deg, #1e1b4b 0%, #581c54 30%, #5c0a14 60%, #8b0000 100%)',
+            'champagne-gradient': 'linear-gradient(180deg, #fef9f3 0%, #f7e7ce 50%, #fef9f3 100%)',
+            'pearl-shimmer': 'linear-gradient(45deg, #f8fafc 0%, #ffffff 25%, #f8fafc 50%, #ffffff 75%, #f8fafc 100%)'
           }
         }
       }
     }
   </script>
   <style>
-    .bg-velvet { background: radial-gradient(1200px 600px at 15% 5%, rgba(241,70,104,.18), transparent 60%), radial-gradient(1000px 700px at 85% 0%, rgba(124,58,237,.18), transparent 65%), radial-gradient(900px 580px at 50% 100%, rgba(155,17,30,.22), transparent 70%), linear-gradient(180deg, #fff 0%, #fff 6%, #fff 20%, #ffe8f1 55%, #fff 100%); }
-    .hero { background: linear-gradient(135deg, #7c3aed 0%, #9b111e 45%, #e11d48 70%, #f472b6 100%); }
-    .glass { backdrop-filter: blur(10px); background: linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.7)); }
-    .btn-cta { background: linear-gradient(90deg, #9b111e, #e11d48, #7c3aed); background-size: 200% 200%; transition: background-position .6s ease, transform .2s ease, box-shadow .2s ease; }
-    .btn-cta:hover { background-position: 100% 0; transform: translateY(-1px); box-shadow: 0 18px 40px rgba(155,17,30,.35); }
-    .badge { background: linear-gradient(120deg, rgba(255,255,255,.8), rgba(255,255,255,.55)); box-shadow: 0 10px 24px rgba(124,58,237,.18); }
-    .rad-card { background: radial-gradient(800px 400px at 0% 0%, rgba(244,114,182,.08), transparent 60%), radial-gradient(800px 400px at 100% 0%, rgba(124,58,237,.08), transparent 60%), #fff; }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    
+    /* Enhanced Background Patterns */
+    .bg-velvet { 
+      background: 
+        radial-gradient(1400px 700px at 20% 10%, rgba(236,72,153,.12), transparent 65%), 
+        radial-gradient(1200px 800px at 80% 5%, rgba(109,40,217,.15), transparent 70%), 
+        radial-gradient(1000px 650px at 50% 95%, rgba(139,0,0,.18), transparent 75%),
+        linear-gradient(180deg, #fef9f3 0%, #f8fafc 15%, #ffffff 30%, #f7e7ce 65%, #fef9f3 100%);
+    }
+    
+    .hero { 
+      background: 
+        radial-gradient(ellipse 1200px 600px at 0% 0%, rgba(109,40,217,.25), transparent 50%),
+        radial-gradient(ellipse 1000px 500px at 100% 0%, rgba(236,72,153,.2), transparent 50%),
+        linear-gradient(135deg, #1e1b4b 0%, #581c54 25%, #5c0a14 50%, #8b0000 75%, #d1264f 100%);
+      position: relative;
+    }
+    
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: 
+        radial-gradient(circle 800px at 25% 25%, rgba(236,72,153,.15), transparent 60%),
+        radial-gradient(circle 600px at 75% 75%, rgba(109,40,217,.12), transparent 50%);
+      pointer-events: none;
+    }
+    
+    /* Glass & Material Effects */
+    .glass { 
+      backdrop-filter: blur(20px) saturate(180%);
+      background: linear-gradient(135deg, 
+        rgba(255,255,255,.95) 0%, 
+        rgba(255,255,255,.85) 50%, 
+        rgba(248,250,252,.90) 100%);
+      border: 1px solid rgba(255,255,255,.3);
+    }
+    
+    .glass-dark {
+      backdrop-filter: blur(16px) saturate(150%);
+      background: linear-gradient(135deg,
+        rgba(30,27,75,.85) 0%,
+        rgba(88,28,84,.80) 50%,
+        rgba(92,10,20,.85) 100%);
+      border: 1px solid rgba(255,255,255,.15);
+    }
+    
+    /* Enhanced Buttons */
+    .btn-cta { 
+      background: linear-gradient(90deg, #5c0a14 0%, #8b0000 25%, #d1264f 50%, #ec4899 75%, #6d28d9 100%);
+      background-size: 300% 100%;
+      transition: all .8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn-cta::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.2) 50%, transparent 100%);
+      transform: translateX(-100%);
+      transition: transform .6s ease;
+    }
+    
+    .btn-cta:hover { 
+      background-position: 100% 0; 
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 25px 50px rgba(139,0,0,.4), 0 10px 30px rgba(139,0,0,.3);
+    }
+    
+    .btn-cta:hover::before {
+      transform: translateX(100%);
+    }
+    
+    /* Premium Cards */
+    .badge { 
+      background: linear-gradient(135deg, 
+        rgba(255,255,255,.95) 0%, 
+        rgba(247,231,206,.90) 50%, 
+        rgba(255,255,255,.85) 100%);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,.4);
+      box-shadow: 0 8px 25px rgba(92,10,20,.15), inset 0 1px 0 rgba(255,255,255,.5);
+    }
+    
+    .rad-card { 
+      background: 
+        radial-gradient(600px 300px at 0% 0%, rgba(236,72,153,.06), transparent 60%),
+        radial-gradient(500px 250px at 100% 100%, rgba(109,40,217,.06), transparent 60%),
+        linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+      border: 1px solid rgba(209,38,79,.08);
+      box-shadow: 0 12px 40px rgba(88,28,84,.08), 0 4px 15px rgba(88,28,84,.05);
+      transition: all .4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    
+    .rad-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 60px rgba(88,28,84,.15), 0 8px 25px rgba(88,28,84,.1);
+      border-color: rgba(209,38,79,.15);
+    }
+    
+    /* Luxury Borders */
+    .luxury-border {
+      border: 2px solid transparent;
+      background: linear-gradient(white, white) padding-box,
+                  linear-gradient(135deg, #ec4899, #6d28d9, #5c0a14) border-box;
+    }
+    
+    /* Text Enhancements */
+    .text-gradient {
+      background: linear-gradient(135deg, #5c0a14 0%, #8b0000 50%, #d1264f 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    /* Smooth Animations */
+    .fade-in-up {
+      animation: fadeInUp 0.8s ease-out forwards;
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* Enhanced Selection */
+    ::selection {
+      background: linear-gradient(135deg, rgba(236,72,153,.3), rgba(109,40,217,.3));
+      color: #5c0a14;
+    }
   </style>
 </head>
 <body class="font-sans text-slate-800 bg-white selection:bg-blush/50 selection:text-maroon">
 
   <!-- HERO -->
-  <header class="hero text-white">
-    <div class="max-w-7xl mx-auto px-4 pt-14 pb-16 md:pb-24 grid md:grid-cols-2 gap-10 items-center">
-      <div>
-        <div class="inline-flex items-center gap-2 badge px-3 py-1 rounded-full text-xs text-maroon font-semibold">
-          <span class="w-1.5 h-1.5 rounded-full bg-rose"></span>
+    <!-- HERO -->
+  <header class="hero text-white relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 pt-16 pb-20 md:pb-28 grid md:grid-cols-2 gap-12 items-center relative z-10">
+      <div class="fade-in-up order-last md:order-first">
+        <div class="inline-flex items-center gap-2 badge px-4 py-2 rounded-full text-xs text-maroon font-semibold shadow-elegant">
+          <span class="w-2 h-2 rounded-full bg-rose shadow-inner"></span>
           Pelancaran Edisi Istimewa
         </div>
-        <h1 class="mt-4 font-display text-4xl md:text-6xl leading-[1.05]">
-          “Macam ni rupanya <span class="underline decoration-blush decoration-4 underline-offset-8">cara nak bercinta</span>… <span class="text-blush">mudahnya lahai!</span>”
+        <h1 class="mt-6 font-display text-4xl md:text-6xl lg:text-7xl leading-[0.95] tracking-tight">
+          "Macam ni rupanya <span class="relative">
+            <span class="underline decoration-blush decoration-4 md:decoration-6 underline-offset-8">cara nak bercinta</span>
+            <span class="absolute -inset-2 bg-blush/10 rounded-lg -z-10 blur-sm"></span>
+          </span>… <span class="text-blush drop-shadow-lg">mudahnya lahai!</span>"
         </h1>
-        <p class="mt-5 text-white/90 text-lg md:text-xl">Buku <b>34 Teknik Bercinta Dengan Pasangan</b> oleh <b>Kamalia Kamal (Kak Kay)</b> ialah panduan praktikal untuk <i>hidupkan semula rasa</i> — tanpa bajet besar, tanpa drama. Hanya usaha kecil yang ikhlas, konsisten, dan manis.
+        <p class="mt-6 text-white/95 text-lg md:text-xl leading-relaxed max-w-2xl">
+          Buku <strong class="text-champagne">34 Teknik Bercinta Dengan Pasangan</strong> oleh <strong class="text-champagne">Kamalia Kamal (Kak Kay)</strong> ialah panduan praktikal untuk <em class="text-blush font-medium">hidupkan semula rasa</em> — tanpa bajet besar, tanpa drama. Hanya usaha kecil yang ikhlas, konsisten, dan manis.
         </p>
-        <div class="mt-8 flex flex-wrap gap-3">
-          <button id="openCartTop" class="btn-cta shadow-glow rounded-full px-7 py-3 text-base font-semibold text-white">Tambah ke Troli</button>
-          <a href="#learn" class="rounded-full px-7 py-3 text-base font-semibold bg-white/20 ring-1 ring-white/40 hover:bg-white/30">Baca Lagi</a>
+        <div class="mt-8 flex flex-wrap gap-4">
+          <button id="openCartTop" class="btn-cta shadow-glow rounded-full px-8 py-4 text-base font-semibold text-white transform hover:scale-105 transition-all duration-300">
+            Tambah ke Troli
+          </button>
+          <a href="#learn" class="rounded-full px-8 py-4 text-base font-semibold bg-white/20 backdrop-blur-sm ring-1 ring-white/40 hover:bg-white/30 hover:ring-white/60 transition-all duration-300 hover:scale-105">
+            Baca Lagi
+          </a>
         </div>
-        <div class="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 text-[13px] text-white/90">
-          <div class="bg-white/10 rounded-xl p-3">Mudah & Murah</div>
-          <div class="bg-white/10 rounded-xl p-3">Mesra Syariah</div>
-          <div class="bg-white/10 rounded-xl p-3">Sesuai Pasangan Sibuk</div>
-          <div class="bg-white/10 rounded-xl p-3">34 Teknik Praktikal</div>
+        <div class="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3 text-[13px] text-white/90">
+          <div class="bg-white/15 backdrop-blur-sm rounded-xl p-3 border border-white/20 hover:bg-white/25 transition-all duration-300">
+            <div class="font-medium">Mudah & Murah</div>
+          </div>
+          <div class="bg-white/15 backdrop-blur-sm rounded-xl p-3 border border-white/20 hover:bg-white/25 transition-all duration-300">
+            <div class="font-medium">Mesra Syariah</div>
+          </div>
+          <div class="bg-white/15 backdrop-blur-sm rounded-xl p-3 border border-white/20 hover:bg-white/25 transition-all duration-300">
+            <div class="font-medium">Sesuai Pasangan Sibuk</div>
+          </div>
+          <div class="bg-white/15 backdrop-blur-sm rounded-xl p-3 border border-white/20 hover:bg-white/25 transition-all duration-300">
+            <div class="font-medium">34 Teknik Praktikal</div>
+          </div>
         </div>
       </div>
-      <div class="relative">
-        {{-- <div class="absolute -inset-2 md:-inset-3 rounded-3xl blur-2xl opacity-60" style="background: radial-gradient(closest-side, rgba(241,70,104,.5), transparent), radial-gradient(closest-side, rgba(124,58,237,.35), transparent)"></div> --}}
-        <div class="relative">
-          <img src="cara-bercinta-3d.png" alt="Muka depan buku 34 Teknik Bercinta" class="w-full justify-center align-middle max-w-80 aspect-[3/4] object-cover"/>
+      <div class="relative flex justify-center md:justify-end order-first md:order-last">
+        <div class="relative group">
+          <!-- Floating glow effect -->
+          <div class="absolute -inset-4 rounded-3xl blur-2xl opacity-75 bg-gradient-to-r from-blush/30 via-orchid/30 to-ruby/30 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <!-- Book container -->
+          <div class="relative glass rounded-3xl p-6 shadow-luxury group-hover:shadow-dreamy transition-all duration-500 group-hover:scale-105">
+            <img src="cara-bercinta.png" alt="Muka depan buku 34 Teknik Bercinta" class="w-full max-w-80 aspect-[3/4] object-cover rounded-2xl shadow-elegant"/>
+          </div>
+          <!-- Floating elements -->
+          <div class="absolute -top-4 -right-4 glass-dark rounded-full p-3 shadow-luxury">
+            <div class="w-3 h-3 bg-blush rounded-full animate-pulse"></div>
+          </div>
+          <div class="absolute -bottom-4 -left-4 glass-dark rounded-full p-4 shadow-luxury">
+            <div class="w-2 h-2 bg-champagne rounded-full animate-pulse"></div>
+          </div>
         </div>
       </div>
     </div>
+    <!-- Decorative elements -->
+    <div class="absolute top-10 left-10 w-20 h-20 bg-blush/10 rounded-full blur-xl"></div>
+    <div class="absolute bottom-10 right-10 w-32 h-32 bg-orchid/10 rounded-full blur-2xl"></div>
   </header>
 
   <!-- LONG COPY -->
-  <main class="bg-velvet" id="learn">
+  <main class="bg-velvet relative" id="learn">
+    <!-- Floating decorative elements -->
+    <div class="absolute top-20 left-4 w-16 h-16 bg-orchid/5 rounded-full blur-xl"></div>
+    <div class="absolute bottom-40 right-8 w-24 h-24 bg-rose/5 rounded-full blur-2xl"></div>
     <section class="max-w-3xl mx-auto px-4 py-16">
       <h2 class="font-display text-3xl md:text-4xl text-maroon">Kalau ikut perasaan, cinta surut. Kalau ikut <i>usaha</i>, cinta subur.</h2>
       <p class="mt-5 leading-relaxed text-[17px] text-slate-700">Ramai pasangan tunggu <b>mood</b> datang. Tunggu masa lapang, tunggu anak tidur awal, tunggu ada duit lebih. Sementara menunggu, rumah jadi macam <i>hostel</i>: jumpa, makan, tidur. Rasa rindu jadi jarang, bicara jadi urusan. Anda tak salah; hidup memang sibuk. Tapi kalau kita sanggup buat usaha kecil setiap hari—cinta tak perlu tunggu mood. Ia boleh <b>dihidupkan</b>.</p>
@@ -103,12 +282,22 @@
     </section>
 
     <!-- WHAT'S INSIDE -->
-    <section class="max-w-6xl mx-auto px-4 py-4 md:py-8">
-      <div class="rounded-[28px] border shadow-soft bg-white overflow-hidden">
-        <div class="px-6 md:px-10 py-10 bg-gradient-to-br from-rose/10 via-white to-white">
-          <h2 class="font-display text-3xl md:text-4xl text-maroon">Dalam buku ini, anda akan temui…</h2>
-          <p class="mt-3 text-slate-700">34 teknik yang dibahagi kepada kategori mudah. Setiap teknik disertakan cadangan waktu, pantang ringkas dan tujuan—supaya anda boleh terus praktik malam ini.</p>
-          <div class="mt-8 grid lg:grid-cols-3 gap-6">
+    <section class="max-w-7xl mx-auto px-4 py-12 md:py-16">
+      <div class="rounded-[32px] border shadow-luxury bg-white overflow-hidden relative">
+        <!-- Decorative background -->
+        <div class="absolute inset-0 bg-gradient-to-br from-rose/5 via-white to-orchid/5 pointer-events-none"></div>
+        
+        <div class="px-6 md:px-12 py-12 md:py-16 relative">
+          <div class="text-center mb-12">
+            <h2 class="font-display text-4xl md:text-5xl lg:text-6xl text-gradient leading-tight mb-4">
+              Dalam buku ini, anda akan temui…
+            </h2>
+            <p class="text-xl md:text-2xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+              34 teknik yang dibahagi kepada kategori mudah. Setiap teknik disertakan cadangan waktu, pantang ringkas dan tujuan—supaya anda boleh terus praktik malam ini.
+            </p>
+          </div>
+          
+          <div class="grid lg:grid-cols-3 gap-8 mb-12">
             <div class="rad-card rounded-2xl border p-6">
               <h3 class="font-semibold text-maroon">1) Makanan & Nostalgia</h3>
               <p class="text-slate-700 mt-2">Masak menu kenangan bersama, pilih kudapan ‘zaman kita bercinta’, minum teh tarik berdua. Rasa lama yang baik itu ditarik pulang.</p>
@@ -165,14 +354,80 @@
             </div>
           </div>
 
-          <div class="mt-10 text-center">
-            <button id="openCartMid" class="btn-cta rounded-full px-8 py-3 font-semibold text-white shadow-glow">Tambah ke Troli</button>
+          <div class="text-center">
+            <div class="inline-flex flex-col items-center gap-4">
+              <button id="openCartMid" class="btn-cta rounded-full px-10 py-4 text-lg font-semibold text-white shadow-glow transform hover:scale-105 transition-all duration-300">
+                Tambah ke Troli
+              </button>
+              <p class="text-sm text-slate-500 italic">✨ Mulakan perjalanan cinta yang lebih bermakna</p>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- STORY / AUTHOR -->
+    <section class="max-w-5xl mx-auto px-4 py-20">
+      <div class="glass rounded-3xl p-8 md:p-12 shadow-luxury border relative overflow-hidden">
+        <!-- Decorative background -->
+        <div class="absolute inset-0 bg-gradient-to-br from-champagne/20 via-cream/30 to-pearl/20 pointer-events-none"></div>
+        
+        <div class="relative">
+          <div class="text-center mb-8">
+            <h2 class="font-display text-4xl md:text-5xl text-gradient leading-tight mb-4">
+              Ditulis dengan hati oleh <br class="hidden md:block"/>
+              <span class="text-maroon">Kamalia Kamal</span> (Kak Kay)
+            </h2>
+          </div>
+          
+          <div class="grid md:grid-cols-[1fr_300px] gap-8 items-center">
+            <div>
+              <p class="text-xl md:text-2xl text-slate-700 leading-relaxed font-light mb-6">
+                Kak Kay pernah berada di fasa <em class="text-mulberry font-medium">"letih menunggu rasa"</em>. Lalu beliau pilih jalan yang lebih mudah: <strong class="text-maroon font-semibold">buat dulu</strong> walau kecil.
+              </p>
+              
+              <div class="grid sm:grid-cols-3 gap-4 mb-6">
+                <div class="text-center p-4 bg-white/60 rounded-2xl border border-rose/10">
+                  <div class="text-2xl mb-2">💌</div>
+                  <p class="text-sm text-slate-600">Tulis nota comel</p>
+                </div>
+                <div class="text-center p-4 bg-white/60 rounded-2xl border border-rose/10">
+                  <div class="text-2xl mb-2">🍜</div>
+                  <p class="text-sm text-slate-600">Masak mi telur goyang</p>
+                </div>
+                <div class="text-center p-4 bg-white/60 rounded-2xl border border-rose/10">
+                  <div class="text-2xl mb-2">🤲</div>
+                  <p class="text-sm text-slate-600">Genggam tangan doa</p>
+                </div>
+              </div>
+              
+              <div class="p-6 bg-gradient-to-r from-champagne/30 to-cream/30 rounded-2xl border border-rose/10">
+                <p class="text-lg text-slate-700 font-medium italic">
+                  "Hasilnya? Rumah terasa hangat semula. Buku ini merangkum pengalaman itu menjadi langkah yang jelas supaya pasangan lain dapat merasai kelegaan yang sama: <strong class="text-maroon not-italic">bahagia itu boleh diusahakan</strong>."
+                </p>
+              </div>
+            </div>
+            
+            <div class="flex justify-center">
+              <div class="relative group">
+                <div class="absolute -inset-2 rounded-3xl blur-xl opacity-50 bg-gradient-to-r from-rose/20 via-orchid/20 to-maroon/20 group-hover:opacity-75 transition-opacity duration-500"></div>
+                <div class="relative glass rounded-3xl p-8 text-center shadow-elegant">
+                  <div class="mx-auto w-24 h-24 rounded-full bg-gradient-to-br from-maroon via-rose to-blush flex items-center justify-center text-white font-bold text-2xl shadow-luxury mb-4">
+                    KK
+                  </div>
+                  <h3 class="font-display text-xl font-bold text-maroon mb-2">Kamalia Kamal</h3>
+                  <p class="text-sm text-slate-600 mb-4">Penulis & Kaunselor</p>
+                  <blockquote class="text-maroon font-medium italic">
+                    "Usaha kecil. Hati besar."
+                  </blockquote>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {{-- <!-- STORY / AUTHOR -->
     <section class="max-w-4xl mx-auto px-4 py-16">
       <h2 class="font-display text-3xl md:text-4xl text-maroon">Ditulis dengan hati oleh Kamalia Kamal (Kak Kay)</h2>
       <p class="mt-4 text-[17px] text-slate-700 leading-relaxed">Kak Kay pernah berada di fasa “letih menunggu rasa”. Lalu beliau pilih jalan yang lebih mudah: <i>buat dulu</i> walau kecil. Tulis nota comel, masak mi telur goyang, genggam tangan ketika doa. Hasilnya? Rumah terasa hangat semula. Buku ini merangkum pengalaman itu menjadi langkah yang jelas supaya pasangan lain dapat merasai kelegaan yang sama: <b>bahagia itu boleh diusahakan</b>.</p>
@@ -200,7 +455,7 @@
       <div class="text-center mt-8">
         <button id="openCartLow" class="btn-cta rounded-full px-8 py-3 font-semibold text-white shadow-glow">Tambah ke Troli</button>
       </div>
-    </section>
+    </section> --}}
 
     <!-- TESTIMONIALS -->
     <section class="max-w-6xl mx-auto px-4 py-16">
@@ -225,7 +480,7 @@
     </section>
 
     <!-- VALUE STACK / OFFER -->
-    <section class="max-w-7xl mx-auto px-4 py-16">
+    {{-- <section class="max-w-7xl mx-auto px-4 py-16">
       <div class="grid lg:grid-cols-2 gap-10 items-center">
         <div class="rad-card rounded-3xl border p-8">
           <h2 class="font-display text-3xl text-maroon">Apa yang anda dapat</h2>
@@ -257,7 +512,7 @@
           <p class="mt-4 text-xs text-slate-500">*Kemaskan harga mengikut promosi semasa.</p>
         </div>
       </div>
-    </section>
+    </section> --}}
 
     <!-- FAQ -->
     <section class="max-w-4xl mx-auto px-4 pb-24">
@@ -302,10 +557,10 @@
   <div class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/80 backdrop-blur border-t border-rose/20">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
       <div>
-        <div class="text-[13px] text-slate-600">Edisi Digital dari</div>
-        <div class="text-lg font-display text-maroon -mt-1">RM39</div>
+        <div class="text-[13px] text-slate-600">Hidupkan semula rasa</div>
+        <div class="text-lg font-display text-maroon -mt-1">RM50</div>
       </div>
-      <button id="openCartFloat" class="btn-cta rounded-full px-5 py-2.5 text-white font-semibold">Tambah ke Troli</button>
+      <button id="openCartFloat" class="btn-cta rounded-full px-5 py-2.5 text-white font-semibold">Order Sekarang!</button>
     </div>
   </div>
 
@@ -318,7 +573,7 @@
         <button id="closeCart" class="text-slate-500 hover:text-rose">✕</button>
       </div>
       <div class="mt-6 grid grid-cols-[80px_1fr] gap-4">
-        <img src="cara-bercinta.png" class="max-w-80 aspect-[3/4] object-cover rounded-xl border" alt="Buku 34 Teknik Bercinta"/>
+        <img src="cara-bercinta.png" class="w-20 h-40 object-cover rounded-xl border" alt="Buku 34 Teknik Bercinta"/>
         <div>
           <div class="font-semibold">34 Teknik Bercinta — Kamalia Kamal</div>
           <div class="text-sm text-slate-600">Pilih edisi, kuantiti & terus checkout.</div>
