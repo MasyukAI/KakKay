@@ -7,6 +7,10 @@ use App\Http\Controllers\PageController;
 
 Route::get('/', Home::class)->name('home');
 
+Volt::route('/cart', 'cart')->name('cart');
+
+Route::view('/checkout', 'checkout')->name('checkout');
+
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');

@@ -545,6 +545,17 @@
     </section>
   </main>
 
+              {{-- <div class="mt-4 space-y-3">
+              <div class="text-center">
+                <h4 class="text-lg font-semibold text-white">{{ $product->name }}</h4>
+                <p class="text-pink-300 text-lg font-bold">RM {{ number_format($product->price / 100, 2) }}</p>
+              </div>
+              
+              <div class="flex justify-center">
+                @livewire('add-to-cart', ['product' => $product], key($product->id))
+              </div>
+            </div> --}}
+
   <!-- FOOTER -->
   <footer class="bg-maroon text-white">
     <div class="max-w-6xl mx-auto px-4 py-10 text-center">
