@@ -9,18 +9,20 @@ class Home extends Component
 {
     public function render()
     {
-        $product = Product::query()->where('is_featured', true)->first();
+        $allProducts = Product::query()
+            ->where('is_active', true)
+            ->orWhere('is_featured', true)
+            ->orderByDesc('is_featured')
+            ->get();
 
-        $products = Product::query()
-                        ->where('is_featured', false)
-                        ->where('is_active', true)->get();
+        $featuredProduct = $allProducts->firstWhere('is_featured', true);
+
+        $products = $allProducts->where('is_featured', false);
 
         return view('livewire.home', [
-            'featuredImageUrl' => optional(
-                    $product->getMedia('product-image-main')->first()
-                )?->getUrl(),
-            'featuredProductName' => $product->name,
-            'featuredProductDescription' => $product->description,
+            'featuredImageUrl' => optional($featuredProduct?->getMedia('product-image-main')->first())?->getUrl(),
+            'featuredProductName' => $featuredProduct?->name,
+            'featuredProductDescription' => $featuredProduct?->description,
             'products' => $products,
         ]);
     }
