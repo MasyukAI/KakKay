@@ -9,7 +9,7 @@
       </div>
       <div class="hidden sm:flex">
         <nav>
-          <a class="pill" href="#featured" 
+          <a class="pill" href="member" 
             style="transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);"
             onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(255,105,180,0.3)'; this.style.backgroundColor='rgba(255,105,180,0.1)';" 
             onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'; this.style.backgroundColor='';">KKDI Member</a>
@@ -71,7 +71,7 @@ Kau tahu tak, wanita ni bukan sekadar pelengkap je… tapi dia boleh jadi punca 
             <a class="btn primary" href="#buy" 
                style="transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);"
                onmouseover="this.style.transform='translateY(-3px) scale(1.05)'; this.style.boxShadow='0 15px 35px rgba(255,105,180,0.4), 0 5px 15px rgba(0,0,0,0.3)'; this.style.filter='brightness(1.1)';" 
-               onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow=''; this.style.filter='brightness(1)';">Dapatkan Sekarang 🤌 ❤️</a>
+               onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow=''; this.style.filter='brightness(1)';">Nak tau pasal buku ni? 🤌 ❤️</a>
             <a class="btn ghost" href="#sample" 
                style="transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);"
                onmouseover="this.style.transform='translateY(-2px)'; this.style.backgroundColor='rgba(255,255,255,0.1)'; this.style.borderColor='rgba(255,105,180,0.8)'; this.style.color='#ff69b4';" 
@@ -103,7 +103,7 @@ Kau tahu tak, wanita ni bukan sekadar pelengkap je… tapi dia boleh jadi punca 
 
     <div class="visible sm:hidden flex justify-center">
         <nav class="text-center">
-          <a class="pill" href="#featured" 
+          <a class="pill" href="member" 
             style="transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);"
             onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(255,105,180,0.3)'; this.style.backgroundColor='rgba(255,105,180,0.1)';" 
             onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'; this.style.backgroundColor='';">KKDI Member</a>
