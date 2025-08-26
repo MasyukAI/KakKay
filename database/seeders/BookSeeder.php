@@ -73,5 +73,7 @@ class BookSeeder extends Seeder
                 ])
             );
         }
+
+        $this->command->info('Created Books category and 20 book products successfully!');
     }
 }
