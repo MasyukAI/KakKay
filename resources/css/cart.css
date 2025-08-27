@@ -1,0 +1,173 @@
+@import 'tailwindcss';
+
+:root {
+    /* Theme palette: purple, magenta, ruby, pink, maroon & white */
+    --purple: #6A00F4;
+    --magenta: #D100D1;
+    --ruby: #E0115F;
+    --pink: #FF5FA2;
+    --maroon: #80002A;
+    --white: #ffffff;
+
+    /* Supportive neutrals */
+    --ink: #1b1020;
+    --ink-soft: #402b42;
+    --muted: #9b8aa1;
+
+    --radius: 18px;
+    --shadow-lg: 0 20px 60px rgba(0,0,0,.25), 0 8px 24px rgba(0,0,0,.18);
+    --shadow-sm: 0 6px 20px rgba(0,0,0,.18);
+
+    /* Gradient tokens */
+    --grad-hero: radial-gradient(1200px 600px at 10% -10%, rgba(255,95,162,.35) 0%, transparent 45%),
+                 radial-gradient(800px 500px at 110% 10%, rgba(209,0,209,.30) 0%, transparent 50%),
+                 linear-gradient(135deg, rgba(106,0,244,.18), rgba(224,17,95,.22));
+    --grad-card: linear-gradient(135deg, rgba(255,95,162,.12), rgba(224,17,95,.20));
+    --grad-button: linear-gradient(135deg, var(--purple), var(--ruby));
+    --grad-ring: conic-gradient(from 0deg, var(--pink), var(--magenta), var(--ruby), var(--purple), var(--pink));
+}
+
+/* Apply the same base styles as home */
+body {
+    background: #1a0d1a;
+    background-image: var(--grad-hero);
+    color: var(--white);
+    font-family: "Playfair Display", Georgia, serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    min-height: 100vh;
+}
+
+/* Cart specific styles */
+.cart-container {
+    width: min(1200px, 92vw);
+    margin-inline: auto;
+}
+
+.cart-card {
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: calc(var(--radius) * 1.2);
+    backdrop-filter: blur(8px);
+    box-shadow: var(--shadow-sm);
+}
+
+.cart-header {
+    padding: 1.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,.1);
+}
+
+.cart-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font: 800 clamp(1.0rem, 2vw + .4rem, 1.4rem) Montserrat, system-ui, sans-serif;
+    letter-spacing: .3px;
+    color: var(--white);
+    text-decoration: none;
+}
+
+.cart-nav-link {
+    color: #f7e9f4;
+    opacity: .9;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+}
+
+.cart-nav-link:hover {
+    color: var(--pink);
+    opacity: 1;
+}
+
+.cart-button-primary {
+    background: var(--grad-button);
+    box-shadow: 0 10px 30px rgba(106,0,244,.35), 0 6px 18px rgba(224,17,95,.35);
+    border: none;
+    border-radius: 14px;
+    color: white;
+    font: 800 .95rem Montserrat, system-ui, sans-serif;
+    position: relative;
+    isolation: isolate;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cart-button-primary::after {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: 16px;
+    background: radial-gradient(60% 60% at 50% 0%, rgba(255,255,255,.35), transparent);
+    mix-blend-mode: screen;
+    pointer-events: none;
+}
+
+.cart-button-primary:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 15px 35px rgba(255,105,180,0.4), 0 5px 15px rgba(0,0,0,0.3);
+    filter: brightness(1.1);
+}
+
+.cart-button-ghost {
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.18);
+    border-radius: 14px;
+    color: white;
+    font: 800 .95rem Montserrat, system-ui, sans-serif;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cart-button-ghost:hover {
+    transform: translateY(-2px);
+    background-color: rgba(255,255,255,0.1);
+    border-color: rgba(255,105,180,0.8);
+    color: #ff69b4;
+}
+
+.cart-item-card {
+    background: var(--grad-card);
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    backdrop-filter: blur(6px);
+    box-shadow: var(--shadow-sm);
+}
+
+.cart-summary-card {
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.16);
+    border-radius: calc(var(--radius) * 1.1);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-lg);
+}
+
+.cart-text-muted {
+    color: #f7e9f4;
+    opacity: .85;
+}
+
+.cart-text-accent {
+    background: linear-gradient(90deg, var(--pink), var(--magenta));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.cart-empty-state {
+    background: var(--grad-card);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: calc(var(--radius) * 1.2);
+    padding: 3rem;
+    text-align: center;
+    backdrop-filter: blur(8px);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Utility classes */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}

@@ -1,15 +1,15 @@
 <?php
 
-use App\Livewire\Home;
-use Livewire\Volt\Volt;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PageController;
+use App\Livewire\Home;
+use Illuminate\Support\Facades\Route;
+use Livewire\Volt\Volt;
 
 Route::get('/', Home::class)->name('home');
 
 Volt::route('/cart', 'cart')->name('cart');
 
-Route::view('/checkout', 'checkout')->name('checkout');
+Volt::route('/checkout', 'checkout')->name('checkout');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
@@ -23,10 +23,10 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 });
 
-
 require __DIR__.'/auth.php';
+//
+// Route::get('/{slug}', [PageController::class, 'show'])
+//    ->where('slug', '[a-z0-9\-]+')
+//    ->name('page.show');
 
-Route::get('/{slug}', [PageController::class, 'show'])
-    ->where('slug', '[a-z0-9\-]+')
-    ->name('page.show');
-
+Volt::route('cara-bercinta', 'cara-bercinta');

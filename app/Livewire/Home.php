@@ -3,8 +3,10 @@
 namespace App\Livewire;
 
 use App\Models\Product;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
+#[Layout('components.layouts.home')]
 class Home extends Component
 {
     public function render()
@@ -22,6 +24,7 @@ class Home extends Component
         return view('livewire.home', [
             'featuredImageUrl' => optional($featuredProduct?->getMedia('product-image-main')->first())?->getUrl(),
             'featuredProductName' => $featuredProduct?->name,
+            'featuredProductSlug' => $featuredProduct?->slug,
             'featuredProductDescription' => $featuredProduct?->description,
             'products' => $products,
         ]);

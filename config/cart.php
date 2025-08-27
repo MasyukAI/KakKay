@@ -17,15 +17,15 @@ return [
      * Storage
      * ---------------------------------------------------------------
      */
-    'driver' => 'session',
+    'driver' => 'database',
 
     'storage' => [
         'session',
         'database' => [
-            'model' => '',
-            'id' => '',
-            'items' => '',
-            'conditions' => '',
+            'model' => \App\Models\Carting::class, // your model here
+            'id' => 'session_id',
+            'items' => 'items',
+            'conditions' => 'conditions',
         ],
     ],
 ];

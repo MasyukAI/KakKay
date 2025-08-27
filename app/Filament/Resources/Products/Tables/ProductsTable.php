@@ -26,8 +26,12 @@ class ProductsTable
                     ->width(60),
                 TextColumn::make('name')
                     ->searchable(),
-                // TextColumn::make('category.name')
-                //     ->searchable(),
+                TextColumn::make('slug')
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),    
+                TextColumn::make('category.name')
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
                 TextColumn::make('price')
                     ->numeric(decimalPlaces: 2)
                     ->money(currency: 'MYR', divideBy: 100)

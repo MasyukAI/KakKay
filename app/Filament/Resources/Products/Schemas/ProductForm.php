@@ -16,6 +16,9 @@ class ProductForm
             ->components([
                 TextInput::make('name')
                     ->required(),
+                TextInput::make('slug')
+                    ->required()
+                    ->unique(),
                 Select::make('category_id')
                     ->relationship('category', 'name')
                     ->required(),
