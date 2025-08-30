@@ -3,7 +3,6 @@
 use App\Traits\ManagesCart;
 use Livewire\Volt\Component;
 use Livewire\Attributes\Computed;
-use Joelwmale\Cart\Facades\CartFacade as Cart;
 use Illuminate\Support\Facades\Log;
 
 new class extends Component {
@@ -33,7 +32,7 @@ new class extends Component {
     public function loadCartItems(): void
     {
         try {
-            $this->setCartSession();
+            $this->setCartSession(auth()->check() ? auth()->user()->id : session()->getId());
             $cartContents = Cart::getContent();
 
             if ($cartContents->isEmpty()) {

@@ -3,11 +3,11 @@
 use App\Traits\ManagesCart;
 use Livewire\Volt\Component;
 use Livewire\Attributes\Computed;
-use Joelwmale\Cart\Facades\CartFacade as Cart;
 use Illuminate\Support\Facades\Log;
+// use Cart;
 
 new class extends Component {
-    use ManagesCart;
+    // use ManagesCart;
 
     public array $cartItems = [];
     public string $voucherCode = '';
@@ -15,6 +15,7 @@ new class extends Component {
 
     public function mount(): void
     {
+        // $this->setCartSession();
         $this->loadCartItems();
         $this->loadSuggestedProducts();
     }
@@ -22,14 +23,16 @@ new class extends Component {
     public function loadCartItems(): void
     {
         try {
-            // $this->setCartSession();
+
+            // Cart::setSessionKey(Auth::check() ? (string) Auth::user()->id : Session::getId());
+
 
             $cartContents = Cart::getContent();
 
-            if ($cartContents->isEmpty()) {
-                $this->cartItems = [];
-                return;
-            }
+            // if ($cartContents->isEmpty()) {
+            //     $this->cartItems = [];
+            //     return;
+            // }
 
             $this->cartItems = $cartContents->map(function ($item) {
                 return [
@@ -38,12 +41,13 @@ new class extends Component {
                     'price' => (int) $item->price,
                     'quantity' => (int) $item->quantity,
                     'attributes' => $item->attributes,
-                    'image' => $item->attributes['imageUrl'] ?? '',
+                    // 'conditions' => $item->conditions,
+                    'imageUrl' => $item->attributes['imageUrl'],
                 ];
             })->values()->toArray();
         } catch (\Exception $e) {
-            $this->cartItems = [];
-            Log::error('Cart loading error: ' . $e->getMessage());
+            // $this->cartItems = [];
+            // Log::error('Cart loading error: ' . $e->getMessage());
         }
     }
 
@@ -98,47 +102,47 @@ new class extends Component {
         }
     }
 
-    public function addToCart(int $productId): void
-    {
-        $product = \App\Models\Product::find($productId);
+    // public function addToCart(int $productId): void
+    // {
+    //     $product = \App\Models\Product::find($productId);
         
-        if (!$product) {
-            return;
-        }
+    //     if (!$product) {
+    //         return;
+    //     }
 
-        $this->setCartSession();
+    //     // $this->setCartSession();
 
-        // Check if product already in cart
-        $cartItem = Cart::get($productId);
+    //     // Check if product already in cart
+    //     $cartItem = Cart::get($productId);
         
-        if ($cartItem) {
-            // Update quantity if already exists
-            Cart::update($productId, [
-                'quantity' => [
-                    'relative' => true,
-                    'value' => 1
-                ]
-            ]);
-        } else {
-            // Add new item to cart
-            Cart::add([
-                'id' => $product->id,
-                'name' => $product->name,
-                'price' => $product->price,
-                'quantity' => 1,
-                'attributes' => [
-                    'image' => $product->primaryImage() ? '/storage/' . $product->primaryImage()->image_path : 'https://flowbite.s3.amazonaws.com/blocks/e-commerce/book-placeholder.svg',
-                    'description' => $product->description,
-                ]
-            ]);
-        }
+    //     if ($cartItem) {
+    //         // Update quantity if already exists
+    //         Cart::update($productId, [
+    //             'quantity' => [
+    //                 'relative' => true,
+    //                 'value' => 1
+    //             ]
+    //         ]);
+    //     } else {
+    //         // Add new item to cart
+    //         Cart::add([
+    //             'id' => $product->id,
+    //             'name' => $product->name,
+    //             'price' => $product->price,
+    //             'quantity' => 1,
+    //             'attributes' => [
+    //                 'image' => $product->primaryImage() ? '/storage/' . $product->primaryImage()->image_path : 'https://flowbite.s3.amazonaws.com/blocks/e-commerce/book-placeholder.svg',
+    //                 'description' => $product->description,
+    //             ]
+    //         ]);
+    //     }
 
-        $this->loadCartItems();
-        $this->loadSuggestedProducts(); // Refresh suggestions to exclude newly added item
-        $this->dispatch('product-added-to-cart');
+    //     $this->loadCartItems();
+    //     $this->loadSuggestedProducts(); // Refresh suggestions to exclude newly added item
+    //     $this->dispatch('product-added-to-cart');
         
-        session()->flash('success', "'{$product->name}' telah ditambah ke keranjang!");
-    }
+    //     session()->flash('success', "'{$product->name}' telah ditambah ke keranjang!");
+    // }
 
     #[Computed]
     public function getSubtotal(): int
@@ -246,7 +250,7 @@ new class extends Component {
                                     <!-- Product Image -->
                                     <div class="flex-shrink-0">
                                         <div class="w-24 h-32 sm:w-32 sm:h-40 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg overflow-hidden shadow-lg">
-                                            <img src="{{ $item['attributes']['imageUrl'] }}" 
+                                            <img src="{{ $item['imageUrl'] }}" 
                                                  alt="{{ $item['name'] }}" 
                                                  class="w-full h-full object-cover">
                                         </div>

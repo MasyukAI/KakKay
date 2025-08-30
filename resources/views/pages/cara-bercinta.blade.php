@@ -3,16 +3,21 @@
 use Livewire\Attributes\{Layout, Title};
 use Livewire\Volt\Component;
 use App\Models\Product;
+use App\Traits\ManagesCart;
+use Cart;
 
 new
 #[Layout('components.layouts.pages')]
 class extends Component {
+    use ManagesCart;
 
     public function addToCart()
     {
         $componentName = static::getName();
 
         $product = Product::where('slug', 'cara-bercinta')->first();
+
+        $this->setCartSession();
 
         Cart::add(
             $product->id, // any unique id
@@ -21,8 +26,6 @@ class extends Component {
             1,
             ['imageUrl' => $product->getFirstMediaUrl('product-image-main')]
         );
-
-        $cartContents = \Cart::getContent();
 
         $this->redirect('/cart');
     }

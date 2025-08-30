@@ -1,25 +1,4 @@
-<?php
-
-use Livewire\Volt\Component;
-
-new class extends Component {
-
-    public function addToCart()
-    {
-//        dd('hello');
-//        Cart::add(
-//            1, // any unique id
-//            'Product 1', // product name
-//            19.99, // product price
-//            2, // quantity
-//            ['size' => 'large'] // an array of extra attributes
-//        );
-
-        $this->redirect('/cart');
-    }
-} ?>
-
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ms">
 <head>
     <meta charset="utf-8" />
