@@ -4,10 +4,11 @@ use App\Traits\ManagesCart;
 use Livewire\Volt\Component;
 use Livewire\Attributes\Computed;
 use Illuminate\Support\Facades\Log;
-// use Cart;
+use MasyukAI\Cart\Facades\Cart;
+use Filament\Notifications\Notification;
 
 new class extends Component {
-    // use ManagesCart;
+    use ManagesCart;
 
     public array $cartItems = [];
     public string $voucherCode = '';
@@ -15,7 +16,6 @@ new class extends Component {
 
     public function mount(): void
     {
-        // $this->setCartSession();
         $this->loadCartItems();
         $this->loadSuggestedProducts();
     }
@@ -23,31 +23,24 @@ new class extends Component {
     public function loadCartItems(): void
     {
         try {
-
-            // Cart::setSessionKey(Auth::check() ? (string) Auth::user()->id : Session::getId());
-
-
+            $this->setCartSession();
             $cartContents = Cart::getContent();
-
-            // if ($cartContents->isEmpty()) {
-            //     $this->cartItems = [];
-            //     return;
-            // }
 
             $this->cartItems = $cartContents->map(function ($item) {
                 return [
-                    'id' => (int) $item->id,
+                    'id' => (string) $item->id,
                     'name' => (string) $item->name,
-                    'price' => (int) $item->price,
+                    'price' => (int) ($item->price / 100), // Convert to cents
                     'quantity' => (int) $item->quantity,
-                    'attributes' => $item->attributes,
-                    // 'conditions' => $item->conditions,
-                    'imageUrl' => $item->attributes['imageUrl'],
+                    'attributes' => $item->attributes->toArray(),
+                    'imageUrl' => $item->attributes->get('imageUrl', 'https://flowbite.s3.amazonaws.com/blocks/e-commerce/book-placeholder.svg'),
                 ];
             })->values()->toArray();
+
+            ds($this->cartItems);
         } catch (\Exception $e) {
-            // $this->cartItems = [];
-            // Log::error('Cart loading error: ' . $e->getMessage());
+            $this->cartItems = [];
+            Log::error('Cart loading error: ' . $e->getMessage());
         }
     }
 
@@ -64,7 +57,7 @@ new class extends Component {
             ->get();
     }
 
-    public function updateQuantity(int $itemId, int $quantity): void
+    public function updateQuantity(string $itemId, int $quantity): void
     {
         $this->setCartSession();
 
@@ -73,76 +66,131 @@ new class extends Component {
             return;
         }
 
-        Cart::update($itemId, [
-            'quantity' => [
-                'relative' => false,
-                'value' => $quantity
-            ]
-        ]);
+        Cart::update($itemId, ['quantity' => $quantity]);
 
         $this->loadCartItems();
         $this->dispatch('product-added-to-cart');
     }
 
-    public function removeItem(int $itemId): void
+    public function incrementQuantity($itemId)
     {
         $this->setCartSession();
+        $item = Cart::get($itemId);
+        if ($item) {
+            // Use absolute quantity update
+            Cart::update($itemId, ['quantity' => ['value' => $item->quantity + 1]]);
+            $this->loadCartItems();
+            
+            Notification::make()
+                ->title('Kuantiti Ditambah')
+                ->body("Kuantiti '{$item->name}' telah ditambah.")
+                ->info()
+                ->icon('heroicon-o-plus-circle')
+                ->iconColor('info')
+                ->duration(2000)
+                ->send();
+        }
+    }
+
+    public function decrementQuantity($itemId)
+    {
+        $this->setCartSession();
+        $item = Cart::get($itemId);
+        if ($item) {
+            $newQuantity = max(1, $item->quantity - 1);
+            // Use absolute quantity update
+            Cart::update($itemId, ['quantity' => ['value' => $newQuantity]]);
+            $this->loadCartItems();
+            
+            Notification::make()
+                ->title('Kuantiti Dikurangkan')
+                ->body("Kuantiti '{$item->name}' telah dikurangkan.")
+                ->info()
+                ->icon('heroicon-o-minus-circle')
+                ->iconColor('info')
+                ->duration(2000)
+                ->send();
+        }
+    }
+
+    public function removeItem(string $itemId): void
+    {
+        $this->setCartSession();
+        $item = Cart::get($itemId);
+        $itemName = $item ? $item->name : 'Item';
+        
         Cart::remove($itemId);
         $this->loadCartItems();
-        $this->dispatch('product-added-to-cart');
+        $this->loadSuggestedProducts(); // Refresh suggestions when item is removed
+        // $this->dispatch('product-added-to-cart');
 
-        session()->flash('success', 'Item removed from cart.');
+        Notification::make()
+            ->title('Item Dibuang!')
+            ->body("'{$itemName}' telah dikeluarkan dari keranjang.")
+            ->success()
+            ->icon('heroicon-o-trash')
+            ->iconColor('success')
+            ->duration(3000)
+            ->send();
     }
 
     public function applyVoucher(): void
     {
         if (!empty($this->voucherCode)) {
-            session()->flash('success', "Voucher '{$this->voucherCode}' applied successfully!");
+            Notification::make()
+                ->title('Voucher Berjaya!')
+                ->body("Kod voucher '{$this->voucherCode}' telah digunakan.")
+                ->success()
+                ->icon('heroicon-o-ticket')
+                ->iconColor('success')
+                ->duration(4000)
+                ->send();
             $this->voucherCode = '';
         }
     }
 
-    // public function addToCart(int $productId): void
-    // {
-    //     $product = \App\Models\Product::find($productId);
+    public function addToCart(int $productId): void
+    {
+        $product = \App\Models\Product::find($productId);
         
-    //     if (!$product) {
-    //         return;
-    //     }
+        if (!$product) {
+            Notification::make()
+                ->title('Produk Tidak Dijumpai')
+                ->body('Produk yang diminta tidak wujud.')
+                ->danger()
+                ->icon('heroicon-o-exclamation-triangle')
+                ->iconColor('danger')
+                ->duration(5000)
+                ->send();
+            return;
+        }
 
-    //     // $this->setCartSession();
+        $this->setCartSession();
 
-    //     // Check if product already in cart
-    //     $cartItem = Cart::get($productId);
+        Cart::add(
+            (string) $product->id,
+            $product->name,
+            $product->price / 100, // Convert from cents to dollars
+            1,
+            [
+                'imageUrl' => $product->getFirstMediaUrl('product-image-main') ?: 'https://flowbite.s3.amazonaws.com/blocks/e-commerce/book-placeholder.svg',
+                'description' => $product->description,
+            ]
+        );
+
+        $this->loadCartItems();
+        $this->loadSuggestedProducts(); // Refresh suggestions to exclude newly added item
+        $this->dispatch('product-added-to-cart');
         
-    //     if ($cartItem) {
-    //         // Update quantity if already exists
-    //         Cart::update($productId, [
-    //             'quantity' => [
-    //                 'relative' => true,
-    //                 'value' => 1
-    //             ]
-    //         ]);
-    //     } else {
-    //         // Add new item to cart
-    //         Cart::add([
-    //             'id' => $product->id,
-    //             'name' => $product->name,
-    //             'price' => $product->price,
-    //             'quantity' => 1,
-    //             'attributes' => [
-    //                 'image' => $product->primaryImage() ? '/storage/' . $product->primaryImage()->image_path : 'https://flowbite.s3.amazonaws.com/blocks/e-commerce/book-placeholder.svg',
-    //                 'description' => $product->description,
-    //             ]
-    //         ]);
-    //     }
-
-    //     $this->loadCartItems();
-    //     $this->loadSuggestedProducts(); // Refresh suggestions to exclude newly added item
-    //     $this->dispatch('product-added-to-cart');
-        
-    //     session()->flash('success', "'{$product->name}' telah ditambah ke keranjang!");
-    // }
+        Notification::make()
+            ->title('Ditambah ke Keranjang!')
+            ->body("'{$product->name}' telah ditambah ke keranjang!")
+            ->success()
+            ->icon('heroicon-o-shopping-cart')
+            ->iconColor('success')
+            ->duration(4000)
+            ->send();
+    }
 
     #[Computed]
     public function getSubtotal(): int
@@ -150,11 +198,11 @@ new class extends Component {
         return $this->getCartSubtotal();
     }
 
-    #[Computed]
-    public function getSavings(): int
-    {
-        return 29900; // $299.00 in cents
-    }
+    // #[Computed]
+    // public function getSavings(): int
+    // {
+    //     return 29900; // $299.00 in cents
+    // }
 
     #[Computed]
     public function getShipping(): int
@@ -162,16 +210,16 @@ new class extends Component {
         return 9900; // $99.00 in cents
     }
 
-    #[Computed]
-    public function getTax(): int
-    {
-        return (int) ($this->getSubtotal() * 0.105); // 10.5% tax
-    }
+    // #[Computed]
+    // public function getTax(): int
+    // {
+    //     return (int) ($this->getSubtotal() * 0.105); // 10.5% tax
+    // }
 
     #[Computed]
     public function getTotal(): int
     {
-        return $this->getSubtotal() - $this->getSavings() + $this->getShipping() + $this->getTax();
+        return $this->getSubtotal() + $this->getShipping();
     }
 
     public function formatPrice(int $cents): string
@@ -193,13 +241,13 @@ new class extends Component {
                 </div>
 
                 <div class="flex items-center gap-6">
-                    <a href="{{ route('home') }}" class="cart-nav-link">
+                    {{-- <a href="{{ route('home') }}" class="cart-nav-link">
                         ← Kembali Beli-belah
-                    </a>
+                    </a> --}}
 
                     <div class="relative">
                         <flux:button variant="primary" size="sm" href="{{ route('cart') }}" class="flex items-center gap-2">
-                            <flux:icon.shopping-bag class="h-5 w-5" />
+                            <flux:icon.shopping-bag class="h-5 w-5 cart-text-accent" />
                         </flux:button>
                         @livewire('cart-counter')
                     </div>
@@ -213,23 +261,17 @@ new class extends Component {
         <div class="cart-container">
             <div class="mb-8">
                 <h2 class="text-3xl font-bold mb-2" style="font-family: 'Caveat Brush', cursive;">
-                    Keranjang <span class="cart-text-accent">Belanja</span> Kamu
+                    Troli <span class="cart-text-accent">Belanja</span> Kamu
                 </h2>
                 <p class="cart-text-muted text-lg">Buku-buku pilihan yang akan mengubah hidupmu</p>
             </div>
-
-            @if(session('success'))
-                <flux:callout variant="success" class="mb-6">
-                    {{ session('success') }}
-                </flux:callout>
-            @endif
 
             @if(empty($cartItems))
                 <div class="cart-empty-state">
                     <div class="max-w-md mx-auto">
                         <div class="text-6xl mb-4">📚</div>
                         <h3 class="text-2xl font-bold mb-4" style="font-family: 'Caveat Brush', cursive;">
-                            Keranjang Masih Kosong
+                            Troli Masih Kosong
                         </h3>
                         <p class="cart-text-muted mb-8 text-lg">
                             Jom pilih buku-buku yang boleh ubah hidup kamu! Setiap halaman ada cerita, setiap cerita ada pelajaran.
@@ -280,7 +322,7 @@ new class extends Component {
                                         <div class="flex items-center justify-between">
                                             <div class="flex items-center gap-3">
                                                 <flux:button variant="subtle" size="sm" 
-                                                           wire:click="updateQuantity({{ $item['id'] }}, {{ $item['quantity'] - 1 }})"
+                                                           wire:click="decrementQuantity('{{ $item['id'] }}')"
                                                            class="w-8 h-8 flex items-center justify-center">
                                                     <flux:icon.minus class="h-4 w-4" />
                                                 </flux:button>
@@ -290,14 +332,14 @@ new class extends Component {
                                                 </span>
                                                 
                                                 <flux:button variant="subtle" size="sm" 
-                                                           wire:click="updateQuantity({{ $item['id'] }}, {{ $item['quantity'] + 1 }})"
+                                                           wire:click="incrementQuantity('{{ $item['id'] }}')"
                                                            class="w-8 h-8 flex items-center justify-center">
                                                     <flux:icon.plus class="h-4 w-4" />
                                                 </flux:button>
                                             </div>
 
                                             <flux:button variant="subtle" color="red" size="sm" 
-                                                       wire:click="removeItem({{ $item['id'] }})"
+                                                       wire:click="removeItem('{{ $item['id'] }}')"
                                                        class="hover:bg-red-500/20">
                                                 <flux:icon.trash class="h-4 w-4 mr-1" />
                                                 Buang
@@ -322,20 +364,20 @@ new class extends Component {
                                     <span class="font-semibold">{{ $this->formatPrice($this->getSubtotal()) }}</span>
                                 </div>
                                 
-                                <div class="flex justify-between text-green-400">
+                                {{-- <div class="flex justify-between text-green-400">
                                     <span>Diskaun</span>
                                     <span class="font-semibold">-{{ $this->formatPrice($this->getSavings()) }}</span>
-                                </div>
+                                </div> --}}
                                 
                                 <div class="flex justify-between">
                                     <span class="cart-text-muted">Penghantaran</span>
                                     <span class="font-semibold">{{ $this->formatPrice($this->getShipping()) }}</span>
                                 </div>
                                 
-                                <div class="flex justify-between">
+                                {{-- <div class="flex justify-between">
                                     <span class="cart-text-muted">Cukai (10.5%)</span>
                                     <span class="font-semibold">{{ $this->formatPrice($this->getTax()) }}</span>
-                                </div>
+                                </div> --}}
                                 
                                 <hr class="border-white/20">
                                 
@@ -348,20 +390,20 @@ new class extends Component {
                             <flux:button variant="primary" href="{{ route('checkout') }}" 
                                        class="w-full cart-button-primary mb-4 px-6 py-4 text-lg">
                                 <flux:icon.credit-card class="h-5 w-5 mr-2" />
-                                Bayar Sekarang
+                                Teruskan Pembelian
                             </flux:button>
 
-                            <div class="text-center">
+                            {{-- <div class="text-center">
                                 <span class="cart-text-muted text-sm">atau</span>
                                 <flux:button variant="subtle" href="{{ route('home') }}" class="cart-button-ghost ml-2">
                                     <flux:icon.arrow-left class="h-4 w-4 mr-2" />
                                     Teruskan Beli-belah
                                 </flux:button>
-                            </div>
+                            </div> --}}
                         </div>
 
                         <!-- Voucher Section -->
-                        <div class="cart-summary-card p-6 mt-6">
+                        {{-- <div class="cart-summary-card p-6 mt-6">
                             <h4 class="text-lg font-bold mb-4" style="font-family: 'Montserrat', sans-serif;">
                                 Kod Voucher
                             </h4>
@@ -375,7 +417,7 @@ new class extends Component {
                                     Guna Voucher
                                 </flux:button>
                             </form>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
             @endif
@@ -394,8 +436,7 @@ new class extends Component {
                         <div class="cart-item-card overflow-hidden">
                             <div class="aspect-[3/4] bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg mb-4 overflow-hidden">
                                 @php
-                                    $primaryImage = $product->primaryImage();
-                                    $imageUrl = $primaryImage ? '/storage/' . $primaryImage->image_path : 'https://flowbite.s3.amazonaws.com/blocks/e-commerce/book-placeholder.svg';
+                                    $imageUrl = $product->getFirstMediaUrl('product-image-main');
                                 @endphp
                                 <img src="{{ $imageUrl }}" 
                                      alt="{{ $product->name }}" 
@@ -403,9 +444,9 @@ new class extends Component {
                             </div>
                             
                             <div class="space-y-4">
-                                <h4 class="text-lg font-bold leading-tight" style="font-family: 'Montserrat', sans-serif;">
+                                {{-- <h4 class="text-lg font-bold leading-tight" style="font-family: 'Montserrat', sans-serif;">
                                     {{ $product->name }}
-                                </h4>
+                                </h4> --}}
                                 <p class="cart-text-muted text-sm line-clamp-2">
                                     {{ $product->description }}
                                 </p>
@@ -414,22 +455,22 @@ new class extends Component {
                                     <span class="text-xl font-bold cart-text-accent">
                                         {{ $this->formatPrice($product->price) }}
                                     </span>
-                                    <flux:badge variant="solid" color="pink" size="sm">
+                                    {{-- <flux:badge variant="solid" color="pink" size="sm">
                                         <flux:icon.sparkles class="h-3 w-3 mr-1" />
                                         Hot
-                                    </flux:badge>
+                                    </flux:badge> --}}
                                 </div>
                                 
                                 <div class="flex gap-3 pt-2">
-                                    <flux:button variant="subtle" size="sm" 
+                                    {{-- <flux:button variant="subtle" size="sm" 
                                                class="flex-1 hover:bg-white/10">
                                         <flux:icon.heart class="h-4 w-4 mr-1" />
                                         Suka
-                                    </flux:button>
+                                    </flux:button> --}}
                                     <flux:button variant="primary" size="sm" 
                                                wire:click="addToCart({{ $product->id }})"
                                                class="flex-1 cart-button-primary">
-                                        <flux:icon.shopping-cart class="h-4 w-4 mr-1" />
+                                        <flux:icon.shopping-cart class="h-4 w-4 mr-1 block" />
                                         Tambah
                                     </flux:button>
                                 </div>

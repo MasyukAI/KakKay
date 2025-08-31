@@ -1,4 +1,11 @@
 @import 'tailwindcss';
+@import '../../vendor/livewire/flux/dist/flux.css';
+/* @import '../../vendor/filament/support/resources/css/index.css';
+@import '../../vendor/filament/actions/resources/css/index.css';
+@import '../../vendor/filament/forms/resources/css/index.css';
+@import '../../vendor/filament/infolists/resources/css/index.css'; 
+@import '../../vendor/filament/notifications/resources/css/index.css';
+@import '../../vendor/filament/schemas/resources/css/index.css'; */
 
 :root {
     /* Theme palette: purple, magenta, ruby, pink, maroon & white */
@@ -90,6 +97,16 @@ body {
     position: relative;
     isolation: isolate;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-direction: row !important;
+    gap: 0.25rem !important;
+}
+
+.cart-button-primary > * {
+    display: inline-flex !important;
+    align-items: center !important;
 }
 
 .cart-button-primary::after {
@@ -161,6 +178,225 @@ body {
     text-align: center;
     backdrop-filter: blur(8px);
     box-shadow: var(--shadow-sm);
+}
+
+/* Custom Filament Notification Styles - Complete Override */
+.fi-no {
+    pointer-events: none;
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 9999;
+    display: flex;
+    gap: 0.75rem;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-end;
+    max-width: 420px;
+}
+
+.fi-no-notification {
+    pointer-events: auto;
+    display: flex;
+    width: 100%;
+    max-width: 380px;
+    flex-shrink: 0;
+    gap: 0.75rem;
+    overflow: hidden;
+    padding: 1.25rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Glass morphic design matching your cart theme */
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.16);
+    border-radius: calc(var(--radius) * 1.1);
+    backdrop-filter: blur(12px);
+    box-shadow: var(--shadow-lg);
+    color: var(--white);
+}
+
+.fi-no-notification-icon {
+    flex-shrink: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-top: 0.125rem;
+}
+
+.fi-no-notification-main {
+    margin-top: 0.125rem;
+    display: grid;
+    flex: 1 1 0%;
+    gap: 0.75rem;
+}
+
+.fi-no-notification-text {
+    display: grid;
+    gap: 0.25rem;
+}
+
+.fi-no-notification-title {
+    color: var(--white);
+    font-family: 'Montserrat', system-ui, sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    line-height: 1.25rem;
+}
+
+.fi-no-notification-body {
+    color: #f7e9f4;
+    opacity: 0.9;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    overflow: hidden;
+    word-break: break-words;
+}
+
+.fi-no-notification-body > p:not(:first-of-type) {
+    margin-top: 0.25rem;
+}
+
+/* Success notifications */
+.fi-no-notification.fi-color.fi-color-success {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(16, 185, 129, 0.20));
+    border-color: rgba(34, 197, 94, 0.3);
+    box-shadow: 
+        0 20px 60px rgba(34, 197, 94, 0.15), 
+        0 8px 24px rgba(16, 185, 129, 0.18),
+        var(--shadow-lg);
+}
+
+.fi-no-notification.fi-color.fi-color-success .fi-no-notification-icon {
+    color: #10b981;
+    filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.4));
+}
+
+/* Info notifications */
+.fi-no-notification.fi-color.fi-color-info {
+    background: var(--grad-card);
+    border-color: rgba(255, 95, 162, 0.3);
+    box-shadow: 
+        0 20px 60px rgba(255, 95, 162, 0.15), 
+        0 8px 24px rgba(209, 0, 209, 0.18),
+        var(--shadow-lg);
+}
+
+.fi-no-notification.fi-color.fi-color-info .fi-no-notification-icon {
+    color: var(--pink);
+    filter: drop-shadow(0 0 8px rgba(255, 95, 162, 0.4));
+}
+
+/* Warning notifications */
+.fi-no-notification.fi-color.fi-color-warning {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(251, 191, 36, 0.20));
+    border-color: rgba(245, 158, 11, 0.3);
+    box-shadow: 
+        0 20px 60px rgba(245, 158, 11, 0.15), 
+        0 8px 24px rgba(251, 191, 36, 0.18),
+        var(--shadow-lg);
+}
+
+.fi-no-notification.fi-color.fi-color-warning .fi-no-notification-icon {
+    color: #f59e0b;
+    filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.4));
+}
+
+/* Danger notifications */
+.fi-no-notification.fi-color.fi-color-danger {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(220, 38, 38, 0.20));
+    border-color: rgba(239, 68, 68, 0.3);
+    box-shadow: 
+        0 20px 60px rgba(239, 68, 68, 0.15), 
+        0 8px 24px rgba(220, 38, 38, 0.18),
+        var(--shadow-lg);
+}
+
+.fi-no-notification.fi-color.fi-color-danger .fi-no-notification-icon {
+    color: #ef4444;
+    filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.4));
+}
+
+/* Entrance animation */
+.fi-no-notification.fi-transition-enter-start {
+    opacity: 0;
+    transform: translateX(20px) scale(0.95);
+}
+
+.fi-no-notification.fi-transition-enter-end {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+}
+
+/* Exit animation */
+.fi-no-notification.fi-transition-leave-start {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+}
+
+.fi-no-notification.fi-transition-leave-end {
+    opacity: 0;
+    transform: translateX(20px) scale(0.95);
+}
+
+/* Close button styling */
+.fi-no-notification .fi-icon-btn,
+.fi-no-notification button[type="button"] {
+    color: rgba(255, 255, 255, 0.7);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: transparent;
+    border: none;
+    padding: 0.25rem;
+    border-radius: 0.375rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fi-no-notification .fi-icon-btn:hover,
+.fi-no-notification button[type="button"]:hover {
+    color: var(--pink);
+    background-color: rgba(255, 95, 162, 0.1);
+    transform: scale(1.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .fi-no {
+        top: 1rem;
+        right: 1rem;
+        max-width: calc(100vw - 2rem);
+    }
+    
+    .fi-no-notification {
+        max-width: 100%;
+        padding: 1rem;
+    }
+    
+    .fi-no-notification-title {
+        font-size: 0.875rem;
+    }
+    
+    .fi-no-notification-body {
+        font-size: 0.8125rem;
+    }
+}
+
+/* Fix button layout to display icon and text side by side */
+button {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-direction: row !important;
+}
+
+button svg {
+    flex-shrink: 0 !important;
+}
+
+/* Ensure all buttons with cart-button-primary class display horizontally */
+.cart-button-primary svg,
+.cart-button-primary .flux-icon {
+    margin-right: 0.25rem !important;
+    vertical-align: middle !important;
 }
 
 /* Utility classes */

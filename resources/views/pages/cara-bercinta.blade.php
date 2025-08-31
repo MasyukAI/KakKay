@@ -4,7 +4,8 @@ use Livewire\Attributes\{Layout, Title};
 use Livewire\Volt\Component;
 use App\Models\Product;
 use App\Traits\ManagesCart;
-use Cart;
+use MasyukAI\Cart\Facades\Cart;
+use Filament\Notifications\Notification;
 
 new
 #[Layout('components.layouts.pages')]
@@ -13,20 +14,39 @@ class extends Component {
 
     public function addToCart()
     {
-        $componentName = static::getName();
-
         $product = Product::where('slug', 'cara-bercinta')->first();
+        
+        if (!$product) {
+            Notification::make()
+                ->title('Produk Tidak Dijumpai')
+                ->body('Produk yang diminta tidak wujud.')
+                ->danger()
+                ->icon('heroicon-o-exclamation-triangle')
+                ->iconColor('danger')
+                ->persistent()
+                ->send();
+            return;
+        }
 
         $this->setCartSession();
 
         Cart::add(
-            $product->id, // any unique id
-            $product->name, // product name
-            $product->price, // product price
+            (string) $product->id,
+            $product->name,
+            $product->price ,// Convert from cents to dollars for the cart
             1,
             ['imageUrl' => $product->getFirstMediaUrl('product-image-main')]
         );
 
+        Notification::make()
+            ->title('Berjaya Ditambah!')
+            ->body('Produk telah ditambah ke keranjang!')
+            ->success()
+            ->icon('heroicon-o-check-circle')
+            ->iconColor('success')
+            ->duration(3000)
+            ->send();
+        $this->dispatch('product-added-to-cart');
         $this->redirect('/cart');
     }
 } ?>
@@ -51,8 +71,9 @@ class extends Component {
           Buku <strong class="text-champagne">34 Teknik Bercinta Dengan Pasangan</strong> oleh <strong class="text-champagne">Kamalia Kamal (Kak Kay)</strong> ialah panduan praktikal untuk <em class="text-blush font-medium">hidupkan semula rasa</em> — tanpa bajet besar, tanpa drama. Hanya usaha kecil yang ikhlas, konsisten, dan manis.
         </p>
         <div class="mt-8 flex flex-wrap gap-4">
-          <button wire:click="addToCart"
-{{--              id="openCartTop" --}}
+                  <div class="fade-in-up order-last md:order-first">
+          <button 
+              wire:click="addToCart"
               class="btn-cta shadow-glow rounded-full px-8 py-4 text-base font-semibold text-white transform hover:scale-105 transition-all duration-300">
             Tambah ke Troli
           </button>

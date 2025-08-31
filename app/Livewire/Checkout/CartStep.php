@@ -5,8 +5,8 @@ namespace App\Livewire\Checkout;
 use App\Traits\ManagesCart;
 use Livewire\Component;
 use Livewire\Attributes\Computed;
-use Joelwmale\Cart\Facades\CartFacade as Cart;
 use Illuminate\Support\Facades\Log;
+use MasyukAI\Cart\Facades\Cart;
 
 class CartStep extends Component
 {
@@ -38,12 +38,12 @@ class CartStep extends Component
             
             $this->cartItems = $cartContents->map(function ($item) {
                 return [
-                    'id' => (int) $item->id,
+                    'id' => (string) $item->id,
                     'name' => (string) $item->name,
-                    'price' => (int) $item->price, // Already in cents from our addToCart method
+                    'price' => (int) ($item->price * 100), // Convert to cents
                     'quantity' => (int) $item->quantity,
                     'attributes' => $item->attributes ? $item->attributes->toArray() : [],
-                    'image' => 'https://flowbite.s3.amazonaws.com/blocks/e-commerce/book-placeholder.svg',
+                    'imageUrl' => $item->attributes->get('imageUrl', 'https://flowbite.s3.amazonaws.com/blocks/e-commerce/book-placeholder.svg'),
                 ];
             })->values()->toArray();
         } catch (\Exception $e) {
@@ -53,7 +53,7 @@ class CartStep extends Component
         }
     }
 
-    public function updateQuantity(int $itemId, int $quantity): void
+    public function updateQuantity(string $itemId, int $quantity): void
     {
         // Set session key for cart
         $this->setCartSession();
@@ -63,19 +63,14 @@ class CartStep extends Component
             return;
         }
 
-        // Update quantity in cart
-        Cart::update($itemId, [
-            'quantity' => [
-                'relative' => false,
-                'value' => $quantity
-            ]
-        ]);
+        // Update quantity in cart using absolute quantity update
+        Cart::update($itemId, ['quantity' => ['value' => $quantity]]);
 
         // Reload cart items to reflect changes
         $this->loadCartItems();
     }
 
-    public function removeItem(int $itemId): void
+    public function removeItem(string $itemId): void
     {
         // Set session key for cart
         $this->setCartSession();

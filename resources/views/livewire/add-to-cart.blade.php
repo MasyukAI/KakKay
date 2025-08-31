@@ -3,7 +3,6 @@
 use App\Traits\ManagesCart;
 use App\Models\Product;
 use Livewire\Volt\Component;
-use Joelwmale\Cart\Facades\CartFacade as Cart;
 
 new class extends Component {
     use ManagesCart;
@@ -14,17 +13,18 @@ new class extends Component {
     public function addToCart(): void
     {
         $this->setCartSession();
+        $cartManager = app('cart');
         
-        Cart::add([
-            'id' => $this->product->id,
-            'name' => $this->product->name,
-            'price' => $this->product->price, // Price is already in cents
-            'quantity' => $this->quantity,
-            'attributes' => [
-                'image' => $this->product->getMedia('product-image-main')->first()?->getUrl() ?? 'https://flowbite.s3.amazonaws.com/blocks/e-commerce/book-placeholder.svg',
+        $cartManager->add(
+            (string) $this->product->id,
+            $this->product->name,
+            $this->product->price / 100, // Convert from cents to dollars
+            $this->quantity,
+            [
+                'imageUrl' => $this->product->getMedia('product-image-main')->first()?->getUrl() ?? 'https://flowbite.s3.amazonaws.com/blocks/e-commerce/book-placeholder.svg',
                 'description' => $this->product->description,
             ]
-        ]);
+        );
         
         $this->dispatch('product-added-to-cart');
         

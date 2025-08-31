@@ -188,8 +188,13 @@
             color: #5c0a14;
         }
     </style>
+    
+    @filamentStyles
 </head>
 <body class="font-sans text-slate-800 bg-white selection:bg-blush/50 selection:text-maroon">
     {{ $slot }}
+    
+    @livewire('notifications')
+    @filamentScripts
 </body>
 </html>

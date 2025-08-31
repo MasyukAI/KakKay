@@ -32,8 +32,9 @@ new class extends Component {
     public function loadCartItems(): void
     {
         try {
-            $this->setCartSession(auth()->check() ? auth()->user()->id : session()->getId());
-            $cartContents = Cart::getContent();
+            $this->setCartSession();
+            $cartManager = app('cart');
+            $cartContents = $cartManager->getContent();
 
             if ($cartContents->isEmpty()) {
                 $this->redirect(route('cart'));
@@ -42,11 +43,11 @@ new class extends Component {
 
             $this->cartItems = $cartContents->map(function ($item) {
                 return [
-                    'id' => (int) $item->id,
+                    'id' => (string) $item->id,
                     'name' => (string) $item->name,
-                    'price' => (int) $item->price,
+                    'price' => (int) ($item->price * 100), // Convert to cents
                     'quantity' => (int) $item->quantity,
-                    'attributes' => $item->attributes ?: [],
+                    'attributes' => $item->attributes->toArray(),
                 ];
             })->values()->toArray();
         } catch (\Exception $e) {
@@ -110,6 +111,9 @@ new class extends Component {
             'form.city' => 'required|string',
         ]);
 
+        $this->setCartSession();
+        $cartManager = app('cart');
+        
         // Process the checkout
         session()->flash('success', 'Pesanan berjaya dihantar! Kami akan hubungi anda tidak lama lagi.');
         
@@ -119,6 +123,9 @@ new class extends Component {
         // 3. Clear cart
         // 4. Send confirmation email
         // 5. Redirect to success page
+        
+        // Clear the cart after successful checkout
+        $cartManager->clear();
         
         // For now, just redirect back with success message
         $this->redirect(route('home'));
