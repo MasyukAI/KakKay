@@ -1,25 +1,30 @@
 {
     "mcpServers": {
         "laravel-boost": {
-            "command": "/Users/Saiffil/Library/Application Support/Herd/bin/php84",
+            "command": "/Users/saiffil/Library/Application Support/Herd/bin/php84",
             "args": [
-                "/Users/Saiffil/Herd/kay/artisan",
+                "/Users/saiffil/Herd/kay/artisan",
                 "boost:mcp"
             ]
         },
         "herd": {
-            "command": "/Users/Saiffil/Library/Application Support/Herd/bin/php84",
+            "command": "/Users/saiffil/Library/Application Support/Herd/bin/php84",
             "args": [
                 "/Applications/Herd.app/Contents/Resources/herd-mcp.phar"
             ],
             "env": {
-                "SITE_PATH": "/Users/Saiffil/Herd/kay"
+                "SITE_PATH": "/Users/saiffil/Herd/kay"
             }
         },
         "context7": {
             "type": "stdio",
             "command": "npx",
-            "args": ["-y", "@upstash/context7-mcp", "--api-key", "ctx7sk-32c4aafc-cf6f-40aa-aa23-52da7d858a80"]
+            "args": [
+                "-y",
+                "@upstash/context7-mcp",
+                "--api-key",
+                "ctx7sk-32c4aafc-cf6f-40aa-aa23-52da7d858a80"
+            ]
         }
     }
 }
