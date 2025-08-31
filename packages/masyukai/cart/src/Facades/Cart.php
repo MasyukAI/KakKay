@@ -1,0 +1,64 @@
+<?php
+
+declare(strict_types=1);
+
+namespace MasyukAI\Cart\Facades;
+
+use Illuminate\Support\Facades\Facade;
+
+/**
+ * @method static \MasyukAI\Cart\CartManager setInstance(string $name)
+ * @method static string instance()
+ * @method static \MasyukAI\Cart\Models\CartItem|\MasyukAI\Cart\Collections\CartCollection add(string|array $id, ?string $name = null, float|string|null $price = null, int $quantity = 1, array $attributes = [], array|\MasyukAI\Cart\Conditions\CartCondition|null $conditions = null, string|object|null $associatedModel = null)
+ * @method static \MasyukAI\Cart\Models\CartItem|null update(string $id, array $data)
+ * @method static \MasyukAI\Cart\Models\CartItem|null remove(string $id)
+ * @method static \MasyukAI\Cart\Models\CartItem|null get(string $id)
+ * @method static \MasyukAI\Cart\Collections\CartCollection getContent()
+ * @method static \MasyukAI\Cart\Collections\CartCollection content()
+ * @method static bool isEmpty()
+ * @method static int getTotalQuantity()
+ * @method static float getSubTotal()
+ * @method static float getSubTotalWithConditions()
+ * @method static float getTotal()
+ * @method static bool clear()
+ * @method static \MasyukAI\Cart\Cart condition(\MasyukAI\Cart\Conditions\CartCondition|array $condition)
+ * @method static \MasyukAI\Cart\Collections\CartConditionCollection getConditions()
+ * @method static \MasyukAI\Cart\Conditions\CartCondition|null getCondition(string $name)
+ * @method static bool removeCondition(string $name)
+ * @method static bool clearConditions()
+ * @method static bool addItemCondition(string $itemId, \MasyukAI\Cart\Conditions\CartCondition $condition)
+ * @method static bool removeItemCondition(string $itemId, string $conditionName)
+ * @method static bool clearItemConditions(string $itemId)
+ * @method static int count()
+ * @method static int countItems()
+ * @method static array toArray()
+ * @method static string getCurrentInstance()
+ *
+ * @see \MasyukAI\Cart\CartManager
+ */
+class Cart extends Facade
+{
+    /**
+     * Get the registered name of the component.
+     */
+    protected static function getFacadeAccessor(): string
+    {
+        return 'cart';
+    }
+
+    /**
+     * Handle dynamic, static calls to the facade.
+     * This allows us to handle the setInstance method properly for chaining.
+     */
+    public static function __callStatic($method, $args)
+    {
+        $instance = static::getFacadeRoot();
+
+        if ($method === 'setInstance') {
+            // Call setInstance on the CartManager and return the CartManager for chaining
+            return $instance->setInstance(...$args);
+        }
+
+        return $instance->$method(...$args);
+    }
+}

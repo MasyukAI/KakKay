@@ -1,0 +1,78 @@
+{
+    "name": "masyukai/cart",
+    "description": "A modern, feature-rich shopping cart package for Laravel 12 with Livewire integration",
+    "keywords": [
+        "laravel",
+        "laravel12",
+        "shopping-cart",
+        "cart",
+        "livewire",
+        "e-commerce",
+        "masyukai"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "MasyukAI",
+            "email": "info@masyukai.com"
+        }
+    ],
+    "require": {
+        "php": "^8.4",
+        "laravel/framework": "^12.0",
+        "livewire/livewire": "^3.0",
+        "livewire/volt": "^1.0"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.18",
+        "mockery/mockery": "^1.6",
+        "nunomaduro/collision": "^8.6",
+        "orchestra/testbench": "^10.0",
+        "pestphp/pest": "^4.0",
+        "pestphp/pest-plugin-browser": "^4.0",
+        "pestphp/pest-plugin-laravel": "^4.0",
+        "phpunit/phpunit": "^12.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "MasyukAI\\Cart\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MasyukAI\\Cart\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "MasyukAI\\Cart\\CartServiceProvider"
+            ],
+            "aliases": {
+                "Cart": "MasyukAI\\Cart\\Facades\\Cart"
+            }
+        }
+    },
+    "scripts": {
+        "test": [
+            "vendor/bin/pest"
+        ],
+        "test-coverage": [
+            "vendor/bin/pest --coverage"
+        ],
+        "format": [
+            "vendor/bin/pint"
+        ],
+        "format-test": [
+            "vendor/bin/pint --test"
+        ]
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
