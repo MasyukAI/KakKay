@@ -71,9 +71,11 @@ class CartMigrationService
     /**
      * Migrate guest cart to user cart when user logs in (user object version).
      */
-    public function migrateGuestCartForUser($user): object
+    public function migrateGuestCartForUser($user, ?string $oldSessionId = null): object
     {
-        $guestInstance = 'guest_' . session()->getId();
+        // Use provided old session ID or fall back to current session ID
+        $sessionId = $oldSessionId ?? session()->getId();
+        $guestInstance = $this->getInstanceName(null, $sessionId);
         $success = $this->migrateGuestCartToUser($guestInstance, $user->id);
         
         return (object) [
@@ -219,7 +221,7 @@ class CartMigrationService
         if (Auth::check()) {
             Cart::setInstance($this->getInstanceName(Auth::id()));
         } else {
-            Cart::setInstance('guest_' . session()->getId());
+            Cart::setInstance($this->getInstanceName(null, session()->getId()));
         }
     }
 }

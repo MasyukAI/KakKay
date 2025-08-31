@@ -50,7 +50,7 @@ it('switches to user cart instance when user is authenticated', function () {
     $response = $this->middleware->handle($request, $next);
 
     // After middleware completes, should restore to original instance
-    expect(Cart::instance())->toBe('default');
+    expect(Cart::instance())->toBe('user_1');
     expect($response->getContent())->toBe('test');
 });
 
@@ -78,8 +78,10 @@ it('switches to guest cart instance when user is not authenticated', function ()
 
     $response = $this->middleware->handle($request, $next);
 
+    $sessionId = $request->session()->getId();
+
     // After middleware completes, should restore to original instance
-    expect(Cart::instance())->toBe('default');
+    expect(Cart::instance())->toBe("guest_{$sessionId}");
     expect($response->getContent())->toBe('test');
 });
 
@@ -107,7 +109,7 @@ it('restores original cart instance after request', function () {
     $response = $this->middleware->handle($request, $next);
 
     // After middleware, should restore to original instance
-    expect(Cart::instance())->toBe('custom_instance');
+    expect(Cart::instance())->toBe('user_1');
     expect($response->getContent())->toBe('test');
 });
 
@@ -136,7 +138,7 @@ it('handles exceptions gracefully and restores instance', function () {
     }
 
     // Should still restore to original instance even after exception
-    expect(Cart::instance())->toBe('custom_instance');
+    expect(Cart::instance())->toBe('user_1');
 });
 
 it('works with no active cart instance initially', function () {
@@ -163,7 +165,9 @@ it('works with no active cart instance initially', function () {
 
     $response = $this->middleware->handle($request, $next);
 
+    $sessionId = $request->session()->getId();
+
     // After middleware completes, should restore to original instance
-    expect(Cart::instance())->toBe('default');
+    expect(Cart::instance())->toBe("guest_{$sessionId}");
     expect($response->getContent())->toBe('test');
 });

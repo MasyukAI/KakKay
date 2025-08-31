@@ -11,8 +11,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::dropIfExists('cart_storage');
-        
         Schema::create('cart_storage', function (Blueprint $table) {
             $table->id();
             $table->string('identifier')->index();

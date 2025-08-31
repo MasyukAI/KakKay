@@ -42,7 +42,7 @@ Kau tahu tak, wanita ni bukan sekadar pelengkap je… tapi dia boleh jadi punca 
           <div class="ring" aria-hidden="true"></div>
           <img class="portrait" src="https://kay.test/storage/images/kakkayhero.png" alt="Confident portrait" style="width: clamp(220px, 36vw, 380px); aspect-ratio: 4/5; border-radius: calc(var(--radius) * 1.3); object-fit: cover; object-position: center 30%; box-shadow: var(--shadow-lg); position: relative; z-index: 1;">
           <div class="book b1"><span>Empowering Women</span></div>
-          <div class="book b2"><span>Healing Youself</span></div>
+          <div class="book b2"><span>Healing Yourself</span></div>
           <div class="book b3 only-desktop"><span>Calm Your Mind</span></div>
         </div>
       </div>

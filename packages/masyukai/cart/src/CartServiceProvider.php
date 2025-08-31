@@ -9,9 +9,11 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Database\ConnectionInterface as Database;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Auth\Events\Attempting;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
 use MasyukAI\Cart\Listeners\HandleUserLogin;
+use MasyukAI\Cart\Listeners\HandleUserLoginAttempt;
 use MasyukAI\Cart\Listeners\HandleUserLogout;
 use MasyukAI\Cart\Services\CartMigrationService;
 use MasyukAI\Cart\Storage\CacheStorage;
@@ -22,6 +24,7 @@ use MasyukAI\Cart\Http\Livewire\AddToCart;
 use MasyukAI\Cart\Http\Livewire\CartSummary;
 use MasyukAI\Cart\Http\Livewire\CartTable;
 use Livewire\Livewire;
+use MasyukAI\Cart\Http\Middleware\AutoSwitchCartInstance;
 
 class CartServiceProvider extends ServiceProvider
 {
@@ -52,6 +55,22 @@ class CartServiceProvider extends ServiceProvider
         $this->registerEventListeners();
         $this->registerLivewireComponents();
         $this->loadDemoRoutes();
+        $this->registerMiddleware();
+    }
+
+    protected function registerMiddleware(): void
+    {
+        $this->app->booted(function () {
+            $middleware = $this->app->make('Illuminate\Foundation\Configuration\Middleware');
+            
+            // Always alias for manual use
+            $middleware->alias(['cart.middleware' => AutoSwitchCartInstance::class]);
+            
+            // Auto-apply to web routes if config enabled
+            if (config('cart.migration.auto_switch_instances', true)) {
+                $middleware->web(append: [AutoSwitchCartInstance::class]);
+            }
+        });
     }
 
     /**
@@ -140,6 +159,9 @@ class CartServiceProvider extends ServiceProvider
     protected function registerEventListeners(): void
     {
         if (config('cart.migration.auto_migrate_on_login', true)) {
+            // Register login attempt listener to capture session ID before regeneration
+            $this->app['events']->listen(Attempting::class, HandleUserLoginAttempt::class);
+            // Register login listener to handle cart migration
             $this->app['events']->listen(Login::class, HandleUserLogin::class);
         }
 

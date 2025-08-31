@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use MasyukAI\Cart\Middleware\AutoSwitchCartInstance;
+use MasyukAI\Cart\Http\Middleware\AutoSwitchCartInstance;
 use MasyukAI\Cart\Services\CartMigrationService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
