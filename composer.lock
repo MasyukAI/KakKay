@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a28b48fda3448c79c568245d660bf965",
+    "content-hash": "951d6873d7e925eb5627aec1e6f56707",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -2135,76 +2135,6 @@
             "time": "2025-08-22T14:27:06+00:00"
         },
         {
-            "name": "joelwmale/laravel-cart",
-            "version": "1.2.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/joelwmale/laravel-cart.git",
-                "reference": "4c02310bf728acdff5cc65efdaf5cb6684ca99ce"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/joelwmale/laravel-cart/zipball/4c02310bf728acdff5cc65efdaf5cb6684ca99ce",
-                "reference": "4c02310bf728acdff5cc65efdaf5cb6684ca99ce",
-                "shasum": ""
-            },
-            "require": {
-                "illuminate/auth": "^10.0|^11.0|^12.0",
-                "illuminate/container": "^10.0|^11.0|^12.0",
-                "illuminate/database": "^10.0|^11.0|^12.0",
-                "illuminate/support": "^10.0|^11.0|^12.0",
-                "illuminate/validation": "^10.0|^11.0|^12.0",
-                "php": ">=8.2"
-            },
-            "require-dev": {
-                "larapack/dd": "dev-master",
-                "laravel/pint": "^1.21",
-                "mockery/mockery": "^1.6",
-                "pestphp/pest": "^3.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "aliases": {
-                        "Cart": "Joelwmale\\Cart\\Facades\\CartFacade"
-                    },
-                    "providers": [
-                        "Joelwmale\\Cart\\CartServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Joelwmale\\Cart\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Darryl Fernandez",
-                    "email": "engrdarrylfernandez@gmail.com"
-                },
-                {
-                    "name": "Joel Male",
-                    "email": "joel@joelmale.com"
-                }
-            ],
-            "description": "A cart implementation for Laravel",
-            "keywords": [
-                "cart",
-                "laravel",
-                "shopping cart"
-            ],
-            "support": {
-                "issues": "https://github.com/joelwmale/laravel-cart/issues",
-                "source": "https://github.com/joelwmale/laravel-cart/tree/1.2.1"
-            },
-            "time": "2025-04-14T06:53:35+00:00"
-        },
-        {
             "name": "kirschbaum-development/eloquent-power-joins",
             "version": "4.2.8",
             "source": {
@@ -2269,16 +2199,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v12.26.3",
+            "version": "v12.26.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "1a8e961a1801794c36c243bb610210d0a2bd61cb"
+                "reference": "085a367a32ba86fcfa647bfc796098ae6f795b09"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/1a8e961a1801794c36c243bb610210d0a2bd61cb",
-                "reference": "1a8e961a1801794c36c243bb610210d0a2bd61cb",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/085a367a32ba86fcfa647bfc796098ae6f795b09",
+                "reference": "085a367a32ba86fcfa647bfc796098ae6f795b09",
                 "shasum": ""
             },
             "require": {
@@ -2388,7 +2318,7 @@
                 "league/flysystem-read-only": "^3.25.1",
                 "league/flysystem-sftp-v3": "^3.25.1",
                 "mockery/mockery": "^1.6.10",
-                "orchestra/testbench-core": "^10.6.0",
+                "orchestra/testbench-core": "^10.6.3",
                 "pda/pheanstalk": "^5.0.6|^7.0.0",
                 "php-http/discovery": "^1.15",
                 "phpstan/phpstan": "^2.0",
@@ -2482,7 +2412,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2025-08-27T13:51:06+00:00"
+            "time": "2025-08-29T14:15:53+00:00"
         },
         {
             "name": "laravel/prompts",
@@ -3752,6 +3682,88 @@
                 "source": "https://github.com/Masterminds/html5-php/tree/2.10.0"
             },
             "time": "2025-07-25T09:04:22+00:00"
+        },
+        {
+            "name": "masyukai/cart",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "./packages/masyukai/cart",
+                "reference": "5a9d3132ee23dd0e9f3bb0da498d53cab3b6b1cc"
+            },
+            "require": {
+                "laravel/framework": "^12.0",
+                "livewire/livewire": "^3.0",
+                "livewire/volt": "^1.0",
+                "php": "^8.4"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.18",
+                "mockery/mockery": "^1.6",
+                "nunomaduro/collision": "^8.6",
+                "orchestra/testbench": "^10.0",
+                "pestphp/pest": "^4.0",
+                "pestphp/pest-plugin-browser": "^4.0",
+                "pestphp/pest-plugin-laravel": "^4.0",
+                "phpunit/phpunit": "^12.3"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "MasyukAI\\Cart\\CartServiceProvider"
+                    ],
+                    "aliases": {
+                        "Cart": "MasyukAI\\Cart\\Facades\\Cart"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "MasyukAI\\Cart\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "MasyukAI\\Cart\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "vendor/bin/pest"
+                ],
+                "test-coverage": [
+                    "vendor/bin/pest --coverage"
+                ],
+                "format": [
+                    "vendor/bin/pint"
+                ],
+                "format-test": [
+                    "vendor/bin/pint --test"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "MasyukAI",
+                    "email": "info@masyukai.com"
+                }
+            ],
+            "description": "A modern, feature-rich shopping cart package for Laravel 12 with Livewire integration",
+            "keywords": [
+                "cart",
+                "e-commerce",
+                "laravel",
+                "laravel12",
+                "livewire",
+                "masyukai",
+                "shopping-cart"
+            ],
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "monolog/monolog",
@@ -6698,16 +6710,16 @@
         },
         {
             "name": "symfony/http-foundation",
-            "version": "v7.3.2",
+            "version": "v7.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-foundation.git",
-                "reference": "6877c122b3a6cc3695849622720054f6e6fa5fa6"
+                "reference": "7475561ec27020196c49bb7c4f178d33d7d3dc00"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-foundation/zipball/6877c122b3a6cc3695849622720054f6e6fa5fa6",
-                "reference": "6877c122b3a6cc3695849622720054f6e6fa5fa6",
+                "url": "https://api.github.com/repos/symfony/http-foundation/zipball/7475561ec27020196c49bb7c4f178d33d7d3dc00",
+                "reference": "7475561ec27020196c49bb7c4f178d33d7d3dc00",
                 "shasum": ""
             },
             "require": {
@@ -6757,7 +6769,7 @@
             "description": "Defines an object-oriented layer for the HTTP specification",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/http-foundation/tree/v7.3.2"
+                "source": "https://github.com/symfony/http-foundation/tree/v7.3.3"
             },
             "funding": [
                 {
@@ -6777,7 +6789,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-07-10T08:47:49+00:00"
+            "time": "2025-08-20T08:04:18+00:00"
         },
         {
             "name": "symfony/http-kernel",
@@ -10961,16 +10973,16 @@
         },
         {
             "name": "phpstan/phpdoc-parser",
-            "version": "2.2.0",
+            "version": "2.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpdoc-parser.git",
-                "reference": "b9e61a61e39e02dd90944e9115241c7f7e76bfd8"
+                "reference": "1e0cd5370df5dd2e556a36b9c62f62e555870495"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/b9e61a61e39e02dd90944e9115241c7f7e76bfd8",
-                "reference": "b9e61a61e39e02dd90944e9115241c7f7e76bfd8",
+                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/1e0cd5370df5dd2e556a36b9c62f62e555870495",
+                "reference": "1e0cd5370df5dd2e556a36b9c62f62e555870495",
                 "shasum": ""
             },
             "require": {
@@ -11002,9 +11014,9 @@
             "description": "PHPDoc parser with support for nullable, intersection and generic types",
             "support": {
                 "issues": "https://github.com/phpstan/phpdoc-parser/issues",
-                "source": "https://github.com/phpstan/phpdoc-parser/tree/2.2.0"
+                "source": "https://github.com/phpstan/phpdoc-parser/tree/2.3.0"
             },
-            "time": "2025-07-13T07:04:09+00:00"
+            "time": "2025-08-30T15:50:23+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -12320,16 +12332,16 @@
         },
         {
             "name": "spatie/backtrace",
-            "version": "1.8.0",
+            "version": "1.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/backtrace.git",
-                "reference": "1607d8870bf597fc4ad79a6945cf0b2e584c2669"
+                "reference": "8c0f16a59ae35ec8c62d85c3c17585158f430110"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/backtrace/zipball/1607d8870bf597fc4ad79a6945cf0b2e584c2669",
-                "reference": "1607d8870bf597fc4ad79a6945cf0b2e584c2669",
+                "url": "https://api.github.com/repos/spatie/backtrace/zipball/8c0f16a59ae35ec8c62d85c3c17585158f430110",
+                "reference": "8c0f16a59ae35ec8c62d85c3c17585158f430110",
                 "shasum": ""
             },
             "require": {
@@ -12368,7 +12380,7 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/backtrace/issues",
-                "source": "https://github.com/spatie/backtrace/tree/1.8.0"
+                "source": "https://github.com/spatie/backtrace/tree/1.8.1"
             },
             "funding": [
                 {
@@ -12380,7 +12392,7 @@
                     "type": "other"
                 }
             ],
-            "time": "2025-08-25T16:16:45+00:00"
+            "time": "2025-08-26T08:22:30+00:00"
         },
         {
             "name": "staabm/side-effects-detector",
@@ -12622,7 +12634,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "masyukai/cart": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
