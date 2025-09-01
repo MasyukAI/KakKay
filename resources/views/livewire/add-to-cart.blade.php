@@ -1,21 +1,18 @@
 <?php
 
-use App\Traits\ManagesCart;
 use App\Models\Product;
 use Livewire\Volt\Component;
+use MasyukAI\Cart\Facades\Cart;
 
 new class extends Component {
-    use ManagesCart;
     
     public Product $product;
     public int $quantity = 1;
 
     public function addToCart(): void
     {
-        $this->setCartSession();
-        $cartManager = app('cart');
-        
-        $cartManager->add(
+        // Middleware handles cart instance switching
+        Cart::add(
             (string) $this->product->id,
             $this->product->name,
             $this->product->price / 100, // Convert from cents to dollars

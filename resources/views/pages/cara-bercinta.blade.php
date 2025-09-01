@@ -3,14 +3,12 @@
 use Livewire\Attributes\{Layout, Title};
 use Livewire\Volt\Component;
 use App\Models\Product;
-use App\Traits\ManagesCart;
 use MasyukAI\Cart\Facades\Cart;
 use Filament\Notifications\Notification;
 
 new
 #[Layout('components.layouts.pages')]
 class extends Component {
-    use ManagesCart;
 
     public function addToCart()
     {
@@ -28,14 +26,14 @@ class extends Component {
             return;
         }
 
-        $this->setCartSession();
+        // Middleware handles cart instance switching
 
         Cart::add(
             (string) $product->id,
             $product->name,
             $product->price ,// Convert from cents to dollars for the cart
             1,
-            ['imageUrl' => $product->getFirstMediaUrl('product-image-main')]
+            ['slug' => $product]
         );
 
         Notification::make()
@@ -102,7 +100,7 @@ class extends Component {
           <div class="absolute -inset-4 rounded-3xl blur-2xl opacity-75 bg-gradient-to-r from-blush/30 via-orchid/30 to-ruby/30 group-hover:opacity-100 transition-opacity duration-500"></div>
           <!-- Book container -->
           <div class="relative glass rounded-3xl p-6 shadow-luxury group-hover:shadow-dreamy transition-all duration-500 group-hover:scale-105">
-            <img src="images/cara-bercinta.png" alt="Muka depan buku 34 Teknik Bercinta" class="w-full max-w-80 aspect-[3/4] object-cover rounded-2xl shadow-elegant"/>
+            <img src="images/cover/cara-bercinta.png" alt="Muka depan buku 34 Teknik Bercinta" class="w-full max-w-80 aspect-[3/4] object-cover rounded-2xl shadow-elegant"/>
           </div>
           <!-- Floating elements -->
           <div class="absolute -top-4 -right-4 glass-dark rounded-full p-3 shadow-luxury">

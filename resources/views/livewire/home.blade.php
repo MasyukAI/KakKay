@@ -7,15 +7,25 @@
           <div class="tagline">Counsellor • Therapist • KKDI Creator</div>
         </div>
       </div>
-      <div class="hidden">
-        <nav>
+      <div class="flex items-center gap-4 ml-auto">
+        <div class="relative">
+          <flux:button variant="primary" href="{{ route('cart') }}" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-lg">
+            <flux:icon.shopping-bag class="h-6 w-6" />
+            <span class="hidden sm:inline font-medium">Troli</span>
+            <div class="absolute top-0 right-0">
+              @livewire('cart-counter')
+            </div>
+          </flux:button>
+        </div>
+
+        {{-- <nav class="relative">
           <a class="pill" href="member"
             style="transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);"
             onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(255,105,180,0.3)'; this.style.backgroundColor='rgba(255,105,180,0.1)';"
             onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'; this.style.backgroundColor='';">KKDI Member</a>
           {{-- <a class="pill" href="#books">All Books</a>
-          <a class="pill" href="#contact">Contact</a> --}}
-        </nav>
+          <a class="pill" href="#contact">Contact</a>
+        </nav> --}}
       </div>
     </header>
 
@@ -54,21 +64,21 @@ Kau tahu tak, wanita ni bukan sekadar pelengkap je… tapi dia boleh jadi punca 
         <div class="glow-wrap">
           <div class="glow" aria-hidden="true"></div>
           <div class="big-book">
-            <img src="{{ $featuredImageUrl }}" alt="Book Cover" class="book-cover" />
+            <img src="{{ asset('storage/images/cover/' . $featuredProduct->slug . '.png') }}" alt="Book Cover" class="book-cover" />
             <div class="spine" aria-hidden="true"></div>
           </div>
         </div>
         <div>
-          <h3>Buku Terhangat : <span style="background:linear-gradient(90deg,var(--pink),var(--ruby)); -webkit-background-clip:text; background-clip:text; color:transparent;"><br />{{ $featuredProductName }}</span></h3>
+          <h3>Buku Terhangat : <span style="background:linear-gradient(90deg,var(--pink),var(--ruby)); -webkit-background-clip:text; background-clip:text; color:transparent;"><br />{{ $featuredProduct->name }}</span></h3>
           <p>
-            {{ $featuredProductDescription }}
+            {{ $featuredProduct->description }}
           </p>
           <div class="meta" style="margin:.6rem 0 1.1rem;">
             <span class="chip">Bestseller</span>
             <span class="chip">New Release</span>
           </div>
           <div class="cta-row">
-            <a class="btn primary" href="/{{ $featuredProductSlug }}"
+            <a class="btn primary" href="/{{ $featuredProduct->slug }}"
                style="transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);"
                onmouseover="this.style.transform='translateY(-3px) scale(1.05)'; this.style.boxShadow='0 15px 35px rgba(255,105,180,0.4), 0 5px 15px rgba(0,0,0,0.3)'; this.style.filter='brightness(1.1)';"
                onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow=''; this.style.filter='brightness(1)';">Nak tau pasal buku ni? 🤌 ❤️</a>
@@ -93,7 +103,7 @@ Kau tahu tak, wanita ni bukan sekadar pelengkap je… tapi dia boleh jadi punca 
                    onmouseover="this.style.transform='translateY(-8px) scale(1.02)'; this.style.boxShadow='0 20px 40px rgba(0,0,0,0.3), 0 0 30px rgba(255,105,180,0.2)'; this.querySelector('.cover').style.transform='rotateY(-5deg) rotateX(5deg)';"
                    onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='none'; this.querySelector('.cover').style.transform='rotateY(0) rotateX(0)';">
             <div class="cover" style="background:linear-gradient(135deg, var(--purple), var(--pink)); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d;">
-              <img src="{{ $product->getMedia('product-image-main')->first()?->getUrl() }}" alt="{{ $product->name }}">
+              <img src="{{ asset('storage/images/cover/' . $product->slug . '.png') }}" alt="{{ $product->name }}">
               <div class="pages" aria-hidden="true"></div>
             </div>
             {{-- <h4>{{ $product->name }}</h4> --}}
@@ -104,7 +114,7 @@ Kau tahu tak, wanita ni bukan sekadar pelengkap je… tapi dia boleh jadi punca 
       </div>
     </section>
 
-    <div class="hidden flex justify-center">
+  <div class="hidden sm:flex justify-center">
         <nav class="text-center">
           <a class="pill" href="member"
             style="transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);"

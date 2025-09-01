@@ -7,6 +7,8 @@
 @import '../../vendor/filament/notifications/resources/css/index.css';
 @import '../../vendor/filament/schemas/resources/css/index.css'; */
 
+@source '../views/livewire/cart.blade.php';
+
 :root {
     /* Theme palette: purple, magenta, ruby, pink, maroon & white */
     --purple: #6A00F4;
@@ -161,13 +163,6 @@ body {
 .cart-text-muted {
     color: #f7e9f4;
     opacity: .85;
-}
-
-.cart-text-accent {
-    background: linear-gradient(90deg, var(--pink), var(--magenta));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
 }
 
 .cart-empty-state {
@@ -400,6 +395,14 @@ button svg {
 }
 
 /* Utility classes */
+.cart-text-accent {
+    color: var(--pink);
+    background: linear-gradient(135deg, var(--pink), var(--magenta));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
 .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;

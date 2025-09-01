@@ -1,12 +1,11 @@
 <?php
 
-use App\Traits\ManagesCart;
 use Livewire\Volt\Component;
 use Livewire\Attributes\Computed;
 use Illuminate\Support\Facades\Log;
+use MasyukAI\Cart\Facades\Cart;
 
 new class extends Component {
-    use ManagesCart;
 
     public array $form = [
         'name' => '',
@@ -32,9 +31,8 @@ new class extends Component {
     public function loadCartItems(): void
     {
         try {
-            $this->setCartSession();
-            $cartManager = app('cart');
-            $cartContents = $cartManager->getContent();
+            // Middleware handles cart instance switching
+            $cartContents = Cart::getItems();
 
             if ($cartContents->isEmpty()) {
                 $this->redirect(route('cart'));
@@ -111,8 +109,7 @@ new class extends Component {
             'form.city' => 'required|string',
         ]);
 
-        $this->setCartSession();
-        $cartManager = app('cart');
+        // Middleware handles cart instance switching
         
         // Process the checkout
         session()->flash('success', 'Pesanan berjaya dihantar! Kami akan hubungi anda tidak lama lagi.');
@@ -359,7 +356,7 @@ new class extends Component {
                                 </div>
                             </div>
                         </div>
-
+{{-- 
                         <!-- Voucher Code -->
                         <div class="cart-card p-6">
                             <flux:field>
@@ -371,7 +368,7 @@ new class extends Component {
                                     </flux:button>
                                 </div>
                             </flux:field>
-                        </div>
+                        </div> --}}
                     </div>
 
                     <!-- Order Summary Sidebar -->

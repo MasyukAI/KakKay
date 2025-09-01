@@ -1,6 +1,5 @@
 <?php
 
-use App\Traits\ManagesCart;
 use Livewire\Volt\Component;
 use Livewire\Attributes\Computed;
 use Illuminate\Support\Facades\Log;
@@ -8,7 +7,6 @@ use MasyukAI\Cart\Facades\Cart;
 use Filament\Notifications\Notification;
 
 new class extends Component {
-    use ManagesCart;
 
     public array $cartItems = [];
     public string $voucherCode = '';
@@ -23,21 +21,19 @@ new class extends Component {
     public function loadCartItems(): void
     {
         try {
-            $this->setCartSession();
-            $cartContents = Cart::getContent();
+            // Middleware handles cart instance switching
+            $cartContents = Cart::getItems();
 
             $this->cartItems = $cartContents->map(function ($item) {
                 return [
                     'id' => (string) $item->id,
                     'name' => (string) $item->name,
-                    'price' => (int) ($item->price / 100), // Convert to cents
+                    'price' => (int) ($item->price * 100), // Convert to cents
                     'quantity' => (int) $item->quantity,
-                    'attributes' => $item->attributes->toArray(),
-                    'imageUrl' => $item->attributes->get('imageUrl', 'https://flowbite.s3.amazonaws.com/blocks/e-commerce/book-placeholder.svg'),
+                    'slug' => $item->attributes->get('slug', 'cara-bercinta'),
                 ];
             })->values()->toArray();
 
-            ds($this->cartItems);
         } catch (\Exception $e) {
             $this->cartItems = [];
             Log::error('Cart loading error: ' . $e->getMessage());
@@ -59,7 +55,7 @@ new class extends Component {
 
     public function updateQuantity(string $itemId, int $quantity): void
     {
-        $this->setCartSession();
+        // Middleware handles cart instance switching
 
         if ($quantity <= 0) {
             $this->removeItem($itemId);
@@ -74,7 +70,7 @@ new class extends Component {
 
     public function incrementQuantity($itemId)
     {
-        $this->setCartSession();
+        // Middleware handles cart instance switching
         $item = Cart::get($itemId);
         if ($item) {
             // Use absolute quantity update
@@ -94,7 +90,7 @@ new class extends Component {
 
     public function decrementQuantity($itemId)
     {
-        $this->setCartSession();
+        // Middleware handles cart instance switching
         $item = Cart::get($itemId);
         if ($item) {
             $newQuantity = max(1, $item->quantity - 1);
@@ -115,7 +111,7 @@ new class extends Component {
 
     public function removeItem(string $itemId): void
     {
-        $this->setCartSession();
+        // Middleware handles cart instance switching
         $item = Cart::get($itemId);
         $itemName = $item ? $item->name : 'Item';
         
@@ -165,17 +161,14 @@ new class extends Component {
             return;
         }
 
-        $this->setCartSession();
+        // Middleware handles cart instance switching
 
         Cart::add(
             (string) $product->id,
             $product->name,
-            $product->price / 100, // Convert from cents to dollars
+            $product->price ,// Convert from cents to dollars for the cart
             1,
-            [
-                'imageUrl' => $product->getFirstMediaUrl('product-image-main') ?: 'https://flowbite.s3.amazonaws.com/blocks/e-commerce/book-placeholder.svg',
-                'description' => $product->description,
-            ]
+            ['slug' => $product]
         );
 
         $this->loadCartItems();
@@ -195,7 +188,7 @@ new class extends Component {
     #[Computed]
     public function getSubtotal(): int
     {
-        return $this->getCartSubtotal();
+        return (int) (Cart::getSubTotal()) / 100; // Convert to cents
     }
 
     // #[Computed]
@@ -207,7 +200,7 @@ new class extends Component {
     #[Computed]
     public function getShipping(): int
     {
-        return 9900; // $99.00 in cents
+        return 990 / 100; // $99.00 in cents
     }
 
     // #[Computed]
@@ -224,7 +217,7 @@ new class extends Component {
 
     public function formatPrice(int $cents): string
     {
-        return 'RM' . number_format($cents / 100, 2);
+        return 'RM' . number_format($cents, 2);
     }
 }; ?>
 
@@ -245,12 +238,13 @@ new class extends Component {
                         ← Kembali Beli-belah
                     </a> --}}
 
-                    <div class="relative">
-                        <flux:button variant="primary" size="sm" href="{{ route('cart') }}" class="flex items-center gap-2">
-                            <flux:icon.shopping-bag class="h-5 w-5 cart-text-accent" />
+                    {{-- <div class="relative">
+                        <flux:button variant="primary" href="{{ route('cart') }}" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-lg">
+                            <flux:icon.shopping-bag class="h-6 w-6" />
+                            <span class="hidden sm:inline font-medium mr-5">Troli</span>
+                            @livewire('cart-counter')
                         </flux:button>
-                        @livewire('cart-counter')
-                    </div>
+                    </div> --}}
                 </div>
             </div>
         </header>
@@ -259,9 +253,34 @@ new class extends Component {
     <!-- Cart Content -->
     <section class="py-8 md:py-16">
         <div class="cart-container">
+
+             <!-- Progress Steps -->
+                <div class="mb-8">
+                    <ol class="flex items-center justify-center w-full max-w-2xl mx-auto text-center text-sm font-medium text-gray-300 sm:text-base">
+                        <li class="flex items-center text-pink-400 after:mx-6 after:hidden after:h-1 after:w-full after:border-b after:border-gray-600 sm:after:inline-block sm:after:content-[''] md:w-full xl:after:mx-10">
+                            <span class="flex items-center after:mx-2 after:text-gray-500 after:content-['/'] sm:after:hidden">
+                                <flux:icon.check-circle class="me-2 h-4 w-4 sm:h-5 sm:w-5" />
+                                Troli
+                            </span>
+                        </li>
+
+                        <li class="flex items-center text-gray-400 after:mx-6 after:hidden after:h-1 after:w-full after:border-b after:border-gray-600 sm:after:inline-block sm:after:content-[''] md:w-full xl:after:mx-10">
+                            <span class="flex items-center after:mx-2 after:text-gray-500 after:content-['/'] sm:after:hidden">
+                                <flux:icon.clock class="me-2 h-4 w-4 sm:h-5 sm:w-5" />
+                                Bayaran
+                            </span>
+                        </li>
+
+                        <li class="flex shrink-0 items-center text-gray-400">
+                            <flux:icon.clock class="me-2 h-4 w-4 sm:h-5 sm:w-5" />
+                            Ringkasan Pesanan
+                        </li>
+                    </ol>
+                </div>
+                
             <div class="mb-8">
                 <h2 class="text-3xl font-bold mb-2" style="font-family: 'Caveat Brush', cursive;">
-                    Troli <span class="cart-text-accent">Belanja</span> Kamu
+                    Troli <span class="cart-text-accent">Belanja</span>
                 </h2>
                 <p class="cart-text-muted text-lg">Buku-buku pilihan yang akan mengubah hidupmu</p>
             </div>
@@ -292,8 +311,8 @@ new class extends Component {
                                     <!-- Product Image -->
                                     <div class="flex-shrink-0">
                                         <div class="w-24 h-32 sm:w-32 sm:h-40 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg overflow-hidden shadow-lg">
-                                            <img src="{{ $item['imageUrl'] }}" 
-                                                 alt="{{ $item['name'] }}" 
+                                            <img src="{{ asset('storage/images/cover/' . $item['slug'] . '.png') }}" 
+                                                 alt="{{ $item['slug'] }}" 
                                                  class="w-full h-full object-cover">
                                         </div>
                                     </div>
@@ -319,30 +338,29 @@ new class extends Component {
                                         </div>
 
                                         <!-- Quantity and Actions -->
-                                        <div class="flex items-center justify-between">
+                                        <div class="flex items-center justify-between mt-4">
                                             <div class="flex items-center gap-3">
                                                 <flux:button variant="subtle" size="sm" 
                                                            wire:click="decrementQuantity('{{ $item['id'] }}')"
-                                                           class="w-8 h-8 flex items-center justify-center">
+                                                           class="cursor-pointer w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-lg">
                                                     <flux:icon.minus class="h-4 w-4" />
                                                 </flux:button>
                                                 
-                                                <span class="text-lg font-semibold px-4 py-2 bg-white/10 rounded-lg min-w-[3rem] text-center">
+                                                <span class="text-lg font-semibold px-4 py-2 bg-white/15 rounded-lg min-w-[3rem] text-center">
                                                     {{ $item['quantity'] }}
                                                 </span>
                                                 
                                                 <flux:button variant="subtle" size="sm" 
                                                            wire:click="incrementQuantity('{{ $item['id'] }}')"
-                                                           class="w-8 h-8 flex items-center justify-center">
+                                                           class="cursor-pointer w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-lg">
                                                     <flux:icon.plus class="h-4 w-4" />
                                                 </flux:button>
                                             </div>
 
-                                            <flux:button variant="subtle" color="red" size="sm" 
+                                            <flux:button variant="subtle" color="red" 
                                                        wire:click="removeItem('{{ $item['id'] }}')"
-                                                       class="hover:bg-red-500/20">
-                                                <flux:icon.trash class="h-4 w-4 mr-1" />
-                                                Buang
+                                                       class="hover:bg-red-500/30 border border-red-400/60 text-red-300 hover:text-white px-5 py-2.5 font-semibold rounded-lg transition-all duration-200 shadow-sm hover:shadow-md cursor-pointer">
+                                                <flux:icon.trash class="h-5 w-5" />
                                             </flux:button>
                                         </div>
                                     </div>
@@ -435,10 +453,7 @@ new class extends Component {
                     @foreach($suggestedProducts as $product)
                         <div class="cart-item-card overflow-hidden">
                             <div class="aspect-[3/4] bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg mb-4 overflow-hidden">
-                                @php
-                                    $imageUrl = $product->getFirstMediaUrl('product-image-main');
-                                @endphp
-                                <img src="{{ $imageUrl }}" 
+                                <img src="{{ asset('storage/images/cover/' . $product->slug . '.png') }}" 
                                      alt="{{ $product->name }}" 
                                      class="w-full h-full object-cover">
                             </div>
@@ -453,7 +468,7 @@ new class extends Component {
                                 
                                 <div class="flex items-center justify-between">
                                     <span class="text-xl font-bold cart-text-accent">
-                                        {{ $this->formatPrice($product->price) }}
+                                        {{ $this->formatPrice($product->price * 100) }}
                                     </span>
                                     {{-- <flux:badge variant="solid" color="pink" size="sm">
                                         <flux:icon.sparkles class="h-3 w-3 mr-1" />
@@ -469,7 +484,7 @@ new class extends Component {
                                     </flux:button> --}}
                                     <flux:button variant="primary" size="sm" 
                                                wire:click="addToCart({{ $product->id }})"
-                                               class="flex-1 cart-button-primary">
+                                               class="cursor-pointer flex-1 cart-button-primary">
                                         <flux:icon.shopping-cart class="h-4 w-4 mr-1 block" />
                                         Tambah
                                     </flux:button>

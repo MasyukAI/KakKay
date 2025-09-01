@@ -106,7 +106,7 @@
                             </div>
                             
                             @php
-                                $cartItems = \Cart::getContent();
+                                $cartItems = \Cart::getItems();
                             @endphp
                             
                             @if($cartItems->count() > 0)
@@ -334,7 +334,7 @@
 
                             <!-- Order Review -->
                             @php
-                                $cartItems = \Cart::getContent();
+                                $cartItems = \Cart::getItems();
                             @endphp
                             
                             @if($cartItems->count() > 0)
@@ -420,12 +420,12 @@
                     <div class="flex items-center justify-between mb-6">
                         <h3 class="text-xl font-bold text-gray-900 dark:text-white">Order Summary</h3>
                         <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 text-sm font-medium rounded-full">
-                            {{ \Cart::getContent()->count() }} items
+                            {{ \Cart::getItems()->count() }} items
                         </span>
                     </div>
 
                     @php
-                        $cartItems = \Cart::getContent();
+                        $cartItems = \Cart::getItems();
                         $subtotal = \Cart::getSubTotal();
                         $total = \Cart::getTotal();
                     @endphp
