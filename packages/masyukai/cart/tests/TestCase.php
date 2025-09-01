@@ -27,6 +27,7 @@ abstract class TestCase extends Orchestra
             \Illuminate\View\ViewServiceProvider::class,
             \Illuminate\Hashing\HashServiceProvider::class,
             \Illuminate\Cache\CacheServiceProvider::class,
+            \Illuminate\Database\DatabaseServiceProvider::class,
             CartServiceProvider::class,
             \Livewire\LivewireServiceProvider::class,
         ];
@@ -87,14 +88,17 @@ abstract class TestCase extends Orchestra
             '--database' => 'testing',
             '--path' => __DIR__.'/../database/migrations',
         ]);
-        
-        // Create test-specific table
+
+        // Create test-specific table with new structure
         $this->app['db']->connection('testing')->getSchemaBuilder()->create('cart_storage_test', function ($table) {
-            $table->string('key')->primary();
-            $table->longText('value');
+            $table->id();
+            $table->string('identifier')->index()->comment('auth()->id() for authenticated users, session()->id() for guests');
+            $table->string('instance')->default('default')->index()->comment('Cart instance name for multiple carts per identifier');
+            $table->longText('items')->nullable()->comment('Serialized cart items');
+            $table->longText('conditions')->nullable()->comment('Serialized cart conditions');
             $table->timestamps();
-            $table->index('created_at');
-            $table->index('updated_at');
+
+            $table->unique(['identifier', 'instance']);
         });
     }
 }
