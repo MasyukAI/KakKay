@@ -1,0 +1,66 @@
+{
+    "name": "masyukai/chip",
+    "description": "Modern Laravel integration for CHIP payment gateway - Collect & Send APIs",
+    "keywords": ["laravel", "payment", "chip", "malaysia", "gateway", "fintech"],
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Masyukai",
+            "email": "hello@masyuk.ai"
+        }
+    ],
+    "require": {
+        "php": "^8.4",
+        "ext-json": "*",
+        "ext-curl": "*",
+        "illuminate/support": "^12.0",
+        "illuminate/http": "^12.0",
+        "illuminate/validation": "^12.0",
+        "illuminate/queue": "^12.0",
+        "guzzlehttp/guzzle": "^7.0"
+    },
+    "require-dev": {
+        "laravel/framework": "^12.0",
+        "orchestra/testbench": "^10.0",
+        "pestphp/pest": "^4.0",
+        "pestphp/pest-plugin-laravel": "^4.0",
+        "mockery/mockery": "^1.6",
+        "phpstan/phpstan": "^2.0",
+        "laravel/pint": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Masyukai\\Chip\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Masyukai\\Chip\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/pest",
+        "test-coverage": "vendor/bin/pest --coverage",
+        "format": "vendor/bin/pint",
+        "analyse": "vendor/bin/phpstan analyse"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Masyukai\\Chip\\ChipServiceProvider"
+            ],
+            "aliases": {
+                "Chip": "Masyukai\\Chip\\Facades\\Chip"
+            }
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
