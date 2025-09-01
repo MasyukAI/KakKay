@@ -17,7 +17,7 @@ class DemoController extends Controller
     public function index()
     {
         $products = $this->getSampleProducts();
-        $cartItems = Cart::content();
+        $cartItems = Cart::getItems();
         $cartCount = Cart::count();
         $cartSubtotal = Cart::subtotal();
         $cartTotal = Cart::total();
@@ -162,7 +162,7 @@ class DemoController extends Controller
             $instanceData[$instance] = [
                 'count' => Cart::count(),
                 'total' => Cart::total(),
-                'items' => Cart::content()
+                'items' => Cart::getItems()
             ];
         }
 
@@ -196,11 +196,11 @@ class DemoController extends Controller
         
         // Get guest cart items
         Cart::setInstance('guest_demo');
-        $guestCartItems = Cart::content();
+        $guestCartItems = Cart::getItems();
         
         // Get user cart items
         Cart::setInstance('user_demo');
-        $userCartItems = Cart::content();
+        $userCartItems = Cart::getItems();
         
         // Reset to default
         Cart::setInstance('default');

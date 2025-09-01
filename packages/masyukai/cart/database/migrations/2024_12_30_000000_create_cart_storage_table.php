@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('identifier')->index();
             $table->string('instance')->default('default')->index();
-            $table->longText('content');
+            $table->longText('items')->nullable();
+            $table->longText('conditions')->nullable();
             $table->timestamps();
 
             $table->unique(['identifier', 'instance']);

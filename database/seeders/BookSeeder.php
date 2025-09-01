@@ -15,52 +15,66 @@ class BookSeeder extends Seeder
     {
         // Create Books category
         $bookCategory = Category::firstOrCreate([
-            'name' => 'Books'
+            'name' => 'Books',
         ]);
 
         $books = [
             [
                 'name' => 'Macam Ni Rupanya Cara Nak Bercinta, Mudahnya Lahai!',
-                'description' => 'Sebuah panduan lengkap untuk memahami seni bercinta.',
+                'slug' => 'cara-bercinta',
+                'description' => 'Panduan ajaib yang membongkar rahsia bercinta — praktikal, menggelikan, dan penuh kejutan hati.',
                 'price' => 5000,
                 'is_featured' => true,
-                'category_id' => $bookCategory->id
+                'category_id' => $bookCategory->id,
             ],
             [
                 'name' => 'Diari Healing Yang Mendewasakan',
-                'description' => 'Sebuah catatan perjalanan penyembuhan yang mendalam.',
+                'slug' => 'diari-healing',
+                'description' => 'Diari intim yang menuntunmu melalui detik-detik rapuh menjadi kuasa — penyembuhan yang terasa seperti penemuan semula.',
                 'price' => 3499,
-                'category_id' => $bookCategory->id
+                'category_id' => $bookCategory->id,
             ],
             [
                 'name' => 'Kasihi Puteri: The Untold Story of Daughterhood',
-                'description' => 'Sebuah kisah yang menyentuh tentang hubungan antara ibu dan anak perempuan.',
+                'slug' => 'kasihi-puteri',
+                'description' => 'Sebuah kisah berbisik tentang cinta yang diwariskan — lapisan emosi, rahsia, dan keberanian seorang puteri.',
                 'price' => 2799,
-                'category_id' => $bookCategory->id
+                'category_id' => $bookCategory->id,
             ],
             [
                 'name' => 'Ini Rupanya Sebab Dia Terasa Dengan Kita, Senangnya Lahai Nak Baiki Lepas Tahu Cara Ni!',
-                'description' => 'Sebuah panduan untuk memahami perasaan dan emosi dalam hubungan.',
+                'slug' => 'sebab-terasa',
+                'description' => 'Manual halus untuk meneroka mengapa hati terluka — penuh petunjuk untuk membaiki dan memahami sendiri.',
                 'price' => 3199,
-                'category_id' => $bookCategory->id
+                'category_id' => $bookCategory->id,
             ],
             [
                 'name' => 'Ini Rupanya Pekara Tak Boleh Buat Pada Anak Bila Ada Konflik Dengan Pasangan. Kenapalah Takde Orang Bagitahu Sebelum Ni?',
-                'description' => 'Sebuah panduan untuk mengelakkan kesilapan dalam mendidik anak semasa konflik.',
+                'slug' => 'tak-boleh-cakap',
+                'description' => 'Panduan praktikal dan penuh empati untuk menjaga anak ketika dunia dewasa bergoncang — langkah demi langkah yang menenangkan.',
                 'price' => 2899,
-                'category_id' => $bookCategory->id
+                'category_id' => $bookCategory->id,
             ],
             [
                 'name' => 'Macam Ini Rupanya Cara Cakap Dengan Dia, Senangnya Lahai!',
-                'description' => 'Sebuah panduan untuk berkomunikasi dengan pasangan.',
+                'slug' => 'cara-cakap',
+                'description' => 'Seni berbicara yang membuat kata-kata biasa menjadi jambatan: teknik mudah untuk didengari dan dicintai.',
                 'price' => 2699,
-                'category_id' => $bookCategory->id
+                'category_id' => $bookCategory->id,
+            ],
+            [
+                'name' => 'Rahsia Mengenali Potensi Anak KKDI',
+                'slug' => 'potensi-anak',
+                'description' => 'Kunci untuk menemui potensi terpendam anak — pendekatan KKDI yang membangkitkan rasa ingin tahu dan percaya diri.',
+                'price' => 5999,
+                'category_id' => $bookCategory->id,
             ],
             [
                 'name' => 'Kitab KKDI',
-                'description' => 'Sebuah panduan lengkap untuk memahami konsep KKDI.',
+                'slug' => 'kitab-kkdi',
+                'description' => 'Kitab panduan KKDI yang merangkum teori kepada latihan nyata — untuk guru, ibu bapa, dan pencari bakat kecil.',
                 'price' => 5999,
-                'category_id' => $bookCategory->id
+                'category_id' => $bookCategory->id,
             ],
         ];
 

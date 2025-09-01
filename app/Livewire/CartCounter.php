@@ -2,14 +2,12 @@
 
 namespace App\Livewire;
 
-use App\Traits\ManagesCart;
-use Livewire\Component;
 use Livewire\Attributes\On;
+use Livewire\Component;
+use MasyukAI\Cart\Facades\Cart;
 
 class CartCounter extends Component
 {
-    use ManagesCart;
-    
     public int $count = 0;
 
     public function mount(): void
@@ -20,7 +18,7 @@ class CartCounter extends Component
     #[On('product-added-to-cart')]
     public function updateCartCount(): void
     {
-        $this->count = $this->getCartCount();
+        $this->count = Cart::getTotalQuantity();
     }
 
     public function render()

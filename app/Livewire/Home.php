@@ -22,10 +22,7 @@ class Home extends Component
         $products = $allProducts->where('is_featured', false);
 
         return view('livewire.home', [
-            'featuredImageUrl' => optional($featuredProduct?->getMedia('product-image-main')->first())?->getUrl(),
-            'featuredProductName' => $featuredProduct?->name,
-            'featuredProductSlug' => $featuredProduct?->slug,
-            'featuredProductDescription' => $featuredProduct?->description,
+            'featuredProduct' => $featuredProduct,
             'products' => $products,
         ]);
     }

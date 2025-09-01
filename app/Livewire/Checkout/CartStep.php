@@ -2,18 +2,17 @@
 
 namespace App\Livewire\Checkout;
 
-use App\Traits\ManagesCart;
-use Livewire\Component;
-use Livewire\Attributes\Computed;
 use Illuminate\Support\Facades\Log;
+use Livewire\Attributes\Computed;
+use Livewire\Component;
 use MasyukAI\Cart\Facades\Cart;
 
 class CartStep extends Component
 {
-    use ManagesCart;
-    
     public array $checkoutData;
+
     public array $cartItems = [];
+
     public string $voucherCode = '';
 
     public function mount(array $checkoutData = []): void
@@ -25,17 +24,15 @@ class CartStep extends Component
     public function loadCartItems(): void
     {
         try {
-            // Set session key for cart
-            $this->setCartSession();
-            
-            // Load cart items from Cart package
-            $cartContents = Cart::getContent();
-            
+            // Load cart items from Cart package - middleware handles instance switching
+            $cartContents = Cart::getItems();
+
             if ($cartContents->isEmpty()) {
                 $this->cartItems = [];
+
                 return;
             }
-            
+
             $this->cartItems = $cartContents->map(function ($item) {
                 return [
                     'id' => (string) $item->id,
@@ -49,17 +46,17 @@ class CartStep extends Component
         } catch (\Exception $e) {
             // Fallback to empty cart if there's an error
             $this->cartItems = [];
-            Log::error('Cart loading error: ' . $e->getMessage());
+            Log::error('Cart loading error: '.$e->getMessage());
         }
     }
 
     public function updateQuantity(string $itemId, int $quantity): void
     {
-        // Set session key for cart
-        $this->setCartSession();
+        // Middleware handles cart instance switching
 
         if ($quantity <= 0) {
             $this->removeItem($itemId);
+
             return;
         }
 
@@ -72,19 +69,16 @@ class CartStep extends Component
 
     public function removeItem(string $itemId): void
     {
-        // Set session key for cart
-        $this->setCartSession();
-        
-        // Remove item from cart
+        // Remove item from cart - middleware handles instance switching
         Cart::remove($itemId);
-        
+
         // Reload cart items to reflect changes
         $this->loadCartItems();
     }
 
     public function applyVoucher(): void
     {
-        if (!empty($this->voucherCode)) {
+        if (! empty($this->voucherCode)) {
             // Validate voucher code logic here
             session()->flash('success', "Voucher '{$this->voucherCode}' applied successfully!");
             $this->voucherCode = '';
@@ -95,6 +89,7 @@ class CartStep extends Component
     {
         if (empty($this->cartItems)) {
             session()->flash('error', 'Your cart is empty.');
+
             return;
         }
 
@@ -110,7 +105,9 @@ class CartStep extends Component
     #[Computed]
     public function getSubtotal(): int
     {
-        return $this->getCartSubtotal();
+        $total = Cart::getSubTotal();
+
+        return is_numeric($total) ? (int) ($total * 100) : 0; // Convert to cents
     }
 
     #[Computed]
@@ -139,7 +136,7 @@ class CartStep extends Component
 
     public function formatPrice(int $cents): string
     {
-        return 'RM ' . number_format($cents / 100, 2);
+        return 'RM '.number_format($cents / 100, 2);
     }
 
     public function render()

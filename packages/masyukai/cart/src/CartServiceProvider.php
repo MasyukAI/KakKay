@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 namespace MasyukAI\Cart;
 
-use Illuminate\Contracts\Cache\Repository as Cache;
+use Illuminate\Auth\Events\Attempting;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Auth\Events\Logout;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Database\ConnectionInterface as Database;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Auth\Events\Attempting;
-use Illuminate\Auth\Events\Login;
-use Illuminate\Auth\Events\Logout;
+use Livewire\Livewire;
+use MasyukAI\Cart\Http\Livewire\AddToCart;
+use MasyukAI\Cart\Http\Livewire\CartSummary;
+use MasyukAI\Cart\Http\Livewire\CartTable;
+use MasyukAI\Cart\Http\Middleware\AutoSwitchCartInstance;
 use MasyukAI\Cart\Listeners\HandleUserLogin;
 use MasyukAI\Cart\Listeners\HandleUserLoginAttempt;
 use MasyukAI\Cart\Listeners\HandleUserLogout;
@@ -20,11 +24,6 @@ use MasyukAI\Cart\Storage\CacheStorage;
 use MasyukAI\Cart\Storage\DatabaseStorage;
 use MasyukAI\Cart\Storage\SessionStorage;
 use MasyukAI\Cart\Storage\StorageInterface;
-use MasyukAI\Cart\Http\Livewire\AddToCart;
-use MasyukAI\Cart\Http\Livewire\CartSummary;
-use MasyukAI\Cart\Http\Livewire\CartTable;
-use Livewire\Livewire;
-use MasyukAI\Cart\Http\Middleware\AutoSwitchCartInstance;
 
 class CartServiceProvider extends ServiceProvider
 {
@@ -33,14 +32,12 @@ class CartServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->mergeConfigFrom(
-            __DIR__.'/../config/cart.php',
-            'cart'
-        );
+        $this->mergeConfigFrom(__DIR__.'/../config/cart.php', 'cart');
 
         $this->registerStorageDrivers();
         $this->registerCartManager();
         $this->registerMigrationService();
+        $this->registerEventDispatcher();
     }
 
     /**
@@ -62,15 +59,28 @@ class CartServiceProvider extends ServiceProvider
     {
         $this->app->booted(function () {
             $middleware = $this->app->make('Illuminate\Foundation\Configuration\Middleware');
-            
+
             // Always alias for manual use
             $middleware->alias(['cart.middleware' => AutoSwitchCartInstance::class]);
-            
+
             // Auto-apply to web routes if config enabled
             if (config('cart.migration.auto_switch_instances', true)) {
                 $middleware->web(append: [AutoSwitchCartInstance::class]);
             }
         });
+    }
+
+    /**
+     * Register event dispatcher for testing environments
+     */
+    protected function registerEventDispatcher(): void
+    {
+        // Ensure events binding for test environments
+        if ($this->app->environment('testing') && ! $this->app->bound('events')) {
+            $this->app->singleton('events', function ($app) {
+                return new \Illuminate\Events\Dispatcher($app);
+            });
+        }
     }
 
     /**
@@ -80,22 +90,34 @@ class CartServiceProvider extends ServiceProvider
     {
         $this->app->bind('cart.storage.session', function ($app) {
             return new SessionStorage(
-                $app->make(Session::class),
+                $app->make(\Illuminate\Contracts\Session\Session::class),
                 config('cart.session.key', 'cart')
             );
         });
 
         $this->app->bind('cart.storage.cache', function ($app) {
             return new CacheStorage(
-                $app->make(Cache::class),
+                $app->make(\Illuminate\Contracts\Cache\Repository::class),
                 config('cart.cache.prefix', 'cart'),
                 config('cart.cache.ttl', 86400)
             );
         });
 
         $this->app->bind('cart.storage.database', function ($app) {
+            // Skip database storage in test environment if db is not properly bound
+            if ($app->environment('testing') && ! $app->bound('db')) {
+                throw new \Exception('Database storage not available in test environment. Use session or cache storage instead.');
+            }
+
+            // Handle test environment properly
+            if ($app->environment('testing') && $app->bound('db.connection')) {
+                $connection = $app->make('db.connection');
+            } else {
+                $connection = $app->make('db')->connection();
+            }
+
             return new DatabaseStorage(
-                $app->make(Database::class),
+                $connection,
                 config('cart.database.table', 'cart_storage')
             );
         });
@@ -149,7 +171,7 @@ class CartServiceProvider extends ServiceProvider
     protected function registerMigrationService(): void
     {
         $this->app->singleton(CartMigrationService::class, function ($app) {
-            return new CartMigrationService();
+            return new CartMigrationService;
         });
     }
 
@@ -165,7 +187,7 @@ class CartServiceProvider extends ServiceProvider
             $this->app['events']->listen(Login::class, HandleUserLogin::class);
         }
 
-        if (config('cart.migration.backup_guest_cart_on_logout', false)) {
+        if (config('cart.migration.backup_on_logout', false)) {
             $this->app['events']->listen(Logout::class, HandleUserLogout::class);
         }
     }

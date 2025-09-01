@@ -13,6 +13,7 @@ use MasyukAI\Cart\Storage\StorageInterface;
 class CartManager
 {
     private Cart $currentCart;
+
     private string $currentInstance = 'default';
 
     public function __construct(
@@ -80,11 +81,11 @@ class CartManager
     }
 
     /**
-     * Get content (wrapper for getContent)
+     * Get items (wrapper for getItems)
      */
-    public function content(): mixed
+    public function getItems(): mixed
     {
-        return $this->currentCart->getContent();
+        return $this->currentCart->getItems();
     }
 
     /**
@@ -106,14 +107,15 @@ class CartManager
     /**
      * Get session storage access for session-specific operations
      */
-    public function session(string $sessionKey = null): StorageInterface
+    public function session(?string $sessionKey = null): StorageInterface
     {
         if ($this->storage instanceof \MasyukAI\Cart\Storage\SessionStorage) {
             return $this->storage;
         }
-        
+
         // If not using session storage, create a temporary session storage instance
         $session = app('session');
+
         return new \MasyukAI\Cart\Storage\SessionStorage($session, $sessionKey ?? config('cart.session.key', 'cart'));
     }
 

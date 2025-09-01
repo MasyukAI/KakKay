@@ -13,8 +13,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static \MasyukAI\Cart\Models\CartItem|null update(string $id, array $data)
  * @method static \MasyukAI\Cart\Models\CartItem|null remove(string $id)
  * @method static \MasyukAI\Cart\Models\CartItem|null get(string $id)
- * @method static \MasyukAI\Cart\Collections\CartCollection getContent()
- * @method static \MasyukAI\Cart\Collections\CartCollection content()
+ * @method static \MasyukAI\Cart\Collections\CartCollection getItems()
  * @method static bool isEmpty()
  * @method static int getTotalQuantity()
  * @method static float getSubTotal()
@@ -54,11 +53,8 @@ class Cart extends Facade
     {
         $instance = static::getFacadeRoot();
 
-        if ($method === 'setInstance') {
-            // Call setInstance on the CartManager and return the CartManager for chaining
-            return $instance->setInstance(...$args);
-        }
-
+        // For setInstance, we return the CartManager for chaining
+        // All other methods will be proxied to the current cart via __call
         return $instance->$method(...$args);
     }
 }
