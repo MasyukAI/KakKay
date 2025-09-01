@@ -1,0 +1,242 @@
+<?php
+
+return [
+    
+    /*
+    |--------------------------------------------------------------------------
+    | CHIP Environment
+    |--------------------------------------------------------------------------
+    |
+    | This option controls whether CHIP runs in sandbox mode or production mode.
+    | When true, the package will use sandbox endpoints for testing.
+    |
+    */
+    
+    'is_sandbox' => env('CHIP_IS_SANDBOX', true),
+
+    /*
+    |--------------------------------------------------------------------------
+    | CHIP Collect Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for CHIP Collect API (Payment Collection)
+    |
+    */
+    
+    'collect' => [
+        'api_key' => env('CHIP_COLLECT_API_KEY'),
+        'brand_id' => env('CHIP_COLLECT_BRAND_ID'),
+        'secret_key' => env('CHIP_COLLECT_SECRET_KEY'),
+        'environment' => env('CHIP_COLLECT_ENVIRONMENT', 'sandbox'),
+        'base_url' => [
+            'sandbox' => 'https://gate-sandbox.chip-in.asia/api/v1',
+            'production' => 'https://gate.chip-in.asia/api/v1',
+        ],
+        'timeout' => 30,
+        'retry' => [
+            'times' => 3,
+            'sleep' => 1000, // milliseconds
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | CHIP Send Configuration  
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for CHIP Send API (Disbursements/Payouts)
+    |
+    */
+    
+    'send' => [
+        'api_key' => env('CHIP_SEND_API_KEY'),
+        'api_secret' => env('CHIP_SEND_API_SECRET'),
+        'environment' => env('CHIP_SEND_ENVIRONMENT', 'sandbox'),
+        'base_url' => [
+            'sandbox' => 'https://staging-api.chip-in.asia/api',
+            'production' => 'https://api.chip-in.asia/api',
+        ],
+        'timeout' => 30,
+        'retry' => [
+            'times' => 3,
+            'sleep' => 1000, // milliseconds
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Webhook Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for webhook handling and signature verification
+    |
+    */
+    
+    'webhooks' => [
+        'verify_signature' => env('CHIP_VERIFY_WEBHOOKS', true),
+        'public_key' => env('CHIP_WEBHOOK_PUBLIC_KEY'),
+        'secret_key' => env('CHIP_WEBHOOK_SECRET_KEY'),
+        'allowed_ips' => [
+            '52.221.86.60',
+            '54.169.46.69',
+            '13.212.103.36',
+        ],
+        'timeout' => 10,
+        
+        // Event routing configuration
+        'events' => [
+            'purchase.created' => \Masyukai\Chip\Events\PurchaseCreated::class,
+            'purchase.paid' => \Masyukai\Chip\Events\PurchasePaid::class,
+            'purchase.failed' => null, // Can be null to skip
+            'purchase.cancelled' => null,
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Logging and Debugging
+    |--------------------------------------------------------------------------
+    |
+    | Logging configuration for CHIP operations
+    |
+    */
+    
+    'logging' => [
+        'enabled' => env('CHIP_LOGGING_ENABLED', true),
+        'level' => env('CHIP_LOG_LEVEL', 'info'),
+        'channel' => env('CHIP_LOG_CHANNEL', 'stack'),
+        'log_requests' => env('CHIP_LOG_REQUESTS', false),
+        'log_responses' => env('CHIP_LOG_RESPONSES', false),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cache Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for caching CHIP API responses
+    |
+    */
+    
+    'cache' => [
+        'enabled' => env('CHIP_CACHE_ENABLED', true),
+        'store' => env('CHIP_CACHE_STORE', 'default'),
+        'ttl' => [
+            'purchases' => 300, // 5 minutes
+            'payments' => 300,
+            'clients' => 3600, // 1 hour
+            'bank_accounts' => 3600,
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Rate Limiting
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for API rate limiting
+    |
+    */
+    
+    'rate_limiting' => [
+        'enabled' => env('CHIP_RATE_LIMITING_ENABLED', true),
+        'requests_per_minute' => env('CHIP_RATE_LIMIT_RPM', 60),
+        'burst_limit' => env('CHIP_RATE_LIMIT_BURST', 10),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Validation Rules
+    |--------------------------------------------------------------------------
+    |
+    | Default validation rules for CHIP data
+    |
+    */
+    
+    'validation' => [
+        'strict_mode' => env('CHIP_STRICT_VALIDATION', true),
+        'currency_codes' => ['MYR', 'USD', 'SGD', 'THB'],
+        'max_amount_cents' => 99999999, // ~$1M MYR
+        'min_amount_cents' => 100, // $1 MYR
+    ],
+];
+    'disburse' => [
+        'secret_key' => env('CHIP_DISBURSE_SECRET_KEY'),
+        'base_url' => [
+            'sandbox' => 'https://gate-sandbox.chip-in.asia/api/v1',
+            'production' => 'https://gate.chip-in.asia/api/v1',
+        ],
+        'timeout' => 30,
+        'retry' => [
+            'times' => 3,
+            'sleep' => 1000, // milliseconds
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | CHIP Send Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for CHIP Send API (money transfers)
+    |
+    */
+    
+    'send' => [
+        'secret_key' => env('CHIP_SEND_SECRET_KEY'),
+        'base_url' => [
+            'sandbox' => 'https://staging-api.chip-in.asia/api',
+            'production' => 'https://api.chip-in.asia/api',
+        ],
+        'timeout' => 30,
+        'retry' => [
+            'times' => 3,
+            'sleep' => 1000, // milliseconds
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | CHIP Webhooks Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for webhook handling and verification
+    |
+    */
+    
+    'webhooks' => [
+        'signature_key' => env('CHIP_WEBHOOK_SIGNATURE_KEY'),
+        'verify_signature' => env('CHIP_WEBHOOK_VERIFY_SIGNATURE', true),
+        'verify_ssl' => env('CHIP_WEBHOOK_VERIFY_SSL', true),
+        'timeout' => 10,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | CHIP Digital Delivery Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for digital delivery functionality
+    |
+    */
+    
+    'digital_delivery' => [
+        'enabled' => env('CHIP_DIGITAL_DELIVERY_ENABLED', false),
+        'default_expiry_hours' => env('CHIP_DIGITAL_DELIVERY_EXPIRY_HOURS', 24),
+        'max_downloads' => env('CHIP_DIGITAL_DELIVERY_MAX_DOWNLOADS', 3),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Default Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Default settings for requests and responses
+    |
+    */
+    
+    'defaults' => [
+        'creator_agent' => 'Masyukai/Chip Laravel Package',
+    ],
+
+];

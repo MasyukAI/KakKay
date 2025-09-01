@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Tests\Services\ChipCollectServiceTest" file="tests/Services/ChipCollectServiceTest.php" tests="10" assertions="0" errors="10" failures="0" skipped="0" time="0.000000">
+    <testcase name="`ChipCollectService Purchase Management` → it can create a purchase" file="tests/Services/ChipCollectServiceTest.php::`ChipCollectService Purchase Management` → it can create a purchase" class="Tests\Services\ChipCollectServiceTest" classname="Tests.Services.ChipCollectServiceTest" assertions="0" time="0.000000">
+      <error type="Error">`ChipCollectService Purchase Management` → it can create a purchaseError: Class "Masyukai\Chip\Services\ChipCollectService" not found
+at tests/Services/ChipCollectServiceTest.php:14</error>
+    </testcase>
+    <testcase name="`ChipCollectService Purchase Management` → it can retrieve a purchase" file="tests/Services/ChipCollectServiceTest.php::`ChipCollectService Purchase Management` → it can retrieve a purchase" class="Tests\Services\ChipCollectServiceTest" classname="Tests.Services.ChipCollectServiceTest" assertions="0" time="0.000000">
+      <error type="Error">`ChipCollectService Purchase Management` → it can retrieve a purchaseError: Class "Masyukai\Chip\Services\ChipCollectService" not found
+at tests/Services/ChipCollectServiceTest.php:14</error>
+    </testcase>
+    <testcase name="`ChipCollectService Purchase Management` → it can list purchases" file="tests/Services/ChipCollectServiceTest.php::`ChipCollectService Purchase Management` → it can list purchases" class="Tests\Services\ChipCollectServiceTest" classname="Tests.Services.ChipCollectServiceTest" assertions="0" time="0.000000">
+      <error type="Error">`ChipCollectService Purchase Management` → it can list purchasesError: Class "Masyukai\Chip\Services\ChipCollectService" not found
+at tests/Services/ChipCollectServiceTest.php:14</error>
+    </testcase>
+    <testcase name="`ChipCollectService Purchase Management` → it can update a purchase" file="tests/Services/ChipCollectServiceTest.php::`ChipCollectService Purchase Management` → it can update a purchase" class="Tests\Services\ChipCollectServiceTest" classname="Tests.Services.ChipCollectServiceTest" assertions="0" time="0.000000">
+      <error type="Error">`ChipCollectService Purchase Management` → it can update a purchaseError: Class "Masyukai\Chip\Services\ChipCollectService" not found
+at tests/Services/ChipCollectServiceTest.php:14</error>
+    </testcase>
+    <testcase name="`ChipCollectService Purchase Management` → it can delete a purchase" file="tests/Services/ChipCollectServiceTest.php::`ChipCollectService Purchase Management` → it can delete a purchase" class="Tests\Services\ChipCollectServiceTest" classname="Tests.Services.ChipCollectServiceTest" assertions="0" time="0.000000">
+      <error type="Error">`ChipCollectService Purchase Management` → it can delete a purchaseError: Class "Masyukai\Chip\Services\ChipCollectService" not found
+at tests/Services/ChipCollectServiceTest.php:14</error>
+    </testcase>
+    <testcase name="`ChipCollectService Payment Management` → it can list payments for a purchase" file="tests/Services/ChipCollectServiceTest.php::`ChipCollectService Payment Management` → it can list payments for a purchase" class="Tests\Services\ChipCollectServiceTest" classname="Tests.Services.ChipCollectServiceTest" assertions="0" time="0.000000">
+      <error type="Error">`ChipCollectService Payment Management` → it can list payments for a purchaseError: Class "Masyukai\Chip\Services\ChipCollectService" not found
+at tests/Services/ChipCollectServiceTest.php:14</error>
+    </testcase>
+    <testcase name="`ChipCollectService Payment Management` → it can retrieve a specific payment" file="tests/Services/ChipCollectServiceTest.php::`ChipCollectService Payment Management` → it can retrieve a specific payment" class="Tests\Services\ChipCollectServiceTest" classname="Tests.Services.ChipCollectServiceTest" assertions="0" time="0.000000">
+      <error type="Error">`ChipCollectService Payment Management` → it can retrieve a specific paymentError: Class "Masyukai\Chip\Services\ChipCollectService" not found
+at tests/Services/ChipCollectServiceTest.php:14</error>
+    </testcase>
+    <testcase name="`ChipCollectService Client Management` → it can create a client" file="tests/Services/ChipCollectServiceTest.php::`ChipCollectService Client Management` → it can create a client" class="Tests\Services\ChipCollectServiceTest" classname="Tests.Services.ChipCollectServiceTest" assertions="0" time="0.000000">
+      <error type="Error">`ChipCollectService Client Management` → it can create a clientError: Class "Masyukai\Chip\Services\ChipCollectService" not found
+at tests/Services/ChipCollectServiceTest.php:14</error>
+    </testcase>
+    <testcase name="`ChipCollectService Client Management` → it can retrieve a client" file="tests/Services/ChipCollectServiceTest.php::`ChipCollectService Client Management` → it can retrieve a client" class="Tests\Services\ChipCollectServiceTest" classname="Tests.Services.ChipCollectServiceTest" assertions="0" time="0.000000">
+      <error type="Error">`ChipCollectService Client Management` → it can retrieve a clientError: Class "Masyukai\Chip\Services\ChipCollectService" not found
+at tests/Services/ChipCollectServiceTest.php:14</error>
+    </testcase>
+    <testcase name="`ChipCollectService Client Management` → it can list clients" file="tests/Services/ChipCollectServiceTest.php::`ChipCollectService Client Management` → it can list clients" class="Tests\Services\ChipCollectServiceTest" classname="Tests.Services.ChipCollectServiceTest" assertions="0" time="0.000000">
+      <error type="Error">`ChipCollectService Client Management` → it can list clientsError: Class "Masyukai\Chip\Services\ChipCollectService" not found
+at tests/Services/ChipCollectServiceTest.php:14</error>
+    </testcase>
+  </testsuite>
+</testsuites>

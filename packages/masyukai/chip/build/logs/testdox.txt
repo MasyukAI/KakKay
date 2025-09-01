@@ -1,0 +1,12 @@
+/Users/saiffil/Herd/kay/packages/masyukai/chip/tests/Services/ChipCollectServiceTest.php
+ [ ] `ChipCollectService Purchase Management` → it can create a purchase
+ [ ] `ChipCollectService Purchase Management` → it can retrieve a purchase
+ [ ] `ChipCollectService Purchase Management` → it can list purchases
+ [ ] `ChipCollectService Purchase Management` → it can update a purchase
+ [ ] `ChipCollectService Purchase Management` → it can delete a purchase
+ [ ] `ChipCollectService Payment Management` → it can list payments for a purchase
+ [ ] `ChipCollectService Payment Management` → it can retrieve a specific payment
+ [ ] `ChipCollectService Client Management` → it can create a client
+ [ ] `ChipCollectService Client Management` → it can retrieve a client
+ [ ] `ChipCollectService Client Management` → it can list clients
+
