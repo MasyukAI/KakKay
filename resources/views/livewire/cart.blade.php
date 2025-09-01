@@ -28,7 +28,7 @@ new class extends Component {
                 return [
                     'id' => (string) $item->id,
                     'name' => (string) $item->name,
-                    'price' => (int) ($item->price * 100), // Convert to cents
+                    'price' => (int) ($item->price / 100), // Convert to cents
                     'quantity' => (int) $item->quantity,
                     'slug' => $item->attributes->get('slug', 'cara-bercinta'),
                 ];
@@ -44,7 +44,7 @@ new class extends Component {
     {
         // Get cart item IDs to exclude them from suggestions
         $cartProductIds = collect($this->cartItems)->pluck('id')->toArray();
-        
+
         // Get 3 random products that are not in cart
         $this->suggestedProducts = \App\Models\Product::where('is_active', true)
             ->whereNotIn('id', $cartProductIds)
@@ -76,7 +76,7 @@ new class extends Component {
             // Use absolute quantity update
             Cart::update($itemId, ['quantity' => ['value' => $item->quantity + 1]]);
             $this->loadCartItems();
-            
+
             Notification::make()
                 ->title('Kuantiti Ditambah')
                 ->body("Kuantiti '{$item->name}' telah ditambah.")
@@ -97,7 +97,7 @@ new class extends Component {
             // Use absolute quantity update
             Cart::update($itemId, ['quantity' => ['value' => $newQuantity]]);
             $this->loadCartItems();
-            
+
             Notification::make()
                 ->title('Kuantiti Dikurangkan')
                 ->body("Kuantiti '{$item->name}' telah dikurangkan.")
@@ -114,7 +114,7 @@ new class extends Component {
         // Middleware handles cart instance switching
         $item = Cart::get($itemId);
         $itemName = $item ? $item->name : 'Item';
-        
+
         Cart::remove($itemId);
         $this->loadCartItems();
         $this->loadSuggestedProducts(); // Refresh suggestions when item is removed
@@ -148,7 +148,7 @@ new class extends Component {
     public function addToCart(int $productId): void
     {
         $product = \App\Models\Product::find($productId);
-        
+
         if (!$product) {
             Notification::make()
                 ->title('Produk Tidak Dijumpai')
@@ -168,13 +168,13 @@ new class extends Component {
             $product->name,
             $product->price ,// Convert from cents to dollars for the cart
             1,
-            ['slug' => $product]
+            ['slug' => $product->slug]
         );
 
         $this->loadCartItems();
         $this->loadSuggestedProducts(); // Refresh suggestions to exclude newly added item
         $this->dispatch('product-added-to-cart');
-        
+
         Notification::make()
             ->title('Ditambah ke Keranjang!')
             ->body("'{$product->name}' telah ditambah ke keranjang!")
@@ -277,7 +277,7 @@ new class extends Component {
                         </li>
                     </ol>
                 </div>
-                
+
             <div class="mb-8">
                 <h2 class="text-3xl font-bold mb-2" style="font-family: 'Caveat Brush', cursive;">
                     Troli <span class="cart-text-accent">Belanja</span>
@@ -311,8 +311,8 @@ new class extends Component {
                                     <!-- Product Image -->
                                     <div class="flex-shrink-0">
                                         <div class="w-24 h-32 sm:w-32 sm:h-40 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg overflow-hidden shadow-lg">
-                                            <img src="{{ asset('storage/images/cover/' . $item['slug'] . '.png') }}" 
-                                                 alt="{{ $item['slug'] }}" 
+                                            <img src="{{ asset('storage/images/cover/' . $item['slug'] . '.png') }}"
+                                                 alt="{{ $item['slug'] }}"
                                                  class="w-full h-full object-cover">
                                         </div>
                                     </div>
@@ -340,24 +340,24 @@ new class extends Component {
                                         <!-- Quantity and Actions -->
                                         <div class="flex items-center justify-between mt-4">
                                             <div class="flex items-center gap-3">
-                                                <flux:button variant="subtle" size="sm" 
+                                                <flux:button variant="subtle" size="sm"
                                                            wire:click="decrementQuantity('{{ $item['id'] }}')"
                                                            class="cursor-pointer w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-lg">
                                                     <flux:icon.minus class="h-4 w-4" />
                                                 </flux:button>
-                                                
+
                                                 <span class="text-lg font-semibold px-4 py-2 bg-white/15 rounded-lg min-w-[3rem] text-center">
                                                     {{ $item['quantity'] }}
                                                 </span>
-                                                
-                                                <flux:button variant="subtle" size="sm" 
+
+                                                <flux:button variant="subtle" size="sm"
                                                            wire:click="incrementQuantity('{{ $item['id'] }}')"
                                                            class="cursor-pointer w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-lg">
                                                     <flux:icon.plus class="h-4 w-4" />
                                                 </flux:button>
                                             </div>
 
-                                            <flux:button variant="subtle" color="red" 
+                                            <flux:button variant="subtle" color="red"
                                                        wire:click="removeItem('{{ $item['id'] }}')"
                                                        class="hover:bg-red-500/30 border border-red-400/60 text-red-300 hover:text-white px-5 py-2.5 font-semibold rounded-lg transition-all duration-200 shadow-sm hover:shadow-md cursor-pointer">
                                                 <flux:icon.trash class="h-5 w-5" />
@@ -381,31 +381,31 @@ new class extends Component {
                                     <span class="cart-text-muted">Subtotal</span>
                                     <span class="font-semibold">{{ $this->formatPrice($this->getSubtotal()) }}</span>
                                 </div>
-                                
+
                                 {{-- <div class="flex justify-between text-green-400">
                                     <span>Diskaun</span>
                                     <span class="font-semibold">-{{ $this->formatPrice($this->getSavings()) }}</span>
                                 </div> --}}
-                                
+
                                 <div class="flex justify-between">
                                     <span class="cart-text-muted">Penghantaran</span>
                                     <span class="font-semibold">{{ $this->formatPrice($this->getShipping()) }}</span>
                                 </div>
-                                
+
                                 {{-- <div class="flex justify-between">
                                     <span class="cart-text-muted">Cukai (10.5%)</span>
                                     <span class="font-semibold">{{ $this->formatPrice($this->getTax()) }}</span>
                                 </div> --}}
-                                
+
                                 <hr class="border-white/20">
-                                
+
                                 <div class="flex justify-between text-xl font-bold">
                                     <span>Jumlah</span>
                                     <span class="cart-text-accent">{{ $this->formatPrice($this->getTotal()) }}</span>
                                 </div>
                             </div>
 
-                            <flux:button variant="primary" href="{{ route('checkout') }}" 
+                            <flux:button variant="primary" href="{{ route('checkout') }}"
                                        class="w-full cart-button-primary mb-4 px-6 py-4 text-lg">
                                 <flux:icon.credit-card class="h-5 w-5 mr-2" />
                                 Teruskan Pembelian
@@ -426,8 +426,8 @@ new class extends Component {
                                 Kod Voucher
                             </h4>
                             <form wire:submit="applyVoucher" class="space-y-4">
-                                <flux:input 
-                                    wire:model="voucherCode" 
+                                <flux:input
+                                    wire:model="voucherCode"
                                     placeholder="Masukkan kod voucher"
                                     class="w-full"
                                 />
@@ -453,11 +453,11 @@ new class extends Component {
                     @foreach($suggestedProducts as $product)
                         <div class="cart-item-card overflow-hidden">
                             <div class="aspect-[3/4] bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg mb-4 overflow-hidden">
-                                <img src="{{ asset('storage/images/cover/' . $product->slug . '.png') }}" 
-                                     alt="{{ $product->name }}" 
+                                <img src="{{ asset('storage/images/cover/' . $product->slug . '.png') }}"
+                                     alt="{{ $product->name }}"
                                      class="w-full h-full object-cover">
                             </div>
-                            
+
                             <div class="space-y-4">
                                 {{-- <h4 class="text-lg font-bold leading-tight" style="font-family: 'Montserrat', sans-serif;">
                                     {{ $product->name }}
@@ -465,24 +465,24 @@ new class extends Component {
                                 <p class="cart-text-muted text-sm line-clamp-2">
                                     {{ $product->description }}
                                 </p>
-                                
+
                                 <div class="flex items-center justify-between">
                                     <span class="text-xl font-bold cart-text-accent">
-                                        {{ $this->formatPrice($product->price * 100) }}
+                                        {{ $this->formatPrice($product->price / 100) }}
                                     </span>
                                     {{-- <flux:badge variant="solid" color="pink" size="sm">
                                         <flux:icon.sparkles class="h-3 w-3 mr-1" />
                                         Hot
                                     </flux:badge> --}}
                                 </div>
-                                
+
                                 <div class="flex gap-3 pt-2">
-                                    {{-- <flux:button variant="subtle" size="sm" 
+                                    {{-- <flux:button variant="subtle" size="sm"
                                                class="flex-1 hover:bg-white/10">
                                         <flux:icon.heart class="h-4 w-4 mr-1" />
                                         Suka
                                     </flux:button> --}}
-                                    <flux:button variant="primary" size="sm" 
+                                    <flux:button variant="primary" size="sm"
                                                wire:click="addToCart({{ $product->id }})"
                                                class="cursor-pointer flex-1 cart-button-primary">
                                         <flux:icon.shopping-cart class="h-4 w-4 mr-1 block" />
