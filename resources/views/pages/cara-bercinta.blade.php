@@ -31,9 +31,9 @@ class extends Component {
         Cart::add(
             (string) $product->id,
             $product->name,
-            $product->price ,// Convert from cents to dollars for the cart
+            $product->price, // Convert from cents to dollars for the cart
             1,
-            ['slug' => $product]
+            ['slug' => $product->slug]
         );
 
         Notification::make()
