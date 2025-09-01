@@ -23,21 +23,21 @@ class HandleUserLogin implements ShouldQueue
         // Try to retrieve the old session ID from cache
         $userIdentifier = $this->getUserIdentifier($event->user);
         $oldSessionId = null;
-        
+
         if ($userIdentifier) {
             $oldSessionId = Cache::pull("cart_migration_{$userIdentifier}");
         }
-        
+
         // Migrate guest cart to user cart using old session ID
-        $result = $this->migrationService->migrateGuestCartForUser($event->user, $oldSessionId);
-        
+        $result = $this->migrationService->migrateGuestCartForUser($event->user, 'default', $oldSessionId);
+
         if ($result->success && $result->itemsMerged > 0) {
             // Store migration result in session for potential display to user
             session()->flash('cart_migration', [
                 'items_merged' => $result->itemsMerged,
                 'has_conflicts' => false, // Simplified
                 'conflicts' => $result->conflicts,
-                'message' => $result->message ?? 'Cart migration completed'
+                'message' => $result->message ?? 'Cart migration completed',
             ]);
         }
 
@@ -51,9 +51,9 @@ class HandleUserLogin implements ShouldQueue
     private function getUserIdentifier($user): ?string
     {
         // Try common user identifier fields
-        return $user->email 
-            ?? $user->username 
-            ?? $user->phone 
+        return $user->email
+            ?? $user->username
+            ?? $user->phone
             ?? null;
     }
 }

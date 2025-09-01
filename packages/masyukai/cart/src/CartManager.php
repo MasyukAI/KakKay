@@ -81,30 +81,6 @@ class CartManager
     }
 
     /**
-     * Get items (wrapper for getItems)
-     */
-    public function getItems(): mixed
-    {
-        return $this->currentCart->getItems();
-    }
-
-    /**
-     * Get total (wrapper for getTotal)
-     */
-    public function total(): float
-    {
-        return $this->currentCart->getTotal();
-    }
-
-    /**
-     * Get subtotal (wrapper for getSubTotal)
-     */
-    public function subtotal(): float
-    {
-        return $this->currentCart->getSubTotal();
-    }
-
-    /**
      * Get session storage access for session-specific operations
      */
     public function session(?string $sessionKey = null): StorageInterface
@@ -114,7 +90,7 @@ class CartManager
         }
 
         // If not using session storage, create a temporary session storage instance
-        $session = app('session');
+        $session = app('session')->driver();
 
         return new \MasyukAI\Cart\Storage\SessionStorage($session, $sessionKey ?? config('cart.session.key', 'cart'));
     }

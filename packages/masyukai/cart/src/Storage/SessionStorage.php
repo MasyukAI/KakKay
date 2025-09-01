@@ -16,50 +16,157 @@ readonly class SessionStorage implements StorageInterface
     }
 
     /**
-     * Retrieve an item from storage
+     * Check if cart exists in storage
      */
-    public function get(string $key): mixed
+    public function has(string $identifier, string $instance): bool
     {
-        return $this->session->get($this->getKey($key));
+        $cartData = $this->session->get($this->keyPrefix, []);
+        return isset($cartData[$identifier][$instance]['items']) || 
+               isset($cartData[$identifier][$instance]['conditions']);
     }
 
     /**
-     * Store an item in storage
+     * Remove cart from storage
      */
-    public function put(string $key, mixed $value): void
+    public function forget(string $identifier, string $instance): void
     {
-        $this->session->put($this->getKey($key), $value);
+        $cartData = $this->session->get($this->keyPrefix, []);
+        
+        if (isset($cartData[$identifier][$instance])) {
+            unset($cartData[$identifier][$instance]);
+            
+            // If this identifier has no more instances, remove it entirely
+            if (empty($cartData[$identifier])) {
+                unset($cartData[$identifier]);
+            }
+            
+            // Update the session with the modified data
+            if (empty($cartData)) {
+                $this->session->forget($this->keyPrefix);
+            } else {
+                $this->session->put($this->keyPrefix, $cartData);
+            }
+        }
     }
 
     /**
-     * Check if an item exists in storage
-     */
-    public function has(string $key): bool
-    {
-        return $this->session->has($this->getKey($key));
-    }
-
-    /**
-     * Remove an item from storage
-     */
-    public function forget(string $key): void
-    {
-        $this->session->forget($this->getKey($key));
-    }
-
-    /**
-     * Clear all items from storage
+     * Clear all carts from storage
      */
     public function flush(): void
     {
-        $this->session->flush();
+        // Remove the entire cart data from session
+        $this->session->forget($this->keyPrefix);
     }
 
     /**
-     * Get the full storage key
+     * Get all instances for a specific identifier
      */
-    private function getKey(string $key): string
+    public function getInstances(string $identifier): array
     {
-        return "{$this->keyPrefix}.{$key}";
+        // Get the nested cart data for this identifier
+        $cartData = $this->session->get($this->keyPrefix, []);
+        
+        if (!isset($cartData[$identifier]) || !is_array($cartData[$identifier])) {
+            return [];
+        }
+
+        // Return all instance names (keys) for this identifier
+        return array_keys($cartData[$identifier]);
+    }
+
+    /**
+     * Remove all instances for a specific identifier
+     */
+    public function forgetIdentifier(string $identifier): void
+    {
+        // Get current cart data
+        $cartData = $this->session->get($this->keyPrefix, []);
+        
+        // Remove this identifier's data
+        unset($cartData[$identifier]);
+        
+        // Put back the modified cart data
+        if (empty($cartData)) {
+            $this->session->forget($this->keyPrefix);
+        } else {
+            $this->session->put($this->keyPrefix, $cartData);
+        }
+    }
+
+    /**
+     * Retrieve cart items from storage
+     */
+    public function getItems(string $identifier, string $instance): array
+    {
+        $data = $this->session->get($this->getItemsKey($identifier, $instance));
+
+        if (is_string($data)) {
+            return json_decode($data, true) ?: [];
+        }
+
+        return $data ?: [];
+    }
+
+    /**
+     * Retrieve cart conditions from storage
+     */
+    public function getConditions(string $identifier, string $instance): array
+    {
+        $data = $this->session->get($this->getConditionsKey($identifier, $instance));
+
+        if (is_string($data)) {
+            return json_decode($data, true) ?: [];
+        }
+
+        return $data ?: [];
+    }
+
+    /**
+     * Store cart items in storage
+     */
+    public function putItems(string $identifier, string $instance, array $items): void
+    {
+        $this->session->put($this->getItemsKey($identifier, $instance), $items);
+    }
+
+    /**
+     * Store cart conditions in storage
+     */
+    public function putConditions(string $identifier, string $instance, array $conditions): void
+    {
+        $this->session->put($this->getConditionsKey($identifier, $instance), $conditions);
+    }
+
+    /**
+     * Store both items and conditions in storage
+     */
+    public function putBoth(string $identifier, string $instance, array $items, array $conditions): void
+    {
+        $this->putItems($identifier, $instance, $items);
+        $this->putConditions($identifier, $instance, $conditions);
+    }
+
+    /**
+     * Get the full storage key (legacy for backward compatibility)
+     */
+    private function getKey(string $identifier, string $instance): string
+    {
+        return "{$this->keyPrefix}.{$identifier}.{$instance}";
+    }
+
+    /**
+     * Get the items storage key
+     */
+    private function getItemsKey(string $identifier, string $instance): string
+    {
+        return "{$this->keyPrefix}.{$identifier}.{$instance}.items";
+    }
+
+    /**
+     * Get the conditions storage key
+     */
+    private function getConditionsKey(string $identifier, string $instance): string
+    {
+        return "{$this->keyPrefix}.{$identifier}.{$instance}.conditions";
     }
 }

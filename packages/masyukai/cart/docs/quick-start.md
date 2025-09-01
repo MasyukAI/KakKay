@@ -19,7 +19,8 @@ use MasyukAI\Cart\Facades\Cart;
 Cart::add('product-1', 'iPhone 15 Pro', 999.99, 1);
 
 // Check what's in the cart
-$items = Cart::content();
+$items = Cart::getItems(); // Get cart items
+$cartData = Cart::content(); // Get complete cart data (items, conditions, totals, etc.)
 $total = Cart::total();
 $count = Cart::count();
 

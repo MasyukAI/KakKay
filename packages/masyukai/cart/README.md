@@ -6,11 +6,11 @@ A modern, feature-rich shopping cart package for Laravel 12 with Livewire integr
 [![Laravel Version](https://img.shields.io/badge/laravel-%5E12.0-red)](https://laravel.com)
 [![Livewire Version](https://img.shields.io/badge/livewire-%5E3.0-purple)](https://livewire.laravel.com)
 [![Tests](https://img.shields.io/badge/tests-passing-green)](https://pestphp.com)
-[![Coverage](https://img.shields.io/badge/coverage-98.2%25-brightgreen)](https://pestphp.com)
+[![Coverage](https://img.shields.io/badge/coverage-96.2%25-brightgreen)](https://pestphp.com)
 
 ## 🚀 Why Choose MasyukAI Cart?
 
-- **🏆 Production Ready** - 98.2% test coverage with 337 passing tests
+- **🏆 Production Ready** - 96.2% test coverage with 507 passing tests
 - **⚡ High Performance** - Optimized for speed with minimal memory footprint  
 - **🎯 Developer Friendly** - Intuitive API with comprehensive documentation
 - **🔧 Highly Flexible** - Multiple storage drivers, instances, and event system
@@ -27,7 +27,7 @@ A modern, feature-rich shopping cart package for Laravel 12 with Livewire integr
 - 🎯 **Event-Driven Architecture** - Listen to cart events for custom logic
 
 ### Developer Experience  
-- 🧪 **Comprehensive Testing** - 98.2% coverage with PestPHP 4
+- 🧪 **Comprehensive Testing** - 96.2% coverage with PestPHP 4
 - 📚 **Rich Documentation** - Complete guides and API reference
 - 🔗 **Laravel Integration** - Proper facades, middleware, service providers
 - 🎨 **Livewire Components** - Drop-in reactive UI components
@@ -266,12 +266,14 @@ $cart = Cart::add('1', 'Product', 100, 1);
 
 ```php
 // Most cart packages use similar patterns
-Cart::content();    // Get items
+Cart::content();    // Get complete cart data (items + conditions)
 Cart::total();      // Get total  
 Cart::count();      // Get quantity
 Cart::clear();      // Empty cart
 
-// Our enhanced features
+// Our enhanced features with separated concerns
+Cart::getItems();   // Get just the items as CartCollection
+Cart::getConditions(); // Get just the conditions
 Cart::search(fn($item) => $item->price > 100);
 Cart::merge('other-instance');
 Cart::addDiscount('sale', '20%');
@@ -290,20 +292,35 @@ Cart::addDiscount('sale', '20%');
 # Run the comprehensive test suite
 ./vendor/bin/pest
 
-# Check coverage (98.2% coverage achieved)
+# Check coverage (96.2% coverage achieved)
 ./vendor/bin/pest --coverage
 
 # Run specific test categories
 ./vendor/bin/pest tests/Unit/CartTest.php
 ./vendor/bin/pest tests/Feature/
 ./vendor/bin/pest tests/Browser/
+
+# Run coverage-focused tests
+./vendor/bin/pest tests/Unit/Services/CartMigrationServiceCoverageTest.php
+./vendor/bin/pest tests/Unit/Collections/CartConditionCollectionCoverageTest.php
+./vendor/bin/pest tests/Unit/Models/CartItemCoverageTest.php
 ```
 
+**Test Categories:**
+- 🏗️ **Unit Tests** - 200+ tests covering all classes and methods
+- 🔄 **Feature Tests** - End-to-end workflow testing
+- 🧪 **Coverage Tests** - Specialized tests targeting 90%+ coverage
+- 🎯 **Integration Tests** - Component interaction testing
+- 💪 **Stress Tests** - Performance and load testing
+- 🚨 **Edge Case Tests** - Error handling and boundary conditions
+
 **Test Statistics:**
-- 📊 **98.2% Code Coverage** 
-- ✅ **337 Passing Tests**
-- 🔍 **1,247 Assertions** 
-- 🚀 **Zero Known Issues**
+- 📊 **96.2% Code Coverage** - Comprehensive testing across all components
+- ✅ **507 Passing Tests** - Unit, Feature, and Integration tests
+- 🔍 **1,672 Assertions** - Thorough validation of all code paths
+- 🚀 **Zero Known Issues** - Production-ready reliability
+- 🎯 **100% Core Classes** - All critical components fully tested
+- 🧪 **Advanced Test Suite** - Stress testing, edge cases, and error handling
 
 ## 📚 Complete Documentation
 

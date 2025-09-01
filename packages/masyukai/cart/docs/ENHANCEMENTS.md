@@ -8,19 +8,21 @@ Based on the comparison with the `shopping-cart` package, we've implemented seve
 
 ### 1. Intuitive Method Aliases
 
-#### Shopping-Cart Style Method Names:
+#### Method Names and API:
 ```php
-// Before (still works)
-$cart->getContent();
-$cart->getSubTotal();
-$cart->getTotal();
-$cart->getTotalQuantity();
+// Cart Items Access
+$cart->getItems();     // Get cart items as CartCollection
+$cart->getConditions(); // Get cart conditions as CartConditionCollection
 
-// After (new aliases)
-$cart->content();      // More intuitive
-$cart->subtotal();     // Cleaner API
-$cart->total();        // Simpler
-$cart->count();        // Returns total quantity (shopping-cart style)
+// Complete Cart Data  
+$cart->getContent();   // Get complete cart data as array
+$cart->content();      // Alias for getContent() - complete cart data
+$cart->toArray();      // Alias for content() - complete cart data
+
+// Calculations (aliases available)
+$cart->getSubTotal();  // or $cart->subtotal()
+$cart->getTotal();     // or $cart->total()
+$cart->getTotalQuantity(); // or $cart->count()
 $cart->countItems();   // Returns unique items count
 ```
 
@@ -75,12 +77,12 @@ $discount = $item->discountAmount();   // Alias for getDiscountAmount()
 ### 6. Enhanced Collection Methods
 
 ```php
-$content = $cart->content();
+$items = $cart->getItems(); // Get items as CartCollection
 
 // Advanced filtering
-$bulkItems = $content->whereQuantityAbove(5);
-$midRange = $content->wherePriceBetween(10.00, 50.00);
-$electronics = $content->filterByAttribute('category', 'electronics');
+$bulkItems = $items->whereQuantityAbove(5);
+$midRange = $items->wherePriceBetween(10.00, 50.00);
+$electronics = $items->filterByAttribute('category', 'electronics');
 
 // Grouping and statistics
 $grouped = $content->groupByAttribute('category');
@@ -137,30 +139,41 @@ $cart->restore();  // Explicit restoration
 
 ## Migration Guide
 
-### From Shopping-Cart Package
+### Understanding the New API
 
 ```php
-// Shopping-cart code
-$items = Cart::content();
-$total = Cart::total();
-$count = Cart::count();
+// Get cart items for iteration and manipulation
+$items = Cart::getItems(); // Returns CartCollection of CartItem objects
+foreach ($items as $item) {
+    echo $item->name;
+}
 
-// Our enhanced package (same API!)
-$items = Cart::content();
+// Get complete cart data for display/export
+$cartData = Cart::content(); // Returns array with all cart information
+echo "Total: $" . $cartData['total'];
+echo "Items: " . $cartData['count'];
+
+// Get conditions separately if needed  
+$conditions = Cart::getConditions(); // Returns CartConditionCollection
+
+// Calculations
 $total = Cart::total();
 $count = Cart::count();
 
 // Plus additional features
-$stats = Cart::content()->getStatistics();
 $filtered = Cart::search(fn($item) => $item->price > 10);
 Cart::addDiscount('sale', '15%');
 ```
 
-### Backward Compatibility
+### Method Summary
 
-All existing method names continue to work:
+All methods are available with clear purposes:
 ```php
-// Still supported
+// Item access
+Cart::getItems();      // CartCollection of items
+Cart::getConditions(); // CartConditionCollection of conditions
+
+// Complete data
 $cart->getContent();
 $cart->getSubTotal();
 $cart->getTotal();

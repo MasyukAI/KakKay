@@ -277,7 +277,7 @@ class CartTransferService
         $toCart = Cart::instance($toId);
         
         // Validate all items before merging
-        foreach ($fromCart->content() as $item) {
+        foreach ($fromCart->getItems() as $item) {
             $this->validateItemSecurity($item);
         }
         
@@ -318,7 +318,7 @@ class CartController extends Controller
 {
     public function getCartData(): JsonResponse
     {
-        $cart = Cart::content()->map(function($item) {
+        $cart = Cart::getItems()->map(function($item) {
             return [
                 'id' => $item->id,
                 'name' => htmlspecialchars($item->name, ENT_QUOTES, 'UTF-8'),

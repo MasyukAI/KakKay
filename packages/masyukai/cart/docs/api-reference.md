@@ -276,8 +276,56 @@ Cart::clearItemConditions('product-1');
 
 ### Data Export
 
+#### `content(): array`
+Get complete cart content including items, conditions, totals, and metadata.
+
+```php
+$cartContent = Cart::content();
+// Returns:
+// [
+//     'instance' => 'default',
+//     'items' => [...], // Array of cart items
+//     'conditions' => [...], // Array of cart conditions  
+//     'subtotal' => 150.00,
+//     'subtotal_with_conditions' => 145.00,
+//     'total' => 158.25,
+//     'quantity' => 5,
+//     'count' => 3,
+//     'is_empty' => false
+// ]
+```
+
+#### `getContent(): array`
+Alias for `content()` method.
+
+```php
+$cartContent = Cart::getContent();
+```
+
+#### `getItems(): CartCollection`
+Get cart items only.
+
+```php
+$items = Cart::getItems();
+
+foreach ($items as $item) {
+    echo $item->name;
+}
+```
+
+#### `getConditions(): CartConditionCollection`
+Get cart conditions only.
+
+```php
+$conditions = Cart::getConditions();
+
+foreach ($conditions as $condition) {
+    echo $condition->getName();
+}
+```
+
 #### `toArray(): array`
-Convert cart to array.
+Convert cart to array (alias for `content()`).
 
 ```php
 $cartData = Cart::toArray();
@@ -747,7 +795,7 @@ class CheckoutService
         ]);
         
         // Create order items
-        foreach ($cart->content() as $item) {
+        foreach ($cart->getItems() as $item) {
             $order->items()->create([
                 'product_id' => $item->id,
                 'name' => $item->name,
@@ -776,7 +824,7 @@ class CartInventoryManager
         $cart = Cart::instance($instanceId);
         $issues = [];
         
-        foreach ($cart->content() as $item) {
+        foreach ($cart->getItems() as $item) {
             $product = Product::find($item->id);
             
             if (!$product) {
@@ -814,7 +862,7 @@ class CartInventoryManager
         $cart = Cart::instance($instanceId);
         $reservationId = Str::uuid();
         
-        foreach ($cart->content() as $item) {
+        foreach ($cart->getItems() as $item) {
             InventoryReservation::create([
                 'product_id' => $item->id,
                 'quantity' => $item->quantity,
@@ -841,7 +889,7 @@ class CurrencyCartManager
     {
         $rate = $this->getExchangeRate($fromCurrency, $toCurrency);
         
-        foreach (Cart::content() as $item) {
+        foreach (Cart::getItems() as $item) {
             $newPrice = $item->price * $rate;
             Cart::update($item->id, ['price' => $newPrice]);
         }
@@ -933,14 +981,14 @@ class SubscriptionCartManager
     
     public function calculateRecurringTotal(): float
     {
-        return Cart::content()
+        return Cart::getItems()
             ->reject(fn($item) => $item->getAttribute('one_time'))
             ->sum(fn($item) => $item->getPriceSumWithConditions());
     }
     
     public function calculateOneTimeTotal(): float
     {
-        return Cart::content()
+        return Cart::getItems()
             ->filter(fn($item) => $item->getAttribute('one_time'))
             ->sum(fn($item) => $item->getPriceSumWithConditions());
     }

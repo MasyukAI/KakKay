@@ -20,8 +20,12 @@ class HandleUserLogout implements ShouldQueue
     public function handle(Logout $event): void
     {
         // Optionally backup user cart to guest session
-        if (config('cart.migration.backup_guest_cart_on_logout', false)) {
-            $this->migrationService->backupUserCartToGuest($event->user->id, session()->getId());
+        if (config('cart.migration.backup_on_logout', false)) {
+            $this->migrationService->backupUserCartToGuest(
+                $event->user->getAuthIdentifier(), 
+                'default', 
+                session()->getId()
+            );
         }
 
         // Switch to guest cart instance

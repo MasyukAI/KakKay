@@ -67,15 +67,23 @@ Cart::add([
 
 ## Retrieving Items
 
-### Get All Items
+### Get Cart Data
 
 ```php
 // Get all cart items as a collection
-$items = Cart::getContent();
+$items = Cart::getItems();
 
 foreach ($items as $item) {
     echo $item->name . ' - $' . $item->price;
 }
+
+// Get complete cart data (items, conditions, totals, metadata)
+$cartData = Cart::getContent(); // or Cart::content()
+echo "Total: $" . $cartData['total'];
+echo "Items count: " . $cartData['count'];
+
+// Get only conditions
+$conditions = Cart::getConditions();
 ```
 
 ### Get Specific Item

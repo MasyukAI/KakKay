@@ -28,9 +28,9 @@ it('can debug cart manager instance behavior during operations', function () {
     // Now manually do what mergeCartInstances does
     Cart::setInstance('guest_123');
     echo "Source cart instance: " . Cart::instance() . "\n";
-    echo "Source cart content count: " . Cart::content()->count() . "\n";
+    echo "Source cart content count: " . Cart::getItems()->count() . "\n";
     
-    $sourceItems = Cart::content();
+    $sourceItems = Cart::getItems();
     
     foreach ($sourceItems as $sourceItem) {
         echo "Processing item: {$sourceItem->id} - {$sourceItem->name} - Qty: {$sourceItem->quantity}\n";
@@ -51,7 +51,7 @@ it('can debug cart manager instance behavior during operations', function () {
         
         echo "Added item. New item class: " . get_class($newItem) . "\n";
         echo "Target cart count after add: " . Cart::count() . "\n";
-        echo "Target cart content: " . Cart::content()->count() . " items\n";
+        echo "Target cart content: " . Cart::getItems()->count() . " items\n";
     }
     
     echo "Final user cart count: " . Cart::setInstance('user_1')->count() . "\n";

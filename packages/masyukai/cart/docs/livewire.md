@@ -104,7 +104,7 @@ class CartComponent extends Component
 
     public function refreshCart()
     {
-        $this->cartItems = Cart::getContent()->toArray();
+        $this->cartItems = Cart::getItems()->toArray();
         $this->cartTotal = Cart::getTotal();
         $this->cartCount = Cart::count();
     }
@@ -450,7 +450,7 @@ class CartBulkActions extends Component
     public function updatedSelectAll($value)
     {
         if ($value) {
-            $this->selectedItems = Cart::getContent()->pluck('id')->toArray();
+            $this->selectedItems = Cart::getItems()->pluck('id')->toArray();
         } else {
             $this->selectedItems = [];
         }
@@ -497,7 +497,7 @@ class CartBulkActions extends Component
     public function render()
     {
         return view('livewire.cart-bulk-actions', [
-            'cartItems' => Cart::getContent()
+            'cartItems' => Cart::getItems()
         ]);
     }
 }
@@ -525,7 +525,7 @@ new class extends Component {
 
     public function loadRecommendations()
     {
-        $cartItems = Cart::getContent();
+        $cartItems = Cart::getItems();
         $productIds = $cartItems->pluck('id')->toArray();
         
         // Load related products (implement your logic)
@@ -595,7 +595,7 @@ class AuthenticatedCart extends Component
         $userCart = Cart::instance('user_' . Auth::id());
         
         if (!$guestCart->isEmpty()) {
-            foreach ($guestCart->getContent() as $item) {
+            foreach ($guestCart->getItems() as $item) {
                 $userCart->add(
                     $item->id,
                     $item->name,

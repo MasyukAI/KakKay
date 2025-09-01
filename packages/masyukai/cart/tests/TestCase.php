@@ -77,7 +77,9 @@ abstract class TestCase extends Orchestra
         ]);
 
         // Configure cart settings for testing
-        $app['config']->set('cart.storage', 'session');
+        $app['config']->set('cart.storage', 'database');
+        $app['config']->set('cart.database.connection', 'testing');
+        $app['config']->set('cart.database.table', 'cart_storage_test');
         $app['config']->set('cart.events', true);
         $app['config']->set('cart.strict_validation', true);
     }

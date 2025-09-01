@@ -208,16 +208,16 @@ class OptimizedCart
 
 ```php
 // ❌ N+1 Query Problem
-foreach (Cart::content() as $item) {
+foreach (Cart::getItems() as $item) {
     $product = Product::find($item->id);
     echo $product->name;
 }
 
 // ✅ Single Query
-$productIds = Cart::content()->pluck('id');
+$productIds = Cart::getItems()->pluck('id');
 $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
 
-foreach (Cart::content() as $item) {
+foreach (Cart::getItems() as $item) {
     echo $products[$item->id]->name;
 }
 ```
@@ -339,7 +339,7 @@ class Cart
 {
     public function paginatedContent(int $perPage = 20): LengthAwarePaginator
     {
-        $items = $this->content();
+        $items = $this->getItems();
         $page = Paginator::resolveCurrentPage() ?: 1;
         $offset = ($page - 1) * $perPage;
         
@@ -360,7 +360,7 @@ class Cart
 // ❌ Loads all items into memory
 public function calculateTotal(): float
 {
-    $items = $this->content(); // Loads everything
+    $items = $this->getItems(); // Loads everything
     return $items->sum(fn($item) => $item->getTotal());
 }
 
@@ -536,7 +536,7 @@ location /cart {
 ```bash
 # Check storage performance
 php artisan tinker
->>> $start = microtime(true); Cart::content(); echo microtime(true) - $start;
+>>> $start = microtime(true); Cart::getItems(); echo microtime(true) - $start;
 ```
 
 **Memory Issues:**

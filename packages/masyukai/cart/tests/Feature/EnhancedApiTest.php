@@ -17,9 +17,16 @@ describe('Enhanced Cart API', function () {
         $this->cart->add('item1', 'Product 1', 10.00, 2);
         $this->cart->add('item2', 'Product 2', 15.00, 1);
 
-        // Test content() alias
+        // Test items() for item collection (CORRECTED: content() now returns full cart content)
+        $items = $this->cart->getItems();
+        expect($items)->toHaveCount(2);
+        
+        // Test content() returns complete cart content
         $content = $this->cart->content();
-        expect($content)->toHaveCount(2);
+        expect($content)->toBeArray()
+            ->and($content['items'])->toHaveCount(2)
+            ->and($content['count'])->toBe(2)
+            ->and($content['quantity'])->toBe(3);
 
         // Test count() for total quantity
         expect($this->cart->count())->toBe(3);
@@ -114,19 +121,19 @@ describe('Enhanced Cart API', function () {
         $this->cart->add('item2', 'Expensive Item', 50.00, 1);
         $this->cart->add('item3', 'Medium Item', 25.00, 2);
 
-        $content = $this->cart->content();
+        $items = $this->cart->getItems(); // CORRECTED: Use getItems() for collection methods
 
         // Test whereQuantityAbove
-        $bulkItems = $content->whereQuantityAbove(1);
+        $bulkItems = $items->whereQuantityAbove(1);
         expect($bulkItems)->toHaveCount(2);
 
         // Test wherePriceBetween
-        $midRangeItems = $content->wherePriceBetween(10.00, 30.00);
+        $midRangeItems = $items->wherePriceBetween(10.00, 30.00);
         expect($midRangeItems)->toHaveCount(1)
             ->and($midRangeItems->first()->name)->toBe('Medium Item');
 
         // Test statistics
-        $stats = $content->getStatistics();
+        $stats = $items->getStatistics();
         expect($stats['total_items'])->toBe(3)
             ->and($stats['total_quantity'])->toBe(6)
             ->and($stats['total_value'])->toBe(115.00); // 3*5 + 1*50 + 2*25 = 15 + 50 + 50 = 115
@@ -137,16 +144,16 @@ describe('Enhanced Cart API', function () {
         $this->cart->add('item2', 'Blue Shirt', 25.00, 1, ['category' => 'clothing', 'color' => 'blue']);
         $this->cart->add('item3', 'Red Hat', 15.00, 1, ['category' => 'accessories', 'color' => 'red']);
 
-        $content = $this->cart->content();
+        $items = $this->cart->getItems(); // CORRECTED: Use getItems() for collection methods
 
         // Group by category
-        $grouped = $content->groupByAttribute('category');
+        $grouped = $items->groupByAttribute('category');
         expect($grouped)->toHaveCount(2)
             ->and($grouped->get('clothing'))->toHaveCount(2)
             ->and($grouped->get('accessories'))->toHaveCount(1);
 
         // Group by color
-        $colorGrouped = $content->groupByAttribute('color');
+        $colorGrouped = $items->groupByAttribute('color');
         expect($colorGrouped->get('red'))->toHaveCount(2)
             ->and($colorGrouped->get('blue'))->toHaveCount(1);
     });

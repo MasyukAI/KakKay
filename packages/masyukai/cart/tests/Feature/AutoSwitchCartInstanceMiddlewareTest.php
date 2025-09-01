@@ -28,7 +28,7 @@ beforeEach(function () {
     Cart::setInstance('default'); // Reset to default
 });
 
-it('switches to user cart instance when user is authenticated', function () {
+it('preserves default instance when user is authenticated', function () {
     // Mock Auth facade
     Auth::shouldReceive('check')->andReturn(true);
     Auth::shouldReceive('id')->andReturn(1);
@@ -39,8 +39,8 @@ it('switches to user cart instance when user is authenticated', function () {
     $request->setLaravelSession($sessionStore);
     
     $next = function ($request) {
-        // During request processing, should be on user instance
-        expect(Cart::instance())->toBe('user_1');
+        // Instance name should remain 'default' - only identifier changes internally
+        expect(Cart::instance())->toBe('default');
         return response('test');
     };
 
@@ -49,27 +49,24 @@ it('switches to user cart instance when user is authenticated', function () {
 
     $response = $this->middleware->handle($request, $next);
 
-    // After middleware completes, should restore to original instance
-    expect(Cart::instance())->toBe('user_1');
+    // After middleware completes, should still be on default instance
+    // The middleware manages identifiers (who owns cart), not instance names (which cart)
+    expect(Cart::instance())->toBe('default');
     expect($response->getContent())->toBe('test');
 });
 
-it('switches to guest cart instance when user is not authenticated', function () {
+it('preserves default instance when user is not authenticated', function () {
     // Mock Auth facade
     Auth::shouldReceive('check')->andReturn(false);
     
     // Create request with proper session setup
     $request = Request::create('/test', 'GET');
     $sessionStore = app('session.store');
-    $sessionStore->put('test', 'value'); // Initialize session with some data
-    $sessionStore->setId('session_123'); // Set specific session ID
     $request->setLaravelSession($sessionStore);
     
     $next = function ($request) {
-        // During request processing, should be on guest instance based on actual session ID
-        $sessionId = $request->session()->getId();
-        $expectedInstance = "guest_{$sessionId}";
-        expect(Cart::instance())->toBe($expectedInstance);
+        // Instance name should remain 'default' for guests too
+        expect(Cart::instance())->toBe('default');
         return response('test');
     };
 
@@ -78,19 +75,17 @@ it('switches to guest cart instance when user is not authenticated', function ()
 
     $response = $this->middleware->handle($request, $next);
 
-    $sessionId = $request->session()->getId();
-
-    // After middleware completes, should restore to original instance
-    expect(Cart::instance())->toBe("guest_{$sessionId}");
+    // After middleware completes, should still be on default instance
+    expect(Cart::instance())->toBe('default');
     expect($response->getContent())->toBe('test');
 });
 
-it('restores original cart instance after request', function () {
+it('preserves custom instance names when set by developer', function () {
     // Mock Auth facade
     Auth::shouldReceive('check')->andReturn(true);
     Auth::shouldReceive('id')->andReturn(1);
     
-    // Set a custom instance before middleware
+    // Set a custom instance before middleware - this should be preserved
     Cart::setInstance('custom_instance');
     $originalInstance = Cart::instance();
     expect($originalInstance)->toBe('custom_instance');
@@ -101,19 +96,19 @@ it('restores original cart instance after request', function () {
     $request->setLaravelSession($sessionStore);
     
     $next = function ($request) {
-        // During request processing, should be on user instance
-        expect(Cart::instance())->toBe('user_1');
+        // Instance should remain as set by developer - middleware doesn't change it
+        expect(Cart::instance())->toBe('custom_instance');
         return response('test');
     };
 
     $response = $this->middleware->handle($request, $next);
 
-    // After middleware, should restore to original instance
-    expect(Cart::instance())->toBe('user_1');
+    // After middleware, should still be on custom instance
+    expect(Cart::instance())->toBe('custom_instance');
     expect($response->getContent())->toBe('test');
 });
 
-it('handles exceptions gracefully and restores instance', function () {
+it('handles exceptions gracefully without changing instances', function () {
     // Mock Auth facade
     Auth::shouldReceive('check')->andReturn(true);
     Auth::shouldReceive('id')->andReturn(1);
@@ -137,37 +132,33 @@ it('handles exceptions gracefully and restores instance', function () {
         expect($e->getMessage())->toBe('Test exception');
     }
 
-    // Should still restore to original instance even after exception
-    expect(Cart::instance())->toBe('user_1');
+    // Should remain on original instance even after exception
+    expect(Cart::instance())->toBe('custom_instance');
 });
 
-it('works with no active cart instance initially', function () {
+it('works with default cart instance', function () {
     // Mock Auth facade
     Auth::shouldReceive('check')->andReturn(false);
     
-    // Clear any active instance
-    Cart::setInstance('default'); // Reset to default
+    // Start with default instance
+    Cart::setInstance('default');
     
     // Create request with proper session setup
     $request = Request::create('/test', 'GET');
     $sessionStore = app('session.store');
-    $sessionStore->put('test', 'value'); // Initialize session with some data
-    $sessionStore->setId('session_456'); // Set specific session ID
+    $sessionStore->put('test', 'value'); 
+    $sessionStore->setId('session_456'); 
     $request->setLaravelSession($sessionStore);
     
     $next = function ($request) {
-        // Should switch to guest instance based on session ID
-        $sessionId = $request->session()->getId();
-        $expectedInstance = "guest_{$sessionId}";
-        expect(Cart::instance())->toBe($expectedInstance);
+        // Should remain on default instance
+        expect(Cart::instance())->toBe('default');
         return response('test');
     };
 
     $response = $this->middleware->handle($request, $next);
 
-    $sessionId = $request->session()->getId();
-
-    // After middleware completes, should restore to original instance
-    expect(Cart::instance())->toBe("guest_{$sessionId}");
+    // After middleware completes, should still be default
+    expect(Cart::instance())->toBe('default');
     expect($response->getContent())->toBe('test');
 });

@@ -94,10 +94,12 @@ class CartConditionCollection extends Collection
      */
     public function applyAll(float $value): float
     {
-        return $this->sortByOrder()->reduce(
+        $result = $this->sortByOrder()->reduce(
             fn (float $carry, CartCondition $condition) => $condition->apply($carry),
             $value
         );
+
+        return (float) $result;
     }
 
     /**
@@ -151,7 +153,7 @@ class CartConditionCollection extends Collection
      */
     public static function fromArray(array $conditions): static
     {
-        $collection = new static();
+        $collection = new static;
 
         foreach ($conditions as $condition) {
             if ($condition instanceof CartCondition) {

@@ -204,13 +204,8 @@ trait ManagesConditions
     private function applyCartConditions(float $subtotal): float
     {
         $conditions = $this->getConditions()
-            ->filter(fn (CartCondition $condition) => in_array($condition->getTarget(), ['total', 'subtotal']))
-            ->sortBy('order');
+            ->filter(fn (CartCondition $condition) => in_array($condition->getTarget(), ['total', 'subtotal']));
 
-        foreach ($conditions as $condition) {
-            $subtotal = $condition->apply($subtotal);
-        }
-
-        return $subtotal;
+        return $conditions->applyAll($subtotal);
     }
 }

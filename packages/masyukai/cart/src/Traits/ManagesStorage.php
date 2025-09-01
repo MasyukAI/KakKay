@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MasyukAI\Cart\Traits;
 
 use MasyukAI\Cart\Collections\CartCollection;
+use MasyukAI\Cart\Conditions\CartCondition;
 use MasyukAI\Cart\Models\CartItem;
 
 trait ManagesStorage
@@ -49,16 +50,45 @@ trait ManagesStorage
     }
 
     /**
+     * Get complete cart content (items, conditions, totals, etc.)
+     */
+    public function content(): array
+    {
+        return [
+            'instance' => $this->instanceName,
+            'items' => $this->getItems()->toArray(),
+            'conditions' => $this->getConditions()->toArray(),
+            'subtotal' => $this->getSubTotal(),
+            'subtotal_with_conditions' => $this->getSubTotalWithConditions(),
+            'total' => $this->getTotal(),
+            'quantity' => $this->getTotalQuantity(),
+            'count' => $this->countItems(), // Number of unique items, not total quantity
+            'is_empty' => $this->isEmpty(),
+        ];
+    }
+
+    /**
+     * Get complete cart content (alias for content())
+     */
+    public function getContent(): array
+    {
+        return $this->content();
+    }
+
+    /**
      * Merge another cart instance with this one (shopping-cart style)
      */
     public function merge(string $instanceName): static
     {
-        // Get the content from the other instance
-        $otherContent = $this->storage->getItems($this->getIdentifier(), $instanceName);
+        // Get the items from the other instance
+        $otherItems = $this->storage->getItems($this->getIdentifier(), $instanceName);
 
-        if ($otherContent && is_array($otherContent)) {
-            // Convert array back to CartCollection items and merge
-            foreach ($otherContent as $itemData) {
+        // Get the conditions from the other instance
+        $otherConditions = $this->storage->getConditions($this->getIdentifier(), $instanceName);
+
+        // Merge items
+        if ($otherItems && is_array($otherItems)) {
+            foreach ($otherItems as $itemData) {
                 if (is_array($itemData) && isset($itemData['id'])) {
                     $this->add(
                         $itemData['id'],
@@ -71,10 +101,20 @@ trait ManagesStorage
                     );
                 }
             }
-
-            // Clear the merged cart
-            $this->storage->forget($this->getIdentifier(), $instanceName);
         }
+
+        // Merge conditions
+        if ($otherConditions && is_array($otherConditions)) {
+            foreach ($otherConditions as $conditionData) {
+                if (is_array($conditionData) && isset($conditionData['name'])) {
+                    $condition = CartCondition::fromArray($conditionData);
+                    $this->condition($condition);
+                }
+            }
+        }
+
+        // Clear the merged cart
+        $this->storage->forget($this->getIdentifier(), $instanceName);
 
         return $this;
     }
@@ -102,21 +142,11 @@ trait ManagesStorage
     }
 
     /**
-     * Convert cart to array
+     * Convert cart to array (alias for content())
      */
     public function toArray(): array
     {
-        return [
-            'instance' => $this->instanceName,
-            'items' => $this->getItems()->toArray(),
-            'conditions' => $this->getConditions()->toArray(),
-            'subtotal' => $this->getSubTotal(),
-            'subtotal_with_conditions' => $this->getSubTotalWithConditions(),
-            'total' => $this->getTotal(),
-            'quantity' => $this->getTotalQuantity(),
-            'count' => $this->count(),
-            'is_empty' => $this->isEmpty(),
-        ];
+        return $this->content();
     }
 
     /**

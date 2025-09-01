@@ -277,7 +277,7 @@ Cart::condition($conditions);
 ### Shipping Calculator
 
 ```php
-$weight = Cart::getContent()->sum(fn($item) => $item->getAttribute('weight', 0) * $item->quantity);
+$weight = Cart::getItems()->sum(fn($item) => $item->getAttribute('weight', 0) * $item->quantity);
 $shippingCost = match(true) {
     $weight <= 1 => 5.99,
     $weight <= 5 => 9.99, 

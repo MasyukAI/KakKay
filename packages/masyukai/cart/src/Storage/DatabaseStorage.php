@@ -16,30 +16,48 @@ readonly class DatabaseStorage implements StorageInterface
     }
 
     /**
-     * Retrieve an item from storage
+     * Retrieve cart items from storage
      */
-    public function get(string $key): mixed
+    public function getItems(string $identifier, string $instance): array
     {
         $record = $this->database->table($this->table)
-            ->where('key', $key)
+            ->where('identifier', $identifier)
+            ->where('instance', $instance)
             ->first();
 
-        if (!$record) {
-            return null;
+        if (! $record || ! $record->items) {
+            return [];
         }
 
-        return unserialize($record->value);
+        return json_decode($record->items, true) ?: [];
     }
 
     /**
-     * Store an item in storage
+     * Retrieve cart conditions from storage
      */
-    public function put(string $key, mixed $value): void
+    public function getConditions(string $identifier, string $instance): array
+    {
+        $record = $this->database->table($this->table)
+            ->where('identifier', $identifier)
+            ->where('instance', $instance)
+            ->first();
+
+        if (! $record || ! $record->conditions) {
+            return [];
+        }
+
+        return json_decode($record->conditions, true) ?: [];
+    }
+
+    /**
+     * Store cart items in storage
+     */
+    public function putItems(string $identifier, string $instance, array $items): void
     {
         $this->database->table($this->table)->updateOrInsert(
-            ['key' => $key],
+            ['identifier' => $identifier, 'instance' => $instance],
             [
-                'value' => serialize($value),
+                'items' => json_encode($items),
                 'updated_at' => now(),
                 'created_at' => now(),
             ]
@@ -47,30 +65,84 @@ readonly class DatabaseStorage implements StorageInterface
     }
 
     /**
-     * Check if an item exists in storage
+     * Store cart conditions in storage
      */
-    public function has(string $key): bool
+    public function putConditions(string $identifier, string $instance, array $conditions): void
+    {
+        $this->database->table($this->table)->updateOrInsert(
+            ['identifier' => $identifier, 'instance' => $instance],
+            [
+                'conditions' => json_encode($conditions),
+                'updated_at' => now(),
+                'created_at' => now(),
+            ]
+        );
+    }
+
+    /**
+     * Store both items and conditions in storage
+     */
+    public function putBoth(string $identifier, string $instance, array $items, array $conditions): void
+    {
+        $this->database->table($this->table)->updateOrInsert(
+            ['identifier' => $identifier, 'instance' => $instance],
+            [
+                'items' => json_encode($items),
+                'conditions' => json_encode($conditions),
+                'updated_at' => now(),
+                'created_at' => now(),
+            ]
+        );
+    }
+
+    /**
+     * Check if cart exists in storage
+     */
+    public function has(string $identifier, string $instance): bool
     {
         return $this->database->table($this->table)
-            ->where('key', $key)
+            ->where('identifier', $identifier)
+            ->where('instance', $instance)
             ->exists();
     }
 
     /**
-     * Remove an item from storage
+     * Remove cart from storage
      */
-    public function forget(string $key): void
+    public function forget(string $identifier, string $instance): void
     {
         $this->database->table($this->table)
-            ->where('key', $key)
+            ->where('identifier', $identifier)
+            ->where('instance', $instance)
             ->delete();
     }
 
     /**
-     * Clear all items from storage
+     * Clear all carts from storage
      */
     public function flush(): void
     {
         $this->database->table($this->table)->truncate();
+    }
+
+    /**
+     * Get all instances for a specific identifier
+     */
+    public function getInstances(string $identifier): array
+    {
+        return $this->database->table($this->table)
+            ->where('identifier', $identifier)
+            ->pluck('instance')
+            ->toArray();
+    }
+
+    /**
+     * Remove all instances for a specific identifier
+     */
+    public function forgetIdentifier(string $identifier): void
+    {
+        $this->database->table($this->table)
+            ->where('identifier', $identifier)
+            ->delete();
     }
 }

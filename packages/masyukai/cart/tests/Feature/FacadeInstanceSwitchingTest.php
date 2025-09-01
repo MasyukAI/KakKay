@@ -35,7 +35,7 @@ it('can test facade instance switching behavior', function () {
     // Correct approach - don't assign the result
     Cart::setInstance('guest_123');
     echo "Guest instance: " . Cart::instance() . "\n";
-    $sourceItems = Cart::content();
+    $sourceItems = Cart::getItems();
     echo "Source items count: " . $sourceItems->count() . "\n";
     
     Cart::setInstance('user_1');

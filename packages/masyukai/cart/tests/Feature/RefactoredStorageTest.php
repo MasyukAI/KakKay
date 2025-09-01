@@ -245,9 +245,5 @@ describe('Refactored Cart Storage Structure', function () {
         $storage->putBoth('test-id-2', 'test-instance', $itemsArray, $conditionsArray);
         expect($storage->getItems('test-id-2', 'test-instance'))->toBe($itemsArray);
         expect($storage->getConditions('test-id-2', 'test-instance'))->toBe($conditionsArray);
-
-        // Legacy methods should still work for backward compatibility
-        $storage->put('test-id-3', 'test-instance', 'legacy-content');
-        expect($storage->get('test-id-3', 'test-instance'))->toBe('legacy-content');
     });
 });

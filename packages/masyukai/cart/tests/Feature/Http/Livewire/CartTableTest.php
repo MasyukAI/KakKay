@@ -6,12 +6,12 @@ use Livewire\Livewire;
 use MasyukAI\Cart\Facades\Cart;
 use MasyukAI\Cart\Http\Livewire\CartTable;
 
-beforeEach(function () {
-    Cart::session(config('cart.session.key'))->flush();
+beforeEach(function (): void {
+    Cart::clear();
 });
 
-afterEach(function () {
-    Cart::session(config('cart.session.key'))->flush();
+afterEach(function (): void {
+    Cart::clear();
 });
 
 it('can be instantiated with default values', function (): void {

@@ -244,7 +244,7 @@ class DemoController extends Controller
         $originalStrategy = config('cart.migration.merge_strategy');
         config(['cart.migration.merge_strategy' => $request->strategy]);
         
-        $success = $migrationService->migrateGuestCartToUser('guest_demo', 999); // Demo user ID
+        $success = $migrationService->migrateGuestCartToUser(999, 'default', 'guest_demo'); // Demo user ID
         
         // Restore original strategy
         config(['cart.migration.merge_strategy' => $originalStrategy]);

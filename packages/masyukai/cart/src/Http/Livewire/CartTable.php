@@ -17,7 +17,7 @@ class CartTable extends Component
     #[Computed]
     public function items()
     {
-        return Cart::getContent();
+        return Cart::getItems();
     }
 
     #[Computed]
@@ -30,6 +30,7 @@ class CartTable extends Component
     {
         if ($quantity <= 0) {
             $this->removeItem($itemId);
+
             return;
         }
 
@@ -54,9 +55,10 @@ class CartTable extends Component
     public function decreaseQuantity(string $itemId): void
     {
         $item = Cart::get($itemId);
-        
+
         if ($item && $item->quantity <= 1) {
             $this->removeItem($itemId);
+
             return;
         }
 
@@ -68,11 +70,11 @@ class CartTable extends Component
     public function removeItem(string $itemId): void
     {
         $item = Cart::remove($itemId);
-        
+
         if ($item) {
             $this->dispatch('cart-updated');
             $this->dispatch('item-removed', itemId: $itemId, itemName: $item->name);
-            
+
             session()->flash('cart.message', "Removed \"{$item->name}\" from cart.");
         }
     }
@@ -82,13 +84,13 @@ class CartTable extends Component
         Cart::clear();
         $this->dispatch('cart-updated');
         $this->dispatch('cart-cleared');
-        
+
         session()->flash('cart.message', 'Cart cleared successfully.');
     }
 
     public function toggleConditions(): void
     {
-        $this->showConditions = !$this->showConditions;
+        $this->showConditions = ! $this->showConditions;
     }
 
     #[On('cart-updated')]

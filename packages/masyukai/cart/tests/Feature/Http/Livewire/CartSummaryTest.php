@@ -71,7 +71,7 @@ it('computes cart array correctly', function (): void {
         ->and($cartData['subtotal'])->toBe(150.0)
         ->and($cartData['total'])->toBe(150.0)
         ->and($cartData['quantity'])->toBe(2)
-        ->and($cartData['count'])->toBe(2)
+        ->and($cartData['count'])->toBe(1)
         ->and($cartData['is_empty'])->toBeFalse();
 });
 
