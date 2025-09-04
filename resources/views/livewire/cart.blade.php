@@ -28,7 +28,7 @@ new class extends Component {
                 return [
                     'id' => (string) $item->id,
                     'name' => (string) $item->name,
-                    'price' => (int) ($item->price / 100), // Convert to cents
+                    'price' => (int) $item->price, // Keep in cents, don't convert
                     'quantity' => (int) $item->quantity,
                     'slug' => $item->attributes->get('slug', 'cara-bercinta'),
                 ];
@@ -166,7 +166,7 @@ new class extends Component {
         Cart::add(
             (string) $product->id,
             $product->name,
-            $product->price ,// Convert from cents to dollars for the cart
+            $product->price, // Keep the price as-is (in cents)
             1,
             ['slug' => $product->slug]
         );
@@ -188,7 +188,7 @@ new class extends Component {
     #[Computed]
     public function getSubtotal(): int
     {
-        return (int) (Cart::getSubTotal()) / 100; // Convert to cents
+        return (int) Cart::getSubTotal(); // Keep in cents
     }
 
     // #[Computed]
@@ -200,7 +200,7 @@ new class extends Component {
     #[Computed]
     public function getShipping(): int
     {
-        return 990 / 100; // $99.00 in cents
+        return 990; // $9.90 in cents
     }
 
     // #[Computed]
@@ -217,7 +217,7 @@ new class extends Component {
 
     public function formatPrice(int $cents): string
     {
-        return 'RM' . number_format($cents, 2);
+        return 'RM' . number_format($cents / 100, 2);
     }
 }; ?>
 

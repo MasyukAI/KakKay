@@ -16,68 +16,98 @@ class ChipSendService
 
     public function listAccounts(): array
     {
-        return $this->client->get('accounts/');
+        return $this->client->get('send/accounts');
     }
 
-    public function createSendInstruction(array $data): SendInstruction
-    {
-        $response = $this->client->post('send_instructions/', $data);
-        
+    public function createSendInstruction(
+        int $amountInCents,
+        string $currency,
+        string $recipientBankAccountId,
+        string $description,
+        ?string $reference = null,
+        ?string $email = null
+    ): SendInstruction {
+        $data = [
+            'bank_account_id' => $recipientBankAccountId,
+            'amount' => number_format($amountInCents / 100, 2, '.', ''),
+            'description' => $description,
+        ];
+
+        if ($reference) {
+            $data['reference'] = $reference;
+        }
+
+        if ($email) {
+            $data['email'] = $email;
+        }
+
+        $response = $this->client->post('send/send_instructions', $data);
+
         return SendInstruction::fromArray($response);
     }
 
     public function getSendInstruction(string $id): SendInstruction
     {
-        $response = $this->client->get("send_instructions/{$id}/");
-        
+        $response = $this->client->get("send/send_instructions/{$id}");
+
         return SendInstruction::fromArray($response);
     }
 
     public function listSendInstructions(array $filters = []): array
     {
         $queryString = http_build_query($filters);
-        $endpoint = 'send_instructions/' . ($queryString ? "?{$queryString}" : '');
-        
+        $endpoint = 'send/send_instructions'.($queryString ? "?{$queryString}" : '');
+
         return $this->client->get($endpoint);
     }
 
-    public function createBankAccount(array $data): BankAccount
-    {
-        $response = $this->client->post('bank_accounts/', $data);
-        
+    public function createBankAccount(
+        string $bankCode,
+        string $accountNumber,
+        string $accountHolderName,
+        string $accountType = 'savings'
+    ): BankAccount {
+        $data = [
+            'bank_code' => $bankCode,
+            'account_number' => $accountNumber,
+            'name' => $accountHolderName,
+        ];
+
+        $response = $this->client->post('send/bank_accounts', $data);
+
         return BankAccount::fromArray($response);
     }
 
     public function getBankAccount(string $id): BankAccount
     {
-        $response = $this->client->get("bank_accounts/{$id}/");
-        
+        $response = $this->client->get("send/bank_accounts/{$id}");
+
         return BankAccount::fromArray($response);
     }
 
     public function listBankAccounts(array $filters = []): array
     {
         $queryString = http_build_query($filters);
-        $endpoint = 'bank_accounts/' . ($queryString ? "?{$queryString}" : '');
-        
+        $endpoint = 'send/bank_accounts'.($queryString ? "?{$queryString}" : '');
+
         return $this->client->get($endpoint);
     }
 
     public function updateBankAccount(string $id, array $data): BankAccount
     {
-        $response = $this->client->put("bank_accounts/{$id}/", $data);
-        
+        $response = $this->client->put("send/bank_accounts/{$id}", $data);
+
         return BankAccount::fromArray($response);
     }
 
     public function deleteBankAccount(string $id): void
     {
-        $this->client->delete("bank_accounts/{$id}/");
+        $this->client->delete("send/bank_accounts/{$id}");
     }
 
     public function validateBankAccount(array $data): array
     {
-        return $this->client->post('bank_accounts/validate/', $data);
+        return $this->client->post('send/bank_accounts/validate', $data);
     }
 
     public function increaseSendLimit(int $amount, string $reason): array
@@ -87,34 +117,34 @@ class ChipSendService
             'reason' => $reason,
         ];
 
-        return $this->client->post('send_limit/increase/', $data);
+        return $this->client->post('send/send_limits/increase', $data);
     }
 
     public function cancelSendInstruction(string $id): SendInstruction
     {
-        $response = $this->client->post("send_instructions/{$id}/cancel/");
-        
+        $response = $this->client->post("send/send_instructions/{$id}/cancel");
+
         return SendInstruction::fromArray($response['data'] ?? $response);
     }
 
     public function verifyBankAccount(string $id): BankAccount
     {
-        $response = $this->client->post("bank_accounts/{$id}/verify/");
-        
+        $response = $this->client->post("send/bank_accounts/{$id}/verify");
+
         return BankAccount::fromArray($response['data'] ?? $response);
     }
 
     public function getBalance(): array
     {
-        $response = $this->client->get('balance/');
-        
+        $response = $this->client->get('send/balance');
+
         return $response['data'] ?? $response;
     }
 
     public function getSendLimits(): array
     {
-        $response = $this->client->get('send_limits/');
-        
+        $response = $this->client->get('send/send_limits');
+
         return $response['data'] ?? $response;
     }
 
@@ -129,8 +159,8 @@ class ChipSendService
             'business_justification' => $businessJustification,
         ];
 
-        $response = $this->client->post('send_limits/increase/', $data);
-        
+        $response = $this->client->post('send/send_limits/increase', $data);
+
         return $response['data'] ?? $response;
     }
 }

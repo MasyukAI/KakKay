@@ -25,16 +25,14 @@ class ChipWebhookController extends Controller
     public function handle(Request $request): Response
     {
         try {
-            // Verify webhook signature
-            if (! $this->webhookService->verifySignature($request)) {
+            // Verify signature
+            if (!$this->webhookService->verifySignature($request)) {
                 Log::error('CHIP webhook signature verification failed');
-
                 return response('Unauthorized', 401);
             }
 
-            $payload = $this->webhookService->parsePayload($request->getContent());
-            $eventType = $payload->event ?? 'unknown';
-            $purchaseData = $payload->data ?? [];
+            $eventType = $request->input('event');
+            $purchaseData = $request->input('data', []);
 
             Log::info('CHIP webhook received', [
                 'event' => $eventType,

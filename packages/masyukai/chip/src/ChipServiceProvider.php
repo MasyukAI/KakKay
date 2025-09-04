@@ -57,7 +57,7 @@ class ChipServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton(WebhookService::class, function ($app) {
-            return new WebhookService();
+            return new WebhookService;
         });
 
         $this->app->alias(ChipCollectService::class, 'chip.collect');
@@ -69,12 +69,10 @@ class ChipServiceProvider extends ServiceProvider
     {
         $this->app->singleton(ChipCollectClient::class, function () {
             return new ChipCollectClient(
-                apiKey: config('chip.collect.api_key'),
-                brandId: config('chip.collect.brand_id'),
-                environment: 'production', // Set a default since both use same URL
-                baseUrl: config('chip.collect.base_url'),
-                timeout: config('chip.collect.timeout', 30),
-                retryConfig: config('chip.collect.retry', [
+                config('chip.collect.api_key'),
+                config('chip.collect.brand_id'),
+                config('chip.collect.timeout', 30),
+                config('chip.collect.retry', [
                     'attempts' => 3,
                     'delay' => 1000,
                 ])
@@ -82,16 +80,23 @@ class ChipServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton(ChipSendClient::class, function () {
-            $environment = config('chip.send.environment');
-            $baseUrl = config("chip.send.base_url.{$environment}");
-            
+            $environment = config('chip.send.environment', 'sandbox');
+            $baseUrls = config('chip.send.base_url', [
+                'sandbox' => 'https://staging-api.chip-in.asia/api',
+                'production' => 'https://api.chip-in.asia/api',
+            ]);
+            $baseUrl = $baseUrls[$environment] ?? $baseUrls['sandbox'];
+
             return new ChipSendClient(
                 apiKey: config('chip.send.api_key'),
                 apiSecret: config('chip.send.api_secret'),
                 environment: $environment,
                 baseUrl: $baseUrl,
-                timeout: config('chip.send.timeout'),
-                retryConfig: config('chip.send.retry')
+                timeout: config('chip.send.timeout', 30),
+                retryConfig: config('chip.send.retry', [
+                    'attempts' => 3,
+                    'delay' => 1000,
+                ])
             );
         });
     }

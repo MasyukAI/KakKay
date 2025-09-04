@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\Payment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class CheckoutController extends Controller
@@ -16,7 +17,7 @@ class CheckoutController extends Controller
     {
         // Get order info from query parameters or session
         $purchaseId = $request->get('purchase_id') ?? session('chip_purchase_id');
-        $orderNumber = $request->get('reference');
+        $orderNumber = $request->get('reference') ?? $request->get('order_number');
 
         $order = null;
         $payment = null;
@@ -31,6 +32,17 @@ class CheckoutController extends Controller
             $payment = $order?->latestPayment();
         }
 
+        // If we have an order but it's still pending, check if we should update it
+        if ($order && $payment && $payment->status === 'pending') {
+            // This could be a redirect back from CHIP before webhook is processed
+            // We'll keep it as pending until webhook confirms payment
+            Log::info('Order accessed via success URL but payment still pending', [
+                'order_id' => $order->id,
+                'payment_id' => $payment->id,
+                'purchase_id' => $purchaseId,
+            ]);
+        }
+
         // Clear session data
         session()->forget(['chip_purchase_id', 'checkout_data']);
 
@@ -38,6 +50,7 @@ class CheckoutController extends Controller
             'order' => $order ?? null,
             'payment' => $payment ?? null,
             'purchaseId' => $purchaseId ?? null,
+            'isCompleted' => $payment && $payment->status === 'completed',
         ]);
     }
 

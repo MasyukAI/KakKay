@@ -6,6 +6,10 @@ use Illuminate\Support\Facades\Route;
 use Masyukai\Chip\Http\Controllers\WebhookController;
 
 Route::prefix('chip')->group(function () {
+    Route::post('webhook', [WebhookController::class, 'handle'])
+        ->name('chip.webhook.handle')
+        ->middleware(config('chip.webhooks.middleware', ['api']));
+
     Route::post('webhooks/{webhook_id}', [WebhookController::class, 'handle'])
         ->name('chip.webhooks.handle')
         ->middleware(config('chip.webhooks.middleware', ['api']));

@@ -9,115 +9,84 @@ use Carbon\Carbon;
 class SendInstruction
 {
     public function __construct(
-        public readonly string $id,
-        public readonly string $type,
-        public readonly int $created_on,
-        public readonly int $updated_on,
-        public readonly int $amount,
-        public readonly string $currency,
-        public readonly string $status,
-        public readonly array $recipient,
-        public readonly ?string $reference,
+        public readonly int $id,
+        public readonly int $bank_account_id,
+        public readonly string $amount,
+        public readonly string $state,
+        public readonly ?string $email,
         public readonly ?string $description,
-        public readonly ?int $executed_on,
-        public readonly ?array $error,
-        // Additional properties for test compatibility
-        public readonly ?string $recipient_bank_account_id,
-        public readonly ?array $recipient_details,
-        public readonly ?string $failure_reason,
+        public readonly ?string $reference,
+        public readonly string $created_at,
+        public readonly string $updated_at,
     ) {}
 
     public static function fromArray(array $data): self
     {
         return new self(
-            id: $data['id'],
-            type: $data['type'] ?? 'send_instruction',
-            created_on: $data['created_on'] ?? strtotime($data['created_at'] ?? 'now'),
-            updated_on: $data['updated_on'] ?? strtotime($data['updated_at'] ?? 'now'),
-            amount: $data['amount'] ?? $data['amount_in_cents'] ?? 0,
-            currency: $data['currency'] ?? 'MYR',
-            status: $data['status'] ?? 'pending',
-            recipient: is_array($data['recipient'] ?? []) ? ($data['recipient'] ?? []) : ['account_holder_name' => $data['recipient'] ?? ''],
-            reference: $data['reference'] ?? null,
+            id: (int) $data['id'],
+            bank_account_id: (int) $data['bank_account_id'],
+            amount: (string) $data['amount'],
+            state: $data['state'] ?? 'pending',
+            email: $data['email'] ?? null,
             description: $data['description'] ?? null,
-            executed_on: $data['executed_on'] ?? null,
-            error: $data['error'] ?? null,
-            recipient_bank_account_id: $data['recipient_bank_account_id'] ?? null,
-            recipient_details: $data['recipient_details'] ?? null,
-            failure_reason: $data['failure_reason'] ?? null,
+            reference: $data['reference'] ?? null,
+            created_at: $data['created_at'],
+            updated_at: $data['updated_at'],
         );
-    }
-
-    // Compatibility properties for tests
-    public function __get($name)
-    {
-        return match($name) {
-            'amountInCents' => $this->amount,
-            'recipientName' => $this->recipient['account_holder_name'] ?? null,
-            'recipientAccount' => $this->recipient['account_number'] ?? null,
-            'recipientBankAccountId' => $this->recipient_bank_account_id,
-            'recipientDetails' => $this->recipient_details,
-            'failureReason' => $this->failure_reason ?? $this->error['message'] ?? null,
-            'completedAt' => $this->executed_on ? Carbon::createFromTimestamp($this->executed_on) : null,
-            default => null,
-        };
-    }
-
-    public function __isset($name): bool
-    {
-        return in_array($name, ['amountInCents', 'recipientName', 'recipientAccount', 'recipientBankAccountId', 'recipientDetails', 'failureReason', 'completedAt']);
     }
 
     public function getCreatedAt(): Carbon
     {
-        return Carbon::createFromTimestamp($this->created_on);
+        return Carbon::parse($this->created_at);
     }
 
     public function getUpdatedAt(): Carbon
     {
-        return Carbon::createFromTimestamp($this->updated_on);
+        return Carbon::parse($this->updated_at);
     }
 
-    public function getExecutedAt(): ?Carbon
+    public function getAmountInMajorUnits(): float
     {
-        return $this->executed_on ? Carbon::createFromTimestamp($this->executed_on) : null;
+        return (float) $this->amount;
     }
 
-    public function getAmountInCurrency(): float
+    public function getAmountInMinorUnits(): int
     {
-        return $this->amount / 100;
+        return (int) (((float) $this->amount) * 100);
     }
 
     public function isCompleted(): bool
     {
-        return $this->status === 'completed';
+        return $this->state === 'completed';
     }
 
-    public function isFailed(): bool
+    public function isCancelled(): bool
     {
-        return $this->status === 'failed';
+        return $this->state === 'cancelled';
     }
 
     public function isPending(): bool
     {
-        return $this->status === 'pending';
+        return $this->state === 'pending';
+    }
+
+    public function isFailed(): bool
+    {
+        return $this->state === 'failed';
     }
 
     public function toArray(): array
     {
         return [
             'id' => $this->id,
-            'type' => $this->type,
-            'created_on' => $this->created_on,
-            'updated_on' => $this->updated_on,
+            'bank_account_id' => $this->bank_account_id,
             'amount' => $this->amount,
-            'currency' => $this->currency,
-            'status' => $this->status,
-            'recipient' => $this->recipient,
-            'reference' => $this->reference,
+            'state' => $this->state,
+            'email' => $this->email,
             'description' => $this->description,
-            'executed_on' => $this->executed_on,
-            'error' => $this->error,
+            'reference' => $this->reference,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

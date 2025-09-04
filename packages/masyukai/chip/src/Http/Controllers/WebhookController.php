@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
+use Masyukai\Chip\DataObjects\Webhook;
 use Masyukai\Chip\Events\WebhookReceived;
 use Masyukai\Chip\Http\Requests\WebhookRequest;
 use Masyukai\Chip\Services\WebhookService;
@@ -32,11 +33,13 @@ class WebhookController extends Controller
 
             // Dispatch the webhook event
             if (config('chip.events.dispatch_webhook_events')) {
-                event(new WebhookReceived(
-                    eventType: $payload->event_type ?? 'unknown',
-                    payload: $payload,
-                    headers: $headers
-                ));
+                $webhook = Webhook::fromArray([
+                    'event' => $payload->event ?? 'unknown',
+                    'data' => (array) $payload,
+                    'timestamp' => now()->toISOString(),
+                ]);
+
+                event(new WebhookReceived($webhook));
             }
 
             return response('OK', 200);
@@ -57,14 +60,14 @@ class WebhookController extends Controller
             $signature = $request->header('X-Signature');
             $payload = $request->getContent();
 
-            if (!$signature || !$payload) {
+            if (! $signature || ! $payload) {
                 return response('Missing signature or payload', 400);
             }
 
             // Verify signature using general public key
             $publicKey = $this->webhookService->getPublicKey();
-            
-            if (!$this->webhookService->verifySignature($payload, $signature, $publicKey)) {
+
+            if (! $this->webhookService->verifySignature($payload, $signature, $publicKey)) {
                 return response('Invalid signature', 401);
             }
 
@@ -77,11 +80,13 @@ class WebhookController extends Controller
 
             // Dispatch the webhook event
             if (config('chip.events.dispatch_webhook_events')) {
-                event(new WebhookReceived(
-                    eventType: 'purchase.success',
-                    payload: $parsedPayload,
-                    headers: $request->headers->all()
-                ));
+                $webhook = Webhook::fromArray([
+                    'event' => 'purchase.success',
+                    'data' => (array) $parsedPayload,
+                    'timestamp' => now()->toISOString(),
+                ]);
+
+                event(new WebhookReceived($webhook));
             }
 
             return response('OK', 200);

@@ -9,79 +9,58 @@ use Carbon\Carbon;
 class BankAccount
 {
     public function __construct(
-        public readonly string $id,
-        public readonly string $type,
-        public readonly int $created_on,
-        public readonly int $updated_on,
+        public readonly int $id,
+        public readonly string $status,
         public readonly string $account_number,
         public readonly string $bank_code,
-        public readonly string $account_name,
-        public readonly string $status,
-        public readonly ?array $validation_data,
-        // Additional properties for test compatibility
-        public readonly ?string $account_holder_name,
-        public readonly ?string $account_type,
-        public readonly ?bool $is_active,
-        public readonly ?bool $is_verified,
+        public readonly ?int $group_id,
+        public readonly string $name,
+        public readonly ?string $reference,
+        public readonly string $created_at,
+        public readonly bool $is_debiting_account,
+        public readonly bool $is_crediting_account,
+        public readonly string $updated_at,
+        public readonly ?string $deleted_at,
+        public readonly ?string $rejection_reason,
     ) {}
 
     public static function fromArray(array $data): self
     {
         return new self(
-            id: $data['id'],
-            type: $data['type'] ?? 'bank_account',
-            created_on: $data['created_on'] ?? strtotime($data['created_at'] ?? 'now'),
-            updated_on: $data['updated_on'] ?? strtotime($data['updated_at'] ?? 'now'),
+            id: (int) $data['id'],
+            status: $data['status'] ?? 'pending',
             account_number: $data['account_number'] ?? '',
             bank_code: $data['bank_code'] ?? '',
-            account_name: $data['account_name'] ?? '',
-            status: $data['status'] ?? 'active',
-            validation_data: $data['validation_data'] ?? null,
-            account_holder_name: $data['account_holder_name'] ?? null,
-            account_type: $data['account_type'] ?? null,
-            is_active: $data['is_active'] ?? null,
-            is_verified: $data['is_verified'] ?? null,
+            group_id: isset($data['group_id']) ? (int) $data['group_id'] : null,
+            name: $data['name'] ?? '',
+            reference: $data['reference'] ?? null,
+            created_at: $data['created_at'],
+            is_debiting_account: (bool) ($data['is_debiting_account'] ?? false),
+            is_crediting_account: (bool) ($data['is_crediting_account'] ?? false),
+            updated_at: $data['updated_at'],
+            deleted_at: $data['deleted_at'] ?? null,
+            rejection_reason: $data['rejection_reason'] ?? null,
         );
-    }
-
-    // Compatibility properties for tests
-    public function __get($name)
-    {
-        return match($name) {
-            'bankCode' => $this->bank_code,
-            'accountNumber' => $this->account_number,
-            'accountName' => $this->account_name,
-            'accountHolderName' => $this->account_holder_name,
-            'accountType' => $this->account_type,
-            'isActive' => $this->is_active ?? ($this->status === 'active'),
-            'isVerified' => $this->is_verified ?? ($this->status === 'verified'),
-            default => null,
-        };
-    }
-
-    public function __isset($name): bool
-    {
-        return in_array($name, ['bankCode', 'accountNumber', 'accountName', 'accountHolderName', 'accountType', 'isActive', 'isVerified']);
     }
 
     public function getCreatedAt(): Carbon
     {
-        return Carbon::createFromTimestamp($this->created_on);
+        return Carbon::parse($this->created_at);
     }
 
     public function getUpdatedAt(): Carbon
     {
-        return Carbon::createFromTimestamp($this->updated_on);
+        return Carbon::parse($this->updated_at);
     }
 
-    public function isActive(): bool
+    public function getDeletedAt(): ?Carbon
     {
-        return $this->status === 'active';
+        return $this->deleted_at ? Carbon::parse($this->deleted_at) : null;
     }
 
-    public function isValidated(): bool
+    public function isVerified(): bool
     {
-        return $this->status === 'validated';
+        return $this->status === 'verified';
     }
 
     public function isPending(): bool
@@ -89,18 +68,42 @@ class BankAccount
         return $this->status === 'pending';
     }
 
+    public function isRejected(): bool
+    {
+        return $this->status === 'rejected';
+    }
+
+    public function isDeleted(): bool
+    {
+        return $this->deleted_at !== null;
+    }
+
+    public function canReceivePayments(): bool
+    {
+        return $this->is_crediting_account && $this->isVerified() && !$this->isDeleted();
+    }
+
+    public function canSendPayments(): bool
+    {
+        return $this->is_debiting_account && $this->isVerified() && !$this->isDeleted();
+    }
+
     public function toArray(): array
     {
         return [
             'id' => $this->id,
-            'type' => $this->type,
-            'created_on' => $this->created_on,
-            'updated_on' => $this->updated_on,
+            'status' => $this->status,
             'account_number' => $this->account_number,
             'bank_code' => $this->bank_code,
-            'account_name' => $this->account_name,
-            'status' => $this->status,
-            'validation_data' => $this->validation_data,
+            'group_id' => $this->group_id,
+            'name' => $this->name,
+            'reference' => $this->reference,
+            'created_at' => $this->created_at,
+            'is_debiting_account' => $this->is_debiting_account,
+            'is_crediting_account' => $this->is_crediting_account,
+            'updated_at' => $this->updated_at,
+            'deleted_at' => $this->deleted_at,
+            'rejection_reason' => $this->rejection_reason,
         ];
     }
 }

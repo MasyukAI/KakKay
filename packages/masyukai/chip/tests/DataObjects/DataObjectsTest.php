@@ -65,52 +65,66 @@ describe('Purchase DataObject', function () {
 describe('Payment DataObject', function () {
     it('creates a payment from array data', function () {
         $data = [
-            'id' => 'payment_123',
-            'purchase_id' => 'purchase_123',
-            'amount_in_cents' => 10000,
+            'is_outgoing' => false,
+            'payment_type' => 'purchase',
+            'amount' => 10000,
             'currency' => 'MYR',
-            'status' => 'successful',
-            'method' => 'fpx',
-            'paid_at' => '2024-01-01T15:30:00Z',
-            'transaction_fee_in_cents' => 50,
-            'metadata' => ['gateway_reference' => 'TXN_456']
+            'net_amount' => 9950,
+            'fee_amount' => 50,
+            'pending_amount' => 0,
+            'pending_unfreeze_on' => null,
+            'description' => 'Test payment',
+            'paid_on' => 1640995800, // timestamp
+            'remote_paid_on' => 1640995800
         ];
 
         $payment = Payment::fromArray($data);
 
-        expect($payment->id)->toBe('payment_123');
-        expect($payment->purchaseId)->toBe('purchase_123');
-        expect($payment->amountInCents)->toBe(10000);
-        expect($payment->status)->toBe('successful');
-        expect($payment->method)->toBe('fpx');
-        expect($payment->transactionFeeInCents)->toBe(50);
+        expect($payment->payment_type)->toBe('purchase');
+        expect($payment->amount)->toBe(10000);
+        expect($payment->net_amount)->toBe(9950);
+        expect($payment->fee_amount)->toBe(50);
+        expect($payment->currency)->toBe('MYR');
+        expect($payment->description)->toBe('Test payment');
+        expect($payment->paid_on)->toBe(1640995800);
     });
 
     it('handles null payment method', function () {
         $payment = Payment::fromArray([
-            'id' => 'payment_123',
-            'purchase_id' => 'purchase_123',
-            'amount_in_cents' => 10000,
+            'is_outgoing' => false,
+            'payment_type' => 'purchase',
+            'amount' => 10000,
             'currency' => 'MYR',
-            'status' => 'pending'
+            'net_amount' => 10000,
+            'fee_amount' => 0,
+            'pending_amount' => 0,
+            'pending_unfreeze_on' => null,
+            'description' => null,
+            'paid_on' => null,
+            'remote_paid_on' => null
         ]);
 
-        expect($payment->method)->toBeNull();
-        expect($payment->paidAt)->toBeNull();
+        expect($payment->description)->toBeNull();
+        expect($payment->paid_on)->toBeNull();
     });
 
     it('calculates net amount after fees', function () {
         $payment = Payment::fromArray([
-            'id' => 'payment_123',
-            'purchase_id' => 'purchase_123',
-            'amount_in_cents' => 10000,
+            'is_outgoing' => false,
+            'payment_type' => 'purchase',
+            'amount' => 10000,
             'currency' => 'MYR',
-            'status' => 'successful',
-            'transaction_fee_in_cents' => 50
+            'net_amount' => 9950,
+            'fee_amount' => 50,
+            'pending_amount' => 0,
+            'pending_unfreeze_on' => null,
+            'description' => 'Test payment',
+            'paid_on' => 1640995800,
+            'remote_paid_on' => 1640995800
         ]);
 
-        expect($payment->getNetAmountInCents())->toBe(9950);
         expect($payment->getNetAmountInMajorUnits())->toBe(99.50);
+        expect($payment->getFeeAmountInMajorUnits())->toBe(0.50);
     });
 });
 
@@ -165,95 +179,97 @@ describe('Client DataObject', function () {
 describe('SendInstruction DataObject', function () {
     it('creates a send instruction from array data', function () {
         $data = [
-            'id' => 'send_123',
-            'reference' => 'TRANSFER_001',
-            'amount_in_cents' => 50000,
-            'currency' => 'MYR',
-            'recipient_bank_account_id' => 'bank_account_456',
-            'recipient_details' => [
-                'name' => 'Jane Smith',
-                'bank' => 'Maybank'
-            ],
+            'id' => 50,
+            'bank_account_id' => 1,
+            'amount' => '500.00',
+            'state' => 'completed',
+            'email' => 'test@example.com',
             'description' => 'Payment for services',
-            'status' => 'pending',
-            'metadata' => ['invoice_id' => 'INV_789'],
-            'sent_at' => '2024-01-01T14:00:00Z',
-            'completed_at' => null,
-            'failure_reason' => null
+            'reference' => 'TRANSFER_001',
+            'created_at' => '2023-07-20T10:41:25.190Z',
+            'updated_at' => '2023-07-20T10:41:25.302Z',
         ];
 
         $instruction = SendInstruction::fromArray($data);
 
-        expect($instruction->id)->toBe('send_123');
-        expect($instruction->reference)->toBe('TRANSFER_001');
-        expect($instruction->amountInCents)->toBe(50000);
-        expect($instruction->currency)->toBe('MYR');
-        expect($instruction->recipientBankAccountId)->toBe('bank_account_456');
+        expect($instruction->id)->toBe(50);
+        expect($instruction->bank_account_id)->toBe(1);
+        expect($instruction->amount)->toBe('500.00');
+        expect($instruction->state)->toBe('completed');
+        expect($instruction->email)->toBe('test@example.com');
         expect($instruction->description)->toBe('Payment for services');
-        expect($instruction->status)->toBe('pending');
-        expect($instruction->recipientDetails)->toBe([
-            'name' => 'Jane Smith',
-            'bank' => 'Maybank'
-        ]);
+        expect($instruction->reference)->toBe('TRANSFER_001');
+        expect($instruction->created_at)->toBe('2023-07-20T10:41:25.190Z');
     });
 
     it('handles failed send instruction', function () {
         $instruction = SendInstruction::fromArray([
-            'id' => 'send_123',
-            'amount_in_cents' => 50000,
-            'currency' => 'MYR',
-            'recipient_bank_account_id' => 'bank_account_456',
-            'status' => 'failed',
-            'failure_reason' => 'Insufficient funds'
+            'id' => 51,
+            'bank_account_id' => 2,
+            'amount' => '250.00',
+            'state' => 'failed',
+            'email' => 'test2@example.com',
+            'description' => 'Another payment',
+            'reference' => 'TRANSFER_002',
+            'created_at' => '2023-07-20T11:41:25.190Z',
+            'updated_at' => '2023-07-20T11:41:25.302Z',
         ]);
 
-        expect($instruction->status)->toBe('failed');
-        expect($instruction->failureReason)->toBe('Insufficient funds');
-        expect($instruction->completedAt)->toBeNull();
+        expect($instruction->state)->toBe('failed');
+        expect($instruction->isFailed())->toBeTrue();
+        expect($instruction->isCompleted())->toBeFalse();
     });
 });
 
 describe('BankAccount DataObject', function () {
     it('creates a bank account from array data', function () {
         $data = [
-            'id' => 'bank_account_123',
+            'id' => 84,
+            'status' => 'verified',
+            'account_number' => '157380111111',
             'bank_code' => 'MBBEMYKL',
-            'account_number' => '1234567890123456',
-            'account_holder_name' => 'John Doe',
-            'account_type' => 'savings',
-            'is_active' => true,
-            'is_verified' => true,
-            'verified_at' => '2024-01-01T10:00:00Z',
-            'verification_details' => [
-                'method' => 'micro_deposit',
-                'verified_by' => 'system'
-            ]
+            'group_id' => null,
+            'name' => 'Ahmad Pintu',
+            'reference' => null,
+            'created_at' => '2023-07-20T08:59:10.766Z',
+            'is_debiting_account' => false,
+            'is_crediting_account' => false,
+            'updated_at' => '2023-07-20T08:59:10.766Z',
+            'deleted_at' => null,
+            'rejection_reason' => null,
         ];
 
         $account = BankAccount::fromArray($data);
 
-        expect($account->id)->toBe('bank_account_123');
-        expect($account->bankCode)->toBe('MBBEMYKL');
-        expect($account->accountNumber)->toBe('1234567890123456');
-        expect($account->accountHolderName)->toBe('John Doe');
-        expect($account->accountType)->toBe('savings');
-        expect($account->isActive)->toBeTrue();
-        expect($account->isVerified)->toBeTrue();
+        expect($account->id)->toBe(84);
+        expect($account->status)->toBe('verified');
+        expect($account->account_number)->toBe('157380111111');
+        expect($account->bank_code)->toBe('MBBEMYKL');
+        expect($account->name)->toBe('Ahmad Pintu');
+        expect($account->isVerified())->toBeTrue();
+        expect($account->isPending())->toBeFalse();
     });
 
     it('handles unverified bank account', function () {
         $account = BankAccount::fromArray([
-            'id' => 'bank_account_123',
+            'id' => 85,
+            'status' => 'pending',
+            'account_number' => '157380222222',
             'bank_code' => 'MBBEMYKL',
-            'account_number' => '1234567890123456',
-            'account_holder_name' => 'John Doe',
-            'is_active' => true,
-            'is_verified' => false
+            'group_id' => null,
+            'name' => 'Siti Aminah',
+            'reference' => null,
+            'created_at' => '2023-07-20T09:59:10.766Z',
+            'is_debiting_account' => false,
+            'is_crediting_account' => false,
+            'updated_at' => '2023-07-20T09:59:10.766Z',
+            'deleted_at' => null,
+            'rejection_reason' => null,
         ]);
 
-        expect($account->isVerified)->toBeFalse();
-        expect($account->verifiedAt)->toBeNull();
-        expect($account->verificationDetails)->toBeNull();
+        expect($account->isVerified())->toBeFalse();
+        expect($account->isPending())->toBeTrue();
+        expect($account->deleted_at)->toBeNull();
     });
 });
 

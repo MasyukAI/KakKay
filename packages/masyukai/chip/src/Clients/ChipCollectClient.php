@@ -4,19 +4,16 @@ declare(strict_types=1);
 
 namespace Masyukai\Chip\Clients;
 
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Http\Client\Response;
 use Masyukai\Chip\Exceptions\ChipApiException;
-use Masyukai\Chip\Exceptions\ChipValidationException;
 
 class ChipCollectClient
 {
     public function __construct(
         protected string $apiKey,
         protected string $brandId,
-        protected string $environment = 'sandbox',
-        protected string $baseUrl = '',
         protected int $timeout = 30,
         protected array $retryConfig = []
     ) {
@@ -25,17 +22,8 @@ class ChipCollectClient
 
     protected function getBaseUrl(): string
     {
-        if (!empty($this->baseUrl)) {
-            return $this->baseUrl;
-        }
-        
-        // Fallback to environment-based URL
-        $baseUrls = [
-            'sandbox' => 'https://gate-sandbox.chip-in.asia',
-            'production' => 'https://gate.chip-in.asia',
-        ];
-        
-        return $baseUrls[$this->environment] ?? $baseUrls['sandbox'];
+        // CHIP Collect uses a single API endpoint - the API key determines sandbox vs production
+        return 'https://gate.chip-in.asia/api/v1';
     }
 
     /**
@@ -43,7 +31,7 @@ class ChipCollectClient
      */
     public function request(string $method, string $endpoint, array $data = []): array
     {
-        $url = $this->getBaseUrl() . '/' . ltrim($endpoint, '/');
+        $url = $this->getBaseUrl().'/'.ltrim($endpoint, '/');
 
         if (config('chip.logging.log_requests')) {
             Log::channel(config('chip.logging.channel'))
@@ -61,10 +49,10 @@ class ChipCollectClient
                 'Accept' => 'application/json',
                 'User-Agent' => config('chip.defaults.creator_agent', 'MasyukAI/Chip Laravel Package'),
             ])
-            ->timeout($this->timeout)
-            ->send($method, $url, [
-                'json' => $data
-            ]);
+                ->timeout($this->timeout)
+                ->send($method, $url, [
+                    'json' => $data,
+                ]);
 
             if (config('chip.logging.log_responses')) {
                 Log::channel(config('chip.logging.channel'))
@@ -84,7 +72,7 @@ class ChipCollectClient
         }
     }
 
-    protected function handleFailedResponse(Response $response): void
+    protected function handleFailedResponse(Response $response): never
     {
         $statusCode = $response->status();
         $responseData = $response->json() ?? [];
@@ -93,7 +81,7 @@ class ChipCollectClient
         throw new ChipApiException($message, $statusCode, $responseData);
     }
 
-    protected function handleException(\Exception $e): void
+    protected function handleException(\Exception $e): never
     {
         Log::channel(config('chip.logging.channel'))
             ->error('CHIP API Request Failed', [
@@ -105,7 +93,7 @@ class ChipCollectClient
             throw $e;
         }
 
-        throw new ChipApiException('API request failed: ' . $e->getMessage(), 0, [], $e);
+        throw new ChipApiException('API request failed: '.$e->getMessage(), 0, [], $e);
     }
 
     public function get(string $endpoint): array
@@ -136,10 +124,5 @@ class ChipCollectClient
     public function getBrandId(): string
     {
         return $this->brandId;
-    }
-
-    public function getEnvironment(): string
-    {
-        return $this->environment;
     }
 }

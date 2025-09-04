@@ -9,17 +9,20 @@ return new class extends Migration
     public function up(): void
     {
         $tablePrefix = config('chip.database.table_prefix', 'chip_');
-        $connection = config('chip.database.connection');
 
-        Schema::connection($connection)->create($tablePrefix . 'send_instructions', function (Blueprint $table) {
+        Schema::create($tablePrefix . 'send_instructions', function (Blueprint $table) {
             $table->id();
             $table->string('instruction_id')->unique();
+            $table->integer('bank_account_id');
+            $table->string('amount');
+            $table->string('state')->default('pending');
+            $table->string('email')->nullable();
+            $table->text('description')->nullable();
             $table->string('reference')->nullable();
             $table->integer('amount_in_cents');
             $table->string('currency', 3);
             $table->string('recipient_bank_account_id');
             $table->json('recipient_details')->nullable();
-            $table->text('description')->nullable();
             $table->string('status');
             $table->json('metadata')->nullable();
             $table->timestamp('sent_at')->nullable();
@@ -38,8 +41,7 @@ return new class extends Migration
     public function down(): void
     {
         $tablePrefix = config('chip.database.table_prefix', 'chip_');
-        $connection = config('chip.database.connection');
 
-        Schema::connection($connection)->dropIfExists($tablePrefix . 'send_instructions');
+        Schema::dropIfExists($tablePrefix . 'send_instructions');
     }
 };

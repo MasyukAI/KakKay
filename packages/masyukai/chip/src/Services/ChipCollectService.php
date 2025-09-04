@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Masyukai\Chip\Services;
 
 use Illuminate\Support\Facades\Log;
+use Masyukai\Chip\Clients\ChipCollectClient;
 use Masyukai\Chip\DataObjects\Client;
 use Masyukai\Chip\DataObjects\ClientDetails;
 use Masyukai\Chip\DataObjects\CurrencyConversion;
@@ -18,29 +19,11 @@ use Masyukai\Chip\Exceptions\ChipValidationException;
 
 class ChipCollectService
 {
-    private string $apiKey;
-
-    private string $brandId;
-
-    private string $baseUrl;
-
-    private $client;
-
-    public function __construct()
-    {
-        $this->apiKey = config('chip.collect.api_key');
-        $this->brandId = config('chip.collect.brand_id');
-        $this->baseUrl = config('chip.collect.base_url');
-
-        $this->client = new \GuzzleHttp\Client([
-            'base_uri' => $this->baseUrl,
-            'timeout' => config('chip.collect.timeout', 30),
-            'headers' => [
-                'Authorization' => 'Bearer '.$this->apiKey,
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json',
-            ],
-        ]);
+    public function __construct(
+        protected ChipCollectClient $client,
+        protected ?WebhookService $webhookService = null
+    ) {
+        //
     }
 
     /**
@@ -51,11 +34,7 @@ class ChipCollectService
         $this->validatePurchaseData($data);
 
         try {
-            $response = $this->client->post('purchases/', [
-                'json' => $data,
-            ]);
-
-            $responseData = json_decode($response->getBody()->getContents(), true);
+            $responseData = $this->client->post('purchases/', $data);
 
             return $this->mapToPurchase($responseData);
         } catch (\Exception $e) {
@@ -73,9 +52,7 @@ class ChipCollectService
     public function getPurchase(string $purchaseId): Purchase
     {
         try {
-            $response = $this->client->get("purchases/{$purchaseId}/");
-
-            $responseData = json_decode($response->getBody()->getContents(), true);
+            $responseData = $this->client->get("purchases/{$purchaseId}/");
 
             return $this->mapToPurchase($responseData);
         } catch (\Exception $e) {
@@ -93,9 +70,7 @@ class ChipCollectService
     public function cancelPurchase(string $purchaseId): Purchase
     {
         try {
-            $response = $this->client->post("purchases/{$purchaseId}/cancel/");
-
-            $responseData = json_decode($response->getBody()->getContents(), true);
+            $responseData = $this->client->post("purchases/{$purchaseId}/cancel/");
 
             return $this->mapToPurchase($responseData);
         } catch (\Exception $e) {
@@ -118,11 +93,7 @@ class ChipCollectService
         }
 
         try {
-            $response = $this->client->post("purchases/{$purchaseId}/refund/", [
-                'json' => $data,
-            ]);
-
-            $responseData = json_decode($response->getBody()->getContents(), true);
+            $responseData = $this->client->post("purchases/{$purchaseId}/refund/", $data);
 
             return $this->mapToPurchase($responseData);
         } catch (\Exception $e) {
@@ -144,12 +115,291 @@ class ChipCollectService
             $queryString = http_build_query($filters);
             $endpoint = 'payment_methods/'.($queryString ? '?'.$queryString : '');
 
-            $response = $this->client->get($endpoint);
-
-            return json_decode($response->getBody()->getContents(), true);
+            return $this->client->get($endpoint);
         } catch (\Exception $e) {
             Log::error('Failed to get CHIP payment methods', [
                 'filters' => $filters,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Charge a purchase using a saved token
+     */
+    public function chargePurchase(string $purchaseId, string $recurringToken): Purchase
+    {
+        try {
+            $data = ['recurring_token' => $recurringToken];
+            $responseData = $this->client->post("purchases/{$purchaseId}/charge/", $data);
+
+            return $this->mapToPurchase($responseData);
+        } catch (\Exception $e) {
+            Log::error('Failed to charge CHIP purchase', [
+                'purchase_id' => $purchaseId,
+                'recurring_token' => $recurringToken,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Capture a previously authorized payment
+     */
+    public function capturePurchase(string $purchaseId, ?int $amount = null): Purchase
+    {
+        try {
+            $data = [];
+            if ($amount !== null) {
+                $data['amount'] = $amount;
+            }
+
+            $responseData = $this->client->post("purchases/{$purchaseId}/capture/", $data);
+
+            return $this->mapToPurchase($responseData);
+        } catch (\Exception $e) {
+            Log::error('Failed to capture CHIP purchase', [
+                'purchase_id' => $purchaseId,
+                'amount' => $amount,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Release funds on hold
+     */
+    public function releasePurchase(string $purchaseId): Purchase
+    {
+        try {
+            $responseData = $this->client->post("purchases/{$purchaseId}/release/");
+
+            return $this->mapToPurchase($responseData);
+        } catch (\Exception $e) {
+            Log::error('Failed to release CHIP purchase', [
+                'purchase_id' => $purchaseId,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Mark a purchase as paid
+     */
+    public function markPurchaseAsPaid(string $purchaseId, ?int $paidOn = null): Purchase
+    {
+        try {
+            $data = [];
+            if ($paidOn !== null) {
+                $data['paid_on'] = $paidOn;
+            }
+
+            $responseData = $this->client->post("purchases/{$purchaseId}/mark_as_paid/", $data);
+
+            return $this->mapToPurchase($responseData);
+        } catch (\Exception $e) {
+            Log::error('Failed to mark CHIP purchase as paid', [
+                'purchase_id' => $purchaseId,
+                'paid_on' => $paidOn,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Resend invoice for a purchase
+     */
+    public function resendInvoice(string $purchaseId): Purchase
+    {
+        try {
+            $responseData = $this->client->post("purchases/{$purchaseId}/resend_invoice/");
+
+            return $this->mapToPurchase($responseData);
+        } catch (\Exception $e) {
+            Log::error('Failed to resend CHIP purchase invoice', [
+                'purchase_id' => $purchaseId,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Delete a recurring token
+     */
+    public function deleteRecurringToken(string $purchaseId): void
+    {
+        try {
+            $this->client->delete("purchases/{$purchaseId}/recurring_token/");
+        } catch (\Exception $e) {
+            Log::error('Failed to delete CHIP recurring token', [
+                'purchase_id' => $purchaseId,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
+    }
+
+    // Client Management Methods
+
+    /**
+     * Create a client
+     */
+    public function createClient(array $data): Client
+    {
+        try {
+            $responseData = $this->client->post('clients/', $data);
+
+            return Client::fromArray($responseData);
+        } catch (\Exception $e) {
+            Log::error('Failed to create CHIP client', [
+                'error' => $e->getMessage(),
+                'data' => $data,
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Retrieve a client by ID
+     */
+    public function getClient(string $clientId): Client
+    {
+        try {
+            $responseData = $this->client->get("clients/{$clientId}/");
+
+            return Client::fromArray($responseData);
+        } catch (\Exception $e) {
+            Log::error('Failed to retrieve CHIP client', [
+                'client_id' => $clientId,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * List all clients
+     */
+    public function listClients(array $filters = []): array
+    {
+        try {
+            $queryString = http_build_query($filters);
+            $endpoint = 'clients/'.($queryString ? '?'.$queryString : '');
+
+            return $this->client->get($endpoint);
+        } catch (\Exception $e) {
+            Log::error('Failed to list CHIP clients', [
+                'filters' => $filters,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Update a client
+     */
+    public function updateClient(string $clientId, array $data): Client
+    {
+        try {
+            $responseData = $this->client->put("clients/{$clientId}/", $data);
+
+            return Client::fromArray($responseData);
+        } catch (\Exception $e) {
+            Log::error('Failed to update CHIP client', [
+                'client_id' => $clientId,
+                'error' => $e->getMessage(),
+                'data' => $data,
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Partially update a client
+     */
+    public function partialUpdateClient(string $clientId, array $data): Client
+    {
+        try {
+            $responseData = $this->client->patch("clients/{$clientId}/", $data);
+
+            return Client::fromArray($responseData);
+        } catch (\Exception $e) {
+            Log::error('Failed to partially update CHIP client', [
+                'client_id' => $clientId,
+                'error' => $e->getMessage(),
+                'data' => $data,
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Delete a client
+     */
+    public function deleteClient(string $clientId): void
+    {
+        try {
+            $this->client->delete("clients/{$clientId}/");
+        } catch (\Exception $e) {
+            Log::error('Failed to delete CHIP client', [
+                'client_id' => $clientId,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * List recurring tokens for a client
+     */
+    public function listClientRecurringTokens(string $clientId): array
+    {
+        try {
+            return $this->client->get("clients/{$clientId}/recurring_tokens/");
+        } catch (\Exception $e) {
+            Log::error('Failed to list CHIP client recurring tokens', [
+                'client_id' => $clientId,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Retrieve a specific recurring token for a client
+     */
+    public function getClientRecurringToken(string $clientId, string $tokenId): array
+    {
+        try {
+            return $this->client->get("clients/{$clientId}/recurring_tokens/{$tokenId}/");
+        } catch (\Exception $e) {
+            Log::error('Failed to retrieve CHIP client recurring token', [
+                'client_id' => $clientId,
+                'token_id' => $tokenId,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Delete a recurring token for a client
+     */
+    public function deleteClientRecurringToken(string $clientId, string $tokenId): void
+    {
+        try {
+            $this->client->delete("clients/{$clientId}/recurring_tokens/{$tokenId}/");
+        } catch (\Exception $e) {
+            Log::error('Failed to delete CHIP client recurring token', [
+                'client_id' => $clientId,
+                'token_id' => $tokenId,
                 'error' => $e->getMessage(),
             ]);
             throw $e;
@@ -172,7 +422,7 @@ class ChipCollectService
                     : $product, $products),
                 'currency' => $options['currency'] ?? config('chip.defaults.currency', 'MYR'),
             ],
-            'brand_id' => $this->brandId,
+            'brand_id' => $this->client->getBrandId(),
             'send_receipt' => $options['send_receipt'] ?? true,
             'success_redirect' => $options['success_redirect'] ?? config('chip.defaults.success_redirect', '') ?: '',
             'failure_redirect' => $options['failure_redirect'] ?? config('chip.defaults.failure_redirect', '') ?: '',
@@ -231,8 +481,8 @@ class ChipCollectService
         return new Purchase(
             id: $response['id'],
             type: $response['type'],
-            created_on: $response['created_on'],
-            updated_on: $response['updated_on'],
+            created_on: (int) $response['created_on'],
+            updated_on: (int) $response['updated_on'],
             client: ClientDetails::fromArray($response['client']),
             purchase: PurchaseDetails::fromArray($response['purchase']),
             brand_id: $response['brand_id'],
@@ -275,5 +525,15 @@ class ChipCollectService
             marked_as_paid: $response['marked_as_paid'] ?? false,
             order_id: $response['order_id'] ?? null,
         );
+    }
+
+    /**
+     * Get the public key for webhook signature verification
+     */
+    public function getPublicKey(): string
+    {
+        // This would typically come from the CHIP API or configuration
+        // For now, return a configured public key
+        return config('chip.webhooks.public_key') ?: 'default_public_key_for_testing';
     }
 }

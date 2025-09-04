@@ -133,9 +133,11 @@ class WebhookService
             ]);
 
         // Dispatch generic webhook event
-        $webhook = new \Masyukai\Chip\DataObjects\Webhook();
-        $webhook->event = $event;
-        $webhook->data = $data;
+        $webhook = \Masyukai\Chip\DataObjects\Webhook::fromArray([
+            'event' => $event,
+            'data' => $data,
+            'timestamp' => now()->toISOString(),
+        ]);
         Event::dispatch(new WebhookReceived($webhook));
 
         // Handle specific events

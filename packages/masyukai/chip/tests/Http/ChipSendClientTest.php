@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Http;
 use Masyukai\Chip\Exceptions\ChipApiException;
+use Masyukai\Chip\Exceptions\ChipValidationException;
 use Masyukai\Chip\Clients\ChipSendClient;
 
 beforeEach(function () {
@@ -16,8 +17,9 @@ describe('ChipSendClient Authentication', function () {
 
         Http::assertSent(function ($request) {
             $headers = $request->headers();
-            return isset($headers['X-Signature'][0]) &&
-                   isset($headers['X-Timestamp'][0]) &&
+            return isset($headers['epoch'][0]) &&
+                   isset($headers['checksum'][0]) &&
+                   isset($headers['Authorization'][0]) &&
                    $headers['Content-Type'][0] === 'application/json';
         });
     });
@@ -28,14 +30,13 @@ describe('ChipSendClient Authentication', function () {
         $this->client->post('/test', ['key' => 'value']);
 
         Http::assertSent(function ($request) {
-            $timestamp = $request->header('X-Timestamp')[0];
-            $signature = $request->header('X-Signature')[0];
-            $body = $request->body();
+            $epoch = $request->header('epoch')[0];
+            $checksum = $request->header('checksum')[0];
             
-            $payload = $timestamp . $body;
-            $expectedSignature = hash_hmac('sha256', $payload, 'test_secret_key');
+            // The checksum should be a hash of the epoch with the API secret
+            $expectedChecksum = hash_hmac('sha256', $epoch, 'test_secret_key');
             
-            return $signature === $expectedSignature;
+            return $checksum === $expectedChecksum;
         });
     });
 
@@ -45,8 +46,8 @@ describe('ChipSendClient Authentication', function () {
         $this->client->get('/test');
 
         Http::assertSent(function ($request) {
-            $signature = $request->header('X-Signature')[0];
-            return is_string($signature) && strlen($signature) === 64; // SHA256 hex length
+            $checksum = $request->header('checksum')[0];
+            return is_string($checksum) && strlen($checksum) === 64; // SHA256 hex length
         });
     });
 });
@@ -75,7 +76,7 @@ describe('ChipSendClient Request Methods', function () {
 });
 
 describe('ChipSendClient Error Handling', function () {
-    it('throws ChipApiException with proper error details', function () {
+    it('throws ChipValidationException with proper error details', function () {
         Http::fake(['*' => Http::response([
             'error' => 'Invalid amount',
             'code' => 'INVALID_AMOUNT'
@@ -83,11 +84,16 @@ describe('ChipSendClient Error Handling', function () {
 
         try {
             $this->client->get('/test');
-            $this->fail('Expected ChipApiException to be thrown');
-        } catch (ChipApiException $e) {
+            $this->fail('Expected ChipValidationException to be thrown');
+        } catch (ChipValidationException $e) {
             expect($e->getMessage())->toBe('Invalid amount');
             expect($e->getStatusCode())->toBe(400);
-            expect($e->getErrorDetails())->toBe(['code' => 'INVALID_AMOUNT']);
+            expect($e->getErrorDetails())->toBe([
+                'validation_errors' => [
+                    'error' => 'Invalid amount',
+                    'code' => 'INVALID_AMOUNT'
+                ]
+            ]);
         }
     });
 
@@ -106,12 +112,12 @@ describe('ChipSendClient URL Building', function () {
         $this->client->get('/test');
 
         Http::assertSent(function ($request) {
-            return str_contains($request->url(), 'api-sandbox.chip-in.asia');
+            return str_contains($request->url(), 'staging-api.chip-in.asia');
         });
     });
 
     it('uses production URL in live mode', function () {
-        $liveClient = new ChipSendClient('live_api_key', 'live_secret_key', false);
+        $liveClient = new ChipSendClient('live_api_key', 'live_secret_key', 'production');
         Http::fake(['*' => Http::response(['data' => []], 200)]);
 
         $liveClient->get('/test');
@@ -131,7 +137,7 @@ describe('ChipSendClient Timestamp Generation', function () {
         $afterTime = time();
 
         Http::assertSent(function ($request) use ($beforeTime, $afterTime) {
-            $timestamp = (int) $request->header('X-Timestamp')[0];
+            $timestamp = (int) $request->header('epoch')[0];
             return $timestamp >= $beforeTime && $timestamp <= $afterTime;
         });
     });

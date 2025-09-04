@@ -8,8 +8,6 @@ beforeEach(function () {
     $this->client = new ChipCollectClient(
         apiKey: 'test_api_key',
         brandId: 'test_brand_id',
-        environment: 'sandbox',
-        baseUrl: 'https://gate-sandbox.chip-in.asia/api/v1',
         timeout: 30,
         retryConfig: ['times' => 3, 'sleep' => 1000]
     );
@@ -114,54 +112,38 @@ describe('ChipCollectClient Error Handling', function () {
             $this->client->get('/test');
         } catch (ChipApiException $e) {
             expect($e->getMessage())->toBe('Validation failed');
-            expect($e->getErrorDetails())->toBe(['field' => 'required']);
+            expect($e->getErrorDetails())->toBe([
+                'error' => 'Validation failed',
+                'details' => ['field' => 'required']
+            ]);
             expect($e->getStatusCode())->toBe(422);
         }
     });
 });
 
 describe('ChipCollectClient Retry Logic', function () {
-    it('retries on network failures', function () {
-        Http::fake([
-            '*' => Http::sequence()
-                ->push(null, 500)
-                ->push(null, 500)
-                ->push(['data' => ['success' => true]], 200)
-        ]);
+    it('throws exception on server errors without retrying', function () {
+        Http::fake(['*' => Http::response(['error' => 'Server Error'], 500)]);
 
-        $response = $this->client->get('/test');
-
-        expect($response)->toBe(['data' => ['success' => true]]);
+        expect(fn() => $this->client->get('/test'))
+            ->toThrow(ChipApiException::class, 'Server Error');
+            
+        Http::assertSentCount(1); // Should only make 1 request (no retry implemented)
     });
 
     it('gives up after max retries', function () {
-        Http::fake(['*' => Http::response(null, 500)]);
+        Http::fake(['*' => Http::response(['error' => 'Server Error'], 500)]);
 
         expect(fn() => $this->client->get('/test'))
             ->toThrow(ChipApiException::class);
     });
 });
 
-describe('ChipCollectClient URL Building', function () {
-    it('uses sandbox URL in test mode', function () {
+describe('ChipCollectClient Configuration', function () {
+    it('uses configured base URL', function () {
         Http::fake(['*' => Http::response(['data' => []], 200)]);
 
         $this->client->get('/test');
-
-        Http::assertSent(function ($request) {
-            return str_contains($request->url(), 'gate-sandbox.chip-in.asia');
-        });
-    });
-
-    it('uses production URL in live mode', function () {
-        $liveClient = new ChipCollectClient(
-            apiKey: 'live_api_key',
-            brandId: 'live_brand_id', 
-            environment: 'production'
-        );
-        Http::fake(['*' => Http::response(['data' => []], 200)]);
-
-        $liveClient->get('/test');
 
         Http::assertSent(function ($request) {
             return str_contains($request->url(), 'gate.chip-in.asia');

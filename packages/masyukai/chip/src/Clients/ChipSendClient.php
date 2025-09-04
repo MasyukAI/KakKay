@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Masyukai\Chip\Clients;
 
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Http\Client\Response;
 use Masyukai\Chip\Exceptions\ChipApiException;
 use Masyukai\Chip\Exceptions\ChipValidationException;
 
@@ -25,17 +25,18 @@ class ChipSendClient
 
     protected function getBaseUrl(): string
     {
-        if (!empty($this->baseUrl)) {
+        if (! empty($this->baseUrl)) {
             return $this->baseUrl;
         }
-        
-        // Fallback to environment-based URL
+
+        // CHIP Send has separate staging and production environments
         $baseUrls = [
-            'sandbox' => 'https://api-sandbox.chip-in.asia/send',
-            'production' => 'https://api.chip-in.asia/send',
+            'staging' => 'https://staging-api.chip-in.asia/api',
+            'sandbox' => 'https://staging-api.chip-in.asia/api', // alias for staging
+            'production' => 'https://api.chip-in.asia/api',
         ];
-        
-        return $baseUrls[$this->environment] ?? $baseUrls['sandbox'];
+
+        return $baseUrls[$this->environment] ?? $baseUrls['staging'];
     }
 
     /**
@@ -43,7 +44,7 @@ class ChipSendClient
      */
     public function request(string $method, string $endpoint, array $data = []): array
     {
-        $url = $this->getBaseUrl() . '/' . ltrim($endpoint, '/');
+        $url = $this->getBaseUrl().'/'.ltrim($endpoint, '/');
         $epoch = time();
         $checksum = $this->generateChecksum($epoch);
 
@@ -59,16 +60,16 @@ class ChipSendClient
         try {
             $response = Http::withHeaders([
                 'Authorization' => "Bearer {$this->apiKey}",
-                'X-Timestamp' => (string) $epoch,
-                'X-Signature' => $checksum,
+                'epoch' => (string) $epoch,
+                'checksum' => $checksum,
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
                 'User-Agent' => config('chip.defaults.creator_agent', 'MasyukAI/Chip Laravel Package'),
             ])
-            ->timeout($this->timeout)
-            ->send($method, $url, [
-                'json' => $data
-            ]);
+                ->timeout($this->timeout)
+                ->send($method, $url, [
+                    'json' => $data,
+                ]);
 
             if (config('chip.logging.log_responses')) {
                 Log::channel(config('chip.logging.channel'))
@@ -93,7 +94,7 @@ class ChipSendClient
         return hash_hmac('sha256', (string) $epoch, $this->apiSecret);
     }
 
-    protected function handleFailedResponse(Response $response): void
+    protected function handleFailedResponse(Response $response): never
     {
         $statusCode = $response->status();
         $responseData = $response->json() ?? [];
@@ -106,7 +107,7 @@ class ChipSendClient
         throw new ChipApiException($message, $statusCode, $responseData);
     }
 
-    protected function handleException(\Exception $e): void
+    protected function handleException(\Exception $e): never
     {
         Log::channel(config('chip.logging.channel'))
             ->error('CHIP Send API Request Failed', [
@@ -118,7 +119,7 @@ class ChipSendClient
             throw $e;
         }
 
-        throw new ChipApiException('API request failed: ' . $e->getMessage(), 0, [], $e);
+        throw new ChipApiException('API request failed: '.$e->getMessage(), 0, [], $e);
     }
 
     public function get(string $endpoint): array

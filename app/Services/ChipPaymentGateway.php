@@ -14,7 +14,7 @@ class ChipPaymentGateway implements PaymentGatewayInterface
 {
     protected ChipCollectService $chipService;
 
-    public function __construct(ChipCollectService $chipService = null)
+    public function __construct(?ChipCollectService $chipService = null)
     {
         $this->chipService = $chipService ?? new ChipCollectService();
     }
@@ -83,17 +83,19 @@ class ChipPaymentGateway implements PaymentGatewayInterface
     {
         try {
             $methods = $this->chipService->getPaymentMethods([
-                'country' => 'MY', // Default to Malaysia
+                'brand_id' => config('chip.collect.brand_id'),
+                'currency' => 'MYR',
+                'country' => 'MY',
             ]);
 
-            return collect($methods['items'] ?? [])
-                ->map(function ($method) {
+            return collect($methods['available_payment_methods'] ?? [])
+                ->map(function ($methodId) use ($methods) {
                     return [
-                        'id' => $method['id'],
-                        'name' => $method['name'],
-                        'description' => $method['description'] ?? null,
-                        'icon' => $this->mapPaymentMethodToIcon($method['id']),
-                        'group' => $this->getPaymentMethodGroup($method['id']),
+                        'id' => $methodId,
+                        'name' => $methods['names'][$methodId] ?? ucfirst(str_replace('_', ' ', $methodId)),
+                        'description' => $this->getPaymentMethodDescription($methodId),
+                        'icon' => $this->mapPaymentMethodToIcon($methodId),
+                        'group' => $this->getPaymentMethodGroup($methodId),
                     ];
                 })
                 ->toArray();
@@ -134,7 +136,7 @@ class ChipPaymentGateway implements PaymentGatewayInterface
         
         foreach ($items as $item) {
             // Try to determine the product category
-            $category = null;
+            $category = 'books'; // Default category
             
             // First check if category is explicitly provided in attributes
             if (isset($item['attributes']['category']) && !empty($item['attributes']['category'])) {
@@ -148,15 +150,10 @@ class ChipPaymentGateway implements PaymentGatewayInterface
                 }
             }
             
-            // Always ensure we have a category, default to 'books' if nothing found
-            if (!$category) {
-                $category = 'books';
-            }
-            
             $chipProducts[] = ChipProduct::fromArray([
                 'name' => $item['name'],
-                'price' => $item['price'],
-                'quantity' => $item['quantity'],
+                'price' => (int) $item['price'], // Ensure price is integer (cents)
+                'quantity' => (float) $item['quantity'], // CHIP expects float quantity
                 'discount' => 0,
                 'tax_percent' => 0.0,
                 'category' => $category,
@@ -188,9 +185,9 @@ class ChipPaymentGateway implements PaymentGatewayInterface
             'state' => $customerData['state'] ?? '',
             'registration_number' => $customerData['registration_number'] ?? '',
             'tax_number' => $customerData['tax_number'] ?? '',
-            // Required fields that were missing
-            'bank_account' => $customerData['bank_account'] ?? 'default',
-            'bank_code' => $customerData['bank_code'] ?? 'default',
+            // Optional fields - leave as null if not provided
+            'bank_account' => $customerData['bank_account'] ?? null,
+            'bank_code' => $customerData['bank_code'] ?? null,
             // Shipping details
             'shipping_street_address' => $customerData['shipping_address'] ?? $customerData['address'] ?? '',
             'shipping_country' => $customerData['shipping_country'] ?? $customerData['country'] ?? 'MY',
@@ -198,6 +195,31 @@ class ChipPaymentGateway implements PaymentGatewayInterface
             'shipping_zip_code' => $customerData['shipping_zip'] ?? $customerData['zip'] ?? $customerData['postal_code'] ?? '',
             'shipping_state' => $customerData['shipping_state'] ?? $customerData['state'] ?? '',
         ]);
+    }
+
+    /**
+     * Get payment method description
+     *
+     * @param string $methodId Payment method ID
+     * @return string Description
+     */
+    protected function getPaymentMethodDescription(string $methodId): string
+    {
+        $descriptions = [
+            'fpx_b2c' => 'Bayar dengan Internet Banking Malaysia',
+            'fpx_b2b' => 'Bayar dengan Internet Banking untuk Perniagaan',
+            'visa' => 'Kad Kredit/Debit Visa',
+            'mastercard' => 'Kad Kredit/Debit Mastercard',
+            'tng' => 'Touch \'n Go eWallet',
+            'grabpay' => 'GrabPay Malaysia',
+            'boost' => 'Boost eWallet',
+            'maybank_qr' => 'Maybank QR Pay',
+            'duitnow_qr' => 'DuitNow QR',
+            'alipay' => 'Alipay',
+            'wechatpay' => 'WeChat Pay',
+        ];
+
+        return $descriptions[$methodId] ?? ucfirst(str_replace('_', ' ', $methodId));
     }
 
     /**

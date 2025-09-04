@@ -190,7 +190,7 @@ class extends Component {
         
         <!-- Contact Info Footer -->
         <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; color: rgba(255,233,245,0.6); font-size: 0.8rem;">
-          <p style="margin: 0.5rem 0;">&copy; 2025 Kamalia Kamal Research International (Kak Kay)<br />Hak Terpelihara</p>
+          <p style="margin: 0.5rem 0;">&copy; 2025 Kamalia Kamal Research International (Kak Kay)</p>
           <div style="display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; justify-content: center; align-items: center; margin-top: 0.5rem;">
             <span style="display: flex; align-items: center; gap: 0.3rem;">
               <span style="color: #ff69b4;">📍</span>

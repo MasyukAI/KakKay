@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Http;
 use Masyukai\Chip\DataObjects\Purchase;
-use Masyukai\Chip\DataObjects\Payment;
 use Masyukai\Chip\DataObjects\Client;
 use Masyukai\Chip\Services\ChipCollectService;
 use Masyukai\Chip\Services\WebhookService;
@@ -18,51 +17,152 @@ describe('ChipCollectService Purchase Management', function () {
     it('can create a purchase', function () {
         $purchaseData = [
             'id' => 'purchase_123',
-            'amount_in_cents' => 10000,
-            'currency' => 'MYR',
-            'reference' => 'ORDER_001',
-            'checkout_url' => 'https://gate-sandbox.chip-in.asia/checkout/purchase_123',
+            'type' => 'payment',
+            'created_on' => '2024-01-01T12:00:00Z',
+            'updated_on' => '2024-01-01T12:00:00Z',
+            'client' => [
+                'id' => 'client_123',
+                'email' => 'test@example.com',
+            ],
+            'purchase' => [
+                'currency' => 'MYR',
+                'products' => [
+                    [
+                        'name' => 'Test Product',
+                        'price' => 10000,
+                        'quantity' => 1
+                    ]
+                ]
+            ],
+            'brand_id' => 'test_brand_id',
+            'payment' => null,
+            'issuer_details' => [],
+            'transaction_data' => [],
             'status' => 'created',
-            'metadata' => ['order_id' => '123']
+            'status_history' => [],
+            'viewed_on' => null,
+            'company_id' => 'company_123',
+            'is_test' => true,
+            'user_id' => null,
+            'billing_template_id' => null,
+            'client_id' => 'client_123',
+            'send_receipt' => true,
+            'is_recurring_token' => false,
+            'recurring_token' => null,
+            'skip_capture' => false,
+            'force_recurring' => false,
+            'reference_generated' => 'REF_123',
+            'reference' => 'ORDER_001',
+            'notes' => null,
+            'issued' => null,
+            'due' => null,
+            'refund_availability' => 'full',
+            'refundable_amount' => 10000,
+            'currency_conversion' => null,
+            'payment_method_whitelist' => [],
+            'success_redirect' => null,
+            'failure_redirect' => null,
+            'cancel_redirect' => null,
+            'success_callback' => null,
+            'creator_agent' => 'Laravel Package',
+            'platform' => 'api',
+            'product' => 'CHIP',
+            'created_from_ip' => null,
+            'invoice_url' => null,
+            'checkout_url' => 'https://gate.chip-in.asia/checkout/purchase_123',
+            'direct_post_url' => null,
+            'marked_as_paid' => false,
+            'order_id' => null,
+        ];
+
+        $requestData = [
+            'client' => ['email' => 'test@example.com'],
+            'purchase' => [
+                'currency' => 'MYR',
+                'products' => [
+                    ['name' => 'Test Product', 'price' => 10000, 'quantity' => 1]
+                ]
+            ],
+            'brand_id' => 'test_brand_id',
+            'reference' => 'ORDER_001'
         ];
 
         $this->client->shouldReceive('post')
-            ->with('/purchases/', [
-                'amount_in_cents' => 10000,
-                'currency' => 'MYR',
-                'reference' => 'ORDER_001',
-                'metadata' => ['order_id' => '123']
-            ])
-            ->andReturn(['data' => $purchaseData]);
+            ->with('purchases/', $requestData)
+            ->andReturn($purchaseData);
 
-        $purchase = $this->service->createPurchase(
-            amountInCents: 10000,
-            currency: 'MYR',
-            reference: 'ORDER_001',
-            metadata: ['order_id' => '123']
-        );
+        $purchase = $this->service->createPurchase($requestData);
 
         expect($purchase)->toBeInstanceOf(Purchase::class);
         expect($purchase->id)->toBe('purchase_123');
-        expect($purchase->amountInCents)->toBe(10000);
-        expect($purchase->currency)->toBe('MYR');
-        expect($purchase->reference)->toBe('ORDER_001');
         expect($purchase->status)->toBe('created');
+        expect($purchase->reference)->toBe('ORDER_001');
     });
 
     it('can retrieve a purchase', function () {
         $purchaseData = [
             'id' => 'purchase_123',
-            'amount_in_cents' => 10000,
-            'currency' => 'MYR',
+            'type' => 'payment',
+            'created_on' => '2024-01-01T12:00:00Z',
+            'updated_on' => '2024-01-01T12:00:00Z',
+            'client' => [
+                'id' => 'client_123',
+                'email' => 'test@example.com',
+            ],
+            'purchase' => [
+                'currency' => 'MYR',
+                'products' => [
+                    [
+                        'name' => 'Test Product',
+                        'price' => 10000,
+                        'quantity' => 1
+                    ]
+                ]
+            ],
+            'brand_id' => 'test_brand_id',
+            'payment' => null,
+            'issuer_details' => [],
+            'transaction_data' => [],
+            'status' => 'paid',
+            'status_history' => [],
+            'viewed_on' => null,
+            'company_id' => 'company_123',
+            'is_test' => true,
+            'user_id' => null,
+            'billing_template_id' => null,
+            'client_id' => 'client_123',
+            'send_receipt' => true,
+            'is_recurring_token' => false,
+            'recurring_token' => null,
+            'skip_capture' => false,
+            'force_recurring' => false,
+            'reference_generated' => 'REF_123',
             'reference' => 'ORDER_001',
-            'checkout_url' => 'https://gate-sandbox.chip-in.asia/checkout/purchase_123',
-            'status' => 'paid'
+            'notes' => null,
+            'issued' => null,
+            'due' => null,
+            'refund_availability' => 'full',
+            'refundable_amount' => 10000,
+            'currency_conversion' => null,
+            'payment_method_whitelist' => [],
+            'success_redirect' => null,
+            'failure_redirect' => null,
+            'cancel_redirect' => null,
+            'success_callback' => null,
+            'creator_agent' => 'Laravel Package',
+            'platform' => 'api',
+            'product' => 'CHIP',
+            'created_from_ip' => null,
+            'invoice_url' => null,
+            'checkout_url' => 'https://gate.chip-in.asia/checkout/purchase_123',
+            'direct_post_url' => null,
+            'marked_as_paid' => false,
+            'order_id' => null,
         ];
 
         $this->client->shouldReceive('get')
-            ->with('/purchases/purchase_123/')
-            ->andReturn(['data' => $purchaseData]);
+            ->with('purchases/purchase_123/')
+            ->andReturn($purchaseData);
 
         $purchase = $this->service->getPurchase('purchase_123');
 
@@ -71,119 +171,95 @@ describe('ChipCollectService Purchase Management', function () {
         expect($purchase->status)->toBe('paid');
     });
 
-    it('can list purchases', function () {
-        $purchasesData = [
-            [
-                'id' => 'purchase_123',
-                'amount_in_cents' => 10000,
-                'currency' => 'MYR',
-                'status' => 'paid'
-            ],
-            [
-                'id' => 'purchase_456',
-                'amount_in_cents' => 15000,
-                'currency' => 'MYR',
-                'status' => 'created'
-            ]
-        ];
-
-        $this->client->shouldReceive('get')
-            ->with('/purchases/', ['limit' => 20, 'offset' => 0])
-            ->andReturn(['data' => $purchasesData]);
-
-        $purchases = $this->service->listPurchases();
-
-        expect($purchases)->toHaveCount(2);
-        expect($purchases[0])->toBeInstanceOf(Purchase::class);
-        expect($purchases[0]->id)->toBe('purchase_123');
-        expect($purchases[1]->id)->toBe('purchase_456');
-    });
-
-    it('can update a purchase', function () {
-        $updatedData = [
+    it('can cancel a purchase', function () {
+        $purchaseData = [
             'id' => 'purchase_123',
-            'amount_in_cents' => 12000,
-            'currency' => 'MYR',
-            'reference' => 'ORDER_001_UPDATED',
-            'status' => 'created'
+            'type' => 'payment',
+            'created_on' => '2024-01-01T12:00:00Z',
+            'updated_on' => '2024-01-01T12:00:00Z',
+            'client' => [
+                'id' => 'client_123',
+                'email' => 'test@example.com',
+            ],
+            'purchase' => [
+                'currency' => 'MYR',
+                'products' => [
+                    [
+                        'name' => 'Test Product',
+                        'price' => 10000,
+                        'quantity' => 1
+                    ]
+                ]
+            ],
+            'brand_id' => 'test_brand_id',
+            'payment' => null,
+            'issuer_details' => [],
+            'transaction_data' => [],
+            'status' => 'cancelled',
+            'status_history' => [],
+            'viewed_on' => null,
+            'company_id' => 'company_123',
+            'is_test' => true,
+            'user_id' => null,
+            'billing_template_id' => null,
+            'client_id' => 'client_123',
+            'send_receipt' => true,
+            'is_recurring_token' => false,
+            'recurring_token' => null,
+            'skip_capture' => false,
+            'force_recurring' => false,
+            'reference_generated' => 'REF_123',
+            'reference' => 'ORDER_001',
+            'notes' => null,
+            'issued' => null,
+            'due' => null,
+            'refund_availability' => 'none',
+            'refundable_amount' => 0,
+            'currency_conversion' => null,
+            'payment_method_whitelist' => [],
+            'success_redirect' => null,
+            'failure_redirect' => null,
+            'cancel_redirect' => null,
+            'success_callback' => null,
+            'creator_agent' => 'Laravel Package',
+            'platform' => 'api',
+            'product' => 'CHIP',
+            'created_from_ip' => null,
+            'invoice_url' => null,
+            'checkout_url' => 'https://gate.chip-in.asia/checkout/purchase_123',
+            'direct_post_url' => null,
+            'marked_as_paid' => false,
+            'order_id' => null,
         ];
 
-        $this->client->shouldReceive('put')
-            ->with('/purchases/purchase_123/', [
-                'amount_in_cents' => 12000,
-                'reference' => 'ORDER_001_UPDATED'
-            ])
-            ->andReturn(['data' => $updatedData]);
+        $this->client->shouldReceive('post')
+            ->with('purchases/purchase_123/cancel/')
+            ->andReturn($purchaseData);
 
-        $purchase = $this->service->updatePurchase(
-            'purchase_123',
-            amountInCents: 12000,
-            reference: 'ORDER_001_UPDATED'
-        );
+        $purchase = $this->service->cancelPurchase('purchase_123');
 
         expect($purchase)->toBeInstanceOf(Purchase::class);
-        expect($purchase->amountInCents)->toBe(12000);
-        expect($purchase->reference)->toBe('ORDER_001_UPDATED');
+        expect($purchase->status)->toBe('cancelled');
     });
 
-    it('can delete a purchase', function () {
-        $this->client->shouldReceive('delete')
-            ->with('/purchases/purchase_123/')
-            ->andReturn([]);
-
-        $result = $this->service->deletePurchase('purchase_123');
-
-        expect($result)->toBeTrue();
-    });
-});
-
-describe('ChipCollectService Payment Management', function () {
-    it('can list payments for a purchase', function () {
-        $paymentsData = [
-            [
-                'id' => 'payment_123',
-                'purchase_id' => 'purchase_123',
-                'amount_in_cents' => 10000,
-                'currency' => 'MYR',
-                'status' => 'successful',
-                'method' => 'fpx'
+    it('can get payment methods', function () {
+        $paymentMethods = [
+            'available_payment_methods' => ['fpx', 'visa', 'mastercard'],
+            'names' => [
+                'fpx' => 'FPX Online Banking',
+                'visa' => 'Visa',
+                'mastercard' => 'Mastercard'
             ]
         ];
 
         $this->client->shouldReceive('get')
-            ->with('/purchases/purchase_123/payments/')
-            ->andReturn(['data' => $paymentsData]);
+            ->with('payment_methods/?brand_id=test_brand&currency=MYR')
+            ->andReturn($paymentMethods);
 
-        $payments = $this->service->getPayments('purchase_123');
+        $result = $this->service->getPaymentMethods(['brand_id' => 'test_brand', 'currency' => 'MYR']);
 
-        expect($payments)->toHaveCount(1);
-        expect($payments[0])->toBeInstanceOf(Payment::class);
-        expect($payments[0]->id)->toBe('payment_123');
-        expect($payments[0]->purchaseId)->toBe('purchase_123');
-        expect($payments[0]->status)->toBe('successful');
-    });
-
-    it('can retrieve a specific payment', function () {
-        $paymentData = [
-            'id' => 'payment_123',
-            'purchase_id' => 'purchase_123',
-            'amount_in_cents' => 10000,
-            'currency' => 'MYR',
-            'status' => 'successful',
-            'method' => 'fpx',
-            'paid_at' => '2024-01-01T12:00:00Z'
-        ];
-
-        $this->client->shouldReceive('get')
-            ->with('/purchases/purchase_123/payments/payment_123/')
-            ->andReturn(['data' => $paymentData]);
-
-        $payment = $this->service->getPayment('purchase_123', 'payment_123');
-
-        expect($payment)->toBeInstanceOf(Payment::class);
-        expect($payment->id)->toBe('payment_123');
-        expect($payment->status)->toBe('successful');
-        expect($payment->method)->toBe('fpx');
+        expect($result)->toBe($paymentMethods);
+        expect($result['available_payment_methods'])->toContain('fpx');
     });
 });
 
@@ -191,73 +267,77 @@ describe('ChipCollectService Client Management', function () {
     it('can create a client', function () {
         $clientData = [
             'id' => 'client_123',
-            'full_name' => 'John Doe',
             'email' => 'john@example.com',
-            'phone' => '+60123456789'
+            'phone' => '+60123456789',
+            'full_name' => 'John Doe',
+            'personal_code' => null,
+            'brand_id' => 'test_brand_id',
+            'created_on' => '2024-01-01T12:00:00Z',
+            'updated_on' => '2024-01-01T12:00:00Z'
+        ];
+
+        $requestData = [
+            'email' => 'john@example.com',
+            'phone' => '+60123456789',
+            'full_name' => 'John Doe'
         ];
 
         $this->client->shouldReceive('post')
-            ->with('/clients/', [
-                'full_name' => 'John Doe',
-                'email' => 'john@example.com',
-                'phone' => '+60123456789'
-            ])
-            ->andReturn(['data' => $clientData]);
+            ->with('clients/', $requestData)
+            ->andReturn($clientData);
 
-        $client = $this->service->createClient(
-            fullName: 'John Doe',
-            email: 'john@example.com',
-            phone: '+60123456789'
-        );
+        $client = $this->service->createClient($requestData);
 
         expect($client)->toBeInstanceOf(Client::class);
         expect($client->id)->toBe('client_123');
-        expect($client->fullName)->toBe('John Doe');
         expect($client->email)->toBe('john@example.com');
+        expect($client->full_name)->toBe('John Doe');
     });
 
     it('can retrieve a client', function () {
         $clientData = [
             'id' => 'client_123',
-            'full_name' => 'John Doe',
             'email' => 'john@example.com',
-            'phone' => '+60123456789'
+            'phone' => '+60123456789',
+            'full_name' => 'John Doe',
+            'personal_code' => null,
+            'brand_id' => 'test_brand_id',
+            'created_on' => '2024-01-01T12:00:00Z',
+            'updated_on' => '2024-01-01T12:00:00Z'
         ];
 
         $this->client->shouldReceive('get')
-            ->with('/clients/client_123/')
-            ->andReturn(['data' => $clientData]);
+            ->with('clients/client_123/')
+            ->andReturn($clientData);
 
         $client = $this->service->getClient('client_123');
 
         expect($client)->toBeInstanceOf(Client::class);
         expect($client->id)->toBe('client_123');
-        expect($client->fullName)->toBe('John Doe');
+        expect($client->full_name)->toBe('John Doe');
     });
 
     it('can list clients', function () {
         $clientsData = [
             [
                 'id' => 'client_123',
-                'full_name' => 'John Doe',
-                'email' => 'john@example.com'
+                'email' => 'john@example.com',
+                'full_name' => 'John Doe'
             ],
             [
                 'id' => 'client_456',
-                'full_name' => 'Jane Smith',
-                'email' => 'jane@example.com'
+                'email' => 'jane@example.com',
+                'full_name' => 'Jane Smith'
             ]
         ];
 
         $this->client->shouldReceive('get')
-            ->with('/clients/', ['limit' => 20, 'offset' => 0])
-            ->andReturn(['data' => $clientsData]);
+            ->with('clients/')
+            ->andReturn($clientsData);
 
         $clients = $this->service->listClients();
 
+        expect($clients)->toBe($clientsData);
         expect($clients)->toHaveCount(2);
-        expect($clients[0])->toBeInstanceOf(Client::class);
-        expect($clients[0]->fullName)->toBe('John Doe');
-        expect($clients[1]->fullName)->toBe('Jane Smith');
     });
 });

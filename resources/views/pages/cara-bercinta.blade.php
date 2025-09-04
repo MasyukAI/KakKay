@@ -423,7 +423,7 @@ class extends Component {
   <footer class="bg-maroon text-white">
     <div class="max-w-6xl mx-auto px-4 py-10 text-center">
       <p class="font-display text-xl">34 Teknik Bercinta</p>
-      <p class="text-white/90 text-sm mt-2">Hak cipta © <span id="year"></span> Kamalia Kamal. Semua hak terpelihara.</p>
+      <p class="text-white/90 text-sm mt-2">Hak cipta © <span id="year"></span> Kamalia Kamal. Semua Hak Cipta Terpelihara.</p>
     </div>
   </footer>
 

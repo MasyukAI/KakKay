@@ -31,8 +31,8 @@ return [
     'send' => [
         'environment' => env('CHIP_SEND_ENVIRONMENT', 'sandbox'),
         'base_url' => [
-            'sandbox' => env('CHIP_SEND_SANDBOX_URL', 'https://api-sandbox.chip-in.asia/send'),
-            'production' => env('CHIP_SEND_PRODUCTION_URL', 'https://api.chip-in.asia/send'),
+            'sandbox' => env('CHIP_SEND_SANDBOX_URL', 'https://staging-api.chip-in.asia/api'),
+            'production' => env('CHIP_SEND_PRODUCTION_URL', 'https://api.chip-in.asia/api'),
         ],
         'api_key' => env('CHIP_SEND_API_KEY'),
         'api_secret' => env('CHIP_SEND_API_SECRET'),
@@ -64,6 +64,7 @@ return [
     'webhooks' => [
         'public_key' => env('CHIP_WEBHOOK_PUBLIC_KEY'),
         'verify_signature' => env('CHIP_WEBHOOK_VERIFY_SIGNATURE', true),
+        'middleware' => ['api'], // Add this line
         'allowed_events' => [
             'purchase.created',
             'purchase.paid',
@@ -169,6 +170,18 @@ return [
         'payment_method_whitelist' => env('CHIP_PAYMENT_METHOD_WHITELIST', ''),
         'success_redirect' => env('CHIP_SUCCESS_REDIRECT'),
         'failure_redirect' => env('CHIP_FAILURE_REDIRECT'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Database Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for database table prefixes and naming
+    |
+    */
+    'database' => [
+        'table_prefix' => env('CHIP_TABLE_PREFIX', 'chip_'),
     ],
 
     /*

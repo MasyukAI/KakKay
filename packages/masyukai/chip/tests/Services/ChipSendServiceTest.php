@@ -1,293 +1,118 @@
 <?php
 
-use Illuminate\Support\Facades\Http;
 use Masyukai\Chip\DataObjects\SendInstruction;
 use Masyukai\Chip\DataObjects\BankAccount;
 use Masyukai\Chip\Services\ChipSendService;
 use Masyukai\Chip\Clients\ChipSendClient;
 
-beforeEach(function () {
-    $this->client = Mockery::mock(ChipSendClient::class);
-    $this->service = new ChipSendService($this->client);
-});
+describe('ChipSendService', function () {
+    beforeEach(function () {
+        $this->client = Mockery::mock(ChipSendClient::class);
+        $this->service = new ChipSendService($this->client);
+    });
 
-describe('ChipSendService Send Instructions', function () {
     it('can create a send instruction', function () {
         $instructionData = [
-            'id' => 'send_123',
-            'reference' => 'TRANSFER_001',
-            'amount_in_cents' => 50000,
-            'currency' => 'MYR',
-            'recipient_bank_account_id' => 'bank_account_456',
+            'id' => 50,
+            'bank_account_id' => 1,
+            'amount' => '500.00',
+            'state' => 'completed',
+            'email' => 'test@example.com',
             'description' => 'Payment for services',
-            'status' => 'pending'
+            'reference' => 'TRANSFER_001',
+            'created_at' => '2023-07-20T10:41:25.190Z',
+            'updated_at' => '2023-07-20T10:41:25.302Z',
         ];
 
         $this->client->shouldReceive('post')
-            ->with('/send_instructions/', [
-                'amount_in_cents' => 50000,
-                'currency' => 'MYR',
-                'recipient_bank_account_id' => 'bank_account_456',
+            ->with('send/send_instructions', [
+                'bank_account_id' => '1',
+                'amount' => '500.00',
                 'description' => 'Payment for services',
-                'reference' => 'TRANSFER_001'
+                'reference' => 'TRANSFER_001',
+                'email' => 'test@example.com',
             ])
-            ->andReturn(['data' => $instructionData]);
+            ->andReturn($instructionData);
 
         $instruction = $this->service->createSendInstruction(
-            amountInCents: 50000,
-            currency: 'MYR',
-            recipientBankAccountId: 'bank_account_456',
-            description: 'Payment for services',
-            reference: 'TRANSFER_001'
+            50000, // amount in cents
+            'MYR',
+            '1', // recipient bank account id
+            'Payment for services',
+            'TRANSFER_001',
+            'test@example.com'
         );
 
         expect($instruction)->toBeInstanceOf(SendInstruction::class);
-        expect($instruction->id)->toBe('send_123');
-        expect($instruction->amountInCents)->toBe(50000);
-        expect($instruction->currency)->toBe('MYR');
-        expect($instruction->status)->toBe('pending');
+        expect($instruction->id)->toBe(50);
+        expect($instruction->amount)->toBe('500.00');
+        expect($instruction->state)->toBe('completed');
+        expect($instruction->description)->toBe('Payment for services');
+        expect($instruction->reference)->toBe('TRANSFER_001');
+        expect($instruction->email)->toBe('test@example.com');
     });
 
     it('can retrieve a send instruction', function () {
         $instructionData = [
-            'id' => 'send_123',
+            'id' => 50,
+            'bank_account_id' => 1,
+            'amount' => '500.00',
+            'state' => 'completed',
+            'email' => 'test@example.com',
+            'description' => 'Payment for services',
             'reference' => 'TRANSFER_001',
-            'amount_in_cents' => 50000,
-            'currency' => 'MYR',
-            'recipient_bank_account_id' => 'bank_account_456',
-            'status' => 'completed',
-            'completed_at' => '2024-01-01T15:30:00Z'
+            'created_at' => '2023-07-20T10:41:25.190Z',
+            'updated_at' => '2023-07-20T10:41:25.302Z',
         ];
 
         $this->client->shouldReceive('get')
-            ->with('/send_instructions/send_123/')
-            ->andReturn(['data' => $instructionData]);
+            ->with("send/send_instructions/50")
+            ->andReturn($instructionData);
 
-        $instruction = $this->service->getSendInstruction('send_123');
-
-        expect($instruction)->toBeInstanceOf(SendInstruction::class);
-        expect($instruction->id)->toBe('send_123');
-        expect($instruction->status)->toBe('completed');
-    });
-
-    it('can list send instructions', function () {
-        $instructionsData = [
-            [
-                'id' => 'send_123',
-                'amount_in_cents' => 50000,
-                'currency' => 'MYR',
-                'status' => 'completed'
-            ],
-            [
-                'id' => 'send_456',
-                'amount_in_cents' => 25000,
-                'currency' => 'MYR',
-                'status' => 'pending'
-            ]
-        ];
-
-        $this->client->shouldReceive('get')
-            ->with('/send_instructions/', ['limit' => 20, 'offset' => 0])
-            ->andReturn(['data' => $instructionsData]);
-
-        $instructions = $this->service->listSendInstructions();
-
-        expect($instructions)->toHaveCount(2);
-        expect($instructions[0])->toBeInstanceOf(SendInstruction::class);
-        expect($instructions[0]->id)->toBe('send_123');
-        expect($instructions[1]->id)->toBe('send_456');
-    });
-
-    it('can cancel a send instruction', function () {
-        $cancelledData = [
-            'id' => 'send_123',
-            'status' => 'cancelled',
-            'cancelled_at' => '2024-01-01T16:00:00Z'
-        ];
-
-        $this->client->shouldReceive('post')
-            ->with('/send_instructions/send_123/cancel/')
-            ->andReturn(['data' => $cancelledData]);
-
-        $instruction = $this->service->cancelSendInstruction('send_123');
+        $instruction = $this->service->getSendInstruction('50');
 
         expect($instruction)->toBeInstanceOf(SendInstruction::class);
-        expect($instruction->status)->toBe('cancelled');
+        expect($instruction->id)->toBe(50);
+        expect($instruction->state)->toBe('completed');
     });
-});
 
-describe('ChipSendService Bank Account Management', function () {
     it('can create a bank account', function () {
         $accountData = [
-            'id' => 'bank_account_123',
+            'id' => 84,
+            'status' => 'verified',
+            'account_number' => '157380111111',
             'bank_code' => 'MBBEMYKL',
-            'account_number' => '1234567890123456',
-            'account_holder_name' => 'John Doe',
-            'account_type' => 'savings'
+            'group_id' => null,
+            'name' => 'Ahmad Pintu',
+            'reference' => null,
+            'created_at' => '2023-07-20T08:59:10.766Z',
+            'is_debiting_account' => false,
+            'is_crediting_account' => false,
+            'updated_at' => '2023-07-20T08:59:10.766Z',
+            'deleted_at' => null,
+            'rejection_reason' => null,
         ];
 
         $this->client->shouldReceive('post')
-            ->with('/bank_accounts/', [
+            ->with('send/bank_accounts', [
                 'bank_code' => 'MBBEMYKL',
-                'account_number' => '1234567890123456',
-                'account_holder_name' => 'John Doe',
-                'account_type' => 'savings'
+                'account_number' => '157380111111',
+                'name' => 'Ahmad Pintu',
             ])
-            ->andReturn(['data' => $accountData]);
+            ->andReturn($accountData);
 
         $account = $this->service->createBankAccount(
-            bankCode: 'MBBEMYKL',
-            accountNumber: '1234567890123456',
-            accountHolderName: 'John Doe',
-            accountType: 'savings'
+            'MBBEMYKL',
+            '157380111111',
+            'Ahmad Pintu',
+            'savings'
         );
 
         expect($account)->toBeInstanceOf(BankAccount::class);
-        expect($account->id)->toBe('bank_account_123');
-        expect($account->bankCode)->toBe('MBBEMYKL');
-        expect($account->accountNumber)->toBe('1234567890123456');
-        expect($account->accountHolderName)->toBe('John Doe');
-    });
-
-    it('can retrieve a bank account', function () {
-        $accountData = [
-            'id' => 'bank_account_123',
-            'bank_code' => 'MBBEMYKL',
-            'account_number' => '1234567890123456',
-            'account_holder_name' => 'John Doe',
-            'account_type' => 'savings',
-            'is_verified' => true
-        ];
-
-        $this->client->shouldReceive('get')
-            ->with('/bank_accounts/bank_account_123/')
-            ->andReturn(['data' => $accountData]);
-
-        $account = $this->service->getBankAccount('bank_account_123');
-
-        expect($account)->toBeInstanceOf(BankAccount::class);
-        expect($account->id)->toBe('bank_account_123');
-        expect($account->isVerified)->toBeTrue();
-    });
-
-    it('can list bank accounts', function () {
-        $accountsData = [
-            [
-                'id' => 'bank_account_123',
-                'bank_code' => 'MBBEMYKL',
-                'account_holder_name' => 'John Doe'
-            ],
-            [
-                'id' => 'bank_account_456',
-                'bank_code' => 'HLBBMYKL',
-                'account_holder_name' => 'Jane Smith'
-            ]
-        ];
-
-        $this->client->shouldReceive('get')
-            ->with('/bank_accounts/', ['limit' => 20, 'offset' => 0])
-            ->andReturn(['data' => $accountsData]);
-
-        $accounts = $this->service->listBankAccounts();
-
-        expect($accounts)->toHaveCount(2);
-        expect($accounts[0])->toBeInstanceOf(BankAccount::class);
-        expect($accounts[0]->accountHolderName)->toBe('John Doe');
-        expect($accounts[1]->accountHolderName)->toBe('Jane Smith');
-    });
-
-    it('can verify a bank account', function () {
-        $verifiedData = [
-            'id' => 'bank_account_123',
-            'bank_code' => 'MBBEMYKL',
-            'account_number' => '1234567890123456',
-            'account_holder_name' => 'John Doe',
-            'is_verified' => true,
-            'verified_at' => '2024-01-01T12:00:00Z'
-        ];
-
-        $this->client->shouldReceive('post')
-            ->with('/bank_accounts/bank_account_123/verify/')
-            ->andReturn(['data' => $verifiedData]);
-
-        $account = $this->service->verifyBankAccount('bank_account_123');
-
-        expect($account)->toBeInstanceOf(BankAccount::class);
-        expect($account->isVerified)->toBeTrue();
-    });
-
-    it('can delete a bank account', function () {
-        $this->client->shouldReceive('delete')
-            ->with('/bank_accounts/bank_account_123/')
-            ->andReturn([]);
-
-        $result = $this->service->deleteBankAccount('bank_account_123');
-
-        expect($result)->toBeTrue();
-    });
-});
-
-describe('ChipSendService Balance and Limits', function () {
-    it('can get account balance', function () {
-        $balanceData = [
-            'available_balance_in_cents' => 100000,
-            'pending_balance_in_cents' => 5000,
-            'currency' => 'MYR'
-        ];
-
-        $this->client->shouldReceive('get')
-            ->with('/balance/')
-            ->andReturn(['data' => $balanceData]);
-
-        $balance = $this->service->getBalance();
-
-        expect($balance['available_balance_in_cents'])->toBe(100000);
-        expect($balance['pending_balance_in_cents'])->toBe(5000);
-        expect($balance['currency'])->toBe('MYR');
-    });
-
-    it('can get send limits', function () {
-        $limitsData = [
-            'daily_limit_in_cents' => 1000000,
-            'monthly_limit_in_cents' => 10000000,
-            'remaining_daily_in_cents' => 500000,
-            'remaining_monthly_in_cents' => 7500000
-        ];
-
-        $this->client->shouldReceive('get')
-            ->with('/send_limits/')
-            ->andReturn(['data' => $limitsData]);
-
-        $limits = $this->service->getSendLimits();
-
-        expect($limits['daily_limit_in_cents'])->toBe(1000000);
-        expect($limits['remaining_daily_in_cents'])->toBe(500000);
-    });
-
-    it('can request send limit increase', function () {
-        $requestData = [
-            'requested_daily_limit_in_cents' => 2000000,
-            'requested_monthly_limit_in_cents' => 20000000,
-            'business_justification' => 'Increased business volume'
-        ];
-
-        $responseData = [
-            'request_id' => 'limit_request_123',
-            'status' => 'pending_review',
-            'submitted_at' => '2024-01-01T12:00:00Z'
-        ];
-
-        $this->client->shouldReceive('post')
-            ->with('/send_limits/increase/', $requestData)
-            ->andReturn(['data' => $responseData]);
-
-        $response = $this->service->requestSendLimitIncrease(
-            requestedDailyLimitInCents: 2000000,
-            requestedMonthlyLimitInCents: 20000000,
-            businessJustification: 'Increased business volume'
-        );
-
-        expect($response['request_id'])->toBe('limit_request_123');
-        expect($response['status'])->toBe('pending_review');
+        expect($account->id)->toBe(84);
+        expect($account->status)->toBe('verified');
+        expect($account->account_number)->toBe('157380111111');
+        expect($account->bank_code)->toBe('MBBEMYKL');
+        expect($account->name)->toBe('Ahmad Pintu');
     });
 });

@@ -9,17 +9,18 @@ return new class extends Migration
     public function up(): void
     {
         $tablePrefix = config('chip.database.table_prefix', 'chip_');
-        $connection = config('chip.database.connection');
 
-        Schema::connection($connection)->create($tablePrefix.'payments', function (Blueprint $table) use ($tablePrefix) {
+        Schema::create($tablePrefix.'payments', function (Blueprint $table) use ($tablePrefix) {
             $table->id();
             $table->uuid('chip_id')->unique();
-            $table->uuid('purchase_chip_id'); // Changed from string to uuid to match chip_purchases.chip_id
+            $table->uuid('purchase_chip_id');
             $table->string('payment_type');
             $table->boolean('is_outgoing')->default(false);
             $table->integer('amount_cents');
             $table->integer('net_amount_cents');
             $table->integer('fee_amount_cents');
+            $table->integer('pending_amount_cents')->default(0);
+            $table->integer('pending_unfreeze_on')->nullable();
             $table->string('currency', 3)->default('MYR');
             $table->string('description')->nullable();
             $table->json('client_details');
@@ -31,6 +32,7 @@ return new class extends Migration
             $table->timestamp('chip_created_at');
             $table->timestamp('chip_updated_at');
             $table->timestamp('chip_paid_at')->nullable();
+            $table->timestamp('chip_remote_paid_at')->nullable();
             $table->timestamps();
 
             $table->index(['purchase_chip_id', 'is_test']);
@@ -47,8 +49,7 @@ return new class extends Migration
     public function down(): void
     {
         $tablePrefix = config('chip.database.table_prefix', 'chip_');
-        $connection = config('chip.database.connection');
 
-        Schema::connection($connection)->dropIfExists($tablePrefix.'payments');
+        Schema::dropIfExists($tablePrefix.'payments');
     }
 };

@@ -1,435 +1,140 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/phpunit.xml" tests="140" assertions="241" errors="35" failures="14" skipped="0" time="9.791567">
-    <testsuite name="CHIP Package Test Suite" tests="140" assertions="241" errors="35" failures="14" skipped="0" time="9.791567">
-      <testsuite name="Tests\DataObjects\DataObjectsTest" file="tests/DataObjects/DataObjectsTest.php" tests="15" assertions="62" errors="0" failures="0" skipped="0" time="1.260028">
-        <testcase name="`Purchase DataObject` → it creates a purchase from array data" file="tests/DataObjects/DataObjectsTest.php::`Purchase DataObject` → it creates a purchase from array data" class="Tests\DataObjects\DataObjectsTest" classname="Tests.DataObjects.DataObjectsTest" assertions="8" time="0.268089"/>
-        <testcase name="`Purchase DataObject` → it handles nullable fields correctly" file="tests/DataObjects/DataObjectsTest.php::`Purchase DataObject` → it handles nullable fields correctly" class="Tests\DataObjects\DataObjectsTest" classname="Tests.DataObjects.DataObjectsTest" assertions="4" time="0.070737"/>
-        <testcase name="`Purchase DataObject` → it calculates amount in major currency units" file="tests/DataObjects/DataObjectsTest.php::`Purchase DataObject` → it calculates amount in major currency units" class="Tests\DataObjects\DataObjectsTest" classname="Tests.DataObjects.DataObjectsTest" assertions="1" time="0.069747"/>
-        <testcase name="`Payment DataObject` → it creates a payment from array data" file="tests/DataObjects/DataObjectsTest.php::`Payment DataObject` → it creates a payment from array data" class="Tests\DataObjects\DataObjectsTest" classname="Tests.DataObjects.DataObjectsTest" assertions="6" time="0.070906"/>
-        <testcase name="`Payment DataObject` → it handles null payment method" file="tests/DataObjects/DataObjectsTest.php::`Payment DataObject` → it handles null payment method" class="Tests\DataObjects\DataObjectsTest" classname="Tests.DataObjects.DataObjectsTest" assertions="2" time="0.070763"/>
-        <testcase name="`Payment DataObject` → it calculates net amount after fees" file="tests/DataObjects/DataObjectsTest.php::`Payment DataObject` → it calculates net amount after fees" class="Tests\DataObjects\DataObjectsTest" classname="Tests.DataObjects.DataObjectsTest" assertions="2" time="0.069709"/>
-        <testcase name="`Client DataObject` → it creates a client from array data" file="tests/DataObjects/DataObjectsTest.php::`Client DataObject` → it creates a client from array data" class="Tests\DataObjects\DataObjectsTest" classname="Tests.DataObjects.DataObjectsTest" assertions="7" time="0.071058"/>
-        <testcase name="`Client DataObject` → it handles minimal client data" file="tests/DataObjects/DataObjectsTest.php::`Client DataObject` → it handles minimal client data" class="Tests\DataObjects\DataObjectsTest" classname="Tests.DataObjects.DataObjectsTest" assertions="4" time="0.071442"/>
-        <testcase name="`SendInstruction DataObject` → it creates a send instruction from array data" file="tests/DataObjects/DataObjectsTest.php::`SendInstruction DataObject` → it creates a send instruction from array data" class="Tests\DataObjects\DataObjectsTest" classname="Tests.DataObjects.DataObjectsTest" assertions="8" time="0.071307"/>
-        <testcase name="`SendInstruction DataObject` → it handles failed send instruction" file="tests/DataObjects/DataObjectsTest.php::`SendInstruction DataObject` → it handles failed send instruction" class="Tests\DataObjects\DataObjectsTest" classname="Tests.DataObjects.DataObjectsTest" assertions="3" time="0.070440"/>
-        <testcase name="`BankAccount DataObject` → it creates a bank account from array data" file="tests/DataObjects/DataObjectsTest.php::`BankAccount DataObject` → it creates a bank account from array data" class="Tests\DataObjects\DataObjectsTest" classname="Tests.DataObjects.DataObjectsTest" assertions="7" time="0.071497"/>
-        <testcase name="`BankAccount DataObject` → it handles unverified bank account" file="tests/DataObjects/DataObjectsTest.php::`BankAccount DataObject` → it handles unverified bank account" class="Tests\DataObjects\DataObjectsTest" classname="Tests.DataObjects.DataObjectsTest" assertions="3" time="0.071042"/>
-        <testcase name="`Webhook DataObject` → it creates a webhook from array data" file="tests/DataObjects/DataObjectsTest.php::`Webhook DataObject` → it creates a webhook from array data" class="Tests\DataObjects\DataObjectsTest" classname="Tests.DataObjects.DataObjectsTest" assertions="3" time="0.071418"/>
-        <testcase name="`Webhook DataObject` → it extracts purchase from webhook data" file="tests/DataObjects/DataObjectsTest.php::`Webhook DataObject` → it extracts purchase from webhook data" class="Tests\DataObjects\DataObjectsTest" classname="Tests.DataObjects.DataObjectsTest" assertions="3" time="0.071325"/>
-        <testcase name="`Webhook DataObject` → it returns null for non-purchase webhook events" file="tests/DataObjects/DataObjectsTest.php::`Webhook DataObject` → it returns null for non-purchase webhook events" class="Tests\DataObjects\DataObjectsTest" classname="Tests.DataObjects.DataObjectsTest" assertions="1" time="0.070547"/>
+  <testsuite name="/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/phpunit.xml" tests="114" assertions="272" errors="0" failures="0" skipped="0" time="5.312191">
+    <testsuite name="CHIP Package Test Suite" tests="114" assertions="272" errors="0" failures="0" skipped="0" time="5.312191">
+      <testsuite name="Tests\DataObjects\DataObjectsTest" file="tests/DataObjects/DataObjectsTest.php" tests="15" assertions="63" errors="0" failures="0" skipped="0" time="0.772200">
+        <testcase name="`Purchase DataObject` → it creates a purchase from array data" file="tests/DataObjects/DataObjectsTest.php::`Purchase DataObject` → it creates a purchase from array data" class="Tests\DataObjects\DataObjectsTest" classname="Tests.DataObjects.DataObjectsTest" assertions="8" time="0.234799"/>
+        <testcase name="`Purchase DataObject` → it handles nullable fields correctly" file="tests/DataObjects/DataObjectsTest.php::`Purchase DataObject` → it handles nullable fields correctly" class="Tests\DataObjects\DataObjectsTest" classname="Tests.DataObjects.DataObjectsTest" assertions="4" time="0.038521"/>
+        <testcase name="`Purchase DataObject` → it calculates amount in major currency units" file="tests/DataObjects/DataObjectsTest.php::`Purchase DataObject` → it calculates amount in major currency units" class="Tests\DataObjects\DataObjectsTest" classname="Tests.DataObjects.DataObjectsTest" assertions="1" time="0.037075"/>
+        <testcase name="`Payment DataObject` → it creates a payment from array data" file="tests/DataObjects/DataObjectsTest.php::`Payment DataObject` → it creates a payment from array data" class="Tests\DataObjects\DataObjectsTest" classname="Tests.DataObjects.DataObjectsTest" assertions="7" time="0.037141"/>
+        <testcase name="`Payment DataObject` → it handles null payment method" file="tests/DataObjects/DataObjectsTest.php::`Payment DataObject` → it handles null payment method" class="Tests\DataObjects\DataObjectsTest" classname="Tests.DataObjects.DataObjectsTest" assertions="2" time="0.036364"/>
+        <testcase name="`Payment DataObject` → it calculates net amount after fees" file="tests/DataObjects/DataObjectsTest.php::`Payment DataObject` → it calculates net amount after fees" class="Tests\DataObjects\DataObjectsTest" classname="Tests.DataObjects.DataObjectsTest" assertions="2" time="0.038758"/>
+        <testcase name="`Client DataObject` → it creates a client from array data" file="tests/DataObjects/DataObjectsTest.php::`Client DataObject` → it creates a client from array data" class="Tests\DataObjects\DataObjectsTest" classname="Tests.DataObjects.DataObjectsTest" assertions="7" time="0.040764"/>
+        <testcase name="`Client DataObject` → it handles minimal client data" file="tests/DataObjects/DataObjectsTest.php::`Client DataObject` → it handles minimal client data" class="Tests\DataObjects\DataObjectsTest" classname="Tests.DataObjects.DataObjectsTest" assertions="4" time="0.039668"/>
+        <testcase name="`SendInstruction DataObject` → it creates a send instruction from array data" file="tests/DataObjects/DataObjectsTest.php::`SendInstruction DataObject` → it creates a send instruction from array data" class="Tests\DataObjects\DataObjectsTest" classname="Tests.DataObjects.DataObjectsTest" assertions="8" time="0.039731"/>
+        <testcase name="`SendInstruction DataObject` → it handles failed send instruction" file="tests/DataObjects/DataObjectsTest.php::`SendInstruction DataObject` → it handles failed send instruction" class="Tests\DataObjects\DataObjectsTest" classname="Tests.DataObjects.DataObjectsTest" assertions="3" time="0.038336"/>
+        <testcase name="`BankAccount DataObject` → it creates a bank account from array data" file="tests/DataObjects/DataObjectsTest.php::`BankAccount DataObject` → it creates a bank account from array data" class="Tests\DataObjects\DataObjectsTest" classname="Tests.DataObjects.DataObjectsTest" assertions="7" time="0.038727"/>
+        <testcase name="`BankAccount DataObject` → it handles unverified bank account" file="tests/DataObjects/DataObjectsTest.php::`BankAccount DataObject` → it handles unverified bank account" class="Tests\DataObjects\DataObjectsTest" classname="Tests.DataObjects.DataObjectsTest" assertions="3" time="0.039683"/>
+        <testcase name="`Webhook DataObject` → it creates a webhook from array data" file="tests/DataObjects/DataObjectsTest.php::`Webhook DataObject` → it creates a webhook from array data" class="Tests\DataObjects\DataObjectsTest" classname="Tests.DataObjects.DataObjectsTest" assertions="3" time="0.037821"/>
+        <testcase name="`Webhook DataObject` → it extracts purchase from webhook data" file="tests/DataObjects/DataObjectsTest.php::`Webhook DataObject` → it extracts purchase from webhook data" class="Tests\DataObjects\DataObjectsTest" classname="Tests.DataObjects.DataObjectsTest" assertions="3" time="0.037454"/>
+        <testcase name="`Webhook DataObject` → it returns null for non-purchase webhook events" file="tests/DataObjects/DataObjectsTest.php::`Webhook DataObject` → it returns null for non-purchase webhook events" class="Tests\DataObjects\DataObjectsTest" classname="Tests.DataObjects.DataObjectsTest" assertions="1" time="0.037361"/>
       </testsuite>
-      <testsuite name="Tests\Events\EventsTest" file="tests/Events/EventsTest.php" tests="16" assertions="39" errors="0" failures="0" skipped="0" time="1.147519">
-        <testcase name="`PurchaseCreated Event` → it creates event with purchase data" file="tests/Events/EventsTest.php::`PurchaseCreated Event` → it creates event with purchase data" class="Tests\Events\EventsTest" classname="Tests.Events.EventsTest" assertions="3" time="0.087997"/>
-        <testcase name="`PurchaseCreated Event` → it implements ShouldBroadcast interface" file="tests/Events/EventsTest.php::`PurchaseCreated Event` → it implements ShouldBroadcast interface" class="Tests\Events\EventsTest" classname="Tests.Events.EventsTest" assertions="1" time="0.069870"/>
-        <testcase name="`PurchaseCreated Event` → it broadcasts on purchase channel" file="tests/Events/EventsTest.php::`PurchaseCreated Event` → it broadcasts on purchase channel" class="Tests\Events\EventsTest" classname="Tests.Events.EventsTest" assertions="2" time="0.071091"/>
-        <testcase name="`PurchaseCreated Event` → it broadcasts with correct data" file="tests/Events/EventsTest.php::`PurchaseCreated Event` → it broadcasts with correct data" class="Tests\Events\EventsTest" classname="Tests.Events.EventsTest" assertions="3" time="0.070442"/>
-        <testcase name="`PurchasePaid Event` → it creates event with paid purchase data" file="tests/Events/EventsTest.php::`PurchasePaid Event` → it creates event with paid purchase data" class="Tests\Events\EventsTest" classname="Tests.Events.EventsTest" assertions="3" time="0.070078"/>
-        <testcase name="`PurchasePaid Event` → it implements ShouldBroadcast interface" file="tests/Events/EventsTest.php::`PurchasePaid Event` → it implements ShouldBroadcast interface" class="Tests\Events\EventsTest" classname="Tests.Events.EventsTest" assertions="1" time="0.069809"/>
-        <testcase name="`PurchasePaid Event` → it broadcasts on purchase channel" file="tests/Events/EventsTest.php::`PurchasePaid Event` → it broadcasts on purchase channel" class="Tests\Events\EventsTest" classname="Tests.Events.EventsTest" assertions="2" time="0.071843"/>
-        <testcase name="`PurchasePaid Event` → it includes payment timestamp in broadcast data" file="tests/Events/EventsTest.php::`PurchasePaid Event` → it includes payment timestamp in broadcast data" class="Tests\Events\EventsTest" classname="Tests.Events.EventsTest" assertions="3" time="0.072430"/>
-        <testcase name="`WebhookReceived Event` → it creates event with webhook data" file="tests/Events/EventsTest.php::`WebhookReceived Event` → it creates event with webhook data" class="Tests\Events\EventsTest" classname="Tests.Events.EventsTest" assertions="2" time="0.071241"/>
-        <testcase name="`WebhookReceived Event` → it implements ShouldQueue interface for background processing" file="tests/Events/EventsTest.php::`WebhookReceived Event` → it implements ShouldQueue interface for background processing" class="Tests\Events\EventsTest" classname="Tests.Events.EventsTest" assertions="1" time="0.070226"/>
-        <testcase name="`WebhookReceived Event` → it stores raw webhook payload" file="tests/Events/EventsTest.php::`WebhookReceived Event` → it stores raw webhook payload" class="Tests\Events\EventsTest" classname="Tests.Events.EventsTest" assertions="2" time="0.070168"/>
-        <testcase name="`WebhookReceived Event` → it can determine webhook event type" file="tests/Events/EventsTest.php::`WebhookReceived Event` → it can determine webhook event type" class="Tests\Events\EventsTest" classname="Tests.Events.EventsTest" assertions="3" time="0.070192"/>
-        <testcase name="`Event Broadcasting Configuration` → it uses correct queue for background events" file="tests/Events/EventsTest.php::`Event Broadcasting Configuration` → it uses correct queue for background events" class="Tests\Events\EventsTest" classname="Tests.Events.EventsTest" assertions="1" time="0.070326"/>
-        <testcase name="`Event Broadcasting Configuration` → it sets appropriate broadcast queue for real-time events" file="tests/Events/EventsTest.php::`Event Broadcasting Configuration` → it sets appropriate broadcast queue for real-time events" class="Tests\Events\EventsTest" classname="Tests.Events.EventsTest" assertions="1" time="0.070487"/>
-        <testcase name="`Event Data Serialization` → it serializes purchase data correctly for broadcasting" file="tests/Events/EventsTest.php::`Event Data Serialization` → it serializes purchase data correctly for broadcasting" class="Tests\Events\EventsTest" classname="Tests.Events.EventsTest" assertions="8" time="0.070590"/>
-        <testcase name="`Event Data Serialization` → it includes event metadata in broadcast payload" file="tests/Events/EventsTest.php::`Event Data Serialization` → it includes event metadata in broadcast payload" class="Tests\Events\EventsTest" classname="Tests.Events.EventsTest" assertions="3" time="0.070729"/>
+      <testsuite name="Tests\Events\EventsTest" file="tests/Events/EventsTest.php" tests="16" assertions="39" errors="0" failures="0" skipped="0" time="0.643012">
+        <testcase name="`PurchaseCreated Event` → it creates event with purchase data" file="tests/Events/EventsTest.php::`PurchaseCreated Event` → it creates event with purchase data" class="Tests\Events\EventsTest" classname="Tests.Events.EventsTest" assertions="3" time="0.060317"/>
+        <testcase name="`PurchaseCreated Event` → it implements ShouldBroadcast interface" file="tests/Events/EventsTest.php::`PurchaseCreated Event` → it implements ShouldBroadcast interface" class="Tests\Events\EventsTest" classname="Tests.Events.EventsTest" assertions="1" time="0.038638"/>
+        <testcase name="`PurchaseCreated Event` → it broadcasts on purchase channel" file="tests/Events/EventsTest.php::`PurchaseCreated Event` → it broadcasts on purchase channel" class="Tests\Events\EventsTest" classname="Tests.Events.EventsTest" assertions="2" time="0.040442"/>
+        <testcase name="`PurchaseCreated Event` → it broadcasts with correct data" file="tests/Events/EventsTest.php::`PurchaseCreated Event` → it broadcasts with correct data" class="Tests\Events\EventsTest" classname="Tests.Events.EventsTest" assertions="3" time="0.038660"/>
+        <testcase name="`PurchasePaid Event` → it creates event with paid purchase data" file="tests/Events/EventsTest.php::`PurchasePaid Event` → it creates event with paid purchase data" class="Tests\Events\EventsTest" classname="Tests.Events.EventsTest" assertions="3" time="0.038634"/>
+        <testcase name="`PurchasePaid Event` → it implements ShouldBroadcast interface" file="tests/Events/EventsTest.php::`PurchasePaid Event` → it implements ShouldBroadcast interface" class="Tests\Events\EventsTest" classname="Tests.Events.EventsTest" assertions="1" time="0.041647"/>
+        <testcase name="`PurchasePaid Event` → it broadcasts on purchase channel" file="tests/Events/EventsTest.php::`PurchasePaid Event` → it broadcasts on purchase channel" class="Tests\Events\EventsTest" classname="Tests.Events.EventsTest" assertions="2" time="0.039271"/>
+        <testcase name="`PurchasePaid Event` → it includes payment timestamp in broadcast data" file="tests/Events/EventsTest.php::`PurchasePaid Event` → it includes payment timestamp in broadcast data" class="Tests\Events\EventsTest" classname="Tests.Events.EventsTest" assertions="3" time="0.039591"/>
+        <testcase name="`WebhookReceived Event` → it creates event with webhook data" file="tests/Events/EventsTest.php::`WebhookReceived Event` → it creates event with webhook data" class="Tests\Events\EventsTest" classname="Tests.Events.EventsTest" assertions="2" time="0.038946"/>
+        <testcase name="`WebhookReceived Event` → it implements ShouldQueue interface for background processing" file="tests/Events/EventsTest.php::`WebhookReceived Event` → it implements ShouldQueue interface for background processing" class="Tests\Events\EventsTest" classname="Tests.Events.EventsTest" assertions="1" time="0.038062"/>
+        <testcase name="`WebhookReceived Event` → it stores raw webhook payload" file="tests/Events/EventsTest.php::`WebhookReceived Event` → it stores raw webhook payload" class="Tests\Events\EventsTest" classname="Tests.Events.EventsTest" assertions="2" time="0.037640"/>
+        <testcase name="`WebhookReceived Event` → it can determine webhook event type" file="tests/Events/EventsTest.php::`WebhookReceived Event` → it can determine webhook event type" class="Tests\Events\EventsTest" classname="Tests.Events.EventsTest" assertions="3" time="0.037556"/>
+        <testcase name="`Event Broadcasting Configuration` → it uses correct queue for background events" file="tests/Events/EventsTest.php::`Event Broadcasting Configuration` → it uses correct queue for background events" class="Tests\Events\EventsTest" classname="Tests.Events.EventsTest" assertions="1" time="0.038720"/>
+        <testcase name="`Event Broadcasting Configuration` → it sets appropriate broadcast queue for real-time events" file="tests/Events/EventsTest.php::`Event Broadcasting Configuration` → it sets appropriate broadcast queue for real-time events" class="Tests\Events\EventsTest" classname="Tests.Events.EventsTest" assertions="1" time="0.038831"/>
+        <testcase name="`Event Data Serialization` → it serializes purchase data correctly for broadcasting" file="tests/Events/EventsTest.php::`Event Data Serialization` → it serializes purchase data correctly for broadcasting" class="Tests\Events\EventsTest" classname="Tests.Events.EventsTest" assertions="8" time="0.038277"/>
+        <testcase name="`Event Data Serialization` → it includes event metadata in broadcast payload" file="tests/Events/EventsTest.php::`Event Data Serialization` → it includes event metadata in broadcast payload" class="Tests\Events\EventsTest" classname="Tests.Events.EventsTest" assertions="3" time="0.037780"/>
       </testsuite>
-      <testsuite name="Tests\Exceptions\ExceptionsTest" file="tests/Exceptions/ExceptionsTest.php" tests="21" assertions="48" errors="0" failures="0" skipped="0" time="1.507532">
-        <testcase name="`ChipApiException` → it creates exception with message and status code" file="tests/Exceptions/ExceptionsTest.php::`ChipApiException` → it creates exception with message and status code" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="3" time="0.082460"/>
-        <testcase name="`ChipApiException` → it stores error details from API response" file="tests/Exceptions/ExceptionsTest.php::`ChipApiException` → it stores error details from API response" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="2" time="0.069693"/>
-        <testcase name="`ChipApiException` → it handles empty error details" file="tests/Exceptions/ExceptionsTest.php::`ChipApiException` → it handles empty error details" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="2" time="0.069540"/>
-        <testcase name="`ChipApiException` → it formats error message with details" file="tests/Exceptions/ExceptionsTest.php::`ChipApiException` → it formats error message with details" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="3" time="0.072826"/>
-        <testcase name="`ChipApiException` → it creates exception from HTTP response" file="tests/Exceptions/ExceptionsTest.php::`ChipApiException` → it creates exception from HTTP response" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="3" time="0.070302"/>
-        <testcase name="`ChipApiException` → it handles missing error message in response" file="tests/Exceptions/ExceptionsTest.php::`ChipApiException` → it handles missing error message in response" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="2" time="0.069980"/>
-        <testcase name="`ChipValidationException` → it creates validation exception with field errors" file="tests/Exceptions/ExceptionsTest.php::`ChipValidationException` → it creates validation exception with field errors" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="2" time="0.070983"/>
-        <testcase name="`ChipValidationException` → it checks if specific field has error" file="tests/Exceptions/ExceptionsTest.php::`ChipValidationException` → it checks if specific field has error" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="2" time="0.070010"/>
-        <testcase name="`ChipValidationException` → it gets errors for specific field" file="tests/Exceptions/ExceptionsTest.php::`ChipValidationException` → it gets errors for specific field" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="2" time="0.070082"/>
-        <testcase name="`ChipValidationException` → it formats all validation errors as string" file="tests/Exceptions/ExceptionsTest.php::`ChipValidationException` → it formats all validation errors as string" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="2" time="0.070031"/>
-        <testcase name="`ChipValidationException` → it creates exception from Laravel validator" file="tests/Exceptions/ExceptionsTest.php::`ChipValidationException` → it creates exception from Laravel validator" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="4" time="0.080205"/>
-        <testcase name="`WebhookVerificationException` → it creates exception with verification failure message" file="tests/Exceptions/ExceptionsTest.php::`WebhookVerificationException` → it creates exception with verification failure message" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="2" time="0.071288"/>
-        <testcase name="`WebhookVerificationException` → it creates exception for missing signature" file="tests/Exceptions/ExceptionsTest.php::`WebhookVerificationException` → it creates exception for missing signature" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="2" time="0.070449"/>
-        <testcase name="`WebhookVerificationException` → it creates exception for invalid signature format" file="tests/Exceptions/ExceptionsTest.php::`WebhookVerificationException` → it creates exception for invalid signature format" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="2" time="0.070449"/>
-        <testcase name="`WebhookVerificationException` → it creates exception for signature verification failure" file="tests/Exceptions/ExceptionsTest.php::`WebhookVerificationException` → it creates exception for signature verification failure" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="2" time="0.070592"/>
-        <testcase name="`WebhookVerificationException` → it creates exception for invalid payload" file="tests/Exceptions/ExceptionsTest.php::`WebhookVerificationException` → it creates exception for invalid payload" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="2" time="0.070596"/>
-        <testcase name="`WebhookVerificationException` → it creates exception for missing public key" file="tests/Exceptions/ExceptionsTest.php::`WebhookVerificationException` → it creates exception for missing public key" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="2" time="0.071038"/>
-        <testcase name="`Exception Inheritance` → it extends appropriate base exception classes" file="tests/Exceptions/ExceptionsTest.php::`Exception Inheritance` → it extends appropriate base exception classes" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="3" time="0.071089"/>
-        <testcase name="`Exception Inheritance` → it implements custom exception interface if defined" file="tests/Exceptions/ExceptionsTest.php::`Exception Inheritance` → it implements custom exception interface if defined" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="3" time="0.072849"/>
-        <testcase name="`Exception Error Context` → it preserves original exception context" file="tests/Exceptions/ExceptionsTest.php::`Exception Error Context` → it preserves original exception context" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="1" time="0.071591"/>
-        <testcase name="`Exception Error Context` → it maintains error context through exception chain" file="tests/Exceptions/ExceptionsTest.php::`Exception Error Context` → it maintains error context through exception chain" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="2" time="0.071481"/>
+      <testsuite name="Tests\Exceptions\ExceptionsTest" file="tests/Exceptions/ExceptionsTest.php" tests="21" assertions="48" errors="0" failures="0" skipped="0" time="0.839037">
+        <testcase name="`ChipApiException` → it creates exception with message and status code" file="tests/Exceptions/ExceptionsTest.php::`ChipApiException` → it creates exception with message and status code" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="3" time="0.051796"/>
+        <testcase name="`ChipApiException` → it stores error details from API response" file="tests/Exceptions/ExceptionsTest.php::`ChipApiException` → it stores error details from API response" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="2" time="0.037646"/>
+        <testcase name="`ChipApiException` → it handles empty error details" file="tests/Exceptions/ExceptionsTest.php::`ChipApiException` → it handles empty error details" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="2" time="0.037048"/>
+        <testcase name="`ChipApiException` → it formats error message with details" file="tests/Exceptions/ExceptionsTest.php::`ChipApiException` → it formats error message with details" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="3" time="0.038181"/>
+        <testcase name="`ChipApiException` → it creates exception from HTTP response" file="tests/Exceptions/ExceptionsTest.php::`ChipApiException` → it creates exception from HTTP response" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="3" time="0.040664"/>
+        <testcase name="`ChipApiException` → it handles missing error message in response" file="tests/Exceptions/ExceptionsTest.php::`ChipApiException` → it handles missing error message in response" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="2" time="0.037336"/>
+        <testcase name="`ChipValidationException` → it creates validation exception with field errors" file="tests/Exceptions/ExceptionsTest.php::`ChipValidationException` → it creates validation exception with field errors" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="2" time="0.038001"/>
+        <testcase name="`ChipValidationException` → it checks if specific field has error" file="tests/Exceptions/ExceptionsTest.php::`ChipValidationException` → it checks if specific field has error" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="2" time="0.037319"/>
+        <testcase name="`ChipValidationException` → it gets errors for specific field" file="tests/Exceptions/ExceptionsTest.php::`ChipValidationException` → it gets errors for specific field" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="2" time="0.037173"/>
+        <testcase name="`ChipValidationException` → it formats all validation errors as string" file="tests/Exceptions/ExceptionsTest.php::`ChipValidationException` → it formats all validation errors as string" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="2" time="0.037384"/>
+        <testcase name="`ChipValidationException` → it creates exception from Laravel validator" file="tests/Exceptions/ExceptionsTest.php::`ChipValidationException` → it creates exception from Laravel validator" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="4" time="0.047013"/>
+        <testcase name="`WebhookVerificationException` → it creates exception with verification failure message" file="tests/Exceptions/ExceptionsTest.php::`WebhookVerificationException` → it creates exception with verification failure message" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="2" time="0.037868"/>
+        <testcase name="`WebhookVerificationException` → it creates exception for missing signature" file="tests/Exceptions/ExceptionsTest.php::`WebhookVerificationException` → it creates exception for missing signature" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="2" time="0.037421"/>
+        <testcase name="`WebhookVerificationException` → it creates exception for invalid signature format" file="tests/Exceptions/ExceptionsTest.php::`WebhookVerificationException` → it creates exception for invalid signature format" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="2" time="0.038265"/>
+        <testcase name="`WebhookVerificationException` → it creates exception for signature verification failure" file="tests/Exceptions/ExceptionsTest.php::`WebhookVerificationException` → it creates exception for signature verification failure" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="2" time="0.038633"/>
+        <testcase name="`WebhookVerificationException` → it creates exception for invalid payload" file="tests/Exceptions/ExceptionsTest.php::`WebhookVerificationException` → it creates exception for invalid payload" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="2" time="0.040086"/>
+        <testcase name="`WebhookVerificationException` → it creates exception for missing public key" file="tests/Exceptions/ExceptionsTest.php::`WebhookVerificationException` → it creates exception for missing public key" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="2" time="0.041069"/>
+        <testcase name="`Exception Inheritance` → it extends appropriate base exception classes" file="tests/Exceptions/ExceptionsTest.php::`Exception Inheritance` → it extends appropriate base exception classes" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="3" time="0.040494"/>
+        <testcase name="`Exception Inheritance` → it implements custom exception interface if defined" file="tests/Exceptions/ExceptionsTest.php::`Exception Inheritance` → it implements custom exception interface if defined" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="3" time="0.042372"/>
+        <testcase name="`Exception Error Context` → it preserves original exception context" file="tests/Exceptions/ExceptionsTest.php::`Exception Error Context` → it preserves original exception context" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="1" time="0.042805"/>
+        <testcase name="`Exception Error Context` → it maintains error context through exception chain" file="tests/Exceptions/ExceptionsTest.php::`Exception Error Context` → it maintains error context through exception chain" class="Tests\Exceptions\ExceptionsTest" classname="Tests.Exceptions.ExceptionsTest" assertions="2" time="0.040463"/>
       </testsuite>
-      <testsuite name="Tests\Feature\IntegrationTest" file="tests/Feature/IntegrationTest.php" tests="9" assertions="13" errors="5" failures="1" skipped="0" time="0.660814">
-        <testcase name="`Package Integration Tests` → it loads package service provider correctly" file="tests/Feature/IntegrationTest.php::`Package Integration Tests` → it loads package service provider correctly" class="Tests\Feature\IntegrationTest" classname="Tests.Feature.IntegrationTest" assertions="3" time="0.085030"/>
-        <testcase name="`Package Integration Tests` → it registers package routes" file="tests/Feature/IntegrationTest.php::`Package Integration Tests` → it registers package routes" class="Tests\Feature\IntegrationTest" classname="Tests.Feature.IntegrationTest" assertions="1" time="0.080644">
-          <failure type="PHPUnit\Framework\ExpectationFailedException">`Package Integration Tests` → it registers package routesFailed asserting that false is true.
-at tests/Feature/IntegrationTest.php:165</failure>
-        </testcase>
-        <testcase name="`Package Integration Tests` → it publishes package migrations" file="tests/Feature/IntegrationTest.php::`Package Integration Tests` → it publishes package migrations" class="Tests\Feature\IntegrationTest" classname="Tests.Feature.IntegrationTest" assertions="6" time="0.070082"/>
-        <testcase name="`Package Integration Tests` → it configures package correctly from config file" file="tests/Feature/IntegrationTest.php::`Package Integration Tests` → it configures package correctly from config file" class="Tests\Feature\IntegrationTest" classname="Tests.Feature.IntegrationTest" assertions="3" time="0.070142"/>
-        <testcase name="`End-to-End Webhook Processing` → it processes purchase.created webhook end-to-end" file="tests/Feature/IntegrationTest.php::`End-to-End Webhook Processing` → it processes purchase.created webhook end-to-end" class="Tests\Feature\IntegrationTest" classname="Tests.Feature.IntegrationTest" assertions="0" time="0.070349">
-          <error type="ErrorException">`End-to-End Webhook Processing` → it processes purchase.created webhook end-to-endErrorException: Undefined property: P\Tests\Feature\IntegrationTest::$testCase
-at vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php:258
-at tests/Feature/IntegrationTest.php:190</error>
-        </testcase>
-        <testcase name="`End-to-End Webhook Processing` → it processes purchase.paid webhook end-to-end" file="tests/Feature/IntegrationTest.php::`End-to-End Webhook Processing` → it processes purchase.paid webhook end-to-end" class="Tests\Feature\IntegrationTest" classname="Tests.Feature.IntegrationTest" assertions="0" time="0.070299">
-          <error type="ErrorException">`End-to-End Webhook Processing` → it processes purchase.paid webhook end-to-endErrorException: Undefined property: P\Tests\Feature\IntegrationTest::$testCase
-at vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php:258
-at tests/Feature/IntegrationTest.php:206</error>
-        </testcase>
-        <testcase name="`End-to-End Webhook Processing` → it rejects webhook with invalid signature" file="tests/Feature/IntegrationTest.php::`End-to-End Webhook Processing` → it rejects webhook with invalid signature" class="Tests\Feature\IntegrationTest" classname="Tests.Feature.IntegrationTest" assertions="0" time="0.070541">
-          <error type="ErrorException">`End-to-End Webhook Processing` → it rejects webhook with invalid signatureErrorException: Undefined property: P\Tests\Feature\IntegrationTest::$testCase
-at vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php:258
-at tests/Feature/IntegrationTest.php:220</error>
-        </testcase>
-        <testcase name="`Database Persistence Integration` → it stores webhook data in database" file="tests/Feature/IntegrationTest.php::`Database Persistence Integration` → it stores webhook data in database" class="Tests\Feature\IntegrationTest" classname="Tests.Feature.IntegrationTest" assertions="0" time="0.071697">
-          <error type="ErrorException">`Database Persistence Integration` → it stores webhook data in databaseErrorException: Undefined property: P\Tests\Feature\IntegrationTest::$testCase
-at vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php:258
-at tests/Feature/IntegrationTest.php:246</error>
-        </testcase>
-        <testcase name="`Database Persistence Integration` → it stores purchase data in database" file="tests/Feature/IntegrationTest.php::`Database Persistence Integration` → it stores purchase data in database" class="Tests\Feature\IntegrationTest" classname="Tests.Feature.IntegrationTest" assertions="0" time="0.072029">
-          <error type="Illuminate\Database\QueryException">`Database Persistence Integration` → it stores purchase data in databaseIlluminate\Database\QueryException: SQLSTATE[HY000]: General error: 1 table chip_purchases has no column named purchase_id (Connection: testing, SQL: insert into "chip_purchases" ("purchase_id", "amount_in_cents", "currency", "reference", "status", "metadata") values (purchase_123, 10000, MYR, ORDER_001, created, {"order_id":"456"}))
-at vendor/laravel/framework/src/Illuminate/Database/Connection.php:564
-at vendor/laravel/framework/src/Illuminate/Database/Connection.php:811
-at vendor/laravel/framework/src/Illuminate/Database/Connection.php:778
-at vendor/laravel/framework/src/Illuminate/Database/Connection.php:559
-at vendor/laravel/framework/src/Illuminate/Database/Connection.php:523
-at vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3804
-at tests/Feature/IntegrationTest.php:263
-Caused by
-PDOException: SQLSTATE[HY000]: General error: 1 table chip_purchases has no column named purchase_id
-
-at vendor/laravel/framework/src/Illuminate/Database/Connection.php:564
-at vendor/laravel/framework/src/Illuminate/Database/Connection.php:811
-at vendor/laravel/framework/src/Illuminate/Database/Connection.php:778
-at vendor/laravel/framework/src/Illuminate/Database/Connection.php:559
-at vendor/laravel/framework/src/Illuminate/Database/Connection.php:523
-at vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3804
-at tests/Feature/IntegrationTest.php:263</error>
-        </testcase>
+      <testsuite name="Tests\Feature\IntegrationTest" file="tests/Feature/IntegrationTest.php" tests="9" assertions="20" errors="0" failures="0" skipped="0" time="0.417832">
+        <testcase name="`Package Integration Tests` → it loads package service provider correctly" file="tests/Feature/IntegrationTest.php::`Package Integration Tests` → it loads package service provider correctly" class="Tests\Feature\IntegrationTest" classname="Tests.Feature.IntegrationTest" assertions="3" time="0.054925"/>
+        <testcase name="`Package Integration Tests` → it registers package routes" file="tests/Feature/IntegrationTest.php::`Package Integration Tests` → it registers package routes" class="Tests\Feature\IntegrationTest" classname="Tests.Feature.IntegrationTest" assertions="1" time="0.040043"/>
+        <testcase name="`Package Integration Tests` → it publishes package migrations" file="tests/Feature/IntegrationTest.php::`Package Integration Tests` → it publishes package migrations" class="Tests\Feature\IntegrationTest" classname="Tests.Feature.IntegrationTest" assertions="6" time="0.040511"/>
+        <testcase name="`Package Integration Tests` → it configures package correctly from config file" file="tests/Feature/IntegrationTest.php::`Package Integration Tests` → it configures package correctly from config file" class="Tests\Feature\IntegrationTest" classname="Tests.Feature.IntegrationTest" assertions="3" time="0.042711"/>
+        <testcase name="`End-to-End Webhook Processing` → it processes purchase.created webhook end-to-end" file="tests/Feature/IntegrationTest.php::`End-to-End Webhook Processing` → it processes purchase.created webhook end-to-end" class="Tests\Feature\IntegrationTest" classname="Tests.Feature.IntegrationTest" assertions="2" time="0.079696"/>
+        <testcase name="`End-to-End Webhook Processing` → it processes purchase.paid webhook end-to-end" file="tests/Feature/IntegrationTest.php::`End-to-End Webhook Processing` → it processes purchase.paid webhook end-to-end" class="Tests\Feature\IntegrationTest" classname="Tests.Feature.IntegrationTest" assertions="2" time="0.042358"/>
+        <testcase name="`End-to-End Webhook Processing` → it processes webhook with invalid signature when verification is disabled" file="tests/Feature/IntegrationTest.php::`End-to-End Webhook Processing` → it processes webhook with invalid signature when verification is disabled" class="Tests\Feature\IntegrationTest" classname="Tests.Feature.IntegrationTest" assertions="1" time="0.041053"/>
+        <testcase name="`Database Persistence Integration` → it stores webhook data in database" file="tests/Feature/IntegrationTest.php::`Database Persistence Integration` → it stores webhook data in database" class="Tests\Feature\IntegrationTest" classname="Tests.Feature.IntegrationTest" assertions="1" time="0.038519"/>
+        <testcase name="`Database Persistence Integration` → it stores purchase data in database" file="tests/Feature/IntegrationTest.php::`Database Persistence Integration` → it stores purchase data in database" class="Tests\Feature\IntegrationTest" classname="Tests.Feature.IntegrationTest" assertions="1" time="0.038016"/>
       </testsuite>
-      <testsuite name="Tests\Http\ChipCollectClientTest" file="tests/Http/ChipCollectClientTest.php" tests="15" assertions="23" errors="1" failures="1" skipped="0" time="1.122825">
-        <testcase name="`ChipCollectClient Authentication` → it adds bearer token to requests" file="tests/Http/ChipCollectClientTest.php::`ChipCollectClient Authentication` → it adds bearer token to requests" class="Tests\Http\ChipCollectClientTest" classname="Tests.Http.ChipCollectClientTest" assertions="1" time="0.097359"/>
-        <testcase name="`ChipCollectClient Authentication` → it sets correct content type" file="tests/Http/ChipCollectClientTest.php::`ChipCollectClient Authentication` → it sets correct content type" class="Tests\Http\ChipCollectClientTest" classname="Tests.Http.ChipCollectClientTest" assertions="1" time="0.071807"/>
-        <testcase name="`ChipCollectClient Request Methods` → it can make GET requests" file="tests/Http/ChipCollectClientTest.php::`ChipCollectClient Request Methods` → it can make GET requests" class="Tests\Http\ChipCollectClientTest" classname="Tests.Http.ChipCollectClientTest" assertions="2" time="0.075248"/>
-        <testcase name="`ChipCollectClient Request Methods` → it can make POST requests" file="tests/Http/ChipCollectClientTest.php::`ChipCollectClient Request Methods` → it can make POST requests" class="Tests\Http\ChipCollectClientTest" classname="Tests.Http.ChipCollectClientTest" assertions="2" time="0.073335"/>
-        <testcase name="`ChipCollectClient Request Methods` → it can make PUT requests" file="tests/Http/ChipCollectClientTest.php::`ChipCollectClient Request Methods` → it can make PUT requests" class="Tests\Http\ChipCollectClientTest" classname="Tests.Http.ChipCollectClientTest" assertions="2" time="0.071104"/>
-        <testcase name="`ChipCollectClient Request Methods` → it can make DELETE requests" file="tests/Http/ChipCollectClientTest.php::`ChipCollectClient Request Methods` → it can make DELETE requests" class="Tests\Http\ChipCollectClientTest" classname="Tests.Http.ChipCollectClientTest" assertions="2" time="0.072096"/>
-        <testcase name="`ChipCollectClient Error Handling` → it throws ChipApiException on 400 error" file="tests/Http/ChipCollectClientTest.php::`ChipCollectClient Error Handling` → it throws ChipApiException on 400 error" class="Tests\Http\ChipCollectClientTest" classname="Tests.Http.ChipCollectClientTest" assertions="2" time="0.082406"/>
-        <testcase name="`ChipCollectClient Error Handling` → it throws ChipApiException on 401 error" file="tests/Http/ChipCollectClientTest.php::`ChipCollectClient Error Handling` → it throws ChipApiException on 401 error" class="Tests\Http\ChipCollectClientTest" classname="Tests.Http.ChipCollectClientTest" assertions="2" time="0.071040"/>
-        <testcase name="`ChipCollectClient Error Handling` → it throws ChipApiException on 404 error" file="tests/Http/ChipCollectClientTest.php::`ChipCollectClient Error Handling` → it throws ChipApiException on 404 error" class="Tests\Http\ChipCollectClientTest" classname="Tests.Http.ChipCollectClientTest" assertions="2" time="0.071032"/>
-        <testcase name="`ChipCollectClient Error Handling` → it throws ChipApiException on 500 error" file="tests/Http/ChipCollectClientTest.php::`ChipCollectClient Error Handling` → it throws ChipApiException on 500 error" class="Tests\Http\ChipCollectClientTest" classname="Tests.Http.ChipCollectClientTest" assertions="2" time="0.071502"/>
-        <testcase name="`ChipCollectClient Error Handling` → it includes error details in exception" file="tests/Http/ChipCollectClientTest.php::`ChipCollectClient Error Handling` → it includes error details in exception" class="Tests\Http\ChipCollectClientTest" classname="Tests.Http.ChipCollectClientTest" assertions="2" time="0.075806">
-          <failure type="PHPUnit\Framework\ExpectationFailedException">`ChipCollectClient Error Handling` → it includes error details in exceptionFailed asserting that two arrays are identical.
-at tests/Http/ChipCollectClientTest.php:117</failure>
-        </testcase>
-        <testcase name="`ChipCollectClient Retry Logic` → it retries on network failures" file="tests/Http/ChipCollectClientTest.php::`ChipCollectClient Retry Logic` → it retries on network failures" class="Tests\Http\ChipCollectClientTest" classname="Tests.Http.ChipCollectClientTest" assertions="0" time="0.072466">
-          <error type="Masyukai\Chip\Exceptions\ChipApiException">`ChipCollectClient Retry Logic` → it retries on network failuresMasyukai\Chip\Exceptions\ChipApiException: API request failed with status 500
-at src/Clients/ChipCollectClient.php:93
-at src/Clients/ChipCollectClient.php:78
-at src/Clients/ChipCollectClient.php:113
-at tests/Http/ChipCollectClientTest.php:132</error>
-        </testcase>
-        <testcase name="`ChipCollectClient Retry Logic` → it gives up after max retries" file="tests/Http/ChipCollectClientTest.php::`ChipCollectClient Retry Logic` → it gives up after max retries" class="Tests\Http\ChipCollectClientTest" classname="Tests.Http.ChipCollectClientTest" assertions="1" time="0.071336"/>
-        <testcase name="`ChipCollectClient URL Building` → it uses sandbox URL in test mode" file="tests/Http/ChipCollectClientTest.php::`ChipCollectClient URL Building` → it uses sandbox URL in test mode" class="Tests\Http\ChipCollectClientTest" classname="Tests.Http.ChipCollectClientTest" assertions="1" time="0.072049"/>
-        <testcase name="`ChipCollectClient URL Building` → it uses production URL in live mode" file="tests/Http/ChipCollectClientTest.php::`ChipCollectClient URL Building` → it uses production URL in live mode" class="Tests\Http\ChipCollectClientTest" classname="Tests.Http.ChipCollectClientTest" assertions="1" time="0.074239"/>
+      <testsuite name="Tests\Http\ChipCollectClientTest" file="tests/Http/ChipCollectClientTest.php" tests="14" assertions="26" errors="0" failures="0" skipped="0" time="0.734664">
+        <testcase name="`ChipCollectClient Authentication` → it adds bearer token to requests" file="tests/Http/ChipCollectClientTest.php::`ChipCollectClient Authentication` → it adds bearer token to requests" class="Tests\Http\ChipCollectClientTest" classname="Tests.Http.ChipCollectClientTest" assertions="1" time="0.066880"/>
+        <testcase name="`ChipCollectClient Authentication` → it sets correct content type" file="tests/Http/ChipCollectClientTest.php::`ChipCollectClient Authentication` → it sets correct content type" class="Tests\Http\ChipCollectClientTest" classname="Tests.Http.ChipCollectClientTest" assertions="1" time="0.037598"/>
+        <testcase name="`ChipCollectClient Request Methods` → it can make GET requests" file="tests/Http/ChipCollectClientTest.php::`ChipCollectClient Request Methods` → it can make GET requests" class="Tests\Http\ChipCollectClientTest" classname="Tests.Http.ChipCollectClientTest" assertions="2" time="0.037676"/>
+        <testcase name="`ChipCollectClient Request Methods` → it can make POST requests" file="tests/Http/ChipCollectClientTest.php::`ChipCollectClient Request Methods` → it can make POST requests" class="Tests\Http\ChipCollectClientTest" classname="Tests.Http.ChipCollectClientTest" assertions="2" time="0.037645"/>
+        <testcase name="`ChipCollectClient Request Methods` → it can make PUT requests" file="tests/Http/ChipCollectClientTest.php::`ChipCollectClient Request Methods` → it can make PUT requests" class="Tests\Http\ChipCollectClientTest" classname="Tests.Http.ChipCollectClientTest" assertions="2" time="0.037520"/>
+        <testcase name="`ChipCollectClient Request Methods` → it can make DELETE requests" file="tests/Http/ChipCollectClientTest.php::`ChipCollectClient Request Methods` → it can make DELETE requests" class="Tests\Http\ChipCollectClientTest" classname="Tests.Http.ChipCollectClientTest" assertions="2" time="0.038645"/>
+        <testcase name="`ChipCollectClient Error Handling` → it throws ChipApiException on 400 error" file="tests/Http/ChipCollectClientTest.php::`ChipCollectClient Error Handling` → it throws ChipApiException on 400 error" class="Tests\Http\ChipCollectClientTest" classname="Tests.Http.ChipCollectClientTest" assertions="2" time="0.040468"/>
+        <testcase name="`ChipCollectClient Error Handling` → it throws ChipApiException on 401 error" file="tests/Http/ChipCollectClientTest.php::`ChipCollectClient Error Handling` → it throws ChipApiException on 401 error" class="Tests\Http\ChipCollectClientTest" classname="Tests.Http.ChipCollectClientTest" assertions="2" time="0.040794"/>
+        <testcase name="`ChipCollectClient Error Handling` → it throws ChipApiException on 404 error" file="tests/Http/ChipCollectClientTest.php::`ChipCollectClient Error Handling` → it throws ChipApiException on 404 error" class="Tests\Http\ChipCollectClientTest" classname="Tests.Http.ChipCollectClientTest" assertions="2" time="0.041211"/>
+        <testcase name="`ChipCollectClient Error Handling` → it throws ChipApiException on 500 error" file="tests/Http/ChipCollectClientTest.php::`ChipCollectClient Error Handling` → it throws ChipApiException on 500 error" class="Tests\Http\ChipCollectClientTest" classname="Tests.Http.ChipCollectClientTest" assertions="2" time="0.056516"/>
+        <testcase name="`ChipCollectClient Error Handling` → it includes error details in exception" file="tests/Http/ChipCollectClientTest.php::`ChipCollectClient Error Handling` → it includes error details in exception" class="Tests\Http\ChipCollectClientTest" classname="Tests.Http.ChipCollectClientTest" assertions="3" time="0.058791"/>
+        <testcase name="`ChipCollectClient Retry Logic` → it throws exception on server errors without retrying" file="tests/Http/ChipCollectClientTest.php::`ChipCollectClient Retry Logic` → it throws exception on server errors without retrying" class="Tests\Http\ChipCollectClientTest" classname="Tests.Http.ChipCollectClientTest" assertions="3" time="0.139755"/>
+        <testcase name="`ChipCollectClient Retry Logic` → it gives up after max retries" file="tests/Http/ChipCollectClientTest.php::`ChipCollectClient Retry Logic` → it gives up after max retries" class="Tests\Http\ChipCollectClientTest" classname="Tests.Http.ChipCollectClientTest" assertions="1" time="0.055161"/>
+        <testcase name="`ChipCollectClient Configuration` → it uses configured base URL" file="tests/Http/ChipCollectClientTest.php::`ChipCollectClient Configuration` → it uses configured base URL" class="Tests\Http\ChipCollectClientTest" classname="Tests.Http.ChipCollectClientTest" assertions="1" time="0.046003"/>
       </testsuite>
-      <testsuite name="Tests\Http\ChipSendClientTest" file="tests/Http/ChipSendClientTest.php" tests="10" assertions="14" errors="0" failures="3" skipped="0" time="0.783944">
-        <testcase name="`ChipSendClient Authentication` → it adds correct headers to requests" file="tests/Http/ChipSendClientTest.php::`ChipSendClient Authentication` → it adds correct headers to requests" class="Tests\Http\ChipSendClientTest" classname="Tests.Http.ChipSendClientTest" assertions="1" time="0.089376"/>
-        <testcase name="`ChipSendClient Authentication` → it generates valid HMAC signature" file="tests/Http/ChipSendClientTest.php::`ChipSendClient Authentication` → it generates valid HMAC signature" class="Tests\Http\ChipSendClientTest" classname="Tests.Http.ChipSendClientTest" assertions="1" time="0.081754">
-          <failure type="PHPUnit\Framework\ExpectationFailedException">`ChipSendClient Authentication` → it generates valid HMAC signatureAn expected request was not recorded.
-Failed asserting that false is true.
-at vendor/laravel/framework/src/Illuminate/Http/Client/Factory.php:395
-at vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php:363
-at tests/Http/ChipSendClientTest.php:30</failure>
-        </testcase>
-        <testcase name="`ChipSendClient Authentication` → it includes API key in signature generation" file="tests/Http/ChipSendClientTest.php::`ChipSendClient Authentication` → it includes API key in signature generation" class="Tests\Http\ChipSendClientTest" classname="Tests.Http.ChipSendClientTest" assertions="1" time="0.084222"/>
-        <testcase name="`ChipSendClient Request Methods` → it can make GET requests" file="tests/Http/ChipSendClientTest.php::`ChipSendClient Request Methods` → it can make GET requests" class="Tests\Http\ChipSendClientTest" classname="Tests.Http.ChipSendClientTest" assertions="2" time="0.080205"/>
-        <testcase name="`ChipSendClient Request Methods` → it can make POST requests with JSON body" file="tests/Http/ChipSendClientTest.php::`ChipSendClient Request Methods` → it can make POST requests with JSON body" class="Tests\Http\ChipSendClientTest" classname="Tests.Http.ChipSendClientTest" assertions="2" time="0.081312"/>
-        <testcase name="`ChipSendClient Error Handling` → it throws ChipApiException with proper error details" file="tests/Http/ChipSendClientTest.php::`ChipSendClient Error Handling` → it throws ChipApiException with proper error details" class="Tests\Http\ChipSendClientTest" classname="Tests.Http.ChipSendClientTest" assertions="3" time="0.079911">
-          <failure type="PHPUnit\Framework\ExpectationFailedException">`ChipSendClient Error Handling` → it throws ChipApiException with proper error detailsFailed asserting that two arrays are identical.
-at tests/Http/ChipSendClientTest.php:90</failure>
-        </testcase>
-        <testcase name="`ChipSendClient Error Handling` → it handles network timeouts" file="tests/Http/ChipSendClientTest.php::`ChipSendClient Error Handling` → it handles network timeouts" class="Tests\Http\ChipSendClientTest" classname="Tests.Http.ChipSendClientTest" assertions="1" time="0.074464"/>
-        <testcase name="`ChipSendClient URL Building` → it uses sandbox URL in test mode" file="tests/Http/ChipSendClientTest.php::`ChipSendClient URL Building` → it uses sandbox URL in test mode" class="Tests\Http\ChipSendClientTest" classname="Tests.Http.ChipSendClientTest" assertions="1" time="0.070997"/>
-        <testcase name="`ChipSendClient URL Building` → it uses production URL in live mode" file="tests/Http/ChipSendClientTest.php::`ChipSendClient URL Building` → it uses production URL in live mode" class="Tests\Http\ChipSendClientTest" classname="Tests.Http.ChipSendClientTest" assertions="1" time="0.070985">
-          <failure type="PHPUnit\Framework\ExpectationFailedException">`ChipSendClient URL Building` → it uses production URL in live modeAn expected request was not recorded.
-Failed asserting that false is true.
-at vendor/laravel/framework/src/Illuminate/Http/Client/Factory.php:395
-at vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php:363
-at tests/Http/ChipSendClientTest.php:119</failure>
-        </testcase>
-        <testcase name="`ChipSendClient Timestamp Generation` → it generates current epoch timestamp" file="tests/Http/ChipSendClientTest.php::`ChipSendClient Timestamp Generation` → it generates current epoch timestamp" class="Tests\Http\ChipSendClientTest" classname="Tests.Http.ChipSendClientTest" assertions="1" time="0.070718"/>
+      <testsuite name="Tests\Http\ChipSendClientTest" file="tests/Http/ChipSendClientTest.php" tests="10" assertions="14" errors="0" failures="0" skipped="0" time="0.596120">
+        <testcase name="`ChipSendClient Authentication` → it adds correct headers to requests" file="tests/Http/ChipSendClientTest.php::`ChipSendClient Authentication` → it adds correct headers to requests" class="Tests\Http\ChipSendClientTest" classname="Tests.Http.ChipSendClientTest" assertions="1" time="0.059400"/>
+        <testcase name="`ChipSendClient Authentication` → it generates valid HMAC signature" file="tests/Http/ChipSendClientTest.php::`ChipSendClient Authentication` → it generates valid HMAC signature" class="Tests\Http\ChipSendClientTest" classname="Tests.Http.ChipSendClientTest" assertions="1" time="0.038350"/>
+        <testcase name="`ChipSendClient Authentication` → it includes API key in signature generation" file="tests/Http/ChipSendClientTest.php::`ChipSendClient Authentication` → it includes API key in signature generation" class="Tests\Http\ChipSendClientTest" classname="Tests.Http.ChipSendClientTest" assertions="1" time="0.038269"/>
+        <testcase name="`ChipSendClient Request Methods` → it can make GET requests" file="tests/Http/ChipSendClientTest.php::`ChipSendClient Request Methods` → it can make GET requests" class="Tests\Http\ChipSendClientTest" classname="Tests.Http.ChipSendClientTest" assertions="2" time="0.047059"/>
+        <testcase name="`ChipSendClient Request Methods` → it can make POST requests with JSON body" file="tests/Http/ChipSendClientTest.php::`ChipSendClient Request Methods` → it can make POST requests with JSON body" class="Tests\Http\ChipSendClientTest" classname="Tests.Http.ChipSendClientTest" assertions="2" time="0.056305"/>
+        <testcase name="`ChipSendClient Error Handling` → it throws ChipValidationException with proper error details" file="tests/Http/ChipSendClientTest.php::`ChipSendClient Error Handling` → it throws ChipValidationException with proper error details" class="Tests\Http\ChipSendClientTest" classname="Tests.Http.ChipSendClientTest" assertions="3" time="0.058138"/>
+        <testcase name="`ChipSendClient Error Handling` → it handles network timeouts" file="tests/Http/ChipSendClientTest.php::`ChipSendClient Error Handling` → it handles network timeouts" class="Tests\Http\ChipSendClientTest" classname="Tests.Http.ChipSendClientTest" assertions="1" time="0.091528"/>
+        <testcase name="`ChipSendClient URL Building` → it uses sandbox URL in test mode" file="tests/Http/ChipSendClientTest.php::`ChipSendClient URL Building` → it uses sandbox URL in test mode" class="Tests\Http\ChipSendClientTest" classname="Tests.Http.ChipSendClientTest" assertions="1" time="0.065225"/>
+        <testcase name="`ChipSendClient URL Building` → it uses production URL in live mode" file="tests/Http/ChipSendClientTest.php::`ChipSendClient URL Building` → it uses production URL in live mode" class="Tests\Http\ChipSendClientTest" classname="Tests.Http.ChipSendClientTest" assertions="1" time="0.077313"/>
+        <testcase name="`ChipSendClient Timestamp Generation` → it generates current epoch timestamp" file="tests/Http/ChipSendClientTest.php::`ChipSendClient Timestamp Generation` → it generates current epoch timestamp" class="Tests\Http\ChipSendClientTest" classname="Tests.Http.ChipSendClientTest" assertions="1" time="0.064533"/>
       </testsuite>
-      <testsuite name="Tests\Http\Controllers\WebhookControllerTest" file="tests/Http/Controllers/WebhookControllerTest.php" tests="7" assertions="15" errors="2" failures="5" skipped="0" time="0.563696">
-        <testcase name="`WebhookController Handle Method` → it successfully processes valid webhook" file="tests/Http/Controllers/WebhookControllerTest.php::`WebhookController Handle Method` → it successfully processes valid webhook" class="Tests\Http\Controllers\WebhookControllerTest" classname="Tests.Http.Controllers.WebhookControllerTest" assertions="2" time="0.099327">
-          <failure type="PHPUnit\Framework\ExpectationFailedException">`WebhookController Handle Method` → it successfully processes valid webhookFailed asserting that 400 is identical to 200.
-at tests/Http/Controllers/WebhookControllerTest.php:40</failure>
-        </testcase>
-        <testcase name="`WebhookController Handle Method` → it returns error response for invalid webhook signature" file="tests/Http/Controllers/WebhookControllerTest.php::`WebhookController Handle Method` → it returns error response for invalid webhook signature" class="Tests\Http\Controllers\WebhookControllerTest" classname="Tests.Http.Controllers.WebhookControllerTest" assertions="3" time="0.072605">
-          <failure type="PHPUnit\Framework\ExpectationFailedException">`WebhookController Handle Method` → it returns error response for invalid webhook signatureFailed asserting that null is identical to Array &amp;0 [
-    'status' =&gt; 'error',
-    'message' =&gt; 'Invalid signature',
-].
-at tests/Http/Controllers/WebhookControllerTest.php:65</failure>
-        </testcase>
-        <testcase name="`WebhookController Handle Method` → it returns error response for processing exceptions" file="tests/Http/Controllers/WebhookControllerTest.php::`WebhookController Handle Method` → it returns error response for processing exceptions" class="Tests\Http\Controllers\WebhookControllerTest" classname="Tests.Http.Controllers.WebhookControllerTest" assertions="2" time="0.074342">
-          <failure type="PHPUnit\Framework\ExpectationFailedException">`WebhookController Handle Method` → it returns error response for processing exceptionsFailed asserting that 400 is identical to 500.
-at tests/Http/Controllers/WebhookControllerTest.php:83</failure>
-        </testcase>
-        <testcase name="`WebhookController Handle Method` → it handles empty request body gracefully" file="tests/Http/Controllers/WebhookControllerTest.php::`WebhookController Handle Method` → it handles empty request body gracefully" class="Tests\Http\Controllers\WebhookControllerTest" classname="Tests.Http.Controllers.WebhookControllerTest" assertions="2" time="0.079511">
-          <error type="ErrorException">`WebhookController Handle Method` → it handles empty request body gracefullyErrorException: Trying to access array offset on null
-at vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php:258
-at tests/Http/Controllers/WebhookControllerTest.php:102</error>
-        </testcase>
-        <testcase name="`WebhookController CORS Headers` → it includes proper CORS headers in response" file="tests/Http/Controllers/WebhookControllerTest.php::`WebhookController CORS Headers` → it includes proper CORS headers in response" class="Tests\Http\Controllers\WebhookControllerTest" classname="Tests.Http.Controllers.WebhookControllerTest" assertions="2" time="0.082720">
-          <failure type="PHPUnit\Framework\ExpectationFailedException">`WebhookController CORS Headers` → it includes proper CORS headers in responseFailed asserting that null is identical to 'application/json'.
-at tests/Http/Controllers/WebhookControllerTest.php:118</failure>
-        </testcase>
-        <testcase name="`WebhookController Logging` → it logs webhook processing attempts" file="tests/Http/Controllers/WebhookControllerTest.php::`WebhookController Logging` → it logs webhook processing attempts" class="Tests\Http\Controllers\WebhookControllerTest" classname="Tests.Http.Controllers.WebhookControllerTest" assertions="2" time="0.079425">
-          <failure type="PHPUnit\Framework\ExpectationFailedException">`WebhookController Logging` → it logs webhook processing attemptsFailed asserting that 400 is identical to 200.
-at tests/Http/Controllers/WebhookControllerTest.php:136</failure>
-        </testcase>
-        <testcase name="`WebhookController Logging` → it logs webhook verification failures" file="tests/Http/Controllers/WebhookControllerTest.php::`WebhookController Logging` → it logs webhook verification failures" class="Tests\Http\Controllers\WebhookControllerTest" classname="Tests.Http.Controllers.WebhookControllerTest" assertions="2" time="0.075767">
-          <error type="Mockery\Exception\InvalidCountException">`WebhookController Logging` → it logs webhook verification failuresMockery\Exception\InvalidCountException: Method processWebhook(&lt;Any Arguments&gt;) from Mockery_2_Masyukai_Chip_Services_WebhookService should be called
- exactly 1 times but called 0 times.
-at vendor/mockery/mockery/library/Mockery/CountValidator/Exact.php:32
-at vendor/mockery/mockery/library/Mockery/Expectation.php:739
-at vendor/mockery/mockery/library/Mockery/ExpectationDirector.php:202
-at vendor/mockery/mockery/library/Mockery/Container.php:583
-at vendor/mockery/mockery/library/Mockery/Container.php:519
-at vendor/mockery/mockery/library/Mockery.php:176</error>
-        </testcase>
+      <testsuite name="Tests\Http\Requests\WebhookRequestTest" file="tests/Http/Requests/WebhookRequestTest.php" tests="16" assertions="23" errors="0" failures="0" skipped="0" time="0.779570">
+        <testcase name="`WebhookRequest Validation` → it validates required event field" file="tests/Http/Requests/WebhookRequestTest.php::`WebhookRequest Validation` → it validates required event field" class="Tests\Http\Requests\WebhookRequestTest" classname="Tests.Http.Requests.WebhookRequestTest" assertions="2" time="0.093891"/>
+        <testcase name="`WebhookRequest Validation` → it validates required data field" file="tests/Http/Requests/WebhookRequestTest.php::`WebhookRequest Validation` → it validates required data field" class="Tests\Http\Requests\WebhookRequestTest" classname="Tests.Http.Requests.WebhookRequestTest" assertions="2" time="0.072785"/>
+        <testcase name="`WebhookRequest Validation` → it validates event field is string" file="tests/Http/Requests/WebhookRequestTest.php::`WebhookRequest Validation` → it validates event field is string" class="Tests\Http\Requests\WebhookRequestTest" classname="Tests.Http.Requests.WebhookRequestTest" assertions="2" time="0.050185"/>
+        <testcase name="`WebhookRequest Validation` → it validates data field is array" file="tests/Http/Requests/WebhookRequestTest.php::`WebhookRequest Validation` → it validates data field is array" class="Tests\Http\Requests\WebhookRequestTest" classname="Tests.Http.Requests.WebhookRequestTest" assertions="2" time="0.050687"/>
+        <testcase name="`WebhookRequest Validation` → it passes validation with valid data" file="tests/Http/Requests/WebhookRequestTest.php::`WebhookRequest Validation` → it passes validation with valid data" class="Tests\Http\Requests\WebhookRequestTest" classname="Tests.Http.Requests.WebhookRequestTest" assertions="1" time="0.046279"/>
+        <testcase name="`WebhookRequest Validation` → it allows optional timestamp field" file="tests/Http/Requests/WebhookRequestTest.php::`WebhookRequest Validation` → it allows optional timestamp field" class="Tests\Http\Requests\WebhookRequestTest" classname="Tests.Http.Requests.WebhookRequestTest" assertions="1" time="0.047672"/>
+        <testcase name="`WebhookRequest Validation` → it validates timestamp format when provided" file="tests/Http/Requests/WebhookRequestTest.php::`WebhookRequest Validation` → it validates timestamp format when provided" class="Tests\Http\Requests\WebhookRequestTest" classname="Tests.Http.Requests.WebhookRequestTest" assertions="2" time="0.058838"/>
+        <testcase name="`WebhookRequest Authorization` → it always authorizes webhook requests" file="tests/Http/Requests/WebhookRequestTest.php::`WebhookRequest Authorization` → it always authorizes webhook requests" class="Tests\Http\Requests\WebhookRequestTest" classname="Tests.Http.Requests.WebhookRequestTest" assertions="1" time="0.046989"/>
+        <testcase name="`WebhookRequest Custom Methods` → it extracts webhook signature from headers" file="tests/Http/Requests/WebhookRequestTest.php::`WebhookRequest Custom Methods` → it extracts webhook signature from headers" class="Tests\Http\Requests\WebhookRequestTest" classname="Tests.Http.Requests.WebhookRequestTest" assertions="1" time="0.042740"/>
+        <testcase name="`WebhookRequest Custom Methods` → it returns null when signature header is missing" file="tests/Http/Requests/WebhookRequestTest.php::`WebhookRequest Custom Methods` → it returns null when signature header is missing" class="Tests\Http\Requests\WebhookRequestTest" classname="Tests.Http.Requests.WebhookRequestTest" assertions="1" time="0.038549"/>
+        <testcase name="`WebhookRequest Custom Methods` → it gets webhook event type" file="tests/Http/Requests/WebhookRequestTest.php::`WebhookRequest Custom Methods` → it gets webhook event type" class="Tests\Http\Requests\WebhookRequestTest" classname="Tests.Http.Requests.WebhookRequestTest" assertions="1" time="0.038657"/>
+        <testcase name="`WebhookRequest Custom Methods` → it gets webhook data payload" file="tests/Http/Requests/WebhookRequestTest.php::`WebhookRequest Custom Methods` → it gets webhook data payload" class="Tests\Http\Requests\WebhookRequestTest" classname="Tests.Http.Requests.WebhookRequestTest" assertions="1" time="0.039473"/>
+        <testcase name="`WebhookRequest Custom Methods` → it checks if webhook is for specific event type" file="tests/Http/Requests/WebhookRequestTest.php::`WebhookRequest Custom Methods` → it checks if webhook is for specific event type" class="Tests\Http\Requests\WebhookRequestTest" classname="Tests.Http.Requests.WebhookRequestTest" assertions="2" time="0.038207"/>
+        <testcase name="`WebhookRequest Custom Methods` → it checks if webhook is purchase related" file="tests/Http/Requests/WebhookRequestTest.php::`WebhookRequest Custom Methods` → it checks if webhook is purchase related" class="Tests\Http\Requests\WebhookRequestTest" classname="Tests.Http.Requests.WebhookRequestTest" assertions="2" time="0.038061"/>
+        <testcase name="`WebhookRequest Custom Methods` → it extracts purchase ID from purchase events" file="tests/Http/Requests/WebhookRequestTest.php::`WebhookRequest Custom Methods` → it extracts purchase ID from purchase events" class="Tests\Http\Requests\WebhookRequestTest" classname="Tests.Http.Requests.WebhookRequestTest" assertions="1" time="0.038386"/>
+        <testcase name="`WebhookRequest Custom Methods` → it returns null for purchase ID on non-purchase events" file="tests/Http/Requests/WebhookRequestTest.php::`WebhookRequest Custom Methods` → it returns null for purchase ID on non-purchase events" class="Tests\Http\Requests\WebhookRequestTest" classname="Tests.Http.Requests.WebhookRequestTest" assertions="1" time="0.038170"/>
       </testsuite>
-      <testsuite name="Tests\Http\Requests\WebhookRequestTest" file="tests/Http/Requests/WebhookRequestTest.php" tests="16" assertions="23" errors="0" failures="0" skipped="0" time="1.228138">
-        <testcase name="`WebhookRequest Validation` → it validates required event field" file="tests/Http/Requests/WebhookRequestTest.php::`WebhookRequest Validation` → it validates required event field" class="Tests\Http\Requests\WebhookRequestTest" classname="Tests.Http.Requests.WebhookRequestTest" assertions="2" time="0.079839"/>
-        <testcase name="`WebhookRequest Validation` → it validates required data field" file="tests/Http/Requests/WebhookRequestTest.php::`WebhookRequest Validation` → it validates required data field" class="Tests\Http\Requests\WebhookRequestTest" classname="Tests.Http.Requests.WebhookRequestTest" assertions="2" time="0.077490"/>
-        <testcase name="`WebhookRequest Validation` → it validates event field is string" file="tests/Http/Requests/WebhookRequestTest.php::`WebhookRequest Validation` → it validates event field is string" class="Tests\Http\Requests\WebhookRequestTest" classname="Tests.Http.Requests.WebhookRequestTest" assertions="2" time="0.080941"/>
-        <testcase name="`WebhookRequest Validation` → it validates data field is array" file="tests/Http/Requests/WebhookRequestTest.php::`WebhookRequest Validation` → it validates data field is array" class="Tests\Http\Requests\WebhookRequestTest" classname="Tests.Http.Requests.WebhookRequestTest" assertions="2" time="0.079249"/>
-        <testcase name="`WebhookRequest Validation` → it passes validation with valid data" file="tests/Http/Requests/WebhookRequestTest.php::`WebhookRequest Validation` → it passes validation with valid data" class="Tests\Http\Requests\WebhookRequestTest" classname="Tests.Http.Requests.WebhookRequestTest" assertions="1" time="0.080103"/>
-        <testcase name="`WebhookRequest Validation` → it allows optional timestamp field" file="tests/Http/Requests/WebhookRequestTest.php::`WebhookRequest Validation` → it allows optional timestamp field" class="Tests\Http\Requests\WebhookRequestTest" classname="Tests.Http.Requests.WebhookRequestTest" assertions="1" time="0.079961"/>
-        <testcase name="`WebhookRequest Validation` → it validates timestamp format when provided" file="tests/Http/Requests/WebhookRequestTest.php::`WebhookRequest Validation` → it validates timestamp format when provided" class="Tests\Http\Requests\WebhookRequestTest" classname="Tests.Http.Requests.WebhookRequestTest" assertions="2" time="0.081088"/>
-        <testcase name="`WebhookRequest Authorization` → it always authorizes webhook requests" file="tests/Http/Requests/WebhookRequestTest.php::`WebhookRequest Authorization` → it always authorizes webhook requests" class="Tests\Http\Requests\WebhookRequestTest" classname="Tests.Http.Requests.WebhookRequestTest" assertions="1" time="0.080395"/>
-        <testcase name="`WebhookRequest Custom Methods` → it extracts webhook signature from headers" file="tests/Http/Requests/WebhookRequestTest.php::`WebhookRequest Custom Methods` → it extracts webhook signature from headers" class="Tests\Http\Requests\WebhookRequestTest" classname="Tests.Http.Requests.WebhookRequestTest" assertions="1" time="0.077952"/>
-        <testcase name="`WebhookRequest Custom Methods` → it returns null when signature header is missing" file="tests/Http/Requests/WebhookRequestTest.php::`WebhookRequest Custom Methods` → it returns null when signature header is missing" class="Tests\Http\Requests\WebhookRequestTest" classname="Tests.Http.Requests.WebhookRequestTest" assertions="1" time="0.073840"/>
-        <testcase name="`WebhookRequest Custom Methods` → it gets webhook event type" file="tests/Http/Requests/WebhookRequestTest.php::`WebhookRequest Custom Methods` → it gets webhook event type" class="Tests\Http\Requests\WebhookRequestTest" classname="Tests.Http.Requests.WebhookRequestTest" assertions="1" time="0.073870"/>
-        <testcase name="`WebhookRequest Custom Methods` → it gets webhook data payload" file="tests/Http/Requests/WebhookRequestTest.php::`WebhookRequest Custom Methods` → it gets webhook data payload" class="Tests\Http\Requests\WebhookRequestTest" classname="Tests.Http.Requests.WebhookRequestTest" assertions="1" time="0.072815"/>
-        <testcase name="`WebhookRequest Custom Methods` → it checks if webhook is for specific event type" file="tests/Http/Requests/WebhookRequestTest.php::`WebhookRequest Custom Methods` → it checks if webhook is for specific event type" class="Tests\Http\Requests\WebhookRequestTest" classname="Tests.Http.Requests.WebhookRequestTest" assertions="2" time="0.072959"/>
-        <testcase name="`WebhookRequest Custom Methods` → it checks if webhook is purchase related" file="tests/Http/Requests/WebhookRequestTest.php::`WebhookRequest Custom Methods` → it checks if webhook is purchase related" class="Tests\Http\Requests\WebhookRequestTest" classname="Tests.Http.Requests.WebhookRequestTest" assertions="2" time="0.072834"/>
-        <testcase name="`WebhookRequest Custom Methods` → it extracts purchase ID from purchase events" file="tests/Http/Requests/WebhookRequestTest.php::`WebhookRequest Custom Methods` → it extracts purchase ID from purchase events" class="Tests\Http\Requests\WebhookRequestTest" classname="Tests.Http.Requests.WebhookRequestTest" assertions="1" time="0.072592"/>
-        <testcase name="`WebhookRequest Custom Methods` → it returns null for purchase ID on non-purchase events" file="tests/Http/Requests/WebhookRequestTest.php::`WebhookRequest Custom Methods` → it returns null for purchase ID on non-purchase events" class="Tests\Http\Requests\WebhookRequestTest" classname="Tests.Http.Requests.WebhookRequestTest" assertions="1" time="0.072210"/>
+      <testsuite name="Tests\Services\ChipCollectServiceTest" file="tests/Services/ChipCollectServiceTest.php" tests="7" assertions="20" errors="0" failures="0" skipped="0" time="0.287872">
+        <testcase name="`ChipCollectService Purchase Management` → it can create a purchase" file="tests/Services/ChipCollectServiceTest.php::`ChipCollectService Purchase Management` → it can create a purchase" class="Tests\Services\ChipCollectServiceTest" classname="Tests.Services.ChipCollectServiceTest" assertions="4" time="0.060126"/>
+        <testcase name="`ChipCollectService Purchase Management` → it can retrieve a purchase" file="tests/Services/ChipCollectServiceTest.php::`ChipCollectService Purchase Management` → it can retrieve a purchase" class="Tests\Services\ChipCollectServiceTest" classname="Tests.Services.ChipCollectServiceTest" assertions="3" time="0.037886"/>
+        <testcase name="`ChipCollectService Purchase Management` → it can cancel a purchase" file="tests/Services/ChipCollectServiceTest.php::`ChipCollectService Purchase Management` → it can cancel a purchase" class="Tests\Services\ChipCollectServiceTest" classname="Tests.Services.ChipCollectServiceTest" assertions="2" time="0.037628"/>
+        <testcase name="`ChipCollectService Purchase Management` → it can get payment methods" file="tests/Services/ChipCollectServiceTest.php::`ChipCollectService Purchase Management` → it can get payment methods" class="Tests\Services\ChipCollectServiceTest" classname="Tests.Services.ChipCollectServiceTest" assertions="2" time="0.039063"/>
+        <testcase name="`ChipCollectService Client Management` → it can create a client" file="tests/Services/ChipCollectServiceTest.php::`ChipCollectService Client Management` → it can create a client" class="Tests\Services\ChipCollectServiceTest" classname="Tests.Services.ChipCollectServiceTest" assertions="4" time="0.037639"/>
+        <testcase name="`ChipCollectService Client Management` → it can retrieve a client" file="tests/Services/ChipCollectServiceTest.php::`ChipCollectService Client Management` → it can retrieve a client" class="Tests\Services\ChipCollectServiceTest" classname="Tests.Services.ChipCollectServiceTest" assertions="3" time="0.037748"/>
+        <testcase name="`ChipCollectService Client Management` → it can list clients" file="tests/Services/ChipCollectServiceTest.php::`ChipCollectService Client Management` → it can list clients" class="Tests\Services\ChipCollectServiceTest" classname="Tests.Services.ChipCollectServiceTest" assertions="2" time="0.037781"/>
       </testsuite>
-      <testsuite name="Tests\Services\ChipCollectServiceTest" file="tests/Services/ChipCollectServiceTest.php" tests="10" assertions="0" errors="10" failures="0" skipped="0" time="0.000000">
-        <testcase name="`ChipCollectService Purchase Management` → it can create a purchase" file="tests/Services/ChipCollectServiceTest.php::`ChipCollectService Purchase Management` → it can create a purchase" class="Tests\Services\ChipCollectServiceTest" classname="Tests.Services.ChipCollectServiceTest" assertions="0" time="0.000000">
-          <error type="TypeError">`ChipCollectService Purchase Management` → it can create a purchaseTypeError: Cannot assign null to property Masyukai\Chip\Services\ChipCollectService::$apiKey of type string
-at src/Services/ChipCollectService.php:31
-at tests/Services/ChipCollectServiceTest.php:14</error>
-        </testcase>
-        <testcase name="`ChipCollectService Purchase Management` → it can retrieve a purchase" file="tests/Services/ChipCollectServiceTest.php::`ChipCollectService Purchase Management` → it can retrieve a purchase" class="Tests\Services\ChipCollectServiceTest" classname="Tests.Services.ChipCollectServiceTest" assertions="0" time="0.000000">
-          <error type="TypeError">`ChipCollectService Purchase Management` → it can retrieve a purchaseTypeError: Cannot assign null to property Masyukai\Chip\Services\ChipCollectService::$apiKey of type string
-at src/Services/ChipCollectService.php:31
-at tests/Services/ChipCollectServiceTest.php:14</error>
-        </testcase>
-        <testcase name="`ChipCollectService Purchase Management` → it can list purchases" file="tests/Services/ChipCollectServiceTest.php::`ChipCollectService Purchase Management` → it can list purchases" class="Tests\Services\ChipCollectServiceTest" classname="Tests.Services.ChipCollectServiceTest" assertions="0" time="0.000000">
-          <error type="TypeError">`ChipCollectService Purchase Management` → it can list purchasesTypeError: Cannot assign null to property Masyukai\Chip\Services\ChipCollectService::$apiKey of type string
-at src/Services/ChipCollectService.php:31
-at tests/Services/ChipCollectServiceTest.php:14</error>
-        </testcase>
-        <testcase name="`ChipCollectService Purchase Management` → it can update a purchase" file="tests/Services/ChipCollectServiceTest.php::`ChipCollectService Purchase Management` → it can update a purchase" class="Tests\Services\ChipCollectServiceTest" classname="Tests.Services.ChipCollectServiceTest" assertions="0" time="0.000000">
-          <error type="TypeError">`ChipCollectService Purchase Management` → it can update a purchaseTypeError: Cannot assign null to property Masyukai\Chip\Services\ChipCollectService::$apiKey of type string
-at src/Services/ChipCollectService.php:31
-at tests/Services/ChipCollectServiceTest.php:14</error>
-        </testcase>
-        <testcase name="`ChipCollectService Purchase Management` → it can delete a purchase" file="tests/Services/ChipCollectServiceTest.php::`ChipCollectService Purchase Management` → it can delete a purchase" class="Tests\Services\ChipCollectServiceTest" classname="Tests.Services.ChipCollectServiceTest" assertions="0" time="0.000000">
-          <error type="TypeError">`ChipCollectService Purchase Management` → it can delete a purchaseTypeError: Cannot assign null to property Masyukai\Chip\Services\ChipCollectService::$apiKey of type string
-at src/Services/ChipCollectService.php:31
-at tests/Services/ChipCollectServiceTest.php:14</error>
-        </testcase>
-        <testcase name="`ChipCollectService Payment Management` → it can list payments for a purchase" file="tests/Services/ChipCollectServiceTest.php::`ChipCollectService Payment Management` → it can list payments for a purchase" class="Tests\Services\ChipCollectServiceTest" classname="Tests.Services.ChipCollectServiceTest" assertions="0" time="0.000000">
-          <error type="TypeError">`ChipCollectService Payment Management` → it can list payments for a purchaseTypeError: Cannot assign null to property Masyukai\Chip\Services\ChipCollectService::$apiKey of type string
-at src/Services/ChipCollectService.php:31
-at tests/Services/ChipCollectServiceTest.php:14</error>
-        </testcase>
-        <testcase name="`ChipCollectService Payment Management` → it can retrieve a specific payment" file="tests/Services/ChipCollectServiceTest.php::`ChipCollectService Payment Management` → it can retrieve a specific payment" class="Tests\Services\ChipCollectServiceTest" classname="Tests.Services.ChipCollectServiceTest" assertions="0" time="0.000000">
-          <error type="TypeError">`ChipCollectService Payment Management` → it can retrieve a specific paymentTypeError: Cannot assign null to property Masyukai\Chip\Services\ChipCollectService::$apiKey of type string
-at src/Services/ChipCollectService.php:31
-at tests/Services/ChipCollectServiceTest.php:14</error>
-        </testcase>
-        <testcase name="`ChipCollectService Client Management` → it can create a client" file="tests/Services/ChipCollectServiceTest.php::`ChipCollectService Client Management` → it can create a client" class="Tests\Services\ChipCollectServiceTest" classname="Tests.Services.ChipCollectServiceTest" assertions="0" time="0.000000">
-          <error type="TypeError">`ChipCollectService Client Management` → it can create a clientTypeError: Cannot assign null to property Masyukai\Chip\Services\ChipCollectService::$apiKey of type string
-at src/Services/ChipCollectService.php:31
-at tests/Services/ChipCollectServiceTest.php:14</error>
-        </testcase>
-        <testcase name="`ChipCollectService Client Management` → it can retrieve a client" file="tests/Services/ChipCollectServiceTest.php::`ChipCollectService Client Management` → it can retrieve a client" class="Tests\Services\ChipCollectServiceTest" classname="Tests.Services.ChipCollectServiceTest" assertions="0" time="0.000000">
-          <error type="TypeError">`ChipCollectService Client Management` → it can retrieve a clientTypeError: Cannot assign null to property Masyukai\Chip\Services\ChipCollectService::$apiKey of type string
-at src/Services/ChipCollectService.php:31
-at tests/Services/ChipCollectServiceTest.php:14</error>
-        </testcase>
-        <testcase name="`ChipCollectService Client Management` → it can list clients" file="tests/Services/ChipCollectServiceTest.php::`ChipCollectService Client Management` → it can list clients" class="Tests\Services\ChipCollectServiceTest" classname="Tests.Services.ChipCollectServiceTest" assertions="0" time="0.000000">
-          <error type="TypeError">`ChipCollectService Client Management` → it can list clientsTypeError: Cannot assign null to property Masyukai\Chip\Services\ChipCollectService::$apiKey of type string
-at src/Services/ChipCollectService.php:31
-at tests/Services/ChipCollectServiceTest.php:14</error>
-        </testcase>
+      <testsuite name="Tests\Services\ChipSendServiceTest" file="tests/Services/ChipSendServiceTest.php" tests="3" assertions="16" errors="0" failures="0" skipped="0" time="0.119438">
+        <testcase name="`ChipSendService` → it can create a send instruction" file="tests/Services/ChipSendServiceTest.php::`ChipSendService` → it can create a send instruction" class="Tests\Services\ChipSendServiceTest" classname="Tests.Services.ChipSendServiceTest" assertions="7" time="0.044770"/>
+        <testcase name="`ChipSendService` → it can retrieve a send instruction" file="tests/Services/ChipSendServiceTest.php::`ChipSendService` → it can retrieve a send instruction" class="Tests\Services\ChipSendServiceTest" classname="Tests.Services.ChipSendServiceTest" assertions="3" time="0.037449"/>
+        <testcase name="`ChipSendService` → it can create a bank account" file="tests/Services/ChipSendServiceTest.php::`ChipSendService` → it can create a bank account" class="Tests\Services\ChipSendServiceTest" classname="Tests.Services.ChipSendServiceTest" assertions="6" time="0.037219"/>
       </testsuite>
-      <testsuite name="Tests\Services\ChipSendServiceTest" file="tests/Services/ChipSendServiceTest.php" tests="12" assertions="0" errors="12" failures="0" skipped="0" time="0.867301">
-        <testcase name="`ChipSendService Send Instructions` → it can create a send instruction" file="tests/Services/ChipSendServiceTest.php::`ChipSendService Send Instructions` → it can create a send instruction" class="Tests\Services\ChipSendServiceTest" classname="Tests.Services.ChipSendServiceTest" assertions="0" time="0.077578">
-          <error type="Error">`ChipSendService Send Instructions` → it can create a send instructionError: Unknown named parameter $amountInCents
-at tests/Services/ChipSendServiceTest.php:37</error>
-        </testcase>
-        <testcase name="`ChipSendService Send Instructions` → it can retrieve a send instruction" file="tests/Services/ChipSendServiceTest.php::`ChipSendService Send Instructions` → it can retrieve a send instruction" class="Tests\Services\ChipSendServiceTest" classname="Tests.Services.ChipSendServiceTest" assertions="0" time="0.071412">
-          <error type="Mockery\Exception\NoMatchingExpectationException">`ChipSendService Send Instructions` → it can retrieve a send instructionMockery\Exception\NoMatchingExpectationException: No matching handler found for Mockery_4_Masyukai_Chip_Clients_ChipSendClient::get('send_instructions/send_123/'). Either the method was unexpected or its arguments matched no expected argument list for this method
-
-
-at vendor/mockery/mockery/library/Mockery/ExpectationDirector.php:90
-at src/Services/ChipSendService.php:31
-at tests/Services/ChipSendServiceTest.php:66</error>
-        </testcase>
-        <testcase name="`ChipSendService Send Instructions` → it can list send instructions" file="tests/Services/ChipSendServiceTest.php::`ChipSendService Send Instructions` → it can list send instructions" class="Tests\Services\ChipSendServiceTest" classname="Tests.Services.ChipSendServiceTest" assertions="0" time="0.071379">
-          <error type="Mockery\Exception\NoMatchingExpectationException">`ChipSendService Send Instructions` → it can list send instructionsMockery\Exception\NoMatchingExpectationException: No matching handler found for Mockery_4_Masyukai_Chip_Clients_ChipSendClient::get('send_instructions/'). Either the method was unexpected or its arguments matched no expected argument list for this method
-
-
-at vendor/mockery/mockery/library/Mockery/ExpectationDirector.php:90
-at src/Services/ChipSendService.php:41
-at tests/Services/ChipSendServiceTest.php:93</error>
-        </testcase>
-        <testcase name="`ChipSendService Send Instructions` → it can cancel a send instruction" file="tests/Services/ChipSendServiceTest.php::`ChipSendService Send Instructions` → it can cancel a send instruction" class="Tests\Services\ChipSendServiceTest" classname="Tests.Services.ChipSendServiceTest" assertions="0" time="0.071712">
-          <error type="Mockery\Exception\NoMatchingExpectationException">`ChipSendService Send Instructions` → it can cancel a send instructionMockery\Exception\NoMatchingExpectationException: No matching handler found for Mockery_4_Masyukai_Chip_Clients_ChipSendClient::post('send_instructions/send_123/cancel/'). Either the method was unexpected or its arguments matched no expected argument list for this method
-
-
-at vendor/mockery/mockery/library/Mockery/ExpectationDirector.php:90
-at src/Services/ChipSendService.php:95
-at tests/Services/ChipSendServiceTest.php:112</error>
-        </testcase>
-        <testcase name="`ChipSendService Bank Account Management` → it can create a bank account" file="tests/Services/ChipSendServiceTest.php::`ChipSendService Bank Account Management` → it can create a bank account" class="Tests\Services\ChipSendServiceTest" classname="Tests.Services.ChipSendServiceTest" assertions="0" time="0.071372">
-          <error type="Error">`ChipSendService Bank Account Management` → it can create a bank accountError: Unknown named parameter $bankCode
-at tests/Services/ChipSendServiceTest.php:139</error>
-        </testcase>
-        <testcase name="`ChipSendService Bank Account Management` → it can retrieve a bank account" file="tests/Services/ChipSendServiceTest.php::`ChipSendService Bank Account Management` → it can retrieve a bank account" class="Tests\Services\ChipSendServiceTest" classname="Tests.Services.ChipSendServiceTest" assertions="0" time="0.071752">
-          <error type="Mockery\Exception\NoMatchingExpectationException">`ChipSendService Bank Account Management` → it can retrieve a bank accountMockery\Exception\NoMatchingExpectationException: No matching handler found for Mockery_4_Masyukai_Chip_Clients_ChipSendClient::get('bank_accounts/bank_account_123/'). Either the method was unexpected or its arguments matched no expected argument list for this method
-
-
-at vendor/mockery/mockery/library/Mockery/ExpectationDirector.php:90
-at src/Services/ChipSendService.php:53
-at tests/Services/ChipSendServiceTest.php:166</error>
-        </testcase>
-        <testcase name="`ChipSendService Bank Account Management` → it can list bank accounts" file="tests/Services/ChipSendServiceTest.php::`ChipSendService Bank Account Management` → it can list bank accounts" class="Tests\Services\ChipSendServiceTest" classname="Tests.Services.ChipSendServiceTest" assertions="0" time="0.071704">
-          <error type="Mockery\Exception\NoMatchingExpectationException">`ChipSendService Bank Account Management` → it can list bank accountsMockery\Exception\NoMatchingExpectationException: No matching handler found for Mockery_4_Masyukai_Chip_Clients_ChipSendClient::get('bank_accounts/'). Either the method was unexpected or its arguments matched no expected argument list for this method
-
-
-at vendor/mockery/mockery/library/Mockery/ExpectationDirector.php:90
-at src/Services/ChipSendService.php:63
-at tests/Services/ChipSendServiceTest.php:191</error>
-        </testcase>
-        <testcase name="`ChipSendService Bank Account Management` → it can verify a bank account" file="tests/Services/ChipSendServiceTest.php::`ChipSendService Bank Account Management` → it can verify a bank account" class="Tests\Services\ChipSendServiceTest" classname="Tests.Services.ChipSendServiceTest" assertions="0" time="0.073753">
-          <error type="Mockery\Exception\NoMatchingExpectationException">`ChipSendService Bank Account Management` → it can verify a bank accountMockery\Exception\NoMatchingExpectationException: No matching handler found for Mockery_4_Masyukai_Chip_Clients_ChipSendClient::post('bank_accounts/bank_account_123/verify/'). Either the method was unexpected or its arguments matched no expected argument list for this method
-
-
-at vendor/mockery/mockery/library/Mockery/ExpectationDirector.php:90
-at src/Services/ChipSendService.php:102
-at tests/Services/ChipSendServiceTest.php:213</error>
-        </testcase>
-        <testcase name="`ChipSendService Bank Account Management` → it can delete a bank account" file="tests/Services/ChipSendServiceTest.php::`ChipSendService Bank Account Management` → it can delete a bank account" class="Tests\Services\ChipSendServiceTest" classname="Tests.Services.ChipSendServiceTest" assertions="0" time="0.071803">
-          <error type="Mockery\Exception\NoMatchingExpectationException">`ChipSendService Bank Account Management` → it can delete a bank accountMockery\Exception\NoMatchingExpectationException: No matching handler found for Mockery_4_Masyukai_Chip_Clients_ChipSendClient::delete('bank_accounts/bank_account_123/'). Either the method was unexpected or its arguments matched no expected argument list for this method
-
-
-at vendor/mockery/mockery/library/Mockery/ExpectationDirector.php:90
-at src/Services/ChipSendService.php:75
-at tests/Services/ChipSendServiceTest.php:224</error>
-        </testcase>
-        <testcase name="`ChipSendService Balance and Limits` → it can get account balance" file="tests/Services/ChipSendServiceTest.php::`ChipSendService Balance and Limits` → it can get account balance" class="Tests\Services\ChipSendServiceTest" classname="Tests.Services.ChipSendServiceTest" assertions="0" time="0.071628">
-          <error type="Mockery\Exception\NoMatchingExpectationException">`ChipSendService Balance and Limits` → it can get account balanceMockery\Exception\NoMatchingExpectationException: No matching handler found for Mockery_4_Masyukai_Chip_Clients_ChipSendClient::get('balance/'). Either the method was unexpected or its arguments matched no expected argument list for this method
-
-
-at vendor/mockery/mockery/library/Mockery/ExpectationDirector.php:90
-at src/Services/ChipSendService.php:109
-at tests/Services/ChipSendServiceTest.php:242</error>
-        </testcase>
-        <testcase name="`ChipSendService Balance and Limits` → it can get send limits" file="tests/Services/ChipSendServiceTest.php::`ChipSendService Balance and Limits` → it can get send limits" class="Tests\Services\ChipSendServiceTest" classname="Tests.Services.ChipSendServiceTest" assertions="0" time="0.072010">
-          <error type="Mockery\Exception\NoMatchingExpectationException">`ChipSendService Balance and Limits` → it can get send limitsMockery\Exception\NoMatchingExpectationException: No matching handler found for Mockery_4_Masyukai_Chip_Clients_ChipSendClient::get('send_limits/'). Either the method was unexpected or its arguments matched no expected argument list for this method
-
-
-at vendor/mockery/mockery/library/Mockery/ExpectationDirector.php:90
-at src/Services/ChipSendService.php:116
-at tests/Services/ChipSendServiceTest.php:261</error>
-        </testcase>
-        <testcase name="`ChipSendService Balance and Limits` → it can request send limit increase" file="tests/Services/ChipSendServiceTest.php::`ChipSendService Balance and Limits` → it can request send limit increase" class="Tests\Services\ChipSendServiceTest" classname="Tests.Services.ChipSendServiceTest" assertions="0" time="0.071199">
-          <error type="Mockery\Exception\NoMatchingExpectationException">`ChipSendService Balance and Limits` → it can request send limit increaseMockery\Exception\NoMatchingExpectationException: No matching handler found for Mockery_4_Masyukai_Chip_Clients_ChipSendClient::post('send_limits/increase/', ['requested_daily_limit_in_cents' =&gt; 2000000, 'requested_monthly_limit_in_cents' =&gt; 20000000, 'business_justification' =&gt; 'Increased business volume']). Either the method was unexpected or its arguments matched no expected argument list for this method
-
-
-at vendor/mockery/mockery/library/Mockery/ExpectationDirector.php:90
-at src/Services/ChipSendService.php:132
-at tests/Services/ChipSendServiceTest.php:284</error>
-        </testcase>
-      </testsuite>
-      <testsuite name="Tests\Services\WebhookServiceTest" file="tests/Services/WebhookServiceTest.php" tests="9" assertions="4" errors="5" failures="4" skipped="0" time="0.649768">
-        <testcase name="`WebhookService Signature Verification` → it verifies valid webhook signatures" file="tests/Services/WebhookServiceTest.php::`WebhookService Signature Verification` → it verifies valid webhook signatures" class="Tests\Services\WebhookServiceTest" classname="Tests.Services.WebhookServiceTest" assertions="0" time="0.084072">
-          <error type="TypeError">`WebhookService Signature Verification` → it verifies valid webhook signaturesTypeError: Cannot assign null to property Masyukai\Chip\Services\ChipCollectService::$apiKey of type string
-at src/Services/ChipCollectService.php:31
-at src/ChipServiceProvider.php:47
-at vendor/laravel/framework/src/Illuminate/Container/Container.php:1154
-at vendor/laravel/framework/src/Illuminate/Container/Container.php:972
-at vendor/laravel/framework/src/Illuminate/Foundation/Application.php:1077
-at vendor/laravel/framework/src/Illuminate/Container/Container.php:903
-at vendor/laravel/framework/src/Illuminate/Foundation/Application.php:1057
-at vendor/laravel/framework/src/Illuminate/Foundation/helpers.php:138
-at src/Services/WebhookService.php:89
-at vendor/laravel/framework/src/Illuminate/Cache/Repository.php:431
-at vendor/laravel/framework/src/Illuminate/Cache/CacheManager.php:474
-at vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php:363
-at src/Services/WebhookService.php:81
-at src/Services/WebhookService.php:27
-at tests/Services/WebhookServiceTest.php:52</error>
-        </testcase>
-        <testcase name="`WebhookService Signature Verification` → it rejects invalid webhook signatures" file="tests/Services/WebhookServiceTest.php::`WebhookService Signature Verification` → it rejects invalid webhook signatures" class="Tests\Services\WebhookServiceTest" classname="Tests.Services.WebhookServiceTest" assertions="1" time="0.070421">
-          <failure type="PHPUnit\Framework\ExpectationFailedException">`WebhookService Signature Verification` → it rejects invalid webhook signaturesFailed asserting that an instance of class TypeError is an instance of class Masyukai\Chip\Exceptions\WebhookVerificationException.
-at tests/Services/WebhookServiceTest.php:73</failure>
-        </testcase>
-        <testcase name="`WebhookService Signature Verification` → it throws exception when signature header is missing" file="tests/Services/WebhookServiceTest.php::`WebhookService Signature Verification` → it throws exception when signature header is missing" class="Tests\Services\WebhookServiceTest" classname="Tests.Services.WebhookServiceTest" assertions="1" time="0.070531">
-          <failure type="PHPUnit\Framework\ExpectationFailedException">`WebhookService Signature Verification` → it throws exception when signature header is missingFailed asserting that 'Cannot assign null to property Masyukai\Chip\Services\ChipCollectService::$apiKey of type string' [ASCII](length: 96) contains "Missing signature header" [ASCII](length: 24).
-at tests/Services/WebhookServiceTest.php:83</failure>
-        </testcase>
-        <testcase name="`WebhookService Event Processing` → it processes purchase.created events" file="tests/Services/WebhookServiceTest.php::`WebhookService Event Processing` → it processes purchase.created events" class="Tests\Services\WebhookServiceTest" classname="Tests.Services.WebhookServiceTest" assertions="0" time="0.070106">
-          <error type="TypeError">`WebhookService Event Processing` → it processes purchase.created eventsTypeError: Masyukai\Chip\Services\WebhookService::processWebhook(): Argument #1 ($request) must be of type Masyukai\Chip\Http\Requests\WebhookRequest, Illuminate\Http\Request given, called in /Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Services/WebhookServiceTest.php on line 111
-at src/Services/WebhookService.php:119
-at tests/Services/WebhookServiceTest.php:111</error>
-        </testcase>
-        <testcase name="`WebhookService Event Processing` → it processes purchase.paid events" file="tests/Services/WebhookServiceTest.php::`WebhookService Event Processing` → it processes purchase.paid events" class="Tests\Services\WebhookServiceTest" classname="Tests.Services.WebhookServiceTest" assertions="0" time="0.070115">
-          <error type="TypeError">`WebhookService Event Processing` → it processes purchase.paid eventsTypeError: Masyukai\Chip\Services\WebhookService::processWebhook(): Argument #1 ($request) must be of type Masyukai\Chip\Http\Requests\WebhookRequest, Illuminate\Http\Request given, called in /Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Services/WebhookServiceTest.php on line 144
-at src/Services/WebhookService.php:119
-at tests/Services/WebhookServiceTest.php:144</error>
-        </testcase>
-        <testcase name="`WebhookService Event Processing` → it handles unknown webhook events gracefully" file="tests/Services/WebhookServiceTest.php::`WebhookService Event Processing` → it handles unknown webhook events gracefully" class="Tests\Services\WebhookServiceTest" classname="Tests.Services.WebhookServiceTest" assertions="0" time="0.070417">
-          <error type="TypeError">`WebhookService Event Processing` → it handles unknown webhook events gracefullyTypeError: Masyukai\Chip\Services\WebhookService::processWebhook(): Argument #1 ($request) must be of type Masyukai\Chip\Http\Requests\WebhookRequest, Illuminate\Http\Request given, called in /Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Services/WebhookServiceTest.php on line 171
-at src/Services/WebhookService.php:119
-at tests/Services/WebhookServiceTest.php:171</error>
-        </testcase>
-        <testcase name="`WebhookService Event Processing` → it throws exception for invalid JSON payload" file="tests/Services/WebhookServiceTest.php::`WebhookService Event Processing` → it throws exception for invalid JSON payload" class="Tests\Services\WebhookServiceTest" classname="Tests.Services.WebhookServiceTest" assertions="1" time="0.070362">
-          <failure type="PHPUnit\Framework\ExpectationFailedException">`WebhookService Event Processing` → it throws exception for invalid JSON payloadFailed asserting that 'Masyukai\Chip\Services\WebhookService::processWebhook(): Argument #1 ($request) must be of type Masyukai\Chip\Http\Requests\WebhookRequest, Illuminate\Http\Request given, called in /Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Services/WebhookServiceTest.php on line 190' [ASCII](length: 280) contains "Invalid JSON payload" [ASCII](length: 20).
-at tests/Services/WebhookServiceTest.php:191</failure>
-        </testcase>
-        <testcase name="`WebhookService Configuration` → it uses configured public key when none provided" file="tests/Services/WebhookServiceTest.php::`WebhookService Configuration` → it uses configured public key when none provided" class="Tests\Services\WebhookServiceTest" classname="Tests.Services.WebhookServiceTest" assertions="0" time="0.070987">
-          <error type="TypeError">`WebhookService Configuration` → it uses configured public key when none providedTypeError: Cannot assign null to property Masyukai\Chip\Services\ChipCollectService::$apiKey of type string
-at src/Services/ChipCollectService.php:31
-at src/ChipServiceProvider.php:47
-at vendor/laravel/framework/src/Illuminate/Container/Container.php:1154
-at vendor/laravel/framework/src/Illuminate/Container/Container.php:972
-at vendor/laravel/framework/src/Illuminate/Foundation/Application.php:1077
-at vendor/laravel/framework/src/Illuminate/Container/Container.php:903
-at vendor/laravel/framework/src/Illuminate/Foundation/Application.php:1057
-at vendor/laravel/framework/src/Illuminate/Foundation/helpers.php:138
-at src/Services/WebhookService.php:89
-at vendor/laravel/framework/src/Illuminate/Cache/Repository.php:431
-at vendor/laravel/framework/src/Illuminate/Cache/CacheManager.php:474
-at vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php:363
-at src/Services/WebhookService.php:81
-at src/Services/WebhookService.php:27
-at tests/Services/WebhookServiceTest.php:211</error>
-        </testcase>
-        <testcase name="`WebhookService Configuration` → it throws exception when no public key is available" file="tests/Services/WebhookServiceTest.php::`WebhookService Configuration` → it throws exception when no public key is available" class="Tests\Services\WebhookServiceTest" classname="Tests.Services.WebhookServiceTest" assertions="1" time="0.072758">
-          <failure type="PHPUnit\Framework\ExpectationFailedException">`WebhookService Configuration` → it throws exception when no public key is availableFailed asserting that 'Cannot assign null to property Masyukai\Chip\Services\ChipCollectService::$apiKey of type string' [ASCII](length: 96) contains "No public key configured" [ASCII](length: 24).
-at tests/Services/WebhookServiceTest.php:224</failure>
-        </testcase>
+      <testsuite name="Tests\Services\WebhookServiceTest" file="tests/Services/WebhookServiceTest.php" tests="3" assertions="3" errors="0" failures="0" skipped="0" time="0.122445">
+        <testcase name="`WebhookService` → it verifies valid webhook signatures" file="tests/Services/WebhookServiceTest.php::`WebhookService` → it verifies valid webhook signatures" class="Tests\Services\WebhookServiceTest" classname="Tests.Services.WebhookServiceTest" assertions="1" time="0.040567"/>
+        <testcase name="`WebhookService` → it processes webhook events" file="tests/Services/WebhookServiceTest.php::`WebhookService` → it processes webhook events" class="Tests\Services\WebhookServiceTest" classname="Tests.Services.WebhookServiceTest" assertions="1" time="0.037822"/>
+        <testcase name="`WebhookService` → it uses configured public key when available" file="tests/Services/WebhookServiceTest.php::`WebhookService` → it uses configured public key when available" class="Tests\Services\WebhookServiceTest" classname="Tests.Services.WebhookServiceTest" assertions="1" time="0.044056"/>
       </testsuite>
     </testsuite>
   </testsuite>

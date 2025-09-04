@@ -46,8 +46,8 @@ class Client
         return new self(
             id: $data['id'],
             type: $data['type'] ?? 'client',
-            created_on: $data['created_on'] ?? strtotime($data['created_at'] ?? 'now'),
-            updated_on: $data['updated_on'] ?? strtotime($data['updated_at'] ?? 'now'),
+            created_on: (int) ($data['created_on'] ?? strtotime($data['created_at'] ?? 'now')),
+            updated_on: (int) ($data['updated_on'] ?? strtotime($data['updated_at'] ?? 'now')),
             bank_account: $data['bank_account'] ?? null,
             bank_code: $data['bank_code'] ?? null,
             email: $data['email'] ?? null,

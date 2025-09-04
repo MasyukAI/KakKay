@@ -49,7 +49,7 @@ class CheckoutService
 
                 // Add reference to customer data
                 $customerDataWithReference = array_merge($customerData, [
-                    'reference' => $order->id,
+                    'reference' => $order->order_number, // Use order number as reference
                 ]);
 
                 // Process payment with the gateway
