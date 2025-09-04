@@ -8,6 +8,7 @@
     "require": {
         "php": "^8.2",
         "asmit/resized-column": "^1.1",
+        "fakerphp/faker": "^1.24",
         "filament/filament": "^4.0",
         "filament/spatie-laravel-media-library-plugin": "^4.0",
         "laravel/framework": "^12.0",
@@ -18,7 +19,6 @@
         "masyukai/chip": "@dev"
     },
     "require-dev": {
-        "fakerphp/faker": "^1.23",
         "laradumps/laradumps": "^4.0",
         "laravel/boost": "^1.0",
         "laravel/pail": "^1.2.2",
