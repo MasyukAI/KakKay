@@ -4,6 +4,7 @@ use Livewire\Volt\Component;
 use Livewire\Attributes\Computed;
 use Illuminate\Support\Facades\Log;
 use MasyukAI\Cart\Facades\Cart;
+use App\Services\CheckoutService;
 
 new class extends Component {
 
@@ -13,19 +14,27 @@ new class extends Component {
         'phone' => '',
         'country' => 'Malaysia',
         'city' => 'Kuala Lumpur',
+        'state' => '',
+        'address' => '',
+        'address2' => '',
+        'postal_code' => '',
         'company_name' => '',
         'vat_number' => '',
-        'payment_method' => 'credit-card',
+        'payment_method' => 'chip',
+        'payment_method_whitelist' => [],
         'delivery_method' => 'standard',
         'voucher_code' => '',
     ];
 
     public array $cartItems = [];
     public string $selectedCountryCode = '+60';
+    public array $availablePaymentMethods = [];
+    public string $selectedPaymentGroup = 'card';
 
     public function mount(): void
     {
         $this->loadCartItems();
+        $this->loadPaymentMethods();
     }
 
     public function loadCartItems(): void
@@ -43,7 +52,7 @@ new class extends Component {
                 return [
                     'id' => (string) $item->id,
                     'name' => (string) $item->name,
-                    'price' => (int) ($item->price * 100), // Convert to cents
+                    'price' => (int) ($item->price),
                     'quantity' => (int) $item->quantity,
                     'attributes' => $item->attributes->toArray(),
                 ];
@@ -52,6 +61,51 @@ new class extends Component {
             Log::error('Checkout loading error: ' . $e->getMessage());
             $this->redirect(route('cart'));
         }
+    }
+
+    public function loadPaymentMethods(): void
+    {
+        try {
+            $checkoutService = app(CheckoutService::class);
+            $this->availablePaymentMethods = $checkoutService->getAvailablePaymentMethods();
+        } catch (\Exception $e) {
+            Log::error('Failed to load payment methods: ' . $e->getMessage());
+            // Use fallback payment methods
+            $this->availablePaymentMethods = [
+                [
+                    'id' => 'fpx_b2c',
+                    'name' => 'FPX Online Banking',
+                    'description' => 'Bayar dengan Internet Banking Malaysia',
+                    'icon' => 'building-office',
+                    'group' => 'banking',
+                ],
+                [
+                    'id' => 'visa',
+                    'name' => 'Kad Kredit/Debit',
+                    'description' => 'Visa, Mastercard',
+                    'icon' => 'credit-card',
+                    'group' => 'card',
+                ],
+            ];
+        }
+    }
+
+    public function selectPaymentGroup(string $group): void
+    {
+        $this->selectedPaymentGroup = $group;
+        
+        // Set payment method whitelist based on selected group
+        $groupMethods = collect($this->availablePaymentMethods)
+            ->where('group', $group)
+            ->pluck('id')
+            ->toArray();
+            
+        $this->form['payment_method_whitelist'] = $groupMethods;
+    }
+
+    public function selectPaymentMethod(string $methodId): void
+    {
+        $this->form['payment_method_whitelist'] = [$methodId];
     }
 
     #[Computed]
@@ -72,20 +126,22 @@ new class extends Component {
         return match($this->form['delivery_method']) {
             'express' => 4900, // RM49
             'fast' => 1500,    // RM15
-            default => 0,      // Free shipping
+            default => 500,    // RM5 Standard shipping
         };
     }
 
     #[Computed]
     public function getTax(): int
     {
-        return (int) ($this->getSubtotal() * 0.10); // 10% SST
+        return 0; // No tax applied
     }
 
     #[Computed]
     public function getTotal(): int
     {
-        return $this->getSubtotal() - $this->getSavings() + $this->getShipping() + $this->getTax();
+        // is there a native function from Cart package
+        $cartTotal = Cart::getTotal();
+        return $cartTotal - $this->getSavings() + $this->getShipping() + $this->getTax();
     }
 
     public function formatPrice(int $cents): string
@@ -99,33 +155,95 @@ new class extends Component {
         session()->flash('message', 'Kod voucher akan disemak...');
     }
 
+    #[Computed]
+    public function getPaymentMethodsByGroup(): array
+    {
+        $grouped = [];
+        foreach ($this->availablePaymentMethods as $method) {
+            $grouped[$method['group']][] = $method;
+        }
+        return $grouped;
+    }
+
+    public function getGroupDisplayName(string $group): string
+    {
+        $groupNames = [
+            'banking' => 'Online Banking',
+            'card' => 'Kad Kredit/Debit',
+            'ewallet' => 'E-Wallet',
+            'qr' => 'QR Payment',
+            'bnpl' => 'Beli Sekarang, Bayar Kemudian',
+            'other' => 'Lain-lain',
+        ];
+
+        return $groupNames[$group] ?? ucfirst($group);
+    }
+
     public function processCheckout(): void
     {
         $this->validate([
             'form.name' => 'required|string|max:255',
             'form.email' => 'required|email|max:255',
             'form.phone' => 'required|string|max:20',
-            'form.country' => 'required|string',
-            'form.city' => 'required|string',
+            'form.address' => 'required|string|max:255',
+            'form.city' => 'required|string|max:100',
+            'form.country' => 'required|string|max:100',
         ]);
 
-        // Middleware handles cart instance switching
-        
-        // Process the checkout
-        session()->flash('success', 'Pesanan berjaya dihantar! Kami akan hubungi anda tidak lama lagi.');
-        
-        // Here you would typically:
-        // 1. Create order record
-        // 2. Process payment
-        // 3. Clear cart
-        // 4. Send confirmation email
-        // 5. Redirect to success page
-        
-        // Clear the cart after successful checkout
-        $cartManager->clear();
-        
-        // For now, just redirect back with success message
-        $this->redirect(route('home'));
+        try {
+            $checkoutService = app(CheckoutService::class);
+            
+            // Prepare customer data with all required CHIP fields
+            $customerData = [
+                'name' => $this->form['name'],
+                'email' => $this->form['email'],
+                'phone' => $this->selectedCountryCode . $this->form['phone'],
+                'country' => $this->form['country'],
+                'city' => $this->form['city'],
+                'address' => $this->form['address'],
+                'state' => $this->form['state'],
+                'zip' => $this->form['postal_code'],
+                'company_name' => $this->form['company_name'],
+                'vat_number' => $this->form['vat_number'],
+                // Required CHIP fields - use defaults if not provided by user
+                'personal_code' => $this->form['vat_number'] ?: 'PERSONAL', // Use VAT number or default
+                'brand_name' => $this->form['company_name'] ?: $this->form['name'], // Use company name or personal name
+                'legal_name' => $this->form['company_name'] ?: $this->form['name'],
+                'registration_number' => $this->form['vat_number'] ?: '',
+                'tax_number' => $this->form['vat_number'] ?: '',
+                // Add bank account information (required by CHIP API)
+                'bank_account' => 'default',
+                'bank_code' => 'default',
+                // Use empty array instead of null for payment_method_whitelist
+                'payment_method_whitelist' => !empty($this->form['payment_method_whitelist']) 
+                    ? $this->form['payment_method_whitelist'] 
+                    : [],
+            ];
+
+            // Create payment using the configured gateway
+            $result = $checkoutService->createPayment($customerData, $this->cartItems);
+
+            if ($result['success']) {
+                // Store purchase info in session
+                session([
+                    'chip_purchase_id' => $result['purchase_id'],
+                    'checkout_data' => $this->form,
+                ]);
+
+                // Redirect to CHIP checkout
+                $this->redirect($result['checkout_url']);
+            } else {
+                session()->flash('error', 'Gagal memproses pembayaran: ' . $result['error']);
+            }
+        } catch (\Exception $e) {
+            Log::error('Checkout processing failed', [
+                'error' => $e->getMessage(),
+                'form_data' => $this->form,
+                'cart_items' => $this->cartItems,
+            ]);
+            
+            session()->flash('error', 'Terjadi ralat semasa memproses pesanan. Sila cuba lagi.');
+        }
     }
 }; ?>
 
@@ -136,21 +254,24 @@ new class extends Component {
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
                     <a href="{{ route('home') }}" class="cart-brand">
-                        <flux:icon.home class="h-8 w-8" />
+                        <flux:icon name="home" class="h-8 w-8" />
                         <span>Kak Kay</span>
                     </a>
                 </div>
 
                 <div class="flex items-center gap-6">
-                    <a href="{{ route('cart') }}" class="cart-nav-link">
-                        ← Kembali ke Keranjang
-                    </a>
+                    {{-- <a href="{{ route('cart') }}" class="cart-nav-link">
+                        ← Balik ke Troli
+                    </a> --}}
 
                     <div class="relative">
-                        <flux:button variant="primary" size="sm" href="{{ route('cart') }}" class="flex items-center gap-2">
-                            <flux:icon.shopping-bag class="h-5 w-5" />
+                        <flux:button variant="primary" href="{{ route('cart') }}" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-lg">
+                            <flux:icon.shopping-bag class="h-6 w-6" />
+                            <span class="hidden sm:inline font-medium">Troli</span>
+                            <div class="absolute top-0 right-0">
+                            @livewire('cart-counter')
+                            </div>
                         </flux:button>
-                        @livewire('cart-counter')
                     </div>
                 </div>
             </div>
@@ -167,20 +288,20 @@ new class extends Component {
                     <ol class="flex items-center justify-center w-full max-w-2xl mx-auto text-center text-sm font-medium text-gray-300 sm:text-base">
                         <li class="flex items-center text-pink-400 after:mx-6 after:hidden after:h-1 after:w-full after:border-b after:border-gray-600 sm:after:inline-block sm:after:content-[''] md:w-full xl:after:mx-10">
                             <span class="flex items-center after:mx-2 after:text-gray-500 after:content-['/'] sm:after:hidden">
-                                <flux:icon.check-circle class="me-2 h-4 w-4 sm:h-5 sm:w-5" />
-                                Keranjang
+                                <flux:icon name="check-circle" class="me-2 h-4 w-4 sm:h-5 sm:w-5" />
+                                Troli
                             </span>
                         </li>
 
                         <li class="flex items-center text-pink-400 after:mx-6 after:hidden after:h-1 after:w-full after:border-b after:border-gray-600 sm:after:inline-block sm:after:content-[''] md:w-full xl:after:mx-10">
                             <span class="flex items-center after:mx-2 after:text-gray-500 after:content-['/'] sm:after:hidden">
-                                <flux:icon.check-circle class="me-2 h-4 w-4 sm:h-5 sm:w-5" />
+                                <flux:icon name="check-circle" class="me-2 h-4 w-4 sm:h-5 sm:w-5" />
                                 Bayaran
                             </span>
                         </li>
 
                         <li class="flex shrink-0 items-center text-gray-400">
-                            <flux:icon.clock class="me-2 h-4 w-4 sm:h-5 sm:w-5" />
+                            <flux:icon name="clock" class="me-2 h-4 w-4 sm:h-5 sm:w-5" />
                             Ringkasan Pesanan
                         </li>
                     </ol>
@@ -189,6 +310,12 @@ new class extends Component {
                 @if(session('success'))
                     <flux:callout variant="success" class="mb-6">
                         {{ session('success') }}
+                    </flux:callout>
+                @endif
+
+                @if(session('error'))
+                    <flux:callout variant="danger" class="mb-6">
+                        {{ session('error') }}
                     </flux:callout>
                 @endif
 
@@ -269,6 +396,38 @@ new class extends Component {
                                     </flux:field>
                                 </div>
 
+                                <div class="sm:col-span-2">
+                                    <flux:field>
+                                        <flux:label>Alamat Baris 1 *</flux:label>
+                                        <flux:input wire:model="form.address" placeholder="Nombor rumah, nama jalan" required />
+                                        <flux:error name="form.address" />
+                                    </flux:field>
+                                </div>
+
+                                <div class="sm:col-span-2">
+                                    <flux:field>
+                                        <flux:label>Alamat Baris 2 (Opsional)</flux:label>
+                                        <flux:input wire:model="form.address2" placeholder="Taman, kawasan, dll" />
+                                        <flux:error name="form.address2" />
+                                    </flux:field>
+                                </div>
+
+                                <div>
+                                    <flux:field>
+                                        <flux:label>Negeri</flux:label>
+                                        <flux:input wire:model="form.state" placeholder="Contoh: Selangor" />
+                                        <flux:error name="form.state" />
+                                    </flux:field>
+                                </div>
+
+                                <div>
+                                    <flux:field>
+                                        <flux:label>Poskod</flux:label>
+                                        <flux:input wire:model="form.postal_code" placeholder="Contoh: 40000" />
+                                        <flux:error name="form.postal_code" />
+                                    </flux:field>
+                                </div>
+
                                 <div>
                                     <flux:field>
                                         <flux:label>Nama Syarikat (Opsional)</flux:label>
@@ -276,53 +435,111 @@ new class extends Component {
                                     </flux:field>
                                 </div>
 
-                                <div class="sm:col-span-2">
-                                    <flux:button variant="subtle" type="button" class="w-full flex items-center justify-center gap-2">
-                                        <flux:icon.plus class="h-5 w-5" />
-                                        Tambah Alamat Baru
-                                    </flux:button>
+                                <div>
+                                    <flux:field>
+                                        <flux:label>VAT/SST Number (Opsional)</flux:label>
+                                        <flux:input wire:model="form.vat_number" placeholder="Nombor VAT/SST" />
+                                    </flux:field>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Payment Methods -->
-                        <div class="cart-card p-6 space-y-4">
-                            <h3 class="text-xl font-semibold text-white" style="font-family: 'Caveat Brush', cursive;">
+                        <div class="cart-card p-6 space-y-4 opacity-0">
+                            {{-- <h3 class="text-xl font-semibold text-white" style="font-family: 'Caveat Brush', cursive;">
                                 Cara <span class="cart-text-accent">Pembayaran</span>
                             </h3>
 
-                            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-                                <div class="p-4 border border-gray-600 rounded-lg bg-white/5">
-                                    <flux:radio wire:model="form.payment_method" value="credit-card" checked>
-                                        <div class="ml-3">
-                                            <div class="font-medium text-white">Kad Kredit</div>
-                                            <div class="text-sm text-gray-400">Bayar dengan kad kredit anda</div>
+                            <!-- Payment Method Groups -->
+                            <div class="space-y-4">
+                                @if(!empty($this->getPaymentMethodsByGroup()))
+                                    @foreach($this->getPaymentMethodsByGroup() as $groupName => $methods)
+                                        <div class="space-y-3">
+                                            <h4 class="text-lg font-medium text-white capitalize">
+                                                {{ $this->getGroupDisplayName($groupName) }}
+                                            </h4>
+                                            
+                                            <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+                                                @foreach($methods as $method)
+                                                    <div class="p-4 border border-gray-600 rounded-lg bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
+                                                         wire:click="selectPaymentMethod('{{ $method['id'] }}')">
+                                                        <div class="flex items-center space-x-3">
+                                                            <flux:icon name="{{ $method['icon'] }}" class="h-6 w-6 text-pink-400" />
+                                                            <div class="flex-1">
+                                                                <div class="font-medium text-white">{{ $method['name'] }}</div>
+                                                                <div class="text-sm text-gray-400">{{ $method['description'] }}</div>
+                                                            </div>
+                                                            @if(in_array($method['id'], $form['payment_method_whitelist'] ?? []))
+                                                                <flux:icon name="check-circle" class="h-5 w-5 text-green-400" />
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
                                         </div>
-                                    </flux:radio>
-                                </div>
+                                    @endforeach
+                                @else
+                                    <!-- Fallback payment options -->
+                                    {{-- <div class="space-y-3">
+                                        <h4 class="text-lg font-medium text-white">Online Banking</h4>
+                                        <div class="p-4 border border-gray-600 rounded-lg bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
+                                             wire:click="selectPaymentMethod('fpx_b2c')">
+                                            <div class="flex items-center space-x-3">
+                                                <flux:icon name="building-office" class="h-6 w-6 text-pink-400" />
+                                                <div class="flex-1">
+                                                    <div class="font-medium text-white">FPX Online Banking</div>
+                                                    <div class="text-sm text-gray-400">Bayar dengan Internet Banking Malaysia</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                <div class="p-4 border border-gray-600 rounded-lg bg-white/5">
-                                    <flux:radio wire:model="form.payment_method" value="online-banking">
-                                        <div class="ml-3">
-                                            <div class="font-medium text-white">Online Banking</div>
-                                            <div class="text-sm text-gray-400">FPX / Internet Banking</div>
+                                    <div class="space-y-3">
+                                        <h4 class="text-lg font-medium text-white">Kad Kredit/Debit</h4>
+                                        <div class="p-4 border border-gray-600 rounded-lg bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
+                                             wire:click="selectPaymentMethod('visa')">
+                                            <div class="flex items-center space-x-3">
+                                                <flux:icon name="credit-card" class="h-6 w-6 text-pink-400" />
+                                                <div class="flex-1">
+                                                    <div class="font-medium text-white">Kad Kredit/Debit</div>
+                                                    <div class="text-sm text-gray-400">Visa, Mastercard</div>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </flux:radio>
-                                </div>
+                                    </div>
 
-                                <div class="p-4 border border-gray-600 rounded-lg bg-white/5">
-                                    <flux:radio wire:model="form.payment_method" value="ewallet">
-                                        <div class="ml-3">
-                                            <div class="font-medium text-white">E-Wallet</div>
-                                            <div class="text-sm text-gray-400">GrabPay, Touch 'n Go</div>
+                                    <div class="space-y-3">
+                                        <h4 class="text-lg font-medium text-white">E-Wallet</h4>
+                                        <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+                                            <div class="p-4 border border-gray-600 rounded-lg bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
+                                                 wire:click="selectPaymentMethod('tng_ewallet')">
+                                                <div class="flex items-center space-x-3">
+                                                    <flux:icon name="wallet" class="h-6 w-6 text-pink-400" />
+                                                    <div class="flex-1">
+                                                        <div class="font-medium text-white">Touch 'n Go eWallet</div>
+                                                        <div class="text-sm text-gray-400">Bayar dengan TnG eWallet</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="p-4 border border-gray-600 rounded-lg bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
+                                                 wire:click="selectPaymentMethod('grabpay')">
+                                                <div class="flex items-center space-x-3">
+                                                    <flux:icon name="wallet" class="h-6 w-6 text-pink-400" />
+                                                    <div class="flex-1">
+                                                        <div class="font-medium text-white">GrabPay</div>
+                                                        <div class="text-sm text-gray-400">Bayar dengan GrabPay</div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </flux:radio>
-                                </div>
-                            </div>
+                                    </div> 
+                                @endif
+                            </div>  --}}
                         </div>
 
                         <!-- Delivery Methods -->
-                        <div class="cart-card p-6 space-y-4">
+                        {{-- <div class="cart-card p-6 space-y-4">
                             <h3 class="text-xl font-semibold text-white" style="font-family: 'Caveat Brush', cursive;">
                                 Cara <span class="cart-text-accent">Penghantaran</span>
                             </h3>
@@ -331,7 +548,7 @@ new class extends Component {
                                 <div class="p-4 border border-gray-600 rounded-lg bg-white/5">
                                     <flux:radio wire:model="form.delivery_method" value="standard" checked>
                                         <div class="ml-3">
-                                            <div class="font-medium text-white">Penghantaran Percuma</div>
+                                            <div class="font-medium text-white">RM5 - Penghantaran Standard</div>
                                             <div class="text-sm text-gray-400">3-5 hari bekerja</div>
                                         </div>
                                     </flux:radio>
@@ -355,7 +572,7 @@ new class extends Component {
                                     </flux:radio>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 {{-- 
                         <!-- Voucher Code -->
                         <div class="cart-card p-6">
@@ -394,28 +611,21 @@ new class extends Component {
                                 <dl class="flex items-center justify-between gap-4 py-3">
                                     <dt class="text-base font-normal text-gray-400">Penghantaran</dt>
                                     <dd class="text-base font-medium text-white">
-                                        @if($this->getShipping() > 0)
-                                            {{ $this->formatPrice($this->getShipping()) }}
-                                        @else
-                                            <span class="text-green-400">PERCUMA</span>
-                                        @endif
+                                        {{ $this->formatPrice($this->getShipping()) }}
                                     </dd>
                                 </dl>
 
-                                <dl class="flex items-center justify-between gap-4 py-3">
-                                    <dt class="text-base font-normal text-gray-400">SST (10%)</dt>
-                                    <dd class="text-base font-medium text-white">{{ $this->formatPrice($this->getTax()) }}</dd>
-                                </dl>
+                                <!-- Tax removed -->
 
-                                <dl class="flex items-center justify-between gap-4 py-3 border-t border-gray-600 pt-3">
+                                <dl class="flex items-center justify-between gap-4 py-3 border-gray-600 pt-3">
                                     <dt class="text-base font-bold text-white">Jumlah Keseluruhan</dt>
                                     <dd class="text-base font-bold cart-text-accent">{{ $this->formatPrice($this->getTotal()) }}</dd>
                                 </dl>
                             </div>
 
                             <div class="space-y-3 mt-6">
-                                <flux:button type="submit" variant="primary" class="w-full cart-button-primary py-3">
-                                    <flux:icon.credit-card class="h-5 w-5 mr-2" />
+                                <flux:button type="submit" variant="primary" class="cursor-pointer w-full cart-button-primary py-3">
+                                    <flux:icon name="credit-card" class="h-5 w-5 mr-2" />
                                     Teruskan ke Pembayaran
                                 </flux:button>
 
@@ -423,6 +633,10 @@ new class extends Component {
                                     Maklumat peribadi anda selamat dan tidak akan dikongsi dengan pihak ketiga.
                                 </p>
                             </div>
+                        </div>
+
+                        <div>
+                            <img src="{{ asset('images/payment-method.jpg') }}" alt="payment-method" class="mx-auto mt-10">
                         </div>
                     </div>
                 </div>

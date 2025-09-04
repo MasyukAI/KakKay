@@ -43,14 +43,14 @@ Kau tahu tak, wanita ni bukan sekadar pelengkap je… tapi dia boleh jadi punca 
                onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow=''; this.style.filter='brightness(1)';">Buku Terhangat di Pasaran →</a>
             <a class="btn ghost" href="#books"
                style="transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);"
-               onmouseover="this.style.transform='translateY(-2px)'; this.style.backgroundColor='rgba(255,255,255,0.1)'; this.style.borderColor='rgba(255,105,180,0.8)'; this.style.color='#ff69b4';"
+               onmouseover="this.style.transform='translateY(-2px)'; this.style.backgroundColor='rgba(255,255,255,0.1)'; this.style.borderColor='rgba(255,105,180,0.8)'; this.style.color='#ffffff';"
                onmouseout="this.style.transform='translateY(0)'; this.style.backgroundColor=''; this.style.borderColor=''; this.style.color='';">Karya Kak Kay</a>
           </div>
         </div>
 
         <div class="scene" aria-label="Hero visual with portrait and book stacks">
           <div class="ring" aria-hidden="true"></div>
-          <img class="portrait" src="https://kay.test/storage/images/kakkayhero.png" alt="Confident portrait" style="width: clamp(220px, 36vw, 380px); aspect-ratio: 4/5; border-radius: calc(var(--radius) * 1.3); object-fit: cover; object-position: center 30%; box-shadow: var(--shadow-lg); position: relative; z-index: 1;">
+          <img class="portrait" src="{{ asset('images/kakkayhero.png') }}" alt="Confident portrait" style="width: clamp(220px, 36vw, 380px); aspect-ratio: 4/5; border-radius: calc(var(--radius) * 1.3); object-fit: cover; object-position: center 30%; box-shadow: var(--shadow-lg); position: relative; z-index: 1;">
           <div class="book b1"><span>Empowering Women</span></div>
           <div class="book b2"><span>Healing Yourself</span></div>
           <div class="book b3 only-desktop"><span>Calm Your Mind</span></div>
@@ -114,7 +114,7 @@ Kau tahu tak, wanita ni bukan sekadar pelengkap je… tapi dia boleh jadi punca 
       </div>
     </section>
 
-  <div class="hidden sm:flex justify-center">
+  <div class="hidden justify-center">
         <nav class="text-center">
           <a class="pill" href="member"
             style="transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);"
@@ -172,6 +172,38 @@ Kau tahu tak, wanita ni bukan sekadar pelengkap je… tapi dia boleh jadi punca 
                onmouseover="this.style.transform='translateY(-3px) scale(1.05)'; this.style.boxShadow='0 15px 35px rgba(255,105,180,0.4), 0 5px 15px rgba(0,0,0,0.3)'; this.style.filter='brightness(1.1)';"
                onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow=''; this.style.filter='brightness(1)';">kakkaylovesme@gmail.com
             </a>
+          </div>
+        </div>
+        
+        <!-- Policy Links Section - Centered Below -->
+        <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1);">
+          <div style="text-align: center; max-width: 800px; margin: 0 auto;">
+            <h4 style="color: #ffe9f5; font-size: 1.1rem; margin-bottom: 1rem; font-weight: 600;">Dasar & Polisi</h4>
+            <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; align-items: center;">
+              <a href="/privacy-policy" style="color: rgba(255,233,245,0.8); text-decoration: none; font-size: 0.9rem; transition: all 0.3s; padding: 0.3rem 0;" onmouseover="this.style.color='#ff69b4'; this.style.transform='translateY(-2px)'" onmouseout="this.style.color='rgba(255,233,245,0.8)'; this.style.transform='translateY(0)'">Dasar Privasi</a>
+              <span style="color: rgba(255,233,245,0.3); font-size: 0.8rem;">•</span>
+              <a href="/refund-policy" style="color: rgba(255,233,245,0.8); text-decoration: none; font-size: 0.9rem; transition: all 0.3s; padding: 0.3rem 0;" onmouseover="this.style.color='#ff69b4'; this.style.transform='translateY(-2px)'" onmouseout="this.style.color='rgba(255,233,245,0.8)'; this.style.transform='translateY(0)'">Dasar Pemulangan</a>
+              <span style="color: rgba(255,233,245,0.3); font-size: 0.8rem;">•</span>
+              <a href="/shipping-policy" style="color: rgba(255,233,245,0.8); text-decoration: none; font-size: 0.9rem; transition: all 0.3s; padding: 0.3rem 0;" onmouseover="this.style.color='#ff69b4'; this.style.transform='translateY(-2px)'" onmouseout="this.style.color='rgba(255,233,245,0.8)'; this.style.transform='translateY(0)'">Dasar Penghantaran</a>
+              <span style="color: rgba(255,233,245,0.3); font-size: 0.8rem;">•</span>
+              <a href="/terms-of-service" style="color: rgba(255,233,245,0.8); text-decoration: none; font-size: 0.9rem; transition: all 0.3s; padding: 0.3rem 0;" onmouseover="this.style.color='#ff69b4'; this.style.transform='translateY(-2px)'" onmouseout="this.style.color='rgba(255,233,245,0.8)'; this.style.transform='translateY(0)'">Terma & Syarat</a>
+            </div>
+          </div>
+          
+          <!-- Contact Info Footer -->
+          <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; color: rgba(255,233,245,0.6); font-size: 0.8rem;">
+            <p style="margin: 0.5rem 0;">&copy; 2025 Kamalia Kamal Research International (Kak Kay).<br />Semua hak terpelihara.</p>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; justify-content: center; align-items: center; margin-top: 0.5rem;">
+              <span style="display: flex; align-items: center; gap: 0.3rem;">
+                <span style="color: #ff69b4;">📍</span>
+                24, Jalan Pakis 1, Taman Fern Grove, 43200 Cheras, Selangor
+              </span>
+              <span style="color: rgba(255,233,245,0.3);">•</span>
+              <span style="display: flex; align-items: center; gap: 0.3rem;">
+                <span style="color: #ff69b4;">📱</span>
+                <a href="https://wa.me/60138846594" style="color: inherit; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#ff69b4'" onmouseout="this.style.color='inherit'">+60 12-345 6789</a>
+              </span>
+            </div>
           </div>
         </div>
       </div>

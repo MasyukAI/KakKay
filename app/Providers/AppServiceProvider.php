@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
-use Livewire\Livewire;
-use App\Http\Middleware\SetCartSessionKey;
+use App\Listeners\HandlePaymentSuccess;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
+use Livewire\Livewire;
+use Masyukai\Chip\Events\PurchasePaid;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -26,6 +28,12 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Model::unguard();
+
+        // Register CHIP payment success listener
+        Event::listen(
+            PurchasePaid::class,
+            HandlePaymentSuccess::class
+        );
 
         // Livewire::addPersistentMiddleware([
         //     SetCartSessionKey::class,

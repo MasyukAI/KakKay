@@ -1,0 +1,266 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use App\Models\Payment;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
+use Masyukai\Chip\Events\PurchaseCreated;
+use Masyukai\Chip\Events\PurchasePaid;
+use Masyukai\Chip\Services\WebhookService;
+
+class ChipWebhookController extends Controller
+{
+    public function __construct(
+        protected WebhookService $webhookService
+    ) {
+        //
+    }
+
+    /**
+     * Handle CHIP webhook
+     */
+    public function handle(Request $request): Response
+    {
+        try {
+            // Verify webhook signature
+            if (! $this->webhookService->verifySignature($request)) {
+                Log::error('CHIP webhook signature verification failed');
+
+                return response('Unauthorized', 401);
+            }
+
+            $payload = $this->webhookService->parsePayload($request->getContent());
+            $eventType = $payload->event ?? 'unknown';
+            $purchaseData = $payload->data ?? [];
+
+            Log::info('CHIP webhook received', [
+                'event' => $eventType,
+                'purchase_id' => $purchaseData['id'] ?? null,
+            ]);
+
+            // Handle different webhook events
+            switch ($eventType) {
+                case 'purchase.paid':
+                    $this->handlePurchasePaid($purchaseData);
+                    break;
+
+                case 'purchase.created':
+                    $this->handlePurchaseCreated($purchaseData);
+                    break;
+
+                case 'purchase.cancelled':
+                    $this->handlePurchaseCancelled($purchaseData);
+                    break;
+
+                case 'purchase.refunded':
+                    $this->handlePurchaseRefunded($purchaseData);
+                    break;
+
+                default:
+                    Log::info('Unhandled CHIP webhook event', [
+                        'event' => $eventType,
+                        'data' => $purchaseData,
+                    ]);
+            }
+
+            return response('OK', 200);
+        } catch (\Exception $e) {
+            Log::error('CHIP webhook processing failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'request_data' => $request->all(),
+            ]);
+
+            return response('Internal Server Error', 500);
+        }
+    }
+
+    /**
+     * Handle purchase paid webhook
+     */
+    protected function handlePurchasePaid(array $purchaseData): void
+    {
+        $purchaseId = $purchaseData['id'];
+        $reference = $purchaseData['reference'] ?? null;
+
+        Log::info('Processing purchase paid webhook', [
+            'purchase_id' => $purchaseId,
+            'reference' => $reference,
+        ]);
+
+        // Find payment by gateway payment ID
+        $payment = Payment::where('gateway_payment_id', $purchaseId)->first();
+
+        if (! $payment && $reference) {
+            // Try to find by order reference
+            $order = Order::where('order_number', $reference)->first();
+            if ($order) {
+                $payment = $order->payments()->where('gateway_payment_id', $purchaseId)->first();
+            }
+        }
+
+        if ($payment && $payment->order) {
+            // Update payment status
+            $payment->update([
+                'status' => 'completed',
+                'gateway_transaction_id' => $purchaseData['payment']['id'] ?? null,
+                'gateway_response' => $purchaseData,
+                'method' => $purchaseData['transaction_data']['payment_method'] ?? 'chip',
+                'paid_at' => now(),
+            ]);
+
+            // Update order status
+            $payment->order->update([
+                'status' => 'processing', // Order is paid and being processed
+            ]);
+
+            // Add status history
+            $payment->order->statusHistories()->create([
+                'from_status' => 'pending',
+                'to_status' => 'processing',
+                'actor_type' => 'gateway',
+                'meta' => [
+                    'gateway' => 'chip',
+                    'purchase_id' => $purchaseId,
+                    'payment_id' => $payment->id,
+                ],
+                'note' => 'Payment completed via CHIP webhook',
+                'changed_at' => now(),
+            ]);
+
+            // Dispatch event
+            if (class_exists(PurchasePaid::class)) {
+                $purchase = \Masyukai\Chip\DataObjects\Purchase::fromArray($purchaseData);
+                event(new PurchasePaid($purchase));
+            }
+
+            Log::info('Payment and order updated successfully', [
+                'order_id' => $payment->order->id,
+                'payment_id' => $payment->id,
+                'purchase_id' => $purchaseId,
+            ]);
+        } else {
+            Log::warning('Payment not found for paid purchase', [
+                'purchase_id' => $purchaseId,
+                'reference' => $reference,
+            ]);
+        }
+    }
+
+    /**
+     * Handle purchase created webhook
+     */
+    protected function handlePurchaseCreated(array $purchaseData): void
+    {
+        $purchaseId = $purchaseData['id'];
+
+        Log::info('Processing purchase created webhook', [
+            'purchase_id' => $purchaseId,
+        ]);
+
+        // Dispatch event
+        if (class_exists(PurchaseCreated::class)) {
+            $purchase = \Masyukai\Chip\DataObjects\Purchase::fromArray($purchaseData);
+            event(new PurchaseCreated($purchase));
+        }
+    }
+
+    /**
+     * Handle purchase cancelled webhook
+     */
+    protected function handlePurchaseCancelled(array $purchaseData): void
+    {
+        $purchaseId = $purchaseData['id'];
+
+        Log::info('Processing purchase cancelled webhook', [
+            'purchase_id' => $purchaseId,
+        ]);
+
+        $payment = Payment::where('gateway_payment_id', $purchaseId)->first();
+
+        if ($payment && $payment->order) {
+            // Update payment status
+            $payment->update([
+                'status' => 'cancelled',
+                'gateway_response' => $purchaseData,
+                'failed_at' => now(),
+            ]);
+
+            // Update order status
+            $payment->order->update([
+                'status' => 'cancelled',
+            ]);
+
+            // Add status history
+            $payment->order->statusHistories()->create([
+                'from_status' => $payment->order->status,
+                'to_status' => 'cancelled',
+                'actor_type' => 'gateway',
+                'meta' => [
+                    'gateway' => 'chip',
+                    'purchase_id' => $purchaseId,
+                    'payment_id' => $payment->id,
+                ],
+                'note' => 'Payment cancelled via CHIP webhook',
+                'changed_at' => now(),
+            ]);
+
+            Log::info('Payment and order cancelled', [
+                'order_id' => $payment->order->id,
+                'payment_id' => $payment->id,
+                'purchase_id' => $purchaseId,
+            ]);
+        }
+    }
+
+    /**
+     * Handle purchase refunded webhook
+     */
+    protected function handlePurchaseRefunded(array $purchaseData): void
+    {
+        $purchaseId = $purchaseData['id'];
+
+        Log::info('Processing purchase refunded webhook', [
+            'purchase_id' => $purchaseId,
+        ]);
+
+        $payment = Payment::where('gateway_payment_id', $purchaseId)->first();
+
+        if ($payment && $payment->order) {
+            // Update payment status
+            $payment->update([
+                'status' => 'refunded',
+                'gateway_response' => $purchaseData,
+                'refunded_at' => now(),
+            ]);
+
+            // Update order status
+            $payment->order->update([
+                'status' => 'refunded',
+            ]);
+
+            // Add status history
+            $payment->order->statusHistories()->create([
+                'from_status' => $payment->order->status,
+                'to_status' => 'refunded',
+                'actor_type' => 'gateway',
+                'meta' => [
+                    'gateway' => 'chip',
+                    'purchase_id' => $purchaseId,
+                    'payment_id' => $payment->id,
+                ],
+                'note' => 'Payment refunded via CHIP webhook',
+                'changed_at' => now(),
+            ]);
+
+            Log::info('Payment and order refunded', [
+                'order_id' => $payment->order->id,
+                'payment_id' => $payment->id,
+                'purchase_id' => $purchaseId,
+            ]);
+        }
+    }
+}

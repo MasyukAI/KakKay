@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\ChipWebhookController;
 use App\Http\Controllers\PageController;
 use App\Livewire\Home;
 use Illuminate\Support\Facades\Route;
@@ -10,6 +12,13 @@ Route::get('/', Home::class)->name('home');
 Volt::route('/cart', 'cart')->name('cart');
 
 Volt::route('/checkout', 'checkout')->name('checkout');
+
+// Checkout success/failure routes
+Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
+Route::get('/checkout/failure', [CheckoutController::class, 'failure'])->name('checkout.failure');
+
+// CHIP webhook route
+Route::post('/webhooks/chip', [ChipWebhookController::class, 'handle'])->name('webhooks.chip');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
@@ -29,4 +38,10 @@ require __DIR__.'/auth.php';
 //    ->where('slug', '[a-z0-9\-]+')
 //    ->name('page.show');
 
-Volt::route('cara-bercinta', 'cara-bercinta');
+Volt::route('cara-bercinta', 'pages.cara-bercinta');
+
+// Policy pages
+Volt::route('privacy-policy', 'privacy-policy');
+Volt::route('refund-policy', 'refund-policy');
+Volt::route('shipping-policy', 'shipping-policy');
+Volt::route('terms-of-service', 'terms-of-service');

@@ -116,10 +116,12 @@
                         </dl>
                     @endif
 
+                    @if($this->getTax() > 0)
                     <dl class="flex items-center justify-between gap-4 py-3">
                         <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Tax</dt>
                         <dd class="text-base font-medium text-gray-900 dark:text-white">{{ $this->formatPrice($this->getTax()) }}</dd>
                     </dl>
+                    @endif
 
                     <dl class="flex items-center justify-between gap-4 py-3 border-t border-gray-200 dark:border-gray-700">
                         <dt class="text-base font-bold text-gray-900 dark:text-white">Total</dt>

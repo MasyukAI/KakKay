@@ -97,12 +97,13 @@ class OrderSummaryStep extends Component
 
     public function getDeliveryFee(): int
     {
-        $method = $this->checkoutData['payment']['delivery_method'] ?? 'dhl';
+        $method = $this->checkoutData['payment']['delivery_method'] ?? 'standard';
         return match($method) {
-            'dhl' => 1500,
-            'fedex' => 0,
-            'express' => 4900,
-            default => 0
+            'express' => 4900, // RM49
+            'fast' => 1500,    // RM15
+            'pickup' => 0,     // Free pickup
+            'standard' => 500, // RM5 Standard shipping
+            default => 500     // Default to standard shipping
         };
     }
 
@@ -117,7 +118,8 @@ class OrderSummaryStep extends Component
 
     public function getTax(): int
     {
-        return (int) ($this->getSubtotal() * 0.1);
+        // No tax is applied
+        return 0;
     }
 
     public function getTotal(): int
@@ -136,12 +138,13 @@ class OrderSummaryStep extends Component
 
     public function getDeliveryMethodName(): string
     {
-        $method = $this->checkoutData['payment']['delivery_method'] ?? 'dhl';
+        $method = $this->checkoutData['payment']['delivery_method'] ?? 'standard';
         return match($method) {
-            'dhl' => 'DHL Fast Delivery',
-            'fedex' => 'FedEx Standard',
-            'express' => 'Express Delivery',
-            default => 'Standard Delivery'
+            'express' => 'Express Delivery (Same Day)',
+            'fast' => 'Fast Delivery (Next Day)',
+            'pickup' => 'Store Pickup',
+            'standard' => 'Standard Delivery (3-5 days)',
+            default => 'Standard Delivery (3-5 days)'
         };
     }
 

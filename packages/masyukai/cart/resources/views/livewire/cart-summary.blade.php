@@ -38,6 +38,19 @@
                 <span class="font-medium">${{ number_format($this->subtotal, 2) }}</span>
             </div>
             
+            @if($this->shippingValue !== null)
+            <div class="flex justify-between items-center">
+                <span class="text-sm text-gray-600">Shipping</span>
+                <span class="font-medium">
+                    @if($this->shippingValue > 0)
+                        ${{ number_format($this->shippingValue, 2) }}
+                    @else
+                        <span class="text-green-600">Free</span>
+                    @endif
+                </span>
+            </div>
+            @endif
+            
             <div class="border-t pt-3">
                 <div class="flex justify-between items-center">
                     <span class="text-base font-semibold text-gray-800">Total</span>

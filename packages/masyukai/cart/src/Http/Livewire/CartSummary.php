@@ -36,6 +36,12 @@ class CartSummary extends Component
     {
         return Cart::getSubTotal();
     }
+    
+    #[Computed]
+    public function shippingValue()
+    {
+        return Cart::getShippingValue();
+    }
 
     #[Computed]
     public function total()

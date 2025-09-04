@@ -33,17 +33,21 @@ class extends Component {
             $product->name,
             $product->price, // Convert from cents to dollars for the cart
             1,
-            ['slug' => $product->slug]
+            [
+                'slug' => $product->slug,
+                'category' => $product->category_id ? $product->category->name : 'books'
+            ]
         );
 
-        Notification::make()
-            ->title('Berjaya Ditambah!')
-            ->body('Produk telah ditambah ke keranjang!')
-            ->success()
-            ->icon('heroicon-o-check-circle')
-            ->iconColor('success')
-            ->duration(3000)
-            ->send();
+        // Notification::make()
+        //     ->title('Berjaya Ditambah!')
+        //     ->body('Produk telah ditambah ke keranjang!')
+        //     ->success()
+        //     ->icon('heroicon-o-check-circle')
+        //     ->iconColor('success')
+        //     ->duration(3000)
+        //     ->send();
+
         $this->dispatch('product-added-to-cart');
         $this->redirect('/cart');
     }
@@ -68,17 +72,14 @@ class extends Component {
         <p class="mt-6 text-white/95 text-lg md:text-xl leading-relaxed max-w-2xl">
           Buku <strong class="text-champagne">34 Teknik Bercinta Dengan Pasangan</strong> oleh <strong class="text-champagne">Kamalia Kamal (Kak Kay)</strong> ialah panduan praktikal untuk <em class="text-blush font-medium">hidupkan semula rasa</em> — tanpa bajet besar, tanpa drama. Hanya usaha kecil yang ikhlas, konsisten, dan manis.
         </p>
-        <div class="mt-8 flex flex-wrap gap-4">
-                  <div class="fade-in-up order-last md:order-first">
-          <button 
-              wire:click="addToCart"
-              class="btn-cta shadow-glow rounded-full px-8 py-4 text-base font-semibold text-white transform hover:scale-105 transition-all duration-300">
-            Tambah ke Troli
-          </button>
-          <a href="#learn" class="rounded-full px-8 py-4 text-base font-semibold bg-white/20 backdrop-blur-sm ring-1 ring-white/40 hover:bg-white/30 hover:ring-white/60 transition-all duration-300 hover:scale-105">
-            Baca Lagi
-          </a>
-        </div>
+                  <div class="mt-8 flex flex-wrap gap-4">
+            <button wire:click="addToCart" class="rounded-full px-8 py-4 text-base font-semibold bg-rose text-white hover:bg-rose-600 transition-all duration-300 hover:scale-105">
+              Beli Hari Ini
+            </button>
+            <a href="#learn" class="rounded-full px-8 py-4 text-base font-semibold bg-white/20 backdrop-blur-sm ring-1 ring-white/40 hover:bg-white/30 hover:ring-white/60 transition-all duration-300 hover:scale-105">
+              Baca Lagi
+            </a>
+          </div>
         <div class="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3 text-[13px] text-white/90">
           <div class="bg-white/15 backdrop-blur-sm rounded-xl p-3 border border-white/20 hover:bg-white/25 transition-all duration-300">
             <div class="font-medium">Mudah & Murah</div>
@@ -94,20 +95,20 @@ class extends Component {
           </div>
         </div>
       </div>
-      <div class="relative flex justify-center md:justify-end order-first md:order-last">
+            <div class="relative flex justify-center md:justify-end order-first md:order-last">
         <div class="relative group">
           <!-- Floating glow effect -->
           <div class="absolute -inset-4 rounded-3xl blur-2xl opacity-75 bg-gradient-to-r from-blush/30 via-orchid/30 to-ruby/30 group-hover:opacity-100 transition-opacity duration-500"></div>
           <!-- Book container -->
           <div class="relative glass rounded-3xl p-6 shadow-luxury group-hover:shadow-dreamy transition-all duration-500 group-hover:scale-105">
-            <img src="images/cover/cara-bercinta.png" alt="Muka depan buku 34 Teknik Bercinta" class="w-full max-w-80 aspect-[3/4] object-cover rounded-2xl shadow-elegant"/>
+            <img src="{{ asset('images/cover/cara-bercinta.png') }}" alt="Buku 34 Teknik Bercinta" class="max-w-[280px] md:max-w-[320px] mx-auto h-auto rounded-2xl shadow-elegant" />
           </div>
           <!-- Floating elements -->
           <div class="absolute -top-4 -right-4 glass-dark rounded-full p-3 shadow-luxury">
-            <div class="w-3 h-3 bg-blush rounded-full animate-pulse"></div>
+            <div class="text-white text-xs font-bold">34 Teknik</div>
           </div>
           <div class="absolute -bottom-4 -left-4 glass-dark rounded-full p-4 shadow-luxury">
-            <div class="w-2 h-2 bg-champagne rounded-full animate-pulse"></div>
+            <div class="text-white text-xs font-bold">RM 50</div>
           </div>
         </div>
       </div>
@@ -218,8 +219,8 @@ class extends Component {
 
           <div class="text-center">
             <div class="inline-flex flex-col items-center gap-4">
-              <button id="openCartMid" class="btn-cta rounded-full px-10 py-4 text-lg font-semibold text-white shadow-glow transform hover:scale-105 transition-all duration-300">
-                Tambah ke Troli
+              <button wire:click="addToCart" id="openCartMid" class="btn-cta rounded-full px-10 py-4 text-lg font-semibold text-white shadow-glow transform hover:scale-105 transition-all duration-300">
+                Beli Hari Ini
               </button>
               <p class="text-sm text-slate-500 italic">✨ Mulakan perjalanan cinta yang lebih bermakna</p>
             </div>
@@ -402,7 +403,7 @@ class extends Component {
         </details>
       </div>
       <div class="text-center mt-2">
-        <button id="openCartBottom" class="btn-cta rounded-full px-8 py-3 font-semibold text-white shadow-glow">Tambah ke Troli</button>
+        <button wire:click="addToCart" id="openCartBottom" class="btn-cta rounded-full px-8 py-3 font-semibold text-white shadow-glow">Beli Hari Ini</button>
       </div>
     </section>
   </main>
@@ -442,11 +443,11 @@ class extends Component {
     <div class="absolute inset-0 bg-black/40"></div>
     <div class="absolute right-0 top-0 h-full w-full sm:w-[460px] bg-white shadow-2xl p-6 overflow-y-auto">
       <div class="flex items-center justify-between">
-        <h3 class="font-display text-2xl text-maroon">Tambah ke Troli</h3>
+        <h3 class="font-display text-2xl text-maroon">Beli Hari Ini</h3>
         <button id="closeCart" class="text-slate-500 hover:text-rose">✕</button>
       </div>
       <div class="mt-6 grid grid-cols-[80px_1fr] gap-4">
-        <img src="cara-bercinta.png" class="w-20 h-40 object-cover rounded-xl border" alt="Buku 34 Teknik Bercinta"/>
+        <img src="{{  asset('images/cover/cara-bercinta.png') }}" class="w-20 h-40 object-cover rounded-xl border" alt="Buku 34 Teknik Bercinta"/>
         <div>
           <div class="font-semibold">34 Teknik Bercinta — Kamalia Kamal</div>
           <div class="text-sm text-slate-600">Pilih edisi, kuantiti & terus checkout.</div>

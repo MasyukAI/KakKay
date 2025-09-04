@@ -17,13 +17,13 @@ return new class extends Migration
             $table->string('carrier')->nullable();          // e.g., J&T, PosLaju, DHL
             $table->string('service')->nullable();          // e.g., Express, Economy
             $table->string('tracking_number')->nullable()->unique();
-            $table->enum('status', ['pending','shipped','delivered','returned','cancelled'])->default('pending');
+            $table->string('status')->default('pending');
             $table->timestamp('shipped_at')->nullable();
             $table->timestamp('delivered_at')->nullable();
             $table->text('note')->nullable();
             $table->timestamps();
 
-            $table->index(['order_id','status']);
+            $table->index(['order_id', 'status']);
         });
     }
 

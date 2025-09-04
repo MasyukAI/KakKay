@@ -8,6 +8,7 @@
 @import '../../vendor/filament/schemas/resources/css/index.css'; */
 
 @source '../views/livewire/cart.blade.php';
+@source '../views/livewire/checkout.blade.php';
 
 :root {
     /* Theme palette: purple, magenta, ruby, pink, maroon & white */

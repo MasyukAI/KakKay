@@ -25,7 +25,8 @@ class MemberPanelProvider extends PanelProvider
     {
         return $panel
             ->id('member')
-            ->path('member')
+            ->path('')
+            ->domain('member.kakkay.test')
             ->colors([
                 'primary' => Color::Amber,
             ])

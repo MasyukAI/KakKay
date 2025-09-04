@@ -14,26 +14,22 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->string('order_number')->unique();
-            $table->foreignId('cliend_id')->constrained()->onDelete('restrict');
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('address_id')->nullable()->constrained('addresses')->onDelete('set null');
 
-            // snapshot shipping address
-            $table->string('street')->nullable();
-            $table->string('city')->nullable();
-            $table->string('state')->nullable();
-            $table->string('postal_code')->nullable();
-            $table->string('country')->nullable();
+            // Cart data snapshot
+            $table->json('cart_items')->nullable();
+            $table->string('delivery_method')->nullable();
+            $table->json('checkout_form_data')->nullable(); // Full form backup
 
-            $table->enum('status', ['pending','processing','shipped','delivered','cancelled','refunded'])->default('pending');
-
-            // Payment handling
-            $table->enum('payment_status', ['unpaid','partial','paid','refunded','failed'])->default('unpaid');
-            $table->integer('amount_paid')->default(0);     // cents
-            $table->integer('amount_refunded')->default(0); // cents
-
-            $table->integer('total_amount')->default(0); // cents
+            $table->string('status')->default('pending');
+            $table->integer('total')->default(0);
             $table->timestamps();
 
-            $table->index(['client_id','status']);
+            // Indexes
+            $table->index('user_id');
+            $table->index('address_id');
+            $table->index(['user_id', 'status']);
         });
 
         Schema::create('order_status_histories', function (Blueprint $table) {
@@ -43,7 +39,7 @@ return new class extends Migration
             $table->string('to_status');
 
             // Who/what changed it
-            $table->enum('actor_type', ['user','system','webhook','job','gateway'])->default('system');
+            $table->string('actor_type')->default('system');
             $table->foreignId('changed_by')->nullable()->constrained('users')->nullOnDelete(); // only if actor_type = 'user'
             $table->json('meta')->nullable(); // e.g. job id, webhook payload, gateway event
 
@@ -51,7 +47,7 @@ return new class extends Migration
             $table->timestamp('changed_at')->useCurrent();
             $table->timestamps();
 
-            $table->index(['order_id','to_status']);
+            $table->index(['order_id', 'to_status']);
         });
     }
 

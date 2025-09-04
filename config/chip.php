@@ -166,13 +166,14 @@ return [
     | Default values for various CHIP operations
     |
     */
-    'defaults' => [
+        'defaults' => [
         'currency' => env('CHIP_DEFAULT_CURRENCY', 'MYR'),
-        'creator_agent' => env('CHIP_CREATOR_AGENT', 'Laravel Package'),
+        'creator_agent' => env('CHIP_CREATOR_AGENT', 'Laravel CHIP Integration'),
         'platform' => env('CHIP_PLATFORM', 'api'),
-        'payment_method_whitelist' => env('CHIP_PAYMENT_METHOD_WHITELIST', ''),
-        'success_redirect' => env('CHIP_SUCCESS_REDIRECT'),
-        'failure_redirect' => env('CHIP_FAILURE_REDIRECT'),
+        'success_redirect' => env('CHIP_SUCCESS_REDIRECT', ''),
+        'failure_redirect' => env('CHIP_FAILURE_REDIRECT', ''),
+        'cancel_redirect' => env('CHIP_CANCEL_REDIRECT', ''),
+        'success_callback' => env('CHIP_SUCCESS_CALLBACK', ''),
     ],
 
     /*

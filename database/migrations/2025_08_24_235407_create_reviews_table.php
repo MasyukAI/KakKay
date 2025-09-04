@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('reviews', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('client_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
             $table->tinyInteger('rating'); // 1..5
             $table->text('comment')->nullable();
-            $table->enum('status', ['pending','approved','rejected'])->default('pending');
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->timestamps();
-            $table->unique(['client_id','product_id']); // one review per product per client
-            $table->index(['product_id','status','rating']);
+            $table->unique(['user_id', 'product_id']); // one review per product per user
+            $table->index(['product_id', 'status', 'rating']);
         });
     }
 

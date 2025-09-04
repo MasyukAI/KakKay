@@ -6,12 +6,13 @@ use Filament\Tables\Table;
 use Filament\Actions\EditAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Infolists\Components\SpatieMediaLibraryImageEntry;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Support\Facades\Storage;
 use Filament\Tables\Columns\ImageColumn;
-use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Columns\ToggleColumn;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 
 class ProductsTable
 {
@@ -19,16 +20,15 @@ class ProductsTable
     {
         return $table
             ->columns([
-                SpatieMediaLibraryImageColumn::make('main_image')
-                    ->collection('product-image-main')
-                    ->disk('public')
-                    ->label('Cover')
-                    ->width(60),
+                ImageColumn::make('cover')
+                    ->defaultImageUrl(function($record) {
+                        return asset('images/cover/' . $record->slug.'.png');
+                    }),
                 TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('slug')
                     ->toggleable(isToggledHiddenByDefault: true)
-                    ->searchable(),    
+                    ->searchable(),
                 TextColumn::make('category.name')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
@@ -37,7 +37,7 @@ class ProductsTable
                     ->money(currency: 'MYR', divideBy: 100)
                     ->sortable(),
                 ToggleColumn::make('is_featured')
-                    ->disabled(fn ($record) => !$record->is_active)
+                    ->disabled(fn ($record) => ! $record->is_active)
                     ->afterStateUpdated(function ($record, $state) {
                         if ($state) {
                             $record::query()

@@ -35,10 +35,24 @@
       color:var(--white);
       background: #1a0d1a;
       background-image: var(--grad-hero);
+      background-attachment: fixed;
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      min-height: 100vh;
       font-family:"Playfair Display", Georgia, serif; /* elegant serif for body */
       line-height:1.5;
       -webkit-font-smoothing:antialiased;
       text-rendering:optimizeLegibility;
+    }
+
+    /* Ensure full coverage on all screen sizes */
+    html {
+      background: #1a0d1a;
+      background-image: var(--grad-hero);
+      background-attachment: fixed;
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      min-height: 100vh;
     }
 
     /* Remove height constraints on mobile for continuous background */
@@ -46,6 +60,7 @@
       html, body {
         height: auto;
         min-height: 100vh;
+        background-attachment: scroll; /* Fixed backgrounds can cause issues on mobile */
       }
     }
 

@@ -11,10 +11,10 @@ return new class extends Migration
         $tablePrefix = config('chip.database.table_prefix', 'chip_');
         $connection = config('chip.database.connection');
 
-        Schema::connection($connection)->create($tablePrefix . 'payments', function (Blueprint $table) use ($tablePrefix) {
+        Schema::connection($connection)->create($tablePrefix.'payments', function (Blueprint $table) use ($tablePrefix) {
             $table->id();
             $table->uuid('chip_id')->unique();
-            $table->string('purchase_chip_id');
+            $table->uuid('purchase_chip_id'); // Changed from string to uuid to match chip_purchases.chip_id
             $table->string('payment_type');
             $table->boolean('is_outgoing')->default(false);
             $table->integer('amount_cents');
@@ -39,7 +39,7 @@ return new class extends Migration
 
             $table->foreign('purchase_chip_id')
                 ->references('chip_id')
-                ->on($tablePrefix . 'purchases')
+                ->on($tablePrefix.'purchases')
                 ->onDelete('cascade');
         });
     }
@@ -49,6 +49,6 @@ return new class extends Migration
         $tablePrefix = config('chip.database.table_prefix', 'chip_');
         $connection = config('chip.database.connection');
 
-        Schema::connection($connection)->dropIfExists($tablePrefix . 'payments');
+        Schema::connection($connection)->dropIfExists($tablePrefix.'payments');
     }
 };

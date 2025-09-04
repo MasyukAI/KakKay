@@ -19,10 +19,10 @@ class Product
     {
         return new self(
             name: $data['name'],
-            quantity: $data['quantity'] ?? 1,
-            price: $data['price'],
-            discount: $data['discount'] ?? 0,
-            tax_percent: $data['tax_percent'] ?? 0.0,
+            quantity: (int) ($data['quantity'] ?? 1),
+            price: (int) $data['price'],
+            discount: (int) ($data['discount'] ?? 0),
+            tax_percent: (float) ($data['tax_percent'] ?? 0.0),
             category: $data['category'] ?? null,
         );
     }

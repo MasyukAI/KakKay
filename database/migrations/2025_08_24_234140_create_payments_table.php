@@ -14,18 +14,33 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('order_id')->constrained()->onDelete('cascade');
-            $table->integer('amount')->default(0); // cents
-            $table->enum('status', ['pending','completed','failed','refunded'])->default('pending');
-            $table->enum('method', [
-                'credit_card','debit_card','paypal','bank_transfer','ewallet','cash','cod','stripe'
-            ])->nullable();
+
+            // Gateway transaction identifiers
+            $table->string('gateway_transaction_id')->nullable(); // Gateway's transaction ID
+            $table->string('gateway_payment_id')->nullable(); // Gateway's payment/purchase ID
+            $table->json('gateway_response')->nullable(); // Store full gateway response
+
+            // Payment details
+            $table->integer('amount')->default(0);
+            $table->string('status')->default('pending');
+            $table->string('method')->nullable();
             $table->string('currency', 3)->default('MYR');
-            $table->string('transaction_id')->nullable();
-            $table->timestamp('payment_date')->useCurrent();
+
+            // Timestamps
+            $table->timestamp('paid_at')->nullable();
+            $table->timestamp('failed_at')->nullable();
+            $table->timestamp('refunded_at')->nullable();
+
+            // Additional info
             $table->text('note')->nullable();
+            $table->string('reference')->nullable(); // Internal reference
             $table->timestamps();
 
-            $table->index(['order_id','status','method']);
+            // Indexes for performance
+            $table->index(['order_id', 'status']);
+            $table->index('gateway_transaction_id');
+            $table->index('gateway_payment_id');
+            $table->index(['status', 'paid_at']);
         });
     }
 

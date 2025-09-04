@@ -97,6 +97,8 @@ trait ManagesConditions
 
         return true;
     }
+    
+
 
     /**
      * Add condition to specific item
@@ -196,6 +198,123 @@ trait ManagesConditions
         $this->condition($condition);
 
         return $this;
+    }
+
+    /**
+     * Add a shipping condition (shopping-cart style)
+     *
+     * @param string $name The name of the shipping condition
+     * @param string|float $value The value of the shipping fee (e.g. '15.00', '+15', etc.)
+     * @param string $method The shipping method identifier (e.g. 'standard', 'express')
+     * @param array $attributes Additional attributes to store with the condition
+     * @return static
+     */
+    public function addShipping(string $name, string|float $value, string $method = 'standard', array $attributes = []): static
+    {
+        // Ensure value is prefixed with + if it's a string and doesn't start with an operator
+        if (is_string($value) && ! preg_match('/^[+\-*\/%]/', $value)) {
+            $value = '+'.$value;
+        }
+
+        // Merge the attributes with the shipping method
+        $shippingAttributes = array_merge($attributes, [
+            'method' => $method,
+            'description' => $name
+        ]);
+
+        // Remove any existing shipping conditions first
+        $this->removeShipping();
+
+        // Create and add the condition
+        $condition = new CartCondition(
+            name: $name,
+            type: 'shipping',
+            target: 'subtotal',
+            value: $value,
+            attributes: $shippingAttributes
+        );
+        $this->condition($condition);
+
+        return $this;
+    }
+
+    /**
+     * Remove all shipping conditions from the cart
+     * 
+     * @return void
+     */
+    public function removeShipping(): void
+    {
+        // Get all conditions
+        $conditions = $this->getConditions();
+        
+        // Find and remove shipping conditions
+        foreach ($conditions as $condition) {
+            if ($condition->getType() === 'shipping') {
+                $this->removeCondition($condition->getName());
+            }
+        }
+    }
+
+    /**
+     * Get the current shipping condition if any
+     * 
+     * @return \MasyukAI\Cart\Conditions\CartCondition|null
+     */
+    public function getShipping(): ?\MasyukAI\Cart\Conditions\CartCondition
+    {
+        // Get all conditions
+        $conditions = $this->getConditions();
+        
+        // Find the first shipping condition
+        foreach ($conditions as $condition) {
+            if ($condition->getType() === 'shipping') {
+                return $condition;
+            }
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Get the shipping method from the cart condition
+     * 
+     * @return string|null
+     */
+    public function getShippingMethod(): ?string
+    {
+        $shipping = $this->getShipping();
+        
+        if ($shipping) {
+            $attributes = $shipping->getAttributes();
+            return $attributes['method'] ?? null;
+        }
+        
+        return null;
+    }
+
+    /**
+     * Get shipping condition value
+     */
+    public function getShippingValue(): ?float
+    {
+        $shipping = $this->getShipping();
+        
+        if ($shipping) {
+            $value = $shipping->getValue();
+            
+            // Parse the value to remove operator and convert to float
+            if (is_string($value) && preg_match('/^([+\-*\/%])(.+)$/', $value, $matches)) {
+                $operator = $matches[1];
+                $numericValue = (float) $matches[2];
+                
+                return $operator === '-' ? -$numericValue : $numericValue;
+            }
+            
+            return (float) $value;
+        }
+        
+        return null;
     }
 
     /**

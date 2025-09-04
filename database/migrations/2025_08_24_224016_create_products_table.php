@@ -18,6 +18,15 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
             $table->integer('price')->default(0);
+
+            // Shipping and physical properties
+            $table->integer('weight')->default(0); // Weight in grams
+            $table->integer('length')->nullable(); // Length in mm
+            $table->integer('width')->nullable(); // Width in mm
+            $table->integer('height')->nullable(); // Height in mm
+            $table->boolean('is_digital')->default(false); // Digital products (e-books, software, etc.)
+            $table->boolean('free_shipping')->default(false); // Override shipping calculation
+
             $table->boolean('is_featured')->default(false);
             $table->boolean('is_active')->default(false);
             $table->timestamps();
