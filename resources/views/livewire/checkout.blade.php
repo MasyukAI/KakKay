@@ -636,7 +636,7 @@ new class extends Component {
                         </div>
 
                         <div>
-                            <img src="{{ asset('images/payment-method.jpg') }}" alt="payment-method" class="mx-auto mt-10">
+                            <img src="{{ asset('storage/images/payment-method.jpg') }}" alt="payment-method" class="mx-auto mt-10">
                         </div>
                     </div>
                 </div>
