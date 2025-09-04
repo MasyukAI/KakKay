@@ -405,7 +405,7 @@ new class extends Component {
                                 </div>
                             </div>
 
-                            <flux:button variant="primary" href="{{ route('checkout') }}"
+                            <flux:button variant="primary" wire:navigate href="{{ route('checkout') }}"
                                        class="w-full cart-button-primary mb-4 px-6 py-4 text-lg">
                                 <flux:icon.credit-card class="h-5 w-5 mr-2" />
                                 Teruskan Pembelian

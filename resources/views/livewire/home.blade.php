@@ -79,7 +79,7 @@ Kau tahu tak, wanita ni bukan sekadar pelengkap je… tapi dia boleh jadi punca 
           </div>
           <div class="cta-row">
             <a class="btn primary" href="/{{ $featuredProduct->slug }}"
-               style="transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);"
+               wire:navigate style="transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);"
                onmouseover="this.style.transform='translateY(-3px) scale(1.05)'; this.style.boxShadow='0 15px 35px rgba(255,105,180,0.4), 0 5px 15px rgba(0,0,0,0.3)'; this.style.filter='brightness(1.1)';"
                onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow=''; this.style.filter='brightness(1)';">Nak tau pasal buku ni? 🤌 ❤️</a>
             {{-- <a class="btn ghost" href="#sample"

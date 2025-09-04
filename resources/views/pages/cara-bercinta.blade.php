@@ -49,7 +49,7 @@ class extends Component {
         //     ->send();
 
         $this->dispatch('product-added-to-cart');
-        $this->redirect('/cart');
+        $this->redirect('/cart', navigate: true);
     }
 } ?>
 
