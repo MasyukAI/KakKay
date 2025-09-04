@@ -28,13 +28,13 @@ class ChipCollectService
 
     public function __construct()
     {
-        $this->apiKey = env('CHIP_COLLECT_API_KEY');
-        $this->brandId = env('CHIP_COLLECT_BRAND_ID');
-        $this->baseUrl = env('CHIP_BASE_URL', 'https://gate.chip-in.asia/api/v1/');
+        $this->apiKey = config('chip.collect.api_key');
+        $this->brandId = config('chip.collect.brand_id');
+        $this->baseUrl = config('chip.collect.base_url');
 
         $this->client = new \GuzzleHttp\Client([
             'base_uri' => $this->baseUrl,
-            'timeout' => 30,
+            'timeout' => config('chip.collect.timeout', 30),
             'headers' => [
                 'Authorization' => 'Bearer '.$this->apiKey,
                 'Content-Type' => 'application/json',

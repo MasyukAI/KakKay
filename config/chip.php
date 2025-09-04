@@ -10,11 +10,7 @@ return [
     |
     */
     'collect' => [
-        'environment' => env('CHIP_COLLECT_ENVIRONMENT', 'sandbox'),
-        'base_url' => [
-            'sandbox' => env('CHIP_COLLECT_SANDBOX_URL', 'https://gate-sandbox.chip-in.asia'),
-            'production' => env('CHIP_COLLECT_PRODUCTION_URL', 'https://gate.chip-in.asia'),
-        ],
+        'base_url' => env('CHIP_COLLECT_BASE_URL', 'https://gate.chip-in.asia/api/v1/'),
         'api_key' => env('CHIP_COLLECT_API_KEY'),
         'brand_id' => env('CHIP_COLLECT_BRAND_ID'),
         'timeout' => env('CHIP_COLLECT_TIMEOUT', 30),
@@ -166,14 +162,13 @@ return [
     | Default values for various CHIP operations
     |
     */
-        'defaults' => [
+    'defaults' => [
         'currency' => env('CHIP_DEFAULT_CURRENCY', 'MYR'),
-        'creator_agent' => env('CHIP_CREATOR_AGENT', 'Laravel CHIP Integration'),
+        'creator_agent' => env('CHIP_CREATOR_AGENT', 'Laravel Package'),
         'platform' => env('CHIP_PLATFORM', 'api'),
-        'success_redirect' => env('CHIP_SUCCESS_REDIRECT', ''),
-        'failure_redirect' => env('CHIP_FAILURE_REDIRECT', ''),
-        'cancel_redirect' => env('CHIP_CANCEL_REDIRECT', ''),
-        'success_callback' => env('CHIP_SUCCESS_CALLBACK', ''),
+        'payment_method_whitelist' => env('CHIP_PAYMENT_METHOD_WHITELIST', ''),
+        'success_redirect' => env('CHIP_SUCCESS_REDIRECT'),
+        'failure_redirect' => env('CHIP_FAILURE_REDIRECT'),
     ],
 
     /*

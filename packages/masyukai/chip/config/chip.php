@@ -10,11 +10,7 @@ return [
     |
     */
     'collect' => [
-        'environment' => env('CHIP_COLLECT_ENVIRONMENT', 'sandbox'),
-        'base_url' => [
-            'sandbox' => env('CHIP_COLLECT_SANDBOX_URL', 'https://gate-sandbox.chip-in.asia'),
-            'production' => env('CHIP_COLLECT_PRODUCTION_URL', 'https://gate.chip-in.asia'),
-        ],
+        'base_url' => env('CHIP_COLLECT_BASE_URL', 'https://gate.chip-in.asia/api/v1/'),
         'api_key' => env('CHIP_COLLECT_API_KEY'),
         'brand_id' => env('CHIP_COLLECT_BRAND_ID'),
         'timeout' => env('CHIP_COLLECT_TIMEOUT', 30),

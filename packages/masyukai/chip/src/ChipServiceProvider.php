@@ -68,16 +68,16 @@ class ChipServiceProvider extends ServiceProvider
     protected function registerClients(): void
     {
         $this->app->singleton(ChipCollectClient::class, function () {
-            $environment = config('chip.collect.environment');
-            $baseUrl = config("chip.collect.base_url.{$environment}");
-            
             return new ChipCollectClient(
                 apiKey: config('chip.collect.api_key'),
                 brandId: config('chip.collect.brand_id'),
-                environment: $environment,
-                baseUrl: $baseUrl,
-                timeout: config('chip.collect.timeout'),
-                retryConfig: config('chip.collect.retry')
+                environment: 'production', // Set a default since both use same URL
+                baseUrl: config('chip.collect.base_url'),
+                timeout: config('chip.collect.timeout', 30),
+                retryConfig: config('chip.collect.retry', [
+                    'attempts' => 3,
+                    'delay' => 1000,
+                ])
             );
         });
 
