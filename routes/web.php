@@ -38,7 +38,7 @@ require __DIR__.'/auth.php';
 //    ->where('slug', '[a-z0-9\-]+')
 //    ->name('page.show');
 
-Volt::route('cara-bercinta', 'pages.cara-bercinta');
+Volt::route('cara-bercinta', 'cara-bercinta');
 
 // Policy pages
 Volt::route('privacy-policy', 'privacy-policy');

@@ -299,11 +299,40 @@ class extends Component {
     </div>
   </section>
 
-  <!-- FOOTER -->
+  <!-- STANDARDIZED FOOTER -->
   <footer class="bg-maroon text-white">
-    <div class="max-w-6xl mx-auto px-4 py-10 text-center">
-      <p class="font-display text-xl">Kak Kay - Penghantaran & Pengembalian</p>
-      <p class="text-white/90 text-sm mt-2">Hak cipta © <span id="year">2025</span> Kamalia Kamal Research International (Kak Kay). Semua hak terpelihara.</p>
+    <div class="max-w-6xl mx-auto px-4 py-10">
+      <!-- Policy Links Section - Centered -->
+      <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1);">
+        <div style="text-align: center; max-width: 800px; margin: 0 auto;">
+          <h4 style="color: #ffe9f5; font-size: 1.1rem; margin-bottom: 1rem; font-weight: 600;">Dasar & Polisi</h4>
+          <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; align-items: center;">
+            <a href="/privacy-policy" style="color: rgba(255,233,245,0.8); text-decoration: none; font-size: 0.9rem; transition: all 0.3s; padding: 0.3rem 0;" onmouseover="this.style.color='#ff69b4'; this.style.transform='translateY(-2px)'" onmouseout="this.style.color='rgba(255,233,245,0.8)'; this.style.transform='translateY(0)'">Dasar Privasi</a>
+            <span style="color: rgba(255,233,245,0.3); font-size: 0.8rem;">•</span>
+            <a href="/refund-policy" style="color: rgba(255,233,245,0.8); text-decoration: none; font-size: 0.9rem; transition: all 0.3s; padding: 0.3rem 0;" onmouseover="this.style.color='#ff69b4'; this.style.transform='translateY(-2px)'" onmouseout="this.style.color='rgba(255,233,245,0.8)'; this.style.transform='translateY(0)'">Dasar Pemulangan</a>
+            <span style="color: rgba(255,233,245,0.3); font-size: 0.8rem;">•</span>
+            <a href="/shipping-policy" style="color: rgba(255,233,245,0.8); text-decoration: none; font-size: 0.9rem; transition: all 0.3s; padding: 0.3rem 0;" onmouseover="this.style.color='#ff69b4'; this.style.transform='translateY(-2px)'" onmouseout="this.style.color='rgba(255,233,245,0.8)'; this.style.transform='translateY(0)'">Dasar Penghantaran</a>
+            <span style="color: rgba(255,233,245,0.3); font-size: 0.8rem;">•</span>
+            <a href="/terms-of-service" style="color: rgba(255,233,245,0.8); text-decoration: none; font-size: 0.9rem; transition: all 0.3s; padding: 0.3rem 0;" onmouseover="this.style.color='#ff69b4'; this.style.transform='translateY(-2px)'" onmouseout="this.style.color='rgba(255,233,245,0.8)'; this.style.transform='translateY(0)'">Terma & Syarat</a>
+          </div>
+        </div>
+        
+        <!-- Contact Info Footer -->
+        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; color: rgba(255,233,245,0.6); font-size: 0.8rem;">
+          <p style="margin: 0.5rem 0;">&copy; 2025 Kamalia Kamal Research International (Kak Kay)<br />Hak Terpelihara</p>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; justify-content: center; align-items: center; margin-top: 0.5rem;">
+            <span style="display: flex; align-items: center; gap: 0.3rem;">
+              <span style="color: #ff69b4;">📍</span>
+              24, Jalan Pakis 1, Taman Fern Grove, 43200 Cheras, Selangor
+            </span>
+            <span style="color: rgba(255,233,245,0.3);">•</span>
+            <span style="display: flex; align-items: center; gap: 0.3rem;">
+              <span style="color: #ff69b4;">📱</span>
+              <a href="https://wa.me/60138846594" style="color: inherit; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#ff69b4'" onmouseout="this.style.color='inherit'">+60 12-345 6789</a>
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
   </footer>
 </div>
