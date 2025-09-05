@@ -102,7 +102,7 @@ return [
     */
     'demo' => [
         // Enable demo routes (automatically enabled in local and testing environments)
-        'enabled' => env('CART_DEMO_ENABLED', false),
+        'enabled' => env('CART_DEMO_ENABLED', true),
     ],
 
     /*
