@@ -13,6 +13,7 @@ use MasyukAI\Cart\Traits\ManagesIdentifier;
 use MasyukAI\Cart\Traits\ManagesInstances;
 use MasyukAI\Cart\Traits\ManagesItems;
 use MasyukAI\Cart\Traits\ManagesStorage;
+use MasyukAI\Cart\Traits\ManagesPricing;
 
 readonly class Cart
 {
@@ -22,6 +23,7 @@ readonly class Cart
     use ManagesInstances;
     use ManagesItems;
     use ManagesStorage;
+    use ManagesPricing;
 
     public function __construct(
         private StorageInterface $storage,

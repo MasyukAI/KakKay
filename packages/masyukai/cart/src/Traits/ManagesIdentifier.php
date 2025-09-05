@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MasyukAI\Cart\Traits;
 
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
+use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Session\SessionManager;
 
@@ -27,7 +28,7 @@ trait ManagesIdentifier
             return $sessionId;
         }
 
-        // Handle testing environment
+        // Handle testing environment fallback
         if ($this->isTestingEnvironment($app)) {
             return $this->getTestIdentifier();
         }
@@ -41,7 +42,7 @@ trait ManagesIdentifier
     /**
      * Get the Laravel application instance
      */
-    protected function getApplication(): Application
+    protected function getApplication(): Container
     {
         return app();
     }
@@ -49,7 +50,7 @@ trait ManagesIdentifier
     /**
      * Get authenticated user ID if available
      */
-    protected function getAuthenticatedUserId(Application $app): ?string
+    protected function getAuthenticatedUserId(Container $app): ?string
     {
         try {
             if (! $app->bound('auth')) {
@@ -73,7 +74,7 @@ trait ManagesIdentifier
     /**
      * Get session ID if available
      */
-    protected function getSessionId(Application $app): ?string
+    protected function getSessionId(Container $app): ?string
     {
         try {
             if (! $app->bound('session')) {
@@ -96,11 +97,21 @@ trait ManagesIdentifier
     /**
      * Check if running in testing environment
      */
-    protected function isTestingEnvironment(Application $app): bool
+    protected function isTestingEnvironment(Container $app): bool
     {
-        return $app->environment('testing') ||
-               defined('PHPUNIT_COMPOSER_INSTALL') ||
-               defined('__PHPUNIT_PHAR__');
+        // First, check if app environment is testing (with fallback for mock objects)
+        try {
+            if ($app instanceof Application) {
+                return $app->environment('testing');
+            }
+        } catch (\Throwable $e) {
+            // Fall back to other checks if environment() is not mocked
+        }
+        
+        // Fallback checks for PHPUnit/testing
+        return defined('PHPUNIT_COMPOSER_INSTALL') ||
+               defined('__PHPUNIT_PHAR__') ||
+               (isset($_ENV['APP_ENV']) && $_ENV['APP_ENV'] === 'testing');
     }
 
     /**
@@ -108,7 +119,11 @@ trait ManagesIdentifier
      */
     protected function getTestIdentifier(): string
     {
-        return config('cart.test_identifier') ?? 'test_session_id';
+        try {
+            return config('cart.test_identifier') ?? 'test_session_id';
+        } catch (\Throwable $e) {
+            return 'test_session_id';
+        }
     }
 
     /**

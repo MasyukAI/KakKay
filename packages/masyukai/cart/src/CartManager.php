@@ -6,12 +6,14 @@ namespace MasyukAI\Cart;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use MasyukAI\Cart\Storage\StorageInterface;
+use MasyukAI\Cart\Traits\ManagesPricing;
 
 /**
  * Cart Manager handles global instance switching for the Cart facade
  */
 class CartManager
 {
+    use ManagesPricing;
     private Cart $currentCart;
 
     private string $currentInstance = 'default';
@@ -93,6 +95,33 @@ class CartManager
         $session = app('session')->driver();
 
         return new \MasyukAI\Cart\Storage\SessionStorage($session, $sessionKey ?? config('cart.session.key', 'cart'));
+    }
+
+    /**
+     * Enable formatting for all price outputs
+     */
+    public function formatted(): static
+    {
+        \MasyukAI\Cart\Support\PriceFormatManager::enableFormatting();
+        return $this;
+    }
+
+    /**
+     * Disable formatting for all price outputs
+     */
+    public function raw(): static
+    {
+        \MasyukAI\Cart\Support\PriceFormatManager::disableFormatting();
+        return $this;
+    }
+
+    /**
+     * Set currency and enable formatting
+     */
+    public function currency(?string $currency = null): static
+    {
+        \MasyukAI\Cart\Support\PriceFormatManager::setCurrency($currency);
+        return $this;
     }
 
     /**

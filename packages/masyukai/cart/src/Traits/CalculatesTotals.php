@@ -19,9 +19,10 @@ trait CalculatesTotals
     /**
      * Get cart subtotal (alias for more intuitive API)
      */
-    public function subtotal(): float
+    public function subtotal(): string|int|float
     {
-        return $this->getSubTotal();
+        $subtotal = $this->getSubTotal();
+        return $this->formatPriceValue($subtotal);
     }
 
     /**
@@ -53,9 +54,10 @@ trait CalculatesTotals
     /**
      * Get cart total (alias for more intuitive API)
      */
-    public function total(): float
+    public function total(): string|int|float
     {
-        return $this->getTotal();
+        $total = $this->getTotal();
+        return $this->formatPriceValue($total);
     }
 
     /**

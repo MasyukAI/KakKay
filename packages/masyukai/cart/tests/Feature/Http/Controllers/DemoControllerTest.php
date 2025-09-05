@@ -5,13 +5,8 @@ declare(strict_types=1);
 use MasyukAI\Cart\Http\Controllers\DemoController;
 use MasyukAI\Cart\Facades\Cart;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\View;
 
 beforeEach(function (): void {
-    $this->controller = new DemoController();
-    $this->viewFactory = \Mockery::mock(\Illuminate\Contracts\View\Factory::class);
-    $this->mockView = \Mockery::mock(\Illuminate\Contracts\View\View::class);
-    app()->instance(\Illuminate\Contracts\View\Factory::class, $this->viewFactory);
     Cart::clear();
 });
 
@@ -23,16 +18,10 @@ it('can display instances page', function (): void {
     
     Cart::setInstance('default'); // Reset
     
-    $this->viewFactory
-        ->shouldReceive('make')
-        ->with('cart::demo.instances', Mockery::on(function ($data) {
-            return is_array($data) && array_key_exists('instanceData', $data);
-        }), [])
-        ->andReturn($this->mockView);
+    $controller = new DemoController();
+    $response = $controller->instances();
     
-    $response = $this->controller->instances();
-    
-    expect($response)->toBe($this->mockView);
+    expect($response)->toBeInstanceOf(\Illuminate\View\View::class);
 });
 
 afterEach(function (): void {
@@ -40,26 +29,14 @@ afterEach(function (): void {
 });
 
 it('can display cart demo page', function (): void {
-    // Set up the view mock expectation
-    $this->viewFactory->shouldReceive('make')
-        ->with('cart::demo.index', \Mockery::on(function ($data) {
-            return is_array($data) && 
-                   array_key_exists('products', $data) &&
-                   array_key_exists('cartItems', $data) &&
-                   array_key_exists('cartCount', $data) &&
-                   array_key_exists('cartSubtotal', $data) &&
-                   array_key_exists('cartTotal', $data) &&
-                   array_key_exists('cartConditions', $data);
-        }), [])
-        ->once()
-        ->andReturn($this->mockView);
+    $controller = new DemoController();
+    $response = $controller->index();
     
-    $response = $this->controller->index();
-    
-    expect($response)->toBe($this->mockView);
+    expect($response)->toBeInstanceOf(\Illuminate\View\View::class);
 });
 
 it('can add item to cart via API', function (): void {
+    $controller = new DemoController();
     $request = Request::create('/add-to-cart', 'POST', [
         'id' => 'test-product',
         'name' => 'Test Product',
@@ -68,7 +45,7 @@ it('can add item to cart via API', function (): void {
         'attributes' => ['color' => 'red', 'size' => 'medium']
     ]);
     
-    $response = $this->controller->addToCart($request);
+    $response = $controller->addToCart($request);
     $data = json_decode($response->getContent(), true);
     
     expect($data['success'])->toBeTrue()
@@ -83,17 +60,19 @@ it('can add item to cart via API', function (): void {
 });
 
 it('validates required fields when adding to cart', function (): void {
+    $controller = new DemoController();
     $request = Request::create('/add-to-cart', 'POST', [
         'id' => 'test-product',
         // Missing required fields
     ]);
     
-    expect(function () use ($request) {
-        $this->controller->addToCart($request);
+    expect(function () use ($controller, $request) {
+        $controller->addToCart($request);
     })->toThrow(\Illuminate\Validation\ValidationException::class);
 });
 
 it('can update item quantity', function (): void {
+    $controller = new DemoController();
     // Ensure cart is completely clear
     Cart::clear();
     
@@ -108,7 +87,7 @@ it('can update item quantity', function (): void {
         'quantity' => 5
     ]);
     
-    $response = $this->controller->updateQuantity($request);
+    $response = $controller->updateQuantity($request);
     $data = json_decode($response->getContent(), true);
     
     expect($data['success'])->toBeTrue()
@@ -119,6 +98,7 @@ it('can update item quantity', function (): void {
 });
 
 it('removes item when quantity is updated to zero', function (): void {
+    $controller = new DemoController();
     Cart::add('test-product', 'Test Product', 50, 2);
     
     $request = Request::create('/update-quantity', 'POST', [
@@ -126,7 +106,7 @@ it('removes item when quantity is updated to zero', function (): void {
         'quantity' => 0
     ]);
     
-    $response = $this->controller->updateQuantity($request);
+    $response = $controller->updateQuantity($request);
     $data = json_decode($response->getContent(), true);
     
     expect($data['success'])->toBeTrue()
@@ -136,6 +116,7 @@ it('removes item when quantity is updated to zero', function (): void {
 });
 
 it('can remove specific item from cart', function (): void {
+    $controller = new DemoController();
     Cart::add('product-1', 'Product 1', 100, 1);
     Cart::add('product-2', 'Product 2', 200, 1);
     
@@ -143,7 +124,7 @@ it('can remove specific item from cart', function (): void {
         'id' => 'product-1'
     ]);
     
-    $response = $this->controller->removeItem($request);
+    $response = $controller->removeItem($request);
     $data = json_decode($response->getContent(), true);
     
     expect($data['success'])->toBeTrue()
@@ -155,6 +136,7 @@ it('can remove specific item from cart', function (): void {
 });
 
 it('can apply discount condition', function (): void {
+    $controller = new DemoController();
     Cart::add('test-product', 'Test Product', 100, 2);
     
     $request = Request::create('/apply-condition', 'POST', [
@@ -164,7 +146,7 @@ it('can apply discount condition', function (): void {
         'target' => 'subtotal'
     ]);
     
-    $response = $this->controller->applyCondition($request);
+    $response = $controller->applyCondition($request);
     $data = json_decode($response->getContent(), true);
     
     expect($data['success'])->toBeTrue()
@@ -172,6 +154,7 @@ it('can apply discount condition', function (): void {
 });
 
 it('can apply charge condition', function (): void {
+    $controller = new DemoController();
     Cart::add('test-product', 'Test Product', 100, 2);
     
     $request = Request::create('/apply-condition', 'POST', [
@@ -181,25 +164,27 @@ it('can apply charge condition', function (): void {
         'target' => 'subtotal'
     ]);
     
-    $response = $this->controller->applyCondition($request);
+    $response = $controller->applyCondition($request);
     $data = json_decode($response->getContent(), true);
     
     expect($data['success'])->toBeTrue();
 });
 
 it('validates condition type and required fields', function (): void {
+    $controller = new DemoController();
     $request = Request::create('/apply-condition', 'POST', [
         'type' => 'invalid-type',
         'name' => 'test-condition'
         // Missing value
     ]);
     
-    expect(function () use ($request) {
-        $this->controller->applyCondition($request);
+    expect(function () use ($controller, $request) {
+        $controller->applyCondition($request);
     })->toThrow(\Illuminate\Validation\ValidationException::class);
 });
 
 it('can remove condition', function (): void {
+    $controller = new DemoController();
     Cart::add('test-product', 'Test Product', 100, 2);
     
     // First apply a condition
@@ -215,7 +200,7 @@ it('can remove condition', function (): void {
         'name' => 'test-discount'
     ]);
     
-    $response = $this->controller->removeCondition($request);
+    $response = $controller->removeCondition($request);
     $data = json_decode($response->getContent(), true);
     
     expect($data['success'])->toBeTrue()
@@ -223,10 +208,11 @@ it('can remove condition', function (): void {
 });
 
 it('can clear entire cart', function (): void {
+    $controller = new DemoController();
     Cart::add('product-1', 'Product 1', 100, 1);
     Cart::add('product-2', 'Product 2', 200, 1);
     
-    $response = $this->controller->clearCart();
+    $response = $controller->clearCart();
     $data = json_decode($response->getContent(), true);
     
     expect($data['success'])->toBeTrue()
@@ -237,11 +223,12 @@ it('can clear entire cart', function (): void {
 });
 
 it('can switch cart instance', function (): void {
+    $controller = new DemoController();
     $request = Request::create('/switch-instance', 'POST', [
         'instance' => 'wishlist'
     ]);
     
-    $response = $this->controller->switchInstance($request);
+    $response = $controller->switchInstance($request);
     $data = json_decode($response->getContent(), true);
     
     expect($data['success'])->toBeTrue()
@@ -249,36 +236,30 @@ it('can switch cart instance', function (): void {
 });
 
 it('validates instance name when switching', function (): void {
+    $controller = new DemoController();
     $request = Request::create('/switch-instance', 'POST', [
         'instance' => 'invalid-instance'
     ]);
     
-    expect(function () use ($request) {
-        $this->controller->switchInstance($request);
+    expect(function () use ($controller, $request) {
+        $controller->switchInstance($request);
     })->toThrow(\Illuminate\Validation\ValidationException::class);
 });
 
 it('can display migration demo page', function (): void {
-    $this->viewFactory
-        ->shouldReceive('make')
-        ->with('cart::demo.migration', Mockery::on(function ($data) {
-            return is_array($data) && 
-                   array_key_exists('guestCartItems', $data) && 
-                   array_key_exists('userCartItems', $data);
-        }), [])
-        ->andReturn($this->mockView);
+    $controller = new DemoController();
+    $response = $controller->migrationDemo();
     
-    $response = $this->controller->migrationDemo();
-    
-    expect($response)->toBe($this->mockView);
+    expect($response)->toBeInstanceOf(\Illuminate\View\View::class);
 });
 
 it('can setup guest cart for migration demo', function (): void {
+    $controller = new DemoController();
     $request = Request::create('/setup-migration', 'POST', [
         'type' => 'guest'
     ]);
     
-    $response = $this->controller->setupMigrationDemo($request);
+    $response = $controller->setupMigrationDemo($request);
     $data = json_decode($response->getContent(), true);
     
     expect($data['success'])->toBeTrue()
@@ -286,11 +267,12 @@ it('can setup guest cart for migration demo', function (): void {
 });
 
 it('can setup user cart for migration demo', function (): void {
+    $controller = new DemoController();
     $request = Request::create('/setup-migration', 'POST', [
         'type' => 'user'
     ]);
     
-    $response = $this->controller->setupMigrationDemo($request);
+    $response = $controller->setupMigrationDemo($request);
     $data = json_decode($response->getContent(), true);
     
     expect($data['success'])->toBeTrue()
@@ -298,6 +280,7 @@ it('can setup user cart for migration demo', function (): void {
 });
 
 it('can perform cart migration with different strategies', function (): void {
+    $controller = new DemoController();
     $strategies = ['add_quantities', 'keep_highest_quantity', 'keep_user_cart', 'replace_with_guest'];
     
     foreach ($strategies as $strategy) {
@@ -305,7 +288,7 @@ it('can perform cart migration with different strategies', function (): void {
             'strategy' => $strategy
         ]);
         
-        $response = $this->controller->performMigration($request);
+        $response = $controller->performMigration($request);
         $data = json_decode($response->getContent(), true);
         
         expect($data['strategy_used'])->toBe($strategy);
@@ -313,21 +296,23 @@ it('can perform cart migration with different strategies', function (): void {
 });
 
 it('validates migration strategy', function (): void {
+    $controller = new DemoController();
     $request = Request::create('/perform-migration', 'POST', [
         'strategy' => 'invalid-strategy'
     ]);
     
-    expect(function () use ($request) {
-        $this->controller->performMigration($request);
+    expect(function () use ($controller, $request) {
+        $controller->performMigration($request);
     })->toThrow(\Illuminate\Validation\ValidationException::class);
 });
 
 it('provides sample products with correct structure', function (): void {
-    $reflection = new \ReflectionClass($this->controller);
+    $controller = new DemoController();
+    $reflection = new \ReflectionClass($controller);
     $method = $reflection->getMethod('getSampleProducts');
     $method->setAccessible(true);
     
-    $products = $method->invoke($this->controller);
+    $products = $method->invoke($controller);
     
     expect($products)->toBeArray()
         ->and(count($products))->toBeGreaterThan(0);

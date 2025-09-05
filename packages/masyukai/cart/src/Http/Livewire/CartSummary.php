@@ -40,7 +40,7 @@ class CartSummary extends Component
     #[Computed]
     public function shippingValue(): float
     {
-        return Cart::getShippingValue();
+        return Cart::getShippingValue() ?? 0.0;
     }
 
     #[Computed]

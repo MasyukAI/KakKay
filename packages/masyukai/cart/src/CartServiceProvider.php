@@ -38,6 +38,7 @@ class CartServiceProvider extends ServiceProvider
         $this->registerCartManager();
         $this->registerMigrationService();
         $this->registerEventDispatcher();
+        $this->registerPriceTransformers();
     }
 
     /**
@@ -222,6 +223,44 @@ class CartServiceProvider extends ServiceProvider
             Livewire::component('cart-summary', CartSummary::class);
             Livewire::component('cart-table', CartTable::class);
         }
+    }
+
+    /**
+     * Register price transformers
+     */
+    protected function registerPriceTransformers(): void
+    {
+        $this->app->bind('cart.price.transformer.decimal', function ($app) {
+            return new \MasyukAI\Cart\PriceTransformers\DecimalPriceTransformer(
+                config('cart.price_formatting.currency', 'USD'),
+                config('cart.price_formatting.locale', 'en_US'),
+                config('cart.price_formatting.precision', 2)
+            );
+        });
+
+        $this->app->bind('cart.price.transformer.integer', function ($app) {
+            return new \MasyukAI\Cart\PriceTransformers\IntegerPriceTransformer(
+                config('cart.price_formatting.currency', 'USD'),
+                config('cart.price_formatting.locale', 'en_US'),
+                config('cart.price_formatting.precision', 2)
+            );
+        });
+
+        $this->app->bind('cart.price.transformer.localized', function ($app) {
+            return new \MasyukAI\Cart\PriceTransformers\LocalizedPriceTransformer(
+                config('cart.price_formatting.currency', 'USD'),
+                config('cart.price_formatting.locale', 'en_US'),
+                config('cart.price_formatting.precision', 2),
+                config('cart.price_formatting.decimal_separator', '.'),
+                config('cart.price_formatting.thousands_separator', ',')
+            );
+        });
+
+        // Register the configured transformer
+        $this->app->bind(\MasyukAI\Cart\Contracts\PriceTransformerInterface::class, function ($app) {
+            $transformerClass = config('cart.price_formatting.transformer');
+            return $app->make($transformerClass);
+        });
     }
 
     /**

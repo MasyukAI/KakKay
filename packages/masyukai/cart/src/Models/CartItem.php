@@ -12,9 +12,12 @@ use MasyukAI\Cart\Collections\CartConditionCollection;
 use MasyukAI\Cart\Conditions\CartCondition;
 use MasyukAI\Cart\Exceptions\InvalidCartItemException;
 use MasyukAI\Cart\Exceptions\UnknownModelException;
+use MasyukAI\Cart\Traits\ManagesPricing;
 
 readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
 {
+    use ManagesPricing;
+
     public CartConditionCollection $conditions;
 
     public Collection $attributes;
@@ -280,6 +283,31 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
     }
 
     /**
+     * Get item price (automatically formatted if enabled)
+     */
+    public function getPrice(): string|int|float
+    {
+        return $this->formatPriceValue($this->price);
+    }
+
+    /**
+     * Get item subtotal (price * quantity, automatically formatted if enabled)
+     */
+    public function subtotal(): string|int|float
+    {
+        $subtotal = $this->price * $this->quantity;
+        return $this->formatPriceValue($subtotal);
+    }
+
+    /**
+     * Get item subtotal with conditions (automatically formatted if enabled)
+     */
+    public function subtotalWithConditions(): string|int|float
+    {
+        return $this->formatPriceValue($this->getPriceSumWithConditions());
+    }
+
+    /**
      * Get final total for this item (alias for getPriceSumWithConditions)
      */
     public function finalTotal(): float
@@ -351,11 +379,13 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'price' => $this->price,
+            'price' => $this->getPrice(),
             'quantity' => $this->quantity,
+            'subtotal' => $this->subtotal(),
             'attributes' => $this->attributes->toArray(),
             'conditions' => $this->conditions->map(fn (CartCondition $condition) => $condition->toArray())->toArray(),
             'associated_model' => $this->getAssociatedModelArray(),
+            // Legacy fields for backward compatibility
             'price_sum' => $this->getPriceSum(),
             'price_with_conditions' => $this->getPriceWithConditions(),
             'price_sum_with_conditions' => $this->getPriceSumWithConditions(),

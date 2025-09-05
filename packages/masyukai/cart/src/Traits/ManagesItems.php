@@ -11,6 +11,7 @@ use MasyukAI\Cart\Events\ItemUpdated;
 use MasyukAI\Cart\Exceptions\InvalidCartItemException;
 use MasyukAI\Cart\Exceptions\UnknownModelException;
 use MasyukAI\Cart\Models\CartItem;
+use MasyukAI\Cart\Support\PriceFormatManager;
 
 trait ManagesItems
 {
@@ -235,7 +236,7 @@ trait ManagesItems
     }
 
     /**
-     * Normalize price to float
+     * Normalize price to float using price transformer
      */
     private function normalizePrice(float|string|null $price): float
     {
@@ -243,10 +244,20 @@ trait ManagesItems
             return 0.0;
         }
 
-        if (is_string($price)) {
-            $price = (float) str_replace(',', '', $price);
+        // If cart has local decimals config, use simple rounding instead of transformer
+        if (isset($this->config['decimals'])) {
+            // Handle string normalization locally
+            if (is_string($price)) {
+                $price = str_replace(',', '', $price);
+            }
+            
+            return round((float) $price, $this->config['decimals']);
         }
 
-        return round($price, $this->config['decimals'] ?? 2);
+        // Use the price transformer for proper normalization
+        $normalized = PriceFormatManager::getFormatter()->normalize($price);
+        
+        // Ensure we return a float
+        return (float) $normalized;
     }
 }

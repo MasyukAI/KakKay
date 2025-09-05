@@ -104,4 +104,30 @@ return [
         // Enable demo routes (automatically enabled in local and testing environments)
         'enabled' => env('CART_DEMO_ENABLED', false),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Price Formatting Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configure how prices are stored, displayed, and formatted in the cart
+    |
+    */
+    'price_formatting' => [
+        // Enable automatic formatting for all price outputs
+        'auto_format' => env('CART_AUTO_FORMAT', false),
+        
+        // Price transformer class
+        'transformer' => env('CART_PRICE_TRANSFORMER', \MasyukAI\Cart\PriceTransformers\DecimalPriceTransformer::class),
+        
+        // Currency and locale
+        'currency' => env('CART_CURRENCY', 'USD'),
+        'locale' => env('CART_LOCALE', 'en_US'),
+        'precision' => env('CART_PRICE_PRECISION', 2),
+        
+        // Display options
+        'show_currency_symbol' => env('CART_SHOW_CURRENCY_SYMBOL', false),
+        'decimal_separator' => env('CART_DECIMAL_SEPARATOR', '.'),
+        'thousands_separator' => env('CART_THOUSANDS_SEPARATOR', ','),
+    ],
 ];

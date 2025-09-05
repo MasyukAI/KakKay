@@ -2,14 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Masy    /**
-     * Get a unique identifier for the user
-     */
-    private function getUserIdentifier(mixed $user): ?string
-    {
-        // Try common user identifier fields
-        return $user->email
-            ?? $user->usernameisteners;
+namespace MasyukAI\Cart\Listeners;
 
 use Illuminate\Auth\Events\Login;
 use Illuminate\Contracts\Queue\ShouldQueue;

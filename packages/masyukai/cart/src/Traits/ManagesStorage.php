@@ -34,7 +34,7 @@ trait ManagesStorage
                 $item = new CartItem(
                     $itemData['id'],
                     $itemData['name'],
-                    $itemData['price'],
+                    (float) $itemData['price'], // Ensure price is float
                     $itemData['quantity'],
                     $itemData['attributes'] ?? [],
                     $itemData['conditions'] ?? [],
