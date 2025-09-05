@@ -194,9 +194,9 @@ readonly class CartCondition implements Arrayable, Jsonable, JsonSerializable
     /**
      * Convert to JSON
      *
-     * @param int $options JSON encode options
+     * @param  int  $options  JSON encode options
      */
-    public function toJson(mixed $options = 0): string
+    public function toJson($options = 0): string
     {
         return json_encode($this->jsonSerialize(), $options);
     }
@@ -239,7 +239,7 @@ readonly class CartCondition implements Arrayable, Jsonable, JsonSerializable
             throw new InvalidCartConditionException('Condition target cannot be empty');
         }
 
-        if (!in_array($this->target, ['subtotal', 'total', 'item'])) {
+        if (! in_array($this->target, ['subtotal', 'total', 'item'])) {
             throw new InvalidCartConditionException('Condition target must be one of: subtotal, total, item');
         }
 
@@ -281,6 +281,7 @@ readonly class CartCondition implements Arrayable, Jsonable, JsonSerializable
         // Handle percentage
         if (str_ends_with($value, '%')) {
             $numericValue = (float) substr($value, 0, -1);
+
             return $numericValue / 100; // Convert to decimal
         }
 
@@ -291,7 +292,7 @@ readonly class CartCondition implements Arrayable, Jsonable, JsonSerializable
             $numericValue = (float) $value;
         }
 
-        if (!is_finite($numericValue)) {
+        if (! is_finite($numericValue)) {
             throw new InvalidCartConditionException("Invalid condition value: {$this->value}");
         }
 

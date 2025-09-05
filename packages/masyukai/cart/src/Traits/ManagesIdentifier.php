@@ -107,7 +107,7 @@ trait ManagesIdentifier
         } catch (\Throwable $e) {
             // Fall back to other checks if environment() is not mocked
         }
-        
+
         // Fallback checks for PHPUnit/testing
         return defined('PHPUNIT_COMPOSER_INSTALL') ||
                defined('__PHPUNIT_PHAR__') ||
@@ -120,7 +120,7 @@ trait ManagesIdentifier
     protected function getTestIdentifier(): string
     {
         try {
-            return config('cart.test_identifier') ?? 'test_session_id';
+            return config('cart.test_identifier', 'test_session_id');
         } catch (\Throwable $e) {
             return 'test_session_id';
         }

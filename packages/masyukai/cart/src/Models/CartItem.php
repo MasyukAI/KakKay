@@ -296,6 +296,7 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
     public function subtotal(): string|int|float
     {
         $subtotal = $this->price * $this->quantity;
+
         return $this->formatPriceValue($subtotal);
     }
 
@@ -396,9 +397,9 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
     /**
      * Convert to JSON
      *
-     * @param int $options JSON encode options
+     * @param  int  $options  JSON encode options
      */
-    public function toJson(mixed $options = 0): string
+    public function toJson($options = 0): string
     {
         return json_encode($this->jsonSerialize(), $options);
     }

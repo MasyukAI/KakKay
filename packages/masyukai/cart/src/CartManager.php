@@ -14,6 +14,7 @@ use MasyukAI\Cart\Traits\ManagesPricing;
 class CartManager
 {
     use ManagesPricing;
+
     private Cart $currentCart;
 
     private string $currentInstance = 'default';
@@ -92,7 +93,7 @@ class CartManager
         }
 
         // If not using session storage, create a temporary session storage instance
-        $session = app('session')->driver();
+        $session = app(\Illuminate\Session\SessionManager::class)->driver();
 
         return new \MasyukAI\Cart\Storage\SessionStorage($session, $sessionKey ?? config('cart.session.key', 'cart'));
     }
@@ -103,6 +104,7 @@ class CartManager
     public function formatted(): static
     {
         \MasyukAI\Cart\Support\PriceFormatManager::enableFormatting();
+
         return $this;
     }
 
@@ -112,6 +114,7 @@ class CartManager
     public function raw(): static
     {
         \MasyukAI\Cart\Support\PriceFormatManager::disableFormatting();
+
         return $this;
     }
 
@@ -121,6 +124,7 @@ class CartManager
     public function currency(?string $currency = null): static
     {
         \MasyukAI\Cart\Support\PriceFormatManager::setCurrency($currency);
+
         return $this;
     }
 
