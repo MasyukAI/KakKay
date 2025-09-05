@@ -78,7 +78,7 @@ class CartServiceProvider extends ServiceProvider
     {
         // Ensure events binding for test environments
         if ($this->app->environment('testing') && ! $this->app->bound('events')) {
-            $this->app->singleton('events', function ($app) {
+            $this->app->singleton('events', function (\Illuminate\Contracts\Foundation\Application $app) {
                 return new \Illuminate\Events\Dispatcher($app);
             });
         }
@@ -89,14 +89,14 @@ class CartServiceProvider extends ServiceProvider
      */
     protected function registerStorageDrivers(): void
     {
-        $this->app->bind('cart.storage.session', function ($app) {
+        $this->app->bind('cart.storage.session', function (\Illuminate\Contracts\Foundation\Application $app) {
             return new SessionStorage(
                 $app->make(\Illuminate\Contracts\Session\Session::class),
                 config('cart.session.key', 'cart')
             );
         });
 
-        $this->app->bind('cart.storage.cache', function ($app) {
+        $this->app->bind('cart.storage.cache', function (\Illuminate\Contracts\Foundation\Application $app) {
             return new CacheStorage(
                 $app->make(\Illuminate\Contracts\Cache\Repository::class),
                 config('cart.cache.prefix', 'cart'),
@@ -104,7 +104,7 @@ class CartServiceProvider extends ServiceProvider
             );
         });
 
-        $this->app->bind('cart.storage.database', function ($app) {
+        $this->app->bind('cart.storage.database', function (\Illuminate\Contracts\Foundation\Application $app) {
             // Skip database storage in test environment if db is not properly bound
             if ($app->environment('testing') && ! $app->bound('db')) {
                 throw new \Exception('Database storage not available in test environment. Use session or cache storage instead.');
@@ -129,7 +129,7 @@ class CartServiceProvider extends ServiceProvider
      */
     protected function registerCartManager(): void
     {
-        $this->app->singleton('cart', function ($app) {
+        $this->app->singleton('cart', function (\Illuminate\Contracts\Foundation\Application $app) {
             $driver = config('cart.storage', 'session');
             $storage = $app->make("cart.storage.{$driver}");
 
@@ -171,7 +171,7 @@ class CartServiceProvider extends ServiceProvider
      */
     protected function registerMigrationService(): void
     {
-        $this->app->singleton(CartMigrationService::class, function ($app) {
+        $this->app->singleton(CartMigrationService::class, function (\Illuminate\Contracts\Foundation\Application $app) {
             return new CartMigrationService;
         });
     }
@@ -230,7 +230,7 @@ class CartServiceProvider extends ServiceProvider
      */
     protected function registerPriceTransformers(): void
     {
-        $this->app->bind('cart.price.transformer.decimal', function ($app) {
+        $this->app->bind('cart.price.transformer.decimal', function (\Illuminate\Contracts\Foundation\Application $app) {
             return new \MasyukAI\Cart\PriceTransformers\DecimalPriceTransformer(
                 config('cart.price_formatting.currency', 'USD'),
                 config('cart.price_formatting.locale', 'en_US'),
@@ -238,7 +238,7 @@ class CartServiceProvider extends ServiceProvider
             );
         });
 
-        $this->app->bind('cart.price.transformer.integer', function ($app) {
+        $this->app->bind('cart.price.transformer.integer', function (\Illuminate\Contracts\Foundation\Application $app) {
             return new \MasyukAI\Cart\PriceTransformers\IntegerPriceTransformer(
                 config('cart.price_formatting.currency', 'USD'),
                 config('cart.price_formatting.locale', 'en_US'),
@@ -246,7 +246,7 @@ class CartServiceProvider extends ServiceProvider
             );
         });
 
-        $this->app->bind('cart.price.transformer.localized', function ($app) {
+        $this->app->bind('cart.price.transformer.localized', function (\Illuminate\Contracts\Foundation\Application $app) {
             return new \MasyukAI\Cart\PriceTransformers\LocalizedPriceTransformer(
                 config('cart.price_formatting.currency', 'USD'),
                 config('cart.price_formatting.locale', 'en_US'),
@@ -257,7 +257,7 @@ class CartServiceProvider extends ServiceProvider
         });
 
         // Register the configured transformer
-        $this->app->bind(\MasyukAI\Cart\Contracts\PriceTransformerInterface::class, function ($app) {
+        $this->app->bind(\MasyukAI\Cart\Contracts\PriceTransformerInterface::class, function (\Illuminate\Contracts\Foundation\Application $app) {
             $transformerClass = config('cart.price_formatting.transformer');
             return $app->make($transformerClass);
         });

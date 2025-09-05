@@ -60,7 +60,7 @@ class Cart extends Facade
      * Handle dynamic, static calls to the facade.
      * This allows us to handle the setInstance method properly for chaining.
      */
-    public static function __callStatic($method, $args): mixed
+    public static function __callStatic(string $method, array $args): mixed
     {
         $instance = static::getFacadeRoot();
 

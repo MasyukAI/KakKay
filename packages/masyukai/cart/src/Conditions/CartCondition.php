@@ -193,8 +193,10 @@ readonly class CartCondition implements Arrayable, Jsonable, JsonSerializable
 
     /**
      * Convert to JSON
+     *
+     * @param int $options JSON encode options
      */
-    public function toJson($options = 0): string
+    public function toJson(mixed $options = 0): string
     {
         return json_encode($this->jsonSerialize(), $options);
     }
