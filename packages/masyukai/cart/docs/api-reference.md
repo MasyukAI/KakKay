@@ -1,13 +1,764 @@
-# API Reference
+# 📋 API Reference
 
-Complete API reference for the MasyukAI Cart package with examples and best practices.
+Complete reference for all MasyukAI Cart classes, methods, and interfaces.
 
-## Quick Navigation
+## 🚀 Core Classes
 
-- [Cart Class](#cart-class)
-- [CartItem Class](#cartitem-class)  
-- [CartCondition Class](#cartcondition-class)
-- [CartCollection Class](#cartcollection-class)
+### Cart Manager
+
+The main entry point for all cart operations.
+
+```php
+class CartManager
+{
+    // Instance Management
+    public function instance(string $name = 'default'): CartInstance
+    public function getInstances(): array
+    public function destroyInstance(string $name): bool
+    
+    // Direct Cart Operations (uses default instance)
+    public function add(string $id, string $name, float $price, int $quantity = 1, array $attributes = []): CartItem
+    public function update(string $itemId, array $data): bool
+    public function remove(string $itemId): bool
+    public function clear(): bool
+    
+    // Content & Information
+    public function content(): CartContent
+    public function getItems(): Collection
+    public function get(string $itemId): ?CartItem
+    public function count(): int
+    public function quantity(): int
+    public function isEmpty(): bool
+    
+    // Pricing & Totals
+    public function subtotal(): float
+    public function total(): float
+    public function getConditions(): Collection
+    
+    // Search & Filter
+    public function search(callable $callback): Collection
+    public function filter(callable $callback): Collection
+    
+    // Storage Operations
+    public function store(string $identifier): bool
+    public function restore(string $identifier): bool
+    public function forget(string $identifier): bool
+    
+    // Utility Methods
+    public function toArray(): array
+    public function toJson(): string
+}
+```
+
+### Cart Instance
+
+Individual cart instance with full functionality.
+
+```php
+class CartInstance
+{
+    // Item Management
+    public function add(string $id, string $name, float $price, int $quantity = 1, array $attributes = []): CartItem
+    public function update(string $itemId, array $data): bool
+    public function remove(string $itemId): bool
+    public function clear(): bool
+    
+    // Content Access
+    public function content(): CartContent
+    public function getItems(): Collection
+    public function get(string $itemId): ?CartItem
+    public function has(string $itemId): bool
+    
+    // Quantities & Counts
+    public function count(): int
+    public function quantity(): int
+    public function countItems(): int
+    public function totalQuantity(): int
+    public function isEmpty(): bool
+    
+    // Pricing
+    public function subtotal(bool $formatted = false): float|string
+    public function total(bool $formatted = false): float|string
+    public function tax(bool $formatted = false): float|string
+    public function discount(bool $formatted = false): float|string
+    
+    // Conditions Management
+    public function addCondition(CartConditionInterface $condition): self
+    public function addDiscount(string $name, string $value, array $attributes = []): self
+    public function addTax(string $name, string $value, array $attributes = []): self
+    public function addFee(string $name, string $value, array $attributes = []): self
+    public function removeCondition(string|array $names): self
+    public function clearConditions(): self
+    public function getConditions(): Collection
+    public function getCondition(string $name): ?CartConditionInterface
+    public function hasCondition(string $name): bool
+    
+    // Search & Filter
+    public function search(callable $callback): Collection
+    public function filter(callable $callback): Collection
+    public function where(string $key, mixed $value): Collection
+    public function whereIn(string $key, array $values): Collection
+    public function whereNotIn(string $key, array $values): Collection
+    
+    // Instance Operations
+    public function merge(string $fromInstance, string $strategy = 'add_quantities'): bool
+    public function copy(string $toInstance): bool
+    public function duplicate(string $newInstance): bool
+    
+    // Storage
+    public function store(string $identifier): bool
+    public function restore(string $identifier): bool
+    public function forget(string $identifier): bool
+    
+    // Events
+    public function onItemAdded(callable $callback): self
+    public function onItemUpdated(callable $callback): self
+    public function onItemRemoved(callable $callback): self
+    public function onCartCleared(callable $callback): self
+    
+    // Serialization
+    public function toArray(): array
+    public function toJson(): string
+    public function __toString(): string
+}
+```
+
+### Cart Item
+
+Individual item within a cart.
+
+```php
+class CartItem
+{
+    // Properties (read-only)
+    public readonly string $id;
+    public readonly string $name;
+    public readonly float $price;
+    public readonly int $quantity;
+    public readonly Collection $attributes;
+    
+    // Constructors
+    public function __construct(string $id, string $name, float $price, int $quantity, array $attributes = [])
+    public static function make(string $id, string $name, float $price, int $quantity, array $attributes = []): self
+    
+    // Price Calculations
+    public function getPriceSum(): float
+    public function getFormattedPrice(): string
+    public function getFormattedPriceSum(): string
+    
+    // Attribute Management
+    public function getAttribute(string $key, mixed $default = null): mixed
+    public function hasAttribute(string $key): bool
+    public function getAttributes(): Collection
+    public function setAttribute(string $key, mixed $value): self
+    public function setAttributes(array $attributes): self
+    public function removeAttribute(string $key): self
+    
+    // Quantity Management
+    public function setQuantity(int $quantity): self
+    public function addQuantity(int $quantity): self
+    public function subtractQuantity(int $quantity): self
+    
+    // Conditions (Item-level)
+    public function addCondition(CartConditionInterface $condition): self
+    public function removeCondition(string $name): self
+    public function getConditions(): Collection
+    public function hasCondition(string $name): bool
+    public function clearConditions(): self
+    
+    // Validation
+    public function isValid(): bool
+    public function validate(): array
+    
+    // Comparison
+    public function equals(CartItem $item): bool
+    public function isSimilar(CartItem $item): bool
+    
+    // Serialization
+    public function toArray(): array
+    public function toJson(): string
+    public function __toString(): string
+}
+```
+
+### Cart Content
+
+Container for cart data with metadata.
+
+```php
+class CartContent
+{
+    // Properties
+    public readonly string $instance;
+    public readonly Collection $items;
+    public readonly Collection $conditions;
+    public readonly array $metadata;
+    
+    // Totals
+    public function subtotal(): float
+    public function total(): float
+    public function tax(): float
+    public function discount(): float
+    public function count(): int
+    public function quantity(): int
+    public function isEmpty(): bool
+    
+    // Item Access
+    public function getItems(): Collection
+    public function getItem(string $id): ?CartItem
+    public function hasItem(string $id): bool
+    
+    // Conditions
+    public function getConditions(): Collection
+    public function getCondition(string $name): ?CartConditionInterface
+    public function hasCondition(string $name): bool
+    
+    // Metadata
+    public function getMetadata(): array
+    public function getMeta(string $key, mixed $default = null): mixed
+    public function setMeta(string $key, mixed $value): self
+    
+    // Search
+    public function search(callable $callback): Collection
+    public function filter(callable $callback): Collection
+    
+    // Serialization
+    public function toArray(): array
+    public function toJson(): string
+}
+```
+
+---
+
+## 🔧 Condition System
+
+### Cart Condition Interface
+
+```php
+interface CartConditionInterface
+{
+    // Basic Properties
+    public function getName(): string
+    public function getType(): string
+    public function getTarget(): string
+    public function getValue(): string
+    public function getOrder(): int
+    
+    // Attributes
+    public function getAttributes(): array
+    public function getAttribute(string $key, mixed $default = null): mixed
+    public function setAttribute(string $key, mixed $value): self
+    
+    // Calculation
+    public function getCalculatedValue(float $targetValue): float
+    public function apply(float $targetValue): float
+    
+    // Validation
+    public function isValid(): bool
+    public function canApply(float $targetValue): bool
+    
+    // Serialization
+    public function toArray(): array
+}
+```
+
+### Cart Condition Implementation
+
+```php
+class CartCondition implements CartConditionInterface
+{
+    // Constructor
+    public function __construct(
+        string $name,
+        string $type,
+        string $target,
+        string $value,
+        array $attributes = [],
+        int $order = 0
+    )
+    
+    // Static Constructors
+    public static function discount(string $name, string $value, array $attributes = []): self
+    public static function tax(string $name, string $value, array $attributes = []): self
+    public static function fee(string $name, string $value, array $attributes = []): self
+    
+    // Value Parsing
+    public function isPercentage(): bool
+    public function isFixed(): bool
+    public function getNumericValue(): float
+    
+    // Calculation Methods
+    public function calculatePercentage(float $targetValue): float
+    public function calculateFixed(float $targetValue): float
+    public function getCalculatedValue(float $targetValue): float
+    public function apply(float $targetValue): float
+    
+    // Validation
+    public function isValid(): bool
+    public function canApply(float $targetValue): bool
+    public function validate(): array
+    
+    // Comparison
+    public function equals(CartConditionInterface $condition): bool
+    
+    // Utility
+    public function getDisplayValue(): string
+    public function getDescription(): string
+    public function isActive(): bool
+    
+    // Serialization
+    public function toArray(): array
+    public function toJson(): string
+    public function __toString(): string
+}
+```
+
+### Condition Builder
+
+```php
+class ConditionBuilder
+{
+    // Fluent Interface
+    public function name(string $name): self
+    public function type(string $type): self
+    public function target(string $target): self
+    public function value(string $value): self
+    public function order(int $order): self
+    public function attributes(array $attributes): self
+    public function attribute(string $key, mixed $value): self
+    
+    // Quick Builders
+    public function discount(string $name, string $value): self
+    public function tax(string $name, string $value): self
+    public function fee(string $name, string $value): self
+    
+    // Conditional Logic
+    public function when(callable $condition, callable $callback): self
+    public function unless(callable $condition, callable $callback): self
+    
+    // Validation Rules
+    public function minValue(float $min): self
+    public function maxValue(float $max): self
+    public function validUntil(string $date): self
+    public function validFrom(string $date): self
+    
+    // Build
+    public function build(): CartCondition
+    public function apply(CartInstance $cart): CartInstance
+}
+```
+
+---
+
+## 📦 Storage System
+
+### Storage Interface
+
+```php
+interface CartStorageInterface
+{
+    // Basic Operations
+    public function store(string $identifier, array $data): bool
+    public function restore(string $identifier): ?array
+    public function forget(string $identifier): bool
+    public function exists(string $identifier): bool
+    
+    // Batch Operations
+    public function storeMultiple(array $data): bool
+    public function forgetMultiple(array $identifiers): bool
+    public function getAll(): array
+    
+    // Cleanup
+    public function flush(): bool
+    public function cleanup(): int
+    
+    // Information
+    public function count(): int
+    public function size(): int
+    public function getKeys(): array
+}
+```
+
+### Session Storage
+
+```php
+class SessionCartStorage implements CartStorageInterface
+{
+    // Configuration
+    public function __construct(string $keyPrefix = 'cart_')
+    
+    // Storage Operations
+    public function store(string $identifier, array $data): bool
+    public function restore(string $identifier): ?array
+    public function forget(string $identifier): bool
+    public function exists(string $identifier): bool
+    
+    // Session Management
+    public function getSessionKey(string $identifier): string
+    public function regenerateSession(): bool
+}
+```
+
+### Database Storage
+
+```php
+class DatabaseCartStorage implements CartStorageInterface
+{
+    // Configuration
+    public function __construct(
+        string $table = 'cart_storage',
+        string $connection = null
+    )
+    
+    // Storage Operations
+    public function store(string $identifier, array $data): bool
+    public function restore(string $identifier): ?array
+    public function forget(string $identifier): bool
+    public function exists(string $identifier): bool
+    
+    // Database Queries
+    public function getQuery(): Builder
+    public function cleanup(): int
+    public function deleteExpired(): int
+    
+    // User Association
+    public function storeForUser(int $userId, string $instance, array $data): bool
+    public function restoreForUser(int $userId, string $instance): ?array
+    public function forgetForUser(int $userId, string $instance = null): bool
+}
+```
+
+### File Storage
+
+```php
+class FileCartStorage implements CartStorageInterface
+{
+    // Configuration
+    public function __construct(
+        string $path = null,
+        string $extension = '.json'
+    )
+    
+    // Storage Operations
+    public function store(string $identifier, array $data): bool
+    public function restore(string $identifier): ?array
+    public function forget(string $identifier): bool
+    public function exists(string $identifier): bool
+    
+    // File Management
+    public function getFilePath(string $identifier): string
+    public function ensureDirectory(): bool
+    public function cleanup(): int
+}
+```
+
+---
+
+## 🎣 Event System
+
+### Event Dispatcher Interface
+
+```php
+interface CartEventDispatcherInterface
+{
+    // Event Registration
+    public function listen(string $event, callable $listener): void
+    public function subscribe(object $subscriber): void
+    
+    // Event Dispatch
+    public function dispatch(string $event, array $payload = []): void
+    public function fire(string $event, array $payload = []): void
+    
+    // Event Management
+    public function hasListeners(string $event): bool
+    public function getListeners(string $event): array
+    public function forget(string $event): void
+    public function flush(): void
+}
+```
+
+### Available Events
+
+```php
+// Item Events
+'cart.item.adding'     // Before item is added
+'cart.item.added'      // After item is added
+'cart.item.updating'   // Before item is updated
+'cart.item.updated'    // After item is updated
+'cart.item.removing'   // Before item is removed
+'cart.item.removed'    // After item is removed
+
+// Cart Events
+'cart.clearing'        // Before cart is cleared
+'cart.cleared'         // After cart is cleared
+'cart.storing'         // Before cart is stored
+'cart.stored'          // After cart is stored
+'cart.restoring'       // Before cart is restored
+'cart.restored'        // After cart is restored
+
+// Condition Events
+'cart.condition.adding'    // Before condition is added
+'cart.condition.added'     // After condition is added
+'cart.condition.removing'  // Before condition is removed
+'cart.condition.removed'   // After condition is removed
+
+// Instance Events
+'cart.instance.created'    // When new instance is created
+'cart.instance.destroyed'  // When instance is destroyed
+'cart.instance.switched'   // When switching between instances
+```
+
+### Event Payload Examples
+
+```php
+// Item Added Event
+[
+    'instance' => 'default',
+    'item' => CartItem $item,
+    'cart' => CartInstance $cart,
+    'metadata' => ['user_id' => 123, 'timestamp' => '2024-01-01 12:00:00']
+]
+
+// Condition Added Event
+[
+    'instance' => 'default',
+    'condition' => CartCondition $condition,
+    'cart' => CartInstance $cart,
+    'metadata' => ['applied_by' => 'system']
+]
+
+// Cart Cleared Event
+[
+    'instance' => 'default',
+    'items_count' => 5,
+    'previous_total' => 199.99,
+    'metadata' => ['reason' => 'checkout_completed']
+]
+```
+
+---
+
+## 🔄 Migration System
+
+### Cart Migrator
+
+```php
+class CartMigrator
+{
+    // Migration Operations
+    public function migrate(string $fromStorage, string $toStorage): bool
+    public function migrateInstance(string $instance, string $fromStorage, string $toStorage): bool
+    public function migrateUser(int $userId, string $fromStorage, string $toStorage): bool
+    
+    // Batch Migration
+    public function migrateBatch(array $identifiers, string $fromStorage, string $toStorage): array
+    public function migrateAll(string $fromStorage, string $toStorage): array
+    
+    // Validation
+    public function validateMigration(string $fromStorage, string $toStorage): bool
+    public function testMigration(string $identifier, string $fromStorage, string $toStorage): bool
+    
+    // Progress Tracking
+    public function getMigrationProgress(): array
+    public function setProgressCallback(callable $callback): self
+    
+    // Rollback
+    public function rollbackMigration(string $migrationId): bool
+    public function createBackup(string $storage): string
+    public function restoreBackup(string $backupId): bool
+}
+```
+
+### Migration Events
+
+```php
+// Migration Events
+'cart.migration.starting'   // Before migration starts
+'cart.migration.progress'   // During migration (with progress data)
+'cart.migration.completed'  // After migration completes
+'cart.migration.failed'     // If migration fails
+'cart.migration.rollback'   // During rollback operation
+```
+
+---
+
+## 🧪 Testing Utilities
+
+### Cart Test Helper
+
+```php
+class CartTestHelper
+{
+    // Setup Helpers
+    public static function createEmptyCart(string $instance = 'default'): CartInstance
+    public static function createCartWithItems(array $items, string $instance = 'default'): CartInstance
+    public static function createSampleItem(array $overrides = []): CartItem
+    
+    // Assertion Helpers
+    public static function assertCartHasItem(CartInstance $cart, string $itemId): void
+    public static function assertCartItemCount(CartInstance $cart, int $count): void
+    public static function assertCartTotal(CartInstance $cart, float $total, float $delta = 0.01): void
+    public static function assertCartSubtotal(CartInstance $cart, float $subtotal, float $delta = 0.01): void
+    public static function assertCartIsEmpty(CartInstance $cart): void
+    public static function assertCartIsNotEmpty(CartInstance $cart): void
+    
+    // Condition Assertions
+    public static function assertCartHasCondition(CartInstance $cart, string $conditionName): void
+    public static function assertConditionValue(CartInstance $cart, string $conditionName, float $value): void
+    
+    // Mock Helpers
+    public static function mockStorage(): MockInterface
+    public static function mockEventDispatcher(): MockInterface
+    public static function mockCondition(string $name, string $type, string $value): MockInterface
+    
+    // Data Generators
+    public static function generateRandomItems(int $count = 5): array
+    public static function generateConditions(int $count = 3): array
+}
+```
+
+### Test Traits
+
+```php
+trait InteractsWithCart
+{
+    // Setup
+    protected function setUpCart(): void
+    protected function tearDownCart(): void
+    
+    // Helper Methods
+    protected function addItemToCart(array $itemData = [], string $instance = 'default'): CartItem
+    protected function createCartCondition(array $conditionData = []): CartCondition
+    protected function clearAllCarts(): void
+    
+    // Assertions
+    protected function assertCartEquals(CartInstance $expected, CartInstance $actual): void
+    protected function assertItemEquals(CartItem $expected, CartItem $actual): void
+}
+
+trait MocksCartDependencies
+{
+    // Mock Setup
+    protected function mockCartStorage(): MockInterface
+    protected function mockEventDispatcher(): MockInterface
+    protected function mockSessionDriver(): MockInterface
+    
+    // Mock Expectations
+    protected function expectStorageStore(string $identifier, array $data): void
+    protected function expectStorageRestore(string $identifier, array $data = null): void
+    protected function expectEventDispatch(string $event, array $payload = []): void
+}
+```
+
+---
+
+## 🏗️ Service Providers & Configuration
+
+### Cart Service Provider
+
+```php
+class CartServiceProvider extends ServiceProvider
+{
+    // Registration
+    public function register(): void
+    {
+        $this->registerCartManager();
+        $this->registerStorageDrivers();
+        $this->registerEventDispatcher();
+        $this->registerMigrator();
+    }
+    
+    // Booting
+    public function boot(): void
+    {
+        $this->publishConfiguration();
+        $this->publishMigrations();
+        $this->registerCommands();
+        $this->registerValidationRules();
+    }
+    
+    // Configuration
+    public function provides(): array
+    {
+        return [
+            'cart',
+            'cart.manager',
+            'cart.storage',
+            'cart.events',
+            'cart.migrator'
+        ];
+    }
+}
+```
+
+### Configuration Options
+
+```php
+// config/cart.php
+return [
+    // Default storage driver
+    'default_storage' => env('CART_STORAGE', 'session'),
+    
+    // Storage drivers configuration
+    'storage' => [
+        'session' => [
+            'driver' => 'session',
+            'key_prefix' => 'cart_',
+        ],
+        'database' => [
+            'driver' => 'database',
+            'connection' => env('CART_DB_CONNECTION', 'default'),
+            'table' => 'cart_storage',
+        ],
+        'file' => [
+            'driver' => 'file',
+            'path' => storage_path('framework/cart'),
+            'extension' => '.json',
+        ],
+        'redis' => [
+            'driver' => 'redis',
+            'connection' => env('CART_REDIS_CONNECTION', 'default'),
+            'key_prefix' => 'cart:',
+        ],
+    ],
+    
+    // Default instance name
+    'default_instance' => 'default',
+    
+    // Event system
+    'events' => [
+        'enabled' => true,
+        'dispatcher' => 'default', // or 'sync', 'queue'
+    ],
+    
+    // Formatting
+    'format' => [
+        'currency' => 'USD',
+        'decimal_places' => 2,
+        'decimal_separator' => '.',
+        'thousands_separator' => ',',
+        'currency_symbol' => '$',
+        'currency_position' => 'before', // 'before' or 'after'
+    ],
+    
+    // Validation
+    'validation' => [
+        'max_quantity' => 999,
+        'max_items' => 100,
+        'max_price' => 999999.99,
+        'min_price' => 0.01,
+    ],
+    
+    // Cleanup
+    'cleanup' => [
+        'enabled' => true,
+        'max_age_days' => 30,
+        'run_probability' => 2, // 2% chance to run cleanup
+    ],
+];
+```
+
+This comprehensive API reference covers all public methods, interfaces, and configuration options available in the MasyukAI Cart package. Use this as your complete guide for implementation and integration.
 - [Facades](#facades)
 - [Events](#events)
 - [Exceptions](#exceptions)

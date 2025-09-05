@@ -87,4 +87,24 @@ interface StorageInterface
      * @param  array  $conditions  Cart conditions array
      */
     public function putBoth(string $identifier, string $instance, array $items, array $conditions): void;
+
+    /**
+     * Store cart metadata
+     *
+     * @param  string  $identifier  User/session identifier
+     * @param  string  $instance  Cart instance name
+     * @param  string  $key  Metadata key
+     * @param  mixed  $value  Metadata value
+     */
+    public function putMetadata(string $identifier, string $instance, string $key, mixed $value): void;
+
+    /**
+     * Retrieve cart metadata
+     *
+     * @param  string  $identifier  User/session identifier
+     * @param  string  $instance  Cart instance name
+     * @param  string  $key  Metadata key
+     * @return mixed Metadata value or null if not found
+     */
+    public function getMetadata(string $identifier, string $instance, string $key): mixed;
 }

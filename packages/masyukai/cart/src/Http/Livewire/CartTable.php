@@ -15,13 +15,13 @@ class CartTable extends Component
     public bool $showConditions = false;
 
     #[Computed]
-    public function items()
+    public function items(): \MasyukAI\Cart\Collections\CartCollection
     {
         return Cart::getItems();
     }
 
     #[Computed]
-    public function isEmpty()
+    public function isEmpty(): bool
     {
         return Cart::isEmpty();
     }
@@ -109,7 +109,7 @@ class CartTable extends Component
         return $this->showConditions ? $item->getPriceSumWithConditions() : $item->getPriceSum();
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('cart::livewire.cart-table');
     }

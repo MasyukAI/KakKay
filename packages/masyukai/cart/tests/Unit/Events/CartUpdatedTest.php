@@ -92,6 +92,20 @@ beforeEach(function (): void {
             $this->putItems($identifier, $instance, $items);
             $this->putConditions($identifier, $instance, $conditions);
         }
+
+        public function putMetadata(string $identifier, string $instance, string $key, mixed $value): void
+        {
+            $metadataKey = "{$identifier}.{$instance}.metadata.{$key}";
+            $this->data[$metadataKey] = json_encode($value);
+        }
+
+        public function getMetadata(string $identifier, string $instance, string $key): mixed
+        {
+            $metadataKey = "{$identifier}.{$instance}.metadata.{$key}";
+            $data = $this->data[$metadataKey] ?? null;
+
+            return $data ? json_decode($data, true) : null;
+        }
     };
 
     app()->bind(StorageInterface::class, fn () => $storage);

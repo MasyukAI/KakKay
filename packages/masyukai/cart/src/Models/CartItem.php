@@ -16,6 +16,7 @@ use MasyukAI\Cart\Exceptions\UnknownModelException;
 readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
 {
     public CartConditionCollection $conditions;
+
     public Collection $attributes;
 
     public function __construct(
@@ -384,7 +385,7 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
     public function __toString(): string
     {
         return sprintf(
-            '%s (ID: %s, Price: %.2f, Qty: %d)',
+            '%s (ID: %s, Price: %.2f, Quantity: %d)',
             $this->name,
             $this->id,
             $this->price,
@@ -413,8 +414,8 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
             throw new InvalidCartItemException('Cart item quantity must be at least 1');
         }
 
-        if (is_string($this->associatedModel) && !empty($this->associatedModel)) {
-            if (!class_exists($this->associatedModel)) {
+        if (is_string($this->associatedModel) && ! empty($this->associatedModel)) {
+            if (! class_exists($this->associatedModel)) {
                 throw new UnknownModelException("Model class '{$this->associatedModel}' does not exist");
             }
         }
@@ -429,7 +430,7 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
             return $conditions;
         }
 
-        $collection = new CartConditionCollection();
+        $collection = new CartConditionCollection;
 
         if (is_array($conditions)) {
             foreach ($conditions as $key => $condition) {

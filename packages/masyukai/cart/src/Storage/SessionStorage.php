@@ -21,7 +21,8 @@ readonly class SessionStorage implements StorageInterface
     public function has(string $identifier, string $instance): bool
     {
         $cartData = $this->session->get($this->keyPrefix, []);
-        return isset($cartData[$identifier][$instance]['items']) || 
+
+        return isset($cartData[$identifier][$instance]['items']) ||
                isset($cartData[$identifier][$instance]['conditions']);
     }
 
@@ -31,15 +32,15 @@ readonly class SessionStorage implements StorageInterface
     public function forget(string $identifier, string $instance): void
     {
         $cartData = $this->session->get($this->keyPrefix, []);
-        
+
         if (isset($cartData[$identifier][$instance])) {
             unset($cartData[$identifier][$instance]);
-            
+
             // If this identifier has no more instances, remove it entirely
             if (empty($cartData[$identifier])) {
                 unset($cartData[$identifier]);
             }
-            
+
             // Update the session with the modified data
             if (empty($cartData)) {
                 $this->session->forget($this->keyPrefix);
@@ -65,8 +66,8 @@ readonly class SessionStorage implements StorageInterface
     {
         // Get the nested cart data for this identifier
         $cartData = $this->session->get($this->keyPrefix, []);
-        
-        if (!isset($cartData[$identifier]) || !is_array($cartData[$identifier])) {
+
+        if (! isset($cartData[$identifier]) || ! is_array($cartData[$identifier])) {
             return [];
         }
 
@@ -81,10 +82,10 @@ readonly class SessionStorage implements StorageInterface
     {
         // Get current cart data
         $cartData = $this->session->get($this->keyPrefix, []);
-        
+
         // Remove this identifier's data
         unset($cartData[$identifier]);
-        
+
         // Put back the modified cart data
         if (empty($cartData)) {
             $this->session->forget($this->keyPrefix);
@@ -147,6 +148,25 @@ readonly class SessionStorage implements StorageInterface
     }
 
     /**
+     * Store cart metadata
+     */
+    public function putMetadata(string $identifier, string $instance, string $key, mixed $value): void
+    {
+        $metadataKey = $this->getMetadataKey($identifier, $instance, $key);
+        $this->session->put($metadataKey, $value);
+    }
+
+    /**
+     * Retrieve cart metadata
+     */
+    public function getMetadata(string $identifier, string $instance, string $key): mixed
+    {
+        $metadataKey = $this->getMetadataKey($identifier, $instance, $key);
+
+        return $this->session->get($metadataKey);
+    }
+
+    /**
      * Get the full storage key (legacy for backward compatibility)
      */
     private function getKey(string $identifier, string $instance): string
@@ -168,5 +188,13 @@ readonly class SessionStorage implements StorageInterface
     private function getConditionsKey(string $identifier, string $instance): string
     {
         return "{$this->keyPrefix}.{$identifier}.{$instance}.conditions";
+    }
+
+    /**
+     * Get the metadata storage key
+     */
+    private function getMetadataKey(string $identifier, string $instance, string $key): string
+    {
+        return "{$this->keyPrefix}.{$identifier}.{$instance}.metadata.{$key}";
     }
 }

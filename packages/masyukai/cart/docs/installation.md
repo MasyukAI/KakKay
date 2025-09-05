@@ -1,28 +1,27 @@
-# Installation Guide
+# 📦 Installation Guide
 
-Complete installation instructions for the MasyukAI Cart package.
+Complete installation guide for MasyukAI Cart package with all configuration options and deployment scenarios.
 
-## System Requirements
+## 📋 Prerequisites
 
-Before installing, ensure your system meets these requirements:
+### System Requirements
 
-### Required
-- **PHP**: 8.4 or higher
-- **Laravel**: 12.0 or higher  
-- **Composer**: 2.0 or higher
+| **Component** | **Minimum** | **Recommended** | **Notes** |
+|---------------|-------------|-----------------|-----------|
+| **PHP** | 8.4.0 | 8.4.10+ | Modern PHP features required |
+| **Laravel** | 12.0 | 12.x.x | Latest stable recommended |
+| **Livewire** | 3.0 | 3.x.x | For UI components |
+| **Memory** | 64MB | 128MB+ | For large cart operations |
 
-### Optional (for full features)
-- **Livewire**: 3.0+ (for reactive UI components)
-- **Redis**: For cache storage driver
-- **Database**: MySQL 8.0+, PostgreSQL 13+, or SQLite 3.35+
+### Required PHP Extensions
+```bash
+# Standard extensions (usually included)
+php -m | grep -E "(json|mbstring|openssl|pdo)"
+```
 
-### PHP Extensions
-The following PHP extensions are required:
-- `json` (for data serialization)
-- `mbstring` (for string handling)
-- `openssl` (for Laravel requirements)
+---
 
-## Installation Methods
+## 🚀 Installation Methods
 
 ### Method 1: Composer (Recommended)
 
@@ -30,269 +29,448 @@ The following PHP extensions are required:
 # Install the package
 composer require masyukai/cart
 
-# The package will be auto-discovered by Laravel
+# Verify installation
+composer show masyukai/cart
 ```
 
-### Method 2: Manual Installation
+### Method 2: Development Installation
 
-If auto-discovery is disabled, manually register the service provider:
+```bash
+# For contributing or development
+git clone https://github.com/masyukai/cart.git
+cd cart
+composer install
+./vendor/bin/pest  # Run tests
+```
+
+---
+
+## ⚙️ Configuration
+
+### Basic Setup (Session Storage)
+
+No additional configuration needed! The package works out-of-the-box with session storage:
 
 ```php
-// config/app.php
-'providers' => [
-    // Other providers...
-    MasyukAI\Cart\CartServiceProvider::class,
-],
+use MasyukAI\Cart\Facades\Cart;
 
-'aliases' => [
-    // Other aliases...
-    'Cart' => MasyukAI\Cart\Facades\Cart::class,
-],
+Cart::add('product-1', 'Test Product', 99.99);
+echo Cart::total(); // 99.99
 ```
 
-## Configuration
+### Advanced Configuration
 
-### 1. Publish Configuration File
+#### 1. Publish Configuration File
 
 ```bash
 php artisan vendor:publish --tag=cart-config
 ```
 
-This creates `config/cart.php` with default settings:
+This creates `config/cart.php`:
 
 ```php
 <?php
 
 return [
-    /*
-    |--------------------------------------------------------------------------
-    | Default Storage Driver
-    |--------------------------------------------------------------------------
-    */
+    // Default cart instance name
+    'default_instance' => 'main',
+    
+    // Storage configuration
     'storage' => [
         'driver' => env('CART_STORAGE_DRIVER', 'session'),
         
+        'session' => [
+            'key' => 'shopping_cart',
+        ],
+        
         'database' => [
             'connection' => env('CART_DB_CONNECTION'),
-            'table' => env('CART_DB_TABLE', 'cart_storage'),
+            'table' => 'cart_storage',
         ],
         
         'cache' => [
             'store' => env('CART_CACHE_STORE'),
-            'prefix' => env('CART_CACHE_PREFIX', 'cart'),
+            'prefix' => 'cart',
+            'ttl' => 86400, // 24 hours
         ],
     ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Events Configuration  
-    |--------------------------------------------------------------------------
-    */
-    'events' => [
-        'enabled' => env('CART_EVENTS_ENABLED', true),
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Default Settings
-    |--------------------------------------------------------------------------
-    */
-    'defaults' => [
-        'instance' => 'default',
+    
+    // Cart behavior
+    'cart' => [
         'decimals' => 2,
+        'decimal_point' => '.',
+        'thousands_separator' => ',',
+        'format_numbers' => true,
+        'throw_exceptions' => true,
+    ],
+    
+    // Event system
+    'events' => [
+        'enabled' => true,
+        'listeners' => [],
+    ],
+    
+    // Migration settings
+    'migration' => [
+        'auto_migrate_on_login' => true,
+        'merge_strategy' => 'add_quantities',
+        'clear_guest_cart_after_merge' => true,
+    ],
+    
+    // Validation rules
+    'validation' => [
+        'item_id_max_length' => 255,
+        'item_name_max_length' => 255,
+        'max_quantity_per_item' => 9999,
+        'max_items_in_cart' => 100,
+        'min_price' => 0.01,
+        'max_price' => 999999.99,
     ],
 ];
 ```
 
-### 2. Environment Variables
+#### 2. Environment Configuration
 
-Add these to your `.env` file:
+Add to your `.env` file:
 
 ```env
-# Storage driver: session, database, cache
+# Cart Storage Driver
 CART_STORAGE_DRIVER=session
 
-# Database storage (if using database driver)
+# Database Storage (if using database driver)
 CART_DB_CONNECTION=mysql
-CART_DB_TABLE=cart_storage
 
-# Cache storage (if using cache driver)  
+# Cache Storage (if using cache driver) 
 CART_CACHE_STORE=redis
-CART_CACHE_PREFIX=cart
-
-# Features
-CART_EVENTS_ENABLED=true
 ```
 
-## Storage Setup
+---
+
+## 🗄️ Storage Drivers Setup
 
 ### Session Storage (Default)
 
-No additional setup required. Works out of the box.
-
-**Pros:**
-- Zero configuration
-- Perfect for development
-- Automatic cleanup on session end
-
-**Cons:**
-- Limited to single server
-- Lost when session expires
-
-### Database Storage
-
-For persistent, scalable storage:
-
-```bash
-# Publish migrations
-php artisan vendor:publish --tag=cart-migrations
-
-# Run migrations
-php artisan migrate
-```
-
-**Pros:**
-- Persistent storage
-- Multi-server compatible
-- Advanced querying capabilities
-
-**Cons:**
-- Requires database setup
-- Slightly slower than memory storage
-
-### Cache Storage
-
-For high-performance scenarios:
-
-```bash
-# Configure cache in config/cache.php
-# No additional setup if Redis/Memcached already configured
-```
-
-**Pros:**
-- Extremely fast
-- Multi-server compatible
-- Built-in expiration
-
-**Cons:**
-- Requires cache server
-- Can lose data if cache is cleared
-
-## Livewire Integration
-
-If you want to use the included Livewire components:
-
-```bash
-# Install Livewire (if not already installed)
-composer require livewire/livewire
-
-# Publish Livewire components (optional)
-php artisan vendor:publish --tag=cart-livewire
-```
-
-## Verification
-
-Test your installation:
-
-```php
-// In tinker or a test route
-use MasyukAI\Cart\Facades\Cart;
-
-// Add a test item
-Cart::add('test-1', 'Test Product', 99.99);
-
-// Verify it works
-dump(Cart::content());
-dump(Cart::total()); // Should output 99.99
-```
-
-## Troubleshooting
-
-### Common Issues
-
-#### "Class 'Cart' not found"
-
-**Solution:** Clear config cache and ensure auto-discovery is working:
-
-```bash
-php artisan config:clear
-php artisan cache:clear
-composer dump-autoload
-```
-
-#### Database connection errors
-
-**Solution:** Verify database configuration:
-
-```bash
-# Test database connection
-php artisan tinker
->>> DB::connection()->getPdo();
-```
-
-#### Session storage not persisting
-
-**Solution:** Check session configuration:
-
-```bash
-# Verify session is working
-php artisan tinker
->>> session()->put('test', 'value');
->>> session()->get('test'); // Should return 'value'
-```
-
-#### Cache storage errors
-
-**Solution:** Verify cache is configured:
-
-```bash
-# Test cache connection
-php artisan tinker
->>> Cache::put('test', 'value', 60);
->>> Cache::get('test'); // Should return 'value'
-```
-
-### Performance Optimization
-
-#### For High Traffic Sites
+**Best for:** Development, small applications
 
 ```php
 // config/cart.php
 'storage' => [
-    'driver' => 'cache', // Use cache for speed
-    'cache' => [
-        'store' => 'redis', // Use Redis for persistence
-        'prefix' => 'cart',
+    'driver' => 'session',
+    'session' => [
+        'key' => 'shopping_cart',
     ],
 ],
 ```
 
-#### For Development
+**Pros:** Simple, no additional setup
+**Cons:** Not persistent across browser sessions
+
+### Database Storage
+
+**Best for:** Production, persistent carts
+
+#### Step 1: Publish and Run Migrations
+
+```bash
+php artisan vendor:publish --tag=cart-migrations
+php artisan migrate
+```
+
+#### Step 2: Update Configuration
 
 ```php
 // config/cart.php
 'storage' => [
-    'driver' => 'session', // Simple session storage
-],
-'events' => [
-    'enabled' => false, // Disable events for faster testing
+    'driver' => 'database',
+    'database' => [
+        'connection' => 'mysql', // or your preferred connection
+        'table' => 'cart_storage',
+    ],
 ],
 ```
 
-## Next Steps
+#### Step 3: Database Schema
 
-After successful installation:
+The migration creates this table:
 
-1. **[Quick Start Guide](quick-start.md)** - Get familiar with basic usage
-2. **[Configuration Guide](configuration.md)** - Customize for your needs
-3. **[Basic Usage](basic-usage.md)** - Learn core functionality
-4. **[Livewire Integration](livewire.md)** - Add reactive UI components
+```sql
+CREATE TABLE `cart_storage` (
+    `identifier` varchar(255) NOT NULL,
+    `instance` varchar(255) NOT NULL,
+    `items` longtext,
+    `conditions` longtext,
+    `metadata` longtext,
+    `created_at` timestamp NULL DEFAULT NULL,
+    `updated_at` timestamp NULL DEFAULT NULL,
+    PRIMARY KEY (`identifier`, `instance`),
+    KEY `cart_storage_identifier_index` (`identifier`),
+    KEY `cart_storage_instance_index` (`instance`)
+);
+```
 
-## Support
+**Pros:** Persistent, scalable, backup-friendly
+**Cons:** Requires database setup
 
-If you encounter issues during installation:
+### Cache Storage
 
-- 📖 **[Documentation](./)**
-- 🐛 **[GitHub Issues](../../issues)**
-- 💬 **[Community Discussions](../../discussions)**
-- 📧 **Email**: support@masyukai.com
+**Best for:** High performance, Redis environments
+
+#### Step 1: Configure Cache Store
+
+```php
+// config/cache.php
+'stores' => [
+    'redis' => [
+        'driver' => 'redis',
+        'connection' => 'cache',
+        'lock_connection' => 'default',
+    ],
+],
+```
+
+#### Step 2: Update Cart Configuration
+
+```php
+// config/cart.php
+'storage' => [
+    'driver' => 'cache',
+    'cache' => [
+        'store' => 'redis',
+        'prefix' => 'cart',
+        'ttl' => 86400, // 24 hours
+    ],
+],
+```
+
+**Pros:** Very fast, automatically expires
+**Cons:** Data loss on cache clear, requires Redis
+
+---
+
+## 🎨 Livewire Components Setup
+
+### Publish Views (Optional)
+
+```bash
+php artisan vendor:publish --tag=cart-views
+```
+
+This publishes views to `resources/views/vendor/cart/`:
+
+```
+resources/views/vendor/cart/
+├── livewire/
+│   ├── add-to-cart.blade.php
+│   ├── cart-summary.blade.php
+│   └── cart-table.blade.php
+└── demo/
+    ├── index.blade.php
+    └── cart.blade.php
+```
+
+### Include Livewire Styles/Scripts
+
+In your main layout:
+
+```blade
+<!DOCTYPE html>
+<html>
+<head>
+    @livewireStyles
+</head>
+<body>
+    <!-- Your content -->
+    
+    @livewireScripts
+</body>
+</html>
+```
+
+### Basic Component Usage
+
+```blade
+<!-- Add to cart button -->
+<livewire:add-to-cart 
+    product-id="123" 
+    product-name="iPhone 15" 
+    product-price="999.99" 
+/>
+
+<!-- Cart summary -->
+<livewire:cart-summary />
+
+<!-- Full cart table -->
+<livewire:cart-table />
+```
+
+---
+
+## 🚀 Deployment
+
+### Production Checklist
+
+#### Environment Configuration
+
+```env
+# Production settings
+CART_STORAGE_DRIVER=database
+CART_DB_CONNECTION=mysql
+
+# Cache settings for performance
+CACHE_DRIVER=redis
+QUEUE_CONNECTION=redis
+```
+
+#### Optimization Commands
+
+```bash
+# Optimize for production
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+
+# Run migrations
+php artisan migrate --force
+
+# Clear development caches
+php artisan cache:clear
+php artisan config:clear
+```
+
+#### Database Optimization
+
+```sql
+-- Add indexes for better performance
+CREATE INDEX idx_cart_identifier_updated ON cart_storage(identifier, updated_at);
+CREATE INDEX idx_cart_created_at ON cart_storage(created_at);
+
+-- For cleanup queries
+CREATE INDEX idx_cart_storage_updated_at ON cart_storage(updated_at);
+```
+
+---
+
+## ✅ Verification
+
+### Test Installation
+
+```bash
+# Run basic functionality test
+php artisan tinker
+```
+
+```php
+// In tinker
+use MasyukAI\Cart\Facades\Cart;
+
+Cart::add('test-1', 'Test Product', 99.99);
+Cart::count(); // Should return 1
+Cart::total(); // Should return 99.99
+```
+
+### Run Test Suite
+
+```bash
+# Run all tests
+./vendor/bin/pest
+
+# Run specific installation tests  
+./vendor/bin/pest tests/Feature/InstallationTest.php
+```
+
+### Check Configuration
+
+```php
+// Check current configuration
+php artisan tinker
+
+config('cart.storage.driver'); // Current storage driver
+config('cart.default_instance'); // Default instance name
+```
+
+---
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+#### 1. **Class 'Cart' not found**
+
+**Solution:** Ensure auto-discovery is working:
+
+```bash
+composer dump-autoload
+php artisan package:discover
+```
+
+#### 2. **Storage driver not found**
+
+**Solution:** Check configuration and ensure driver is supported:
+
+```php
+// config/cart.php
+'storage' => [
+    'driver' => 'session', // Use valid driver: session, database, cache
+],
+```
+
+#### 3. **Database migration issues**
+
+**Solution:** Check database connection and permissions:
+
+```bash
+php artisan migrate:status
+php artisan migrate --force
+```
+
+#### 4. **Cache store not found**
+
+**Solution:** Ensure cache store exists in config:
+
+```php
+// config/cache.php
+'stores' => [
+    'redis' => [
+        'driver' => 'redis',
+        // ... configuration
+    ],
+],
+```
+
+### Debug Mode
+
+Enable debug logging:
+
+```php
+// config/cart.php
+'debug' => env('CART_DEBUG', false),
+```
+
+View logs:
+
+```bash
+tail -f storage/logs/laravel.log | grep cart
+```
+
+---
+
+## 📚 Next Steps
+
+After installation:
+
+1. **[🚀 Quick Start Guide](quick-start.md)** - Get up and running in 5 minutes
+2. **[🏃‍♂️ Basic Usage](basic-usage.md)** - Learn fundamental operations  
+3. **[🎨 Livewire Components](livewire.md)** - Add reactive UI components
+4. **[⚙️ Configuration](configuration.md)** - Customize behavior
+5. **[📖 API Reference](api-reference.md)** - Complete method documentation
+
+---
+
+## 🤝 Support
+
+Need help with installation?
+
+- 📖 **Documentation:** [Complete guides](../README.md#documentation)
+- 🐛 **Issues:** [Report installation problems](../../issues/new)
+- 💬 **Community:** [Get help from others](../../discussions)
+- 📧 **Email:** support@masyukai.com

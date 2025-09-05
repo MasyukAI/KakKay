@@ -18,6 +18,7 @@ beforeEach(function () {
             $table->string('instance')->default('default')->index()->comment('Cart instance name for multiple carts per identifier');
             $table->longText('items')->nullable()->comment('Serialized cart items');
             $table->longText('conditions')->nullable()->comment('Serialized cart conditions');
+            $table->longText('metadata')->nullable()->comment('Serialized cart metadata');
             $table->timestamps();
 
             $table->unique(['identifier', 'instance']);

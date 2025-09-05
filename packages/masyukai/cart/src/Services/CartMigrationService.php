@@ -14,12 +14,12 @@ class CartMigrationService
 {
     /**
      * Get the appropriate cart identifier for a user or guest session.
-     * 
+     *
      * NOTE: This returns an IDENTIFIER (user ID or session ID) that identifies WHO owns the cart,
      * NOT an instance name (which identifies WHICH cart - like 'wishlist', 'shopping', etc.)
-     * 
+     *
      * Examples:
-     * - Guest identifier: session ID like "abc123def456" 
+     * - Guest identifier: session ID like "abc123def456"
      * - User identifier: user ID like "42"
      * - Instance names: "default", "wishlist", "compare", etc.
      */
@@ -39,15 +39,15 @@ class CartMigrationService
 
     /**
      * Migrate guest cart to user cart when user logs in.
-     * 
+     *
      * IMPORTANT: This method works with IDENTIFIERS (who owns the cart) and INSTANCES (which cart type).
-     * 
-     * @param int $userId The user ID that will become the new cart IDENTIFIER 
-     * @param string $instance The cart instance name (e.g., 'default', 'wishlist')
-     * @param string|null $oldSessionId The guest session ID (cart IDENTIFIER) to migrate from
-     * 
-     * Example: migrateGuestCartToUser(42, 'default', 'abc123') 
-     * - Migrates from identifier 'abc123' to identifier '42' 
+     *
+     * @param  int  $userId  The user ID that will become the new cart IDENTIFIER
+     * @param  string  $instance  The cart instance name (e.g., 'default', 'wishlist')
+     * @param  string|null  $oldSessionId  The guest session ID (cart IDENTIFIER) to migrate from
+     *
+     * Example: migrateGuestCartToUser(42, 'default', 'abc123')
+     * - Migrates from identifier 'abc123' to identifier '42'
      * - For the 'default' cart instance
      */
     public function migrateGuestCartToUser(int $userId, string $instance = 'default', ?string $oldSessionId = null): bool
@@ -110,7 +110,7 @@ class CartMigrationService
     /**
      * Migrate guest cart to user cart when user logs in (user object version).
      */
-    public function migrateGuestCartForUser($user, string $instance = 'default', ?string $oldSessionId = null): object
+    public function migrateGuestCartForUser(mixed $user, string $instance = 'default', ?string $oldSessionId = null): object
     {
         $success = $this->migrateGuestCartToUser($user->id, $instance, $oldSessionId);
 
@@ -232,7 +232,7 @@ class CartMigrationService
      * Automatically switch to appropriate cart identifier based on authentication state.
      * Note: The Cart system automatically determines the identifier based on authentication state,
      * so this method serves as a placeholder for potential future functionality.
-     * 
+     *
      * IMPORTANT: This does NOT change instance names (like 'default', 'wishlist').
      * Instance names should only be changed explicitly by the developer.
      * This only affects WHO owns the cart (user ID vs session ID), not WHICH cart type.
@@ -250,11 +250,11 @@ class CartMigrationService
 
     /**
      * Automatically switch cart instance based on authentication status.
-     * 
+     *
      * IMPORTANT: This method is intentionally a no-op to preserve package fundamentals.
      * Instance names ('default', 'wishlist', etc.) should only be changed explicitly
      * by the developer, not automatically by authentication state.
-     * 
+     *
      * The cart package automatically manages WHO owns the cart (identifiers) based on
      * authentication, but WHICH cart type (instance) should remain developer-controlled.
      */
@@ -311,22 +311,6 @@ class CartMigrationService
         }
 
         return $results;
-    }
-
-    /**
-     * Get a formatted instance name for a user or guest session.
-     */
-    public function getInstanceName(?int $userId = null, ?string $sessionId = null): string
-    {
-        if ($userId) {
-            return "user_{$userId}";
-        }
-
-        if ($sessionId) {
-            return "guest_{$sessionId}";
-        }
-
-        return 'guest_'.session()->getId();
     }
 
     /**

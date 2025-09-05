@@ -108,7 +108,7 @@ class AddToCart extends Component
         unset($this->productAttributes[$key]);
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('cart::livewire.add-to-cart');
     }

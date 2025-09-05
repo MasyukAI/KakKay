@@ -22,7 +22,7 @@ readonly class CacheStorage implements StorageInterface
     public function has(string $identifier, string $instance): bool
     {
         // Check if either items or conditions exist for this cart
-        return $this->cache->has($this->getItemsKey($identifier, $instance)) 
+        return $this->cache->has($this->getItemsKey($identifier, $instance))
             || $this->cache->has($this->getConditionsKey($identifier, $instance));
     }
 
@@ -122,6 +122,25 @@ readonly class CacheStorage implements StorageInterface
     }
 
     /**
+     * Store cart metadata
+     */
+    public function putMetadata(string $identifier, string $instance, string $key, mixed $value): void
+    {
+        $metadataKey = $this->getMetadataKey($identifier, $instance, $key);
+        $this->cache->put($metadataKey, $value, $this->ttl);
+    }
+
+    /**
+     * Retrieve cart metadata
+     */
+    public function getMetadata(string $identifier, string $instance, string $key): mixed
+    {
+        $metadataKey = $this->getMetadataKey($identifier, $instance, $key);
+
+        return $this->cache->get($metadataKey);
+    }
+
+    /**
      * Get the items storage key
      */
     private function getItemsKey(string $identifier, string $instance): string
@@ -135,5 +154,13 @@ readonly class CacheStorage implements StorageInterface
     private function getConditionsKey(string $identifier, string $instance): string
     {
         return "{$this->keyPrefix}.{$identifier}.{$instance}.conditions";
+    }
+
+    /**
+     * Get the metadata storage key
+     */
+    private function getMetadataKey(string $identifier, string $instance, string $key): string
+    {
+        return "{$this->keyPrefix}.{$identifier}.{$instance}.metadata.{$key}";
     }
 }

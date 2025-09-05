@@ -94,9 +94,7 @@ The demo routes are automatically enabled in `local` and `testing` environments.
 ```php
 // config/cart.php
 'demo' => [
-    'enabled' => true, // Force enable demos
-    'prefix' => 'cart-demo',
-    'middleware' => ['web'],
+    'enabled' => true // Force enable demos
 ],
 ```
 

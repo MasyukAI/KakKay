@@ -239,7 +239,7 @@ class CartConditionCollection extends Collection
     /**
      * Clone collection with new conditions
      */
-    public function merge($items): static
+    public function merge(mixed $items): static
     {
         $merged = clone $this;
 

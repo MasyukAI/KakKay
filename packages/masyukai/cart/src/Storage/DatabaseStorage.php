@@ -145,4 +145,47 @@ readonly class DatabaseStorage implements StorageInterface
             ->where('identifier', $identifier)
             ->delete();
     }
+
+    /**
+     * Store cart metadata
+     */
+    public function putMetadata(string $identifier, string $instance, string $key, mixed $value): void
+    {
+        // Get existing metadata
+        $existing = $this->database->table($this->table)
+            ->where('identifier', $identifier)
+            ->where('instance', $instance)
+            ->value('metadata');
+
+        $metadata = $existing ? json_decode($existing, true) : [];
+        $metadata[$key] = $value;
+
+        $this->database->table($this->table)->updateOrInsert(
+            ['identifier' => $identifier, 'instance' => $instance],
+            [
+                'metadata' => json_encode($metadata),
+                'updated_at' => now(),
+                'created_at' => now(),
+            ]
+        );
+    }
+
+    /**
+     * Retrieve cart metadata
+     */
+    public function getMetadata(string $identifier, string $instance, string $key): mixed
+    {
+        $result = $this->database->table($this->table)
+            ->where('identifier', $identifier)
+            ->where('instance', $instance)
+            ->value('metadata');
+
+        if (! $result) {
+            return null;
+        }
+
+        $metadata = json_decode($result, true);
+
+        return $metadata[$key] ?? null;
+    }
 }

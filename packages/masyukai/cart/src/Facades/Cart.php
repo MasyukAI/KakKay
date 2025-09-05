@@ -31,6 +31,14 @@ use Illuminate\Support\Facades\Facade;
  * @method static bool addItemCondition(string $itemId, \MasyukAI\Cart\Conditions\CartCondition $condition)
  * @method static bool removeItemCondition(string $itemId, string $conditionName)
  * @method static bool clearItemConditions(string $itemId)
+ * @method static static addDiscount(string $name, string $value, string $target = 'subtotal')
+ * @method static static addTax(string $name, string $value, string $target = 'subtotal')
+ * @method static static addFee(string $name, string $value, string $target = 'subtotal')
+ * @method static static addShipping(string $name, string|float $value, string $method = 'standard', array $attributes = [])
+ * @method static void removeShipping()
+ * @method static \MasyukAI\Cart\Conditions\CartCondition|null getShipping()
+ * @method static string|null getShippingMethod()
+ * @method static float|null getShippingValue()
  * @method static int count()
  * @method static int countItems()
  * @method static array toArray()
@@ -52,7 +60,7 @@ class Cart extends Facade
      * Handle dynamic, static calls to the facade.
      * This allows us to handle the setInstance method properly for chaining.
      */
-    public static function __callStatic($method, $args)
+    public static function __callStatic(string $method, array $args): mixed
     {
         $instance = static::getFacadeRoot();
 

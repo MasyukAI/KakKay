@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
+use MasyukAI\Cart\Collections\CartConditionCollection;
 use MasyukAI\Cart\Conditions\CartCondition;
 use MasyukAI\Cart\Models\CartItem;
-use MasyukAI\Cart\Collections\CartConditionCollection;
 
 beforeEach(function (): void {
     $this->condition1 = new CartCondition(
@@ -185,7 +185,7 @@ it('can create item copy with modified properties using with method', function (
     $modifiedItem = $item->with([
         'name' => 'Modified Product',
         'price' => 150.0,
-        'attributes' => ['color' => 'blue', 'size' => 'large']
+        'attributes' => ['color' => 'blue', 'size' => 'large'],
     ]);
 
     expect($modifiedItem->id)->toBe('product-1') // Unchanged
@@ -198,7 +198,7 @@ it('can create item copy with modified properties using with method', function (
 });
 
 it('can create item copy with all properties modified using with method', function (): void {
-    $model = new stdClass();
+    $model = new stdClass;
     $model->id = 123;
 
     $item = new CartItem(
@@ -215,7 +215,7 @@ it('can create item copy with all properties modified using with method', functi
         'quantity' => 3,
         'attributes' => ['color' => 'blue'],
         'conditions' => [$this->condition1],
-        'associated_model' => $model
+        'associated_model' => $model,
     ]);
 
     expect($modifiedItem->id)->toBe('product-2')
@@ -237,7 +237,7 @@ it('can convert to string representation', function (): void {
 
     $string = (string) $item;
 
-    expect($string)->toBe('Test Product (ID: product-1, Price: 99.99, Qty: 2)');
+    expect($string)->toBe('Test Product (ID: product-1, Price: 99.99, Quantity: 2)');
 });
 
 it('handles array conditions in constructor', function (): void {
@@ -246,8 +246,8 @@ it('handles array conditions in constructor', function (): void {
             'name' => 'discount-10',
             'type' => 'discount',
             'target' => 'subtotal',
-            'value' => '-10%'
-        ]
+            'value' => '-10%',
+        ],
     ];
 
     $item = new CartItem(
@@ -279,7 +279,7 @@ it('handles Collection conditions in constructor', function (): void {
 });
 
 it('handles CartConditionCollection in constructor', function (): void {
-    $conditionCollection = new CartConditionCollection();
+    $conditionCollection = new CartConditionCollection;
     $conditionCollection->put('discount-10', $this->condition1);
     $conditionCollection->put('shipping', $this->condition2);
 
@@ -297,15 +297,17 @@ it('handles CartConditionCollection in constructor', function (): void {
 });
 
 it('handles associated model serialization with toArray method', function (): void {
-    $model = new class {
+    $model = new class
+    {
         public $id = 123;
+
         public $name = 'Test Model';
-        
+
         public function toArray(): array
         {
             return [
                 'id' => $this->id,
-                'name' => $this->name
+                'name' => $this->name,
             ];
         }
     };
@@ -327,8 +329,10 @@ it('handles associated model serialization with toArray method', function (): vo
 });
 
 it('handles associated model serialization without toArray method', function (): void {
-    $model = new class {
+    $model = new class
+    {
         public $id = 123;
+
         public $name = 'Test Model';
     };
 
@@ -413,7 +417,7 @@ it('validates associated model exists when provided as string', function (): voi
     expect($item->getAssociatedModel())->toBe('stdClass');
 
     // This should fail with non-existent class
-    expect(fn() => new CartItem(
+    expect(fn () => new CartItem(
         id: 'product-1',
         name: 'Test Product',
         price: 100.0,

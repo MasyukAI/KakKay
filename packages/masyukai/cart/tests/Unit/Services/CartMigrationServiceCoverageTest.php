@@ -3,18 +3,15 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Event;
-use MasyukAI\Cart\Conditions\CartCondition;
-use MasyukAI\Cart\Events\CartMerged;
 use MasyukAI\Cart\Facades\Cart;
 use MasyukAI\Cart\Services\CartMigrationService;
 
 beforeEach(function () {
-    $this->service = new CartMigrationService();
-    
+    $this->service = new CartMigrationService;
+
     // Mock Auth facade for testing
     Auth::clearResolvedInstances();
-    
+
     // Ensure clean state
     Cart::setInstance('default')->clear();
 });
@@ -39,14 +36,14 @@ describe('CartMigrationService Coverage Tests', function () {
         it('can get current identifier when authenticated', function () {
             Auth::shouldReceive('check')->once()->andReturn(true);
             Auth::shouldReceive('id')->once()->andReturn(456);
-            
+
             $identifier = $this->service->getCurrentIdentifier();
             expect($identifier)->toBe('456');
         });
 
         it('can get current identifier when not authenticated', function () {
             Auth::shouldReceive('check')->once()->andReturn(false);
-            
+
             $identifier = $this->service->getCurrentIdentifier();
             expect($identifier)->toBeString()->not->toBeEmpty();
         });
@@ -80,11 +77,11 @@ describe('CartMigrationService Coverage Tests', function () {
                     'quantity' => 2,
                     'attributes' => [],
                     'conditions' => [],
-                    'associated_model' => null
-                ]
+                    'associated_model' => null,
+                ],
             ];
             $storage->putItems('test_session', 'default', $guestData);
-            
+
             // Migrate to user cart
             $result = $this->service->migrateGuestCartToUser(123, 'default', 'test_session');
             expect($result)->toBeTrue();
@@ -93,7 +90,7 @@ describe('CartMigrationService Coverage Tests', function () {
         it('can migrate guest cart with conditions', function () {
             // Setup guest cart with items and conditions via storage
             $storage = Cart::storage();
-            
+
             $guestData = [
                 'item1' => [
                     'id' => 'item1',
@@ -102,11 +99,11 @@ describe('CartMigrationService Coverage Tests', function () {
                     'quantity' => 1,
                     'attributes' => [],
                     'conditions' => [],
-                    'associated_model' => null
-                ]
+                    'associated_model' => null,
+                ],
             ];
             $storage->putItems('cond_session', 'default', $guestData);
-            
+
             $conditionData = [
                 'discount' => [
                     'name' => 'discount',
@@ -114,18 +111,18 @@ describe('CartMigrationService Coverage Tests', function () {
                     'target' => 'subtotal',
                     'value' => '-10',
                     'attributes' => [],
-                    'order' => 0
-                ]
+                    'order' => 0,
+                ],
             ];
             $storage->putConditions('cond_session', 'default', $conditionData);
-            
+
             $result = $this->service->migrateGuestCartToUser(789, 'default', 'cond_session');
             expect($result)->toBeTrue();
         });
 
         it('can migrate with user object instead of ID', function () {
             $user = (object) ['id' => 456];
-            
+
             // Setup guest cart data
             $storage = Cart::storage();
             $guestData = [
@@ -136,11 +133,11 @@ describe('CartMigrationService Coverage Tests', function () {
                     'quantity' => 1,
                     'attributes' => [],
                     'conditions' => [],
-                    'associated_model' => null
-                ]
+                    'associated_model' => null,
+                ],
             ];
             $storage->putItems('user_session', 'default', $guestData);
-            
+
             $result = $this->service->migrateGuestCartForUser($user, 'default', 'user_session');
             expect($result)->toBeInstanceOf('stdClass');
         });
@@ -155,11 +152,11 @@ describe('CartMigrationService Coverage Tests', function () {
                     'quantity' => 1,
                     'attributes' => [],
                     'conditions' => [],
-                    'associated_model' => null
-                ]
+                    'associated_model' => null,
+                ],
             ];
             $storage->putItems('result_session', 'default', $guestData);
-            
+
             $result = $this->service->migrateGuestCartToUser(555, 'default', 'result_session');
             expect($result)->toBeTrue();
         });
@@ -177,11 +174,11 @@ describe('CartMigrationService Coverage Tests', function () {
                     'quantity' => 1,
                     'attributes' => [],
                     'conditions' => [],
-                    'associated_model' => null
-                ]
+                    'associated_model' => null,
+                ],
             ];
             $storage->putItems('111', 'default', $userData);
-            
+
             $result = $this->service->backupUserCartToGuest(111, 'default', 'backup_session');
             expect($result)->toBeTrue();
         });
@@ -190,7 +187,7 @@ describe('CartMigrationService Coverage Tests', function () {
             // Ensure user cart is empty
             $storage = Cart::storage();
             $storage->forget('999', 'default');
-            
+
             $result = $this->service->backupUserCartToGuest(999, 'default', 'backup_empty');
             expect($result)->toBeFalse();
         });
@@ -200,14 +197,14 @@ describe('CartMigrationService Coverage Tests', function () {
         it('auto switch cart identifier when user is authenticated', function () {
             Auth::shouldReceive('check')->andReturn(true);
             Auth::shouldReceive('id')->andReturn(123);
-            
+
             $this->service->autoSwitchCartIdentifier();
             expect(true)->toBeTrue(); // Method completes without error
         });
 
         it('auto switch cart instance when user is not authenticated', function () {
             Auth::shouldReceive('check')->andReturn(false);
-            
+
             $this->service->autoSwitchCartInstance();
             expect(true)->toBeTrue(); // Method completes without error
         });
@@ -217,7 +214,7 @@ describe('CartMigrationService Coverage Tests', function () {
         it('can migrate multiple instances from guest to user', function () {
             // Setup multiple guest cart instances via storage
             $storage = Cart::storage();
-            
+
             $guestData1 = [
                 'item1' => [
                     'id' => 'item1',
@@ -226,8 +223,8 @@ describe('CartMigrationService Coverage Tests', function () {
                     'quantity' => 1,
                     'attributes' => [],
                     'conditions' => [],
-                    'associated_model' => null
-                ]
+                    'associated_model' => null,
+                ],
             ];
             $guestData2 = [
                 'item2' => [
@@ -237,13 +234,13 @@ describe('CartMigrationService Coverage Tests', function () {
                     'quantity' => 1,
                     'attributes' => [],
                     'conditions' => [],
-                    'associated_model' => null
-                ]
+                    'associated_model' => null,
+                ],
             ];
-            
+
             $storage->putItems('multi_session', 'instance1', $guestData1);
             $storage->putItems('multi_session', 'instance2', $guestData2);
-            
+
             $results = $this->service->migrateAllGuestInstances(333, 'multi_session');
             expect($results)->toBeArray();
         });
@@ -252,11 +249,11 @@ describe('CartMigrationService Coverage Tests', function () {
     describe('Merge Strategy Testing', function () {
         it('can handle add quantities merge strategy', function () {
             config(['cart.migration.merge_strategy' => 'add_quantities']);
-            
+
             $storage = Cart::storage();
             $guestSessionId = 'strategy_session';
             $userId = 444;
-            
+
             // Setup guest cart
             $guestData = [
                 'item1' => [
@@ -266,11 +263,11 @@ describe('CartMigrationService Coverage Tests', function () {
                     'quantity' => 2,
                     'attributes' => [],
                     'conditions' => [],
-                    'associated_model' => null
-                ]
+                    'associated_model' => null,
+                ],
             ];
             $storage->putItems($guestSessionId, 'default', $guestData);
-            
+
             // Setup existing user cart with same item
             $userData = [
                 'item1' => [
@@ -280,40 +277,26 @@ describe('CartMigrationService Coverage Tests', function () {
                     'quantity' => 1,
                     'attributes' => [],
                     'conditions' => [],
-                    'associated_model' => null
-                ]
+                    'associated_model' => null,
+                ],
             ];
             $storage->putItems((string) $userId, 'default', $userData);
-            
+
             $result = $this->service->migrateGuestCartToUser($userId, 'default', $guestSessionId);
-            
+
             expect($result)->toBeTrue();
         });
     });
 
     describe('Additional Coverage Tests', function () {
-        it('can test getInstanceName method with various parameters', function () {
-            // Test with user ID
-            $instanceName = $this->service->getInstanceName(123);
-            expect($instanceName)->toBeString();
-            
-            // Test with session ID
-            $instanceName = $this->service->getInstanceName(null, 'session123');
-            expect($instanceName)->toBeString();
-            
-            // Test with no parameters
-            $instanceName = $this->service->getInstanceName();
-            expect($instanceName)->toBeString();
-        });
-
         it('can exercise protected methods via reflection for coverage', function () {
             $reflection = new ReflectionClass($this->service);
             $method = $reflection->getMethod('mergeItemsArray');
             $method->setAccessible(true);
-            
+
             $guestItems = ['item1' => ['id' => 'item1', 'quantity' => 2]];
             $userItems = ['item2' => ['id' => 'item2', 'quantity' => 1]];
-            
+
             $result = $method->invokeArgs($this->service, [$guestItems, $userItems]);
             expect($result)->toBeArray();
         });
@@ -322,15 +305,15 @@ describe('CartMigrationService Coverage Tests', function () {
             $reflection = new ReflectionClass($this->service);
             $method = $reflection->getMethod('mergeCartData');
             $method->setAccessible(true);
-            
+
             // Setup test data in storage first
             $storage = Cart::storage();
             $sourceData = ['item1' => ['id' => 'item1', 'name' => 'Product 1', 'price' => 10.0, 'quantity' => 2, 'attributes' => [], 'conditions' => [], 'associated_model' => null]];
             $targetData = ['item2' => ['id' => 'item2', 'name' => 'Product 2', 'price' => 20.0, 'quantity' => 1, 'attributes' => [], 'conditions' => [], 'associated_model' => null]];
-            
+
             $storage->putItems('source_id', 'default', $sourceData);
             $storage->putItems('target_id', 'default', $targetData);
-            
+
             $result = $method->invokeArgs($this->service, ['source_id', 'target_id', 'default']);
             expect($result)->toBeInstanceOf(\MasyukAI\Cart\Collections\CartCollection::class);
         });
@@ -339,15 +322,15 @@ describe('CartMigrationService Coverage Tests', function () {
             $reflection = new ReflectionClass($this->service);
             $method = $reflection->getMethod('getConflictItems');
             $method->setAccessible(true);
-            
+
             // Setup test data in storage first
             $storage = Cart::storage();
             $sourceData = ['item1' => ['id' => 'item1', 'name' => 'Product 1', 'price' => 10.0, 'quantity' => 2, 'attributes' => [], 'conditions' => [], 'associated_model' => null]];
             $targetData = ['item1' => ['id' => 'item1', 'name' => 'Product 1', 'price' => 10.0, 'quantity' => 1, 'attributes' => [], 'conditions' => [], 'associated_model' => null]];
-            
+
             $storage->putItems('conflict_source', 'default', $sourceData);
             $storage->putItems('conflict_target', 'default', $targetData);
-            
+
             $result = $method->invokeArgs($this->service, ['conflict_source', 'conflict_target', 'default']);
             expect($result)->toBeInstanceOf(\Illuminate\Support\Collection::class);
         });

@@ -14,7 +14,7 @@ use MasyukAI\Cart\Services\CartMigrationService;
 
 class DemoController extends Controller
 {
-    public function index()
+    public function index(): \Illuminate\View\View
     {
         $products = $this->getSampleProducts();
         $cartItems = Cart::getItems();
@@ -33,7 +33,7 @@ class DemoController extends Controller
         ));
     }
 
-    public function addToCart(Request $request)
+    public function addToCart(Request $request): \Illuminate\Http\JsonResponse
     {
         $request->validate([
             'id' => 'required|string',
@@ -61,7 +61,7 @@ class DemoController extends Controller
         ]);
     }
 
-    public function updateQuantity(Request $request)
+    public function updateQuantity(Request $request): \Illuminate\Http\JsonResponse
     {
         $request->validate([
             'id' => 'required|string',
@@ -83,7 +83,7 @@ class DemoController extends Controller
         ]);
     }
 
-    public function removeItem(Request $request)
+    public function removeItem(Request $request): \Illuminate\Http\JsonResponse
     {
         $request->validate([
             'id' => 'required|string',
@@ -99,7 +99,7 @@ class DemoController extends Controller
         ]);
     }
 
-    public function applyCondition(Request $request)
+    public function applyCondition(Request $request): \Illuminate\Http\JsonResponse
     {
         $request->validate([
             'type' => 'required|in:discount,charge',
@@ -124,7 +124,7 @@ class DemoController extends Controller
         ]);
     }
 
-    public function removeCondition(Request $request)
+    public function removeCondition(Request $request): \Illuminate\Http\JsonResponse
     {
         $request->validate([
             'name' => 'required|string',
@@ -139,7 +139,7 @@ class DemoController extends Controller
         ]);
     }
 
-    public function clearCart()
+    public function clearCart(): \Illuminate\Http\JsonResponse
     {
         Cart::clear();
 
@@ -151,7 +151,7 @@ class DemoController extends Controller
         ]);
     }
 
-    public function instances()
+    public function instances(): \Illuminate\View\View
     {
         // Demo different cart instances
         $instances = ['default', 'wishlist', 'compare'];
@@ -172,7 +172,7 @@ class DemoController extends Controller
         return view('cart::demo.instances', compact('instanceData'));
     }
 
-    public function switchInstance(Request $request)
+    public function switchInstance(Request $request): \Illuminate\Http\JsonResponse
     {
         $request->validate([
             'instance' => 'required|string|in:default,wishlist,compare',
@@ -189,7 +189,7 @@ class DemoController extends Controller
         ]);
     }
 
-    public function migrationDemo()
+    public function migrationDemo(): \Illuminate\View\View
     {
         $guestCartItems = collect();
         $userCartItems = collect();
@@ -208,7 +208,7 @@ class DemoController extends Controller
         return view('cart::demo.migration', compact('guestCartItems', 'userCartItems'));
     }
 
-    public function setupMigrationDemo(Request $request)
+    public function setupMigrationDemo(Request $request): \Illuminate\Http\JsonResponse
     {
         $type = $request->input('type', 'guest');
         
@@ -232,7 +232,7 @@ class DemoController extends Controller
         ]);
     }
 
-    public function performMigration(Request $request)
+    public function performMigration(Request $request): \Illuminate\Http\JsonResponse
     {
         $request->validate([
             'strategy' => 'required|string|in:add_quantities,keep_highest_quantity,keep_user_cart,replace_with_guest',

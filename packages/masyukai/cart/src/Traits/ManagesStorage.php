@@ -25,6 +25,12 @@ trait ManagesStorage
         $collection = new CartCollection;
         foreach ($items as $itemData) {
             if (is_array($itemData) && isset($itemData['id'])) {
+                // Handle associated model restoration
+                $associatedModel = null;
+                if (isset($itemData['associated_model'])) {
+                    $associatedModel = $this->restoreAssociatedModel($itemData['associated_model']);
+                }
+
                 $item = new CartItem(
                     $itemData['id'],
                     $itemData['name'],
@@ -32,7 +38,7 @@ trait ManagesStorage
                     $itemData['quantity'],
                     $itemData['attributes'] ?? [],
                     $itemData['conditions'] ?? [],
-                    $itemData['associatedModel'] ?? null
+                    $associatedModel
                 );
                 $collection->put($item->id, $item);
             }
@@ -97,7 +103,7 @@ trait ManagesStorage
                         $itemData['quantity'],
                         $itemData['attributes'] ?? [],
                         $itemData['conditions'] ?? [],
-                        $itemData['associatedModel'] ?? null
+                        $itemData['associated_model'] ?? null // Use snake_case to match storage format
                     );
                 }
             }
@@ -156,5 +162,25 @@ trait ManagesStorage
     {
         $itemsArray = $items->toArray();
         $this->storage->putItems($this->getIdentifier(), $this->getStorageInstanceName(), $itemsArray);
+    }
+
+    /**
+     * Restore associated model from array format
+     */
+    private function restoreAssociatedModel(mixed $associatedData): object|string|null
+    {
+        if (is_string($associatedData)) {
+            return $associatedData;
+        }
+
+        if (is_array($associatedData) && isset($associatedData['class'])) {
+            // Return just the class name if it exists, otherwise null
+            $className = $associatedData['class'];
+            if (class_exists($className)) {
+                return $className;
+            }
+        }
+
+        return null;
     }
 }

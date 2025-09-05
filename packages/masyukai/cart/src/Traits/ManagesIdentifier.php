@@ -4,34 +4,124 @@ declare(strict_types=1);
 
 namespace MasyukAI\Cart\Traits;
 
+use Illuminate\Contracts\Auth\Factory as AuthFactory;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Session\SessionManager;
+
 trait ManagesIdentifier
 {
     /**
      * Get storage identifier (auth()->id() for authenticated users, session()->id() for guests)
      */
-    private function getIdentifier(): string
+    public function getIdentifier(): string
     {
-        // Identifier is ALWAYS determined by authentication state, never by instance name
+        $app = $this->getApplication();
 
-        // Try to get identifier from auth first
-        try {
-            if (app()->bound('auth') && app('auth')->check()) {
-                return (string) app('auth')->id();
-            }
-        } catch (\Exception $e) {
-            // Auth not available, continue to session
+        // Try authenticated user first
+        if ($authenticatedId = $this->getAuthenticatedUserId($app)) {
+            return $authenticatedId;
         }
 
         // Fall back to session ID for guests
-        try {
-            if (app()->bound('session')) {
-                return app('session')->getId();
-            }
-        } catch (\Exception $e) {
-            // Session not available, use test default
+        if ($sessionId = $this->getSessionId($app)) {
+            return $sessionId;
         }
 
-        // For testing environments, provide a consistent test identifier
-        return 'test_session_id';
+        // Handle testing environment
+        if ($this->isTestingEnvironment($app)) {
+            return $this->getTestIdentifier();
+        }
+
+        // Production fallback - throw exception
+        throw new \RuntimeException(
+            'Cart identifier cannot be determined: neither auth nor session services are available'
+        );
+    }
+
+    /**
+     * Get the Laravel application instance
+     */
+    protected function getApplication(): Application
+    {
+        return app();
+    }
+
+    /**
+     * Get authenticated user ID if available
+     */
+    protected function getAuthenticatedUserId(Application $app): ?string
+    {
+        try {
+            if (! $app->bound('auth')) {
+                return null;
+            }
+
+            $auth = $app->make(AuthFactory::class);
+            $guard = $auth->guard();
+
+            return $guard->check() ? (string) $guard->id() : null;
+        } catch (\Throwable $e) {
+            // Log auth service errors in production for debugging
+            if (! $this->isTestingEnvironment($app)) {
+                $this->logServiceError('auth', $e);
+            }
+
+            return null;
+        }
+    }
+
+    /**
+     * Get session ID if available
+     */
+    protected function getSessionId(Application $app): ?string
+    {
+        try {
+            if (! $app->bound('session')) {
+                return null;
+            }
+
+            $session = $app->make(SessionManager::class);
+
+            return $session->getId();
+        } catch (\Throwable $e) {
+            // Log session service errors in production for debugging
+            if (! $this->isTestingEnvironment($app)) {
+                $this->logServiceError('session', $e);
+            }
+
+            return null;
+        }
+    }
+
+    /**
+     * Check if running in testing environment
+     */
+    protected function isTestingEnvironment(Application $app): bool
+    {
+        return $app->environment('testing') ||
+               defined('PHPUNIT_COMPOSER_INSTALL') ||
+               defined('__PHPUNIT_PHAR__');
+    }
+
+    /**
+     * Get test environment identifier
+     */
+    protected function getTestIdentifier(): string
+    {
+        return config('cart.test_identifier') ?? 'test_session_id';
+    }
+
+    /**
+     * Log service errors for debugging
+     */
+    protected function logServiceError(string $service, \Throwable $e): void
+    {
+        try {
+            if (function_exists('logger')) {
+                logger()->warning("Cart {$service} service error: ".$e->getMessage());
+            }
+        } catch (\Throwable $logError) {
+            // Silently fail if logging is not available
+        }
     }
 }

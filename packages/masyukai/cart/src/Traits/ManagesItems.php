@@ -54,6 +54,9 @@ trait ManagesItems
         $cartItems->put($id, $item);
         $this->save($cartItems);
 
+        // Track the last added item for associate() method compatibility
+        $this->setLastAddedItemId($id);
+
         if ($this->eventsEnabled && $this->events) {
             $this->events->dispatch(new ItemAdded($item, $this));
         }

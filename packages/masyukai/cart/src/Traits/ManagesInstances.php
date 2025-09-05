@@ -64,7 +64,7 @@ trait ManagesInstances
     /**
      * Get the instance name to use for storage operations
      */
-    private function getStorageInstanceName(): string
+    public function getStorageInstanceName(): string
     {
         // Instance name is ALWAYS what was set via setInstance(), never modified
         return $this->instanceName;

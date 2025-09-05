@@ -14,43 +14,43 @@ class CartSummary extends Component
     public bool $showDetails = false;
 
     #[Computed]
-    public function cart()
+    public function cart(): array
     {
         return Cart::toArray();
     }
 
     #[Computed]
-    public function itemCount()
+    public function itemCount(): int
     {
         return Cart::countItems();
     }
 
     #[Computed]
-    public function totalQuantity()
+    public function totalQuantity(): int
     {
         return Cart::getTotalQuantity();
     }
 
     #[Computed]
-    public function subtotal()
+    public function subtotal(): float
     {
         return Cart::getSubTotal();
     }
     
     #[Computed]
-    public function shippingValue()
+    public function shippingValue(): float
     {
         return Cart::getShippingValue();
     }
 
     #[Computed]
-    public function total()
+    public function total(): float
     {
         return Cart::getTotal();
     }
 
     #[Computed]
-    public function isEmpty()
+    public function isEmpty(): bool
     {
         return Cart::isEmpty();
     }
@@ -67,7 +67,7 @@ class CartSummary extends Component
         $this->dispatch('cart-summary-updated');
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('cart::livewire.cart-summary');
     }

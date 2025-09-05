@@ -25,6 +25,14 @@ trait CalculatesTotals
     }
 
     /**
+     * Get cart subtotal without any conditions (base price only)
+     */
+    public function getSubTotalWithoutConditions(): float
+    {
+        return $this->getSubTotal(); // This is already the subtotal without conditions
+    }
+
+    /**
      * Get cart subtotal with item conditions applied
      */
     public function getSubTotalWithConditions(): float

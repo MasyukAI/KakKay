@@ -97,8 +97,36 @@ trait ManagesConditions
 
         return true;
     }
-    
 
+    /**
+     * Get conditions by type
+     */
+    public function getConditionsByType(string $type): CartConditionCollection
+    {
+        return $this->getConditions()->filter(fn (CartCondition $condition) => $condition->getType() === $type);
+    }
+
+    /**
+     * Remove conditions by type
+     */
+    public function removeConditionsByType(string $type): bool
+    {
+        $conditions = $this->getConditions();
+        $conditionsToRemove = $conditions->filter(fn (CartCondition $condition) => $condition->getType() === $type);
+
+        if ($conditionsToRemove->isEmpty()) {
+            return false;
+        }
+
+        foreach ($conditionsToRemove as $condition) {
+            $conditions->forget($condition->getName());
+        }
+
+        $conditionsArray = $conditions->toArray();
+        $this->storage->putConditions($this->getIdentifier(), $this->getStorageInstanceName(), $conditionsArray);
+
+        return true;
+    }
 
     /**
      * Add condition to specific item
@@ -203,11 +231,10 @@ trait ManagesConditions
     /**
      * Add a shipping condition (shopping-cart style)
      *
-     * @param string $name The name of the shipping condition
-     * @param string|float $value The value of the shipping fee (e.g. '15.00', '+15', etc.)
-     * @param string $method The shipping method identifier (e.g. 'standard', 'express')
-     * @param array $attributes Additional attributes to store with the condition
-     * @return static
+     * @param  string  $name  The name of the shipping condition
+     * @param  string|float  $value  The value of the shipping fee (e.g. '15.00', '+15', etc.)
+     * @param  string  $method  The shipping method identifier (e.g. 'standard', 'express')
+     * @param  array  $attributes  Additional attributes to store with the condition
      */
     public function addShipping(string $name, string|float $value, string $method = 'standard', array $attributes = []): static
     {
@@ -219,7 +246,7 @@ trait ManagesConditions
         // Merge the attributes with the shipping method
         $shippingAttributes = array_merge($attributes, [
             'method' => $method,
-            'description' => $name
+            'description' => $name,
         ]);
 
         // Remove any existing shipping conditions first
@@ -240,14 +267,12 @@ trait ManagesConditions
 
     /**
      * Remove all shipping conditions from the cart
-     * 
-     * @return void
      */
     public function removeShipping(): void
     {
         // Get all conditions
         $conditions = $this->getConditions();
-        
+
         // Find and remove shipping conditions
         foreach ($conditions as $condition) {
             if ($condition->getType() === 'shipping') {
@@ -258,38 +283,35 @@ trait ManagesConditions
 
     /**
      * Get the current shipping condition if any
-     * 
-     * @return \MasyukAI\Cart\Conditions\CartCondition|null
      */
     public function getShipping(): ?\MasyukAI\Cart\Conditions\CartCondition
     {
         // Get all conditions
         $conditions = $this->getConditions();
-        
+
         // Find the first shipping condition
         foreach ($conditions as $condition) {
             if ($condition->getType() === 'shipping') {
                 return $condition;
             }
         }
-        
+
         return null;
     }
-    
+
     /**
      * Get the shipping method from the cart condition
-     * 
-     * @return string|null
      */
     public function getShippingMethod(): ?string
     {
         $shipping = $this->getShipping();
-        
+
         if ($shipping) {
             $attributes = $shipping->getAttributes();
+
             return $attributes['method'] ?? null;
         }
-        
+
         return null;
     }
 
@@ -299,21 +321,21 @@ trait ManagesConditions
     public function getShippingValue(): ?float
     {
         $shipping = $this->getShipping();
-        
+
         if ($shipping) {
             $value = $shipping->getValue();
-            
+
             // Parse the value to remove operator and convert to float
             if (is_string($value) && preg_match('/^([+\-*\/%])(.+)$/', $value, $matches)) {
                 $operator = $matches[1];
                 $numericValue = (float) $matches[2];
-                
+
                 return $operator === '-' ? -$numericValue : $numericValue;
             }
-            
+
             return (float) $value;
         }
-        
+
         return null;
     }
 
