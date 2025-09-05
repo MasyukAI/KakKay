@@ -9,11 +9,12 @@ it('debugs subtotal calculation step by step', function () {
     config(['cart.price_formatting.enabled' => true]);
     config(['cart.price_formatting.default_transformer' => 'integer']);
     
-    $cart = app(CartManager::class)->session('session1');
-    $cartInstance = $cart->get();
-    $cartInstance->add(1, 'Test Product', 19.99, 1);
+    $cartManager = app(CartManager::class);
+    $cartManager->setInstance('session1');
+    $cartInstance = $cartManager->getCurrentCart();
+    $cartInstance->add('1', 'Test Product', 19.99, 1);
     
-    $cartItem = $cartInstance->items()->first();
+    $cartItem = $cartInstance->getItems()->first();
     
     // Debug the exact values and transformations
     dump('=== Cart Item Details ===');
@@ -26,30 +27,22 @@ it('debugs subtotal calculation step by step', function () {
     dump('Type of raw sum:', gettype($rawSum));
     
     // Debug formatter behavior
-    $formatter = app('cart.price_formatter');
+    $formatter = \MasyukAI\Cart\Support\PriceFormatManager::getFormatter();
     dump('=== Formatter Debug ===');
     dump('Formatter class:', get_class($formatter));
     
-    $transformer = $formatter->getTransformer();
-    dump('Transformer class:', get_class($transformer));
-    
-    // Test transformer methods directly on the raw sum
-    dump('=== Transformer Methods on Raw Sum ===');
-    dump('toNumeric(' . $rawSum . '):', $transformer->toNumeric($rawSum));
-    dump('toDisplay(' . $rawSum . '):', $transformer->toDisplay($rawSum));
-    
     // Test the exact formatter flow
     dump('=== Formatter Flow ===');
-    dump('formatPrice(' . $rawSum . ', false):', $formatter->formatPrice($rawSum, false));
+    dump('format(' . $rawSum . '):', $formatter->format($rawSum));
     
     // Now test the cart subtotal
     dump('=== Cart Subtotal ===');
-    dump('Cart subtotal():', $cart->subtotal());
+    dump('Cart subtotal():', $cartManager->subtotal());
     
     // Enable formatting and test again
     dump('=== With Formatting Enabled ===');
-    $cart->formatted();
-    dump('Cart subtotal() after formatted():', $cart->subtotal());
+    $cartManager->formatted();
+    dump('Cart subtotal() after formatted():', $cartManager->subtotal());
     
     expect(true)->toBeTrue();
 });
