@@ -9,7 +9,7 @@ use Illuminate\Contracts\Support\Jsonable;
 use JsonSerializable;
 use MasyukAI\Cart\Exceptions\InvalidCartConditionException;
 
-readonly class CartCondition implements Arrayable, Jsonable, JsonSerializable
+class CartCondition implements Arrayable, Jsonable, JsonSerializable
 {
     public function __construct(
         private string $name,
@@ -17,7 +17,8 @@ readonly class CartCondition implements Arrayable, Jsonable, JsonSerializable
         private string $target,
         private string|float $value,
         private array $attributes = [],
-        private int $order = 0
+        private int $order = 0,
+        private ?array $rules = null
     ) {
         $this->validateCondition();
     }
@@ -33,7 +34,8 @@ readonly class CartCondition implements Arrayable, Jsonable, JsonSerializable
             target: $data['target'] ?? 'subtotal',
             value: $data['value'] ?? throw new InvalidCartConditionException('Condition value is required'),
             attributes: $data['attributes'] ?? [],
-            order: $data['order'] ?? 0
+            order: $data['order'] ?? 0,
+            rules: $data['rules'] ?? null
         );
     }
 
@@ -167,7 +169,58 @@ readonly class CartCondition implements Arrayable, Jsonable, JsonSerializable
             target: $changes['target'] ?? $this->target,
             value: $changes['value'] ?? $this->value,
             attributes: $changes['attributes'] ?? $this->attributes,
-            order: $changes['order'] ?? $this->order
+            order: $changes['order'] ?? $this->order,
+            rules: $changes['rules'] ?? $this->rules
+        );
+    }
+
+    /**
+     * Check if this is a dynamic condition
+     */
+    public function isDynamic(): bool
+    {
+        return $this->rules !== null && ! empty($this->rules);
+    }
+
+    /**
+     * Get the rules for this condition
+     */
+    public function getRules(): ?array
+    {
+        return $this->rules;
+    }
+
+    /**
+     * Evaluate if the condition should apply based on its rules
+     */
+    public function shouldApply(\MasyukAI\Cart\Cart $cart, ?\MasyukAI\Cart\Models\CartItem $item = null): bool
+    {
+        if (! $this->isDynamic()) {
+            return true; // Static conditions always apply
+        }
+
+        foreach ($this->rules as $rule) {
+            if (! $rule($cart, $item)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Create a copy of this condition without rules (for static application)
+     */
+    public function withoutRules(): static
+    {
+        return new static(
+            name: $this->name,
+            type: $this->type,
+            target: $this->target,
+            value: $this->value,
+            attributes: $this->attributes,
+            order: $this->order,
+            rules: null
         );
     }
 
@@ -183,11 +236,13 @@ readonly class CartCondition implements Arrayable, Jsonable, JsonSerializable
             'value' => $this->value,
             'attributes' => $this->attributes,
             'order' => $this->order,
+            'rules' => $this->rules,
             'operator' => $this->getOperator(),
             'parsed_value' => $this->parseValue(),
             'is_discount' => $this->isDiscount(),
             'is_charge' => $this->isCharge(),
             'is_percentage' => $this->isPercentage(),
+            'is_dynamic' => $this->isDynamic(),
         ];
     }
 

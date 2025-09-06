@@ -17,6 +17,7 @@ use App\Services\TaxService;
 use App\Services\ShippingService;
 use Illuminate\Http\Request;
 use MasyukAI\Cart\Facades\Cart;
+use MasyukAI\Cart\Conditions\CartCondition;
 
 class CartController extends Controller
 {
@@ -169,6 +170,88 @@ class CartController extends Controller
     }
     
     private function applyAutomaticConditions()
+    {
+        // Modern approach: Use dynamic conditions that automatically apply/remove based on rules
+        $this->registerDynamicConditions();
+        
+        // Legacy approach: Manual condition management
+        $this->applyManualConditions();
+    }
+    
+    private function registerDynamicConditions()
+    {
+        // VIP customer discount - automatically applies for VIP members
+        Cart::registerDynamicCondition(new CartCondition(
+            name: 'vip-discount',
+            type: 'discount',
+            target: 'total',
+            value: '-15%',
+            attributes: ['description' => 'VIP Member Discount'],
+            rules: [
+                fn($cart) => auth()->user()?->membership_tier === 'vip',
+            ]
+        ));
+        
+        // First-time buyer discount - automatically applies for new customers
+        Cart::registerDynamicCondition(new CartCondition(
+            name: 'first-time-buyer',
+            type: 'discount', 
+            target: 'total',
+            value: '-10%',
+            attributes: ['description' => 'Welcome! First-time buyer discount'],
+            rules: [
+                fn($cart) => auth()->check(),
+                fn($cart) => auth()->user()->orders()->count() === 0,
+            ]
+        ));
+        
+        // Bulk purchase discount - automatically applies when cart has 5+ items
+        Cart::registerDynamicCondition(new CartCondition(
+            name: 'bulk-discount',
+            type: 'discount',
+            target: 'total', 
+            value: '-5%',
+            attributes: ['description' => 'Bulk purchase discount (5+ items)'],
+            rules: [
+                fn($cart) => $cart->getItems()->count() >= 5,
+            ]
+        ));
+        
+        // Free shipping - automatically applies when cart total >= $75
+        Cart::registerDynamicCondition(new CartCondition(
+            name: 'free-shipping',
+            type: 'discount',
+            target: 'total',
+            value: '-10', // Offset shipping cost
+            attributes: ['description' => 'Free shipping on orders $75+'],
+            rules: [
+                fn($cart) => $cart->getRawSubTotalWithoutConditions() >= 75,
+            ]
+        ));
+        
+        // Sales tax - automatically applies based on user location
+        if ($user = auth()->user()) {
+            if ($user->billing_address) {
+                $taxRate = TaxService::getTaxRate($user->billing_address);
+                if ($taxRate > 0) {
+                    Cart::registerDynamicCondition(new CartCondition(
+                        name: 'sales-tax',
+                        type: 'tax',
+                        target: 'total',
+                        value: "+{$taxRate}%",
+                        attributes: [
+                            'description' => 'Sales Tax (' . $user->billing_address->state . ')'
+                        ],
+                        rules: [
+                            fn($cart) => auth()->user()?->billing_address !== null,
+                        ]
+                    ));
+                }
+            }
+        }
+    }
+    
+    private function applyManualConditions()
     {
         $user = auth()->user();
         

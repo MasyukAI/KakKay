@@ -149,6 +149,286 @@ $discount = new CartCondition('discount', 'discount', 'subtotal', '-20%', [], 0)
 Cart::addCondition([$tax, $shipping, $discount]);
 ```
 
+## Dynamic Conditions
+
+Dynamic conditions are automatically applied or removed based on rules you define. Instead of manually checking cart state and applying conditions, dynamic conditions evaluate their rules after every cart change.
+
+### Creating Dynamic Conditions
+
+```php
+use MasyukAI\Cart\Conditions\CartCondition;
+
+// Create a condition that automatically applies when cart total > $100
+$bigSpenderDiscount = new CartCondition(
+    name: 'big-spender-discount',
+    type: 'discount',
+    target: 'total',
+    value: '-10%',
+    rules: [
+        fn($cart) => $cart->getRawSubTotalWithoutConditions() > 100,
+    ]
+);
+
+// Register the dynamic condition
+Cart::registerDynamicCondition($bigSpenderDiscount);
+```
+
+### Rule Functions
+
+Rules are callable functions that receive the cart and optionally an item (for item-level conditions):
+
+```php
+// Cart-level rule (receives only cart)
+$cartRule = fn($cart) => $cart->getRawSubTotalWithoutConditions() > 100;
+
+// Item-level rule (receives cart and item)
+$itemRule = fn($cart, $item) => $item->quantity >= 3;
+
+// Multiple rules (ALL must return true)
+$condition = new CartCondition(
+    name: 'vip-bulk-discount',
+    type: 'discount',
+    target: 'total',
+    value: '-15%',
+    rules: [
+        fn($cart) => $cart->getRawSubTotalWithoutConditions() > 200,
+        fn($cart) => $cart->getItems()->count() >= 3,
+        fn($cart) => auth()->user()?->isVip() ?? false,
+    ]
+);
+```
+
+### Dynamic Condition Examples
+
+#### Automatic Volume Discounts
+
+```php
+// 5% off when cart has 3+ items
+$volumeDiscount = new CartCondition(
+    name: 'volume-discount',
+    type: 'discount',
+    target: 'total',
+    value: '-5%',
+    rules: [
+        fn($cart) => $cart->getItems()->count() >= 3,
+    ]
+);
+
+Cart::registerDynamicCondition($volumeDiscount);
+```
+
+#### Free Shipping Threshold
+
+```php
+// Free shipping when cart total >= $50
+$freeShipping = new CartCondition(
+    name: 'free-shipping',
+    type: 'discount',
+    target: 'total',
+    value: '-15', // Offset standard $15 shipping
+    rules: [
+        fn($cart) => $cart->getRawSubTotalWithoutConditions() >= 50,
+    ]
+);
+
+Cart::registerDynamicCondition($freeShipping);
+```
+
+#### Member-Only Pricing
+
+```php
+// 10% member discount for authenticated members
+$memberDiscount = new CartCondition(
+    name: 'member-discount',
+    type: 'discount',
+    target: 'total',
+    value: '-10%',
+    rules: [
+        fn($cart) => auth()->check(),
+        fn($cart) => auth()->user()->isMember(),
+    ]
+);
+
+Cart::registerDynamicCondition($memberDiscount);
+```
+
+#### Item-Level Dynamic Conditions
+
+```php
+// Buy 2 get 1 free for specific items
+$buy2Get1Free = new CartCondition(
+    name: 'buy-2-get-1-free',
+    type: 'discount',
+    target: 'item',
+    value: '-33%', // 1/3 off = buy 2 get 1 free
+    rules: [
+        fn($cart, $item) => $item->quantity >= 3,
+        fn($cart, $item) => $item->getAttribute('category') === 'clothing',
+    ]
+);
+
+Cart::registerDynamicCondition($buy2Get1Free);
+```
+
+### Managing Dynamic Conditions
+
+#### Getting Dynamic Conditions
+
+```php
+// Get all registered dynamic conditions
+$dynamicConditions = Cart::getDynamicConditions();
+
+// Check if any dynamic conditions are registered
+$hasDynamic = Cart::getDynamicConditions()->isNotEmpty();
+```
+
+#### Removing Dynamic Conditions
+
+```php
+// Remove a specific dynamic condition
+Cart::removeDynamicCondition('big-spender-discount');
+
+// This also removes it from active conditions if it was applied
+```
+
+### How Dynamic Conditions Work
+
+1. **Registration**: You register dynamic conditions with their rules
+2. **Automatic Evaluation**: After any cart change (add, update, remove), rules are evaluated
+3. **Application**: If rules return `true`, the condition is applied to the cart/item
+4. **Removal**: If rules return `false`, the condition is removed from the cart/item
+5. **No Recursion**: Applied conditions don't include rules to prevent infinite loops
+
+#### Evaluation Triggers
+
+Dynamic conditions are automatically evaluated when:
+- Items are added to the cart
+- Item quantities are updated
+- Items are removed from the cart
+- Cart is cleared
+
+```php
+// Register dynamic condition
+Cart::registerDynamicCondition($bigSpenderDiscount);
+
+Cart::add('product-1', 'Item', 50.00, 1); // $50 total - no discount
+Cart::add('product-2', 'Item', 60.00, 1); // $110 total - discount applied!
+Cart::remove('product-1');                 // $60 total - discount removed
+```
+
+### Advanced Dynamic Rules
+
+#### Complex Business Logic
+
+```php
+$holidayDiscount = new CartCondition(
+    name: 'holiday-special',
+    type: 'discount',
+    target: 'total',
+    value: '-20%',
+    rules: [
+        fn($cart) => $cart->getRawSubTotalWithoutConditions() > 75,
+        fn($cart) => now()->between('2024-11-25', '2024-12-02'), // Black Friday week
+        fn($cart) => $cart->getItems()->contains(fn($item) => 
+            $item->getAttribute('category') === 'electronics'
+        ),
+    ]
+);
+```
+
+#### Geographic Rules
+
+```php
+$localDiscount = new CartCondition(
+    name: 'local-customer-discount',
+    type: 'discount',
+    target: 'total',
+    value: '-5%',
+    rules: [
+        fn($cart) => auth()->check(),
+        fn($cart) => auth()->user()->address?->state === 'CA',
+        fn($cart) => $cart->getRawSubTotalWithoutConditions() > 50,
+    ]
+);
+```
+
+#### Inventory-Based Rules
+
+```php
+$clearanceDiscount = new CartCondition(
+    name: 'clearance-auto-discount',
+    type: 'discount',
+    target: 'item',
+    value: '-25%',
+    rules: [
+        fn($cart, $item) => Product::find($item->id)?->stock < 5,
+        fn($cart, $item) => $item->getAttribute('clearance', false),
+    ]
+);
+```
+
+### Best Practices for Dynamic Conditions
+
+1. **Keep rules simple**: Complex logic can impact performance
+2. **Use specific names**: Make dynamic condition names descriptive
+3. **Consider performance**: Rules run on every cart change
+4. **Test thoroughly**: Ensure rules work as expected
+5. **Handle edge cases**: Account for auth, null values, etc.
+6. **Use appropriate targets**: Choose between cart-level and item-level carefully
+
+### Dynamic vs Static Conditions
+
+| Feature | Static Conditions | Dynamic Conditions |
+|---------|------------------|-------------------|
+| **Application** | Manual | Automatic |
+| **Rules** | In your code | Built into condition |
+| **Performance** | Faster | Slight overhead |
+| **Flexibility** | Manual control | Auto-responsive |
+| **Use Case** | Fixed fees/taxes | Business rule automation |
+
+### Example: Complete Dynamic System
+
+```php
+class CartConditionsService
+{
+    public static function registerAllDynamicConditions(): void
+    {
+        // Volume discount
+        Cart::registerDynamicCondition(new CartCondition(
+            name: 'volume-discount',
+            type: 'discount',
+            target: 'total',
+            value: '-5%',
+            rules: [fn($cart) => $cart->getItems()->count() >= 3]
+        ));
+        
+        // VIP member discount
+        Cart::registerDynamicCondition(new CartCondition(
+            name: 'vip-discount',
+            type: 'discount',
+            target: 'total',
+            value: '-15%',
+            rules: [
+                fn($cart) => auth()->user()?->isVip() ?? false,
+                fn($cart) => $cart->getRawSubTotalWithoutConditions() > 100,
+            ]
+        ));
+        
+        // Free shipping
+        Cart::registerDynamicCondition(new CartCondition(
+            name: 'free-shipping',
+            type: 'discount',
+            target: 'total',
+            value: '-10', // Offset shipping cost
+            rules: [fn($cart) => $cart->getRawSubTotalWithoutConditions() >= 75]
+        ));
+    }
+}
+
+// Register all dynamic conditions when user visits cart
+CartConditionsService::registerAllDynamicConditions();
+```
+
 ### Condition Attributes
 
 Store additional data with conditions:

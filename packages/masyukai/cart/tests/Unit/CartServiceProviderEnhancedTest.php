@@ -31,7 +31,7 @@ describe('CartServiceProvider Enhanced Coverage', function () {
 
         expect($this->app->bound('cart.price.transformer.decimal'))->toBeTrue();
         expect($this->app->bound('cart.price.transformer.integer'))->toBeTrue();
-        expect($this->app->bound('cart.price.transformer.localized'))->toBeTrue();
+        // Localized transformer was removed as redundant
     });
 
     it('registers price transformer interface binding', function () {
@@ -83,8 +83,8 @@ describe('CartServiceProvider Enhanced Coverage', function () {
 
         $this->provider->register();
 
-        $transformer = $this->app->make('cart.price.transformer.localized');
-        expect($transformer)->toBeInstanceOf(\MasyukAI\Cart\PriceTransformers\LocalizedPriceTransformer::class);
+        $transformer = $this->app->make('cart.price.transformer.integer');
+        expect($transformer)->toBeInstanceOf(\MasyukAI\Cart\PriceTransformers\IntegerPriceTransformer::class);
     });
 
     it('boots provider without errors', function () {

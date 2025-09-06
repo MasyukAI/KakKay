@@ -62,6 +62,11 @@ trait ManagesItems
             $this->events->dispatch(new ItemAdded($item, $this));
         }
 
+        // Evaluate dynamic conditions after adding item
+        if (method_exists($this, 'evaluateDynamicConditions')) {
+            $this->evaluateDynamicConditions();
+        }
+
         return $item;
     }
 
@@ -139,6 +144,11 @@ trait ManagesItems
             $this->events->dispatch(new ItemUpdated($item, $this));
         }
 
+        // Evaluate dynamic conditions after updating item
+        if (method_exists($this, 'evaluateDynamicConditions')) {
+            $this->evaluateDynamicConditions();
+        }
+
         return $item;
     }
 
@@ -159,6 +169,11 @@ trait ManagesItems
 
         if ($this->eventsEnabled && $this->events) {
             $this->events->dispatch(new ItemRemoved($item, $this));
+        }
+
+        // Evaluate dynamic conditions after removing item
+        if (method_exists($this, 'evaluateDynamicConditions')) {
+            $this->evaluateDynamicConditions();
         }
 
         return $item;

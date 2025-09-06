@@ -276,16 +276,6 @@ class CartServiceProvider extends ServiceProvider
             );
         });
 
-        $this->app->bind('cart.price.transformer.localized', function (\Illuminate\Contracts\Foundation\Application $app) {
-            return new \MasyukAI\Cart\PriceTransformers\LocalizedPriceTransformer(
-                config('cart.price_formatting.currency', 'USD'),
-                config('cart.price_formatting.locale', 'en_US'),
-                config('cart.price_formatting.precision', 2),
-                config('cart.price_formatting.decimal_separator', '.'),
-                config('cart.price_formatting.thousands_separator', ',')
-            );
-        });
-
         // Register the configured transformer
         $this->app->bind(\MasyukAI\Cart\Contracts\PriceTransformerInterface::class, function (\Illuminate\Contracts\Foundation\Application $app): \MasyukAI\Cart\Contracts\PriceTransformerInterface {
             $transformerClass = config('cart.price_formatting.transformer');

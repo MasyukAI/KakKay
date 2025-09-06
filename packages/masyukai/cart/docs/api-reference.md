@@ -1192,6 +1192,46 @@ Remove all cart conditions.
 Cart::clearConditions();
 ```
 
+### Dynamic Conditions
+
+#### `registerDynamicCondition(CartCondition $condition): static`
+Register a dynamic condition that automatically applies/removes based on rules.
+
+```php
+$volumeDiscount = new CartCondition(
+    name: 'volume-discount',
+    type: 'discount',
+    target: 'total',
+    value: '-10%',
+    rules: [
+        fn($cart) => $cart->getItems()->count() >= 5,
+    ]
+);
+
+Cart::registerDynamicCondition($volumeDiscount);
+```
+
+#### `getDynamicConditions(): CartConditionCollection`
+Get all registered dynamic conditions.
+
+```php
+$dynamicConditions = Cart::getDynamicConditions();
+```
+
+#### `removeDynamicCondition(string $name): static`
+Remove a dynamic condition by name.
+
+```php
+Cart::removeDynamicCondition('volume-discount');
+```
+
+#### `evaluateDynamicConditions(): void`
+Manually trigger evaluation of all dynamic conditions (automatically called after cart changes).
+
+```php
+Cart::evaluateDynamicConditions();
+```
+
 ### Item Conditions
 
 #### `addItemCondition(string $itemId, CartCondition $condition): bool`

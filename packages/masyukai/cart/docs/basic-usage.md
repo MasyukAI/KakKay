@@ -393,7 +393,7 @@ Cart::setMetadata('referrer', request()->headers->get('referer'));
 
 ## Next Steps
 
-- Learn about [Conditions System](conditions.md) for discounts and taxes
+- Learn about [Conditions System](conditions.md) for discounts, taxes, and dynamic auto-conditions
 - Explore [Multiple Cart Instances](instances.md) for wishlists and comparisons
 - Discover [Events](events.md) for custom cart logic
 - Check out [Livewire Integration](livewire.md) for reactive UIs

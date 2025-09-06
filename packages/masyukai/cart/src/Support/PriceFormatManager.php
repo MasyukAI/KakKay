@@ -26,22 +26,12 @@ class PriceFormatManager
 
         // Recreate formatter if transformer class changed or no formatter exists
         if (self::$formatter === null || self::$lastTransformerClass !== $currentTransformerClass) {
-            // Create transformer based on class type
-            if ($currentTransformerClass === \MasyukAI\Cart\PriceTransformers\LocalizedPriceTransformer::class) {
-                $transformer = new $currentTransformerClass(
-                    self::getConfig('cart.price_formatting.currency', 'USD'),
-                    self::getConfig('cart.price_formatting.locale', 'en_US'),
-                    self::getConfig('cart.price_formatting.precision', 2),
-                    self::getConfig('cart.price_formatting.decimal_separator', '.'),
-                    self::getConfig('cart.price_formatting.thousands_separator', ',')
-                );
-            } else {
-                $transformer = new $currentTransformerClass(
-                    self::getConfig('cart.price_formatting.currency', 'USD'),
-                    self::getConfig('cart.price_formatting.locale', 'en_US'),
-                    self::getConfig('cart.price_formatting.precision', 2)
-                );
-            }
+            // Create transformer with standard parameters
+            $transformer = new $currentTransformerClass(
+                self::getConfig('cart.price_formatting.currency', 'USD'),
+                self::getConfig('cart.price_formatting.locale', 'en_US'),
+                self::getConfig('cart.price_formatting.precision', 2)
+            );
 
             self::$formatter = new PriceFormatterService($transformer);
             self::$lastTransformerClass = $currentTransformerClass;

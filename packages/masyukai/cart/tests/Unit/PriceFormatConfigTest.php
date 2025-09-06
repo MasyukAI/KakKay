@@ -7,7 +7,6 @@ use MasyukAI\Cart\Conditions\CartCondition;
 use MasyukAI\Cart\Models\CartItem;
 use MasyukAI\Cart\PriceTransformers\DecimalPriceTransformer;
 use MasyukAI\Cart\PriceTransformers\IntegerPriceTransformer;
-use MasyukAI\Cart\PriceTransformers\LocalizedPriceTransformer;
 use MasyukAI\Cart\Storage\SessionStorage;
 use MasyukAI\Cart\Support\PriceFormatManager;
 
@@ -134,37 +133,11 @@ describe('Price Format Configuration', function () {
         });
     });
 
-    describe('Localized Price Transformer', function () {
-        it('formats with US locale', function () {
-            $transformer = new LocalizedPriceTransformer('USD', 'en_US', 2, '.', ',');
-
-            // US format: 1,234.56
-            $formatted = $transformer->toDisplay(1234.56);
-            expect($formatted)->toBe('1,234.56');
-        });
-
-        it('formats with European locale', function () {
-            $transformer = new LocalizedPriceTransformer('EUR', 'de_DE', 2, ',', '.');
-
-            // Note: Current implementation has a bug with toNumeric calling toStorage
-            // This causes incorrect parsing of numeric inputs
-            $formatted = $transformer->toDisplay(123456);
-            expect($formatted)->toBe('123.456,00'); // Current actual output
-        });
-
-        it('formats without currency symbol when disabled', function () {
-            $transformer = new LocalizedPriceTransformer('USD', 'en_US', 2, '.', ',');
-
-            $formatted = $transformer->toDisplay(1234.56);
-            expect($formatted)->toBe('1,234.56');
-        });
-    });
-
     describe('Currency symbol configuration', function () {
         it('includes currency symbol when enabled', function () {
             PriceFormatManager::enableFormatting();
             config(['cart.price_formatting.show_currency_symbol' => true]);
-            config(['cart.price_formatting.transformer' => LocalizedPriceTransformer::class]);
+            config(['cart.price_formatting.transformer' => DecimalPriceTransformer::class]);
             config(['cart.price_formatting.currency' => 'USD']);
 
             $formatted = PriceFormatManager::formatPrice(100.00, true);
@@ -185,7 +158,7 @@ describe('Price Format Configuration', function () {
             PriceFormatManager::enableFormatting();
             PriceFormatManager::setCurrency('EUR');
 
-            config(['cart.price_formatting.transformer' => LocalizedPriceTransformer::class]);
+            config(['cart.price_formatting.transformer' => DecimalPriceTransformer::class]);
             config(['cart.price_formatting.show_currency_symbol' => true]);
 
             $formatted = PriceFormatManager::formatPrice(100.00, true);

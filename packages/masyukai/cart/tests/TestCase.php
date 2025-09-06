@@ -46,6 +46,10 @@ abstract class TestCase extends Orchestra
         $app['config']->set('app.key', 'base64:'.base64_encode(random_bytes(32)));
         $app['config']->set('app.env', 'testing');
         $app['config']->set('database.default', 'testing');
+
+        // Force DecimalPriceTransformer for consistent tests
+        $app['config']->set('cart.price_formatting.transformer', \MasyukAI\Cart\PriceTransformers\DecimalPriceTransformer::class);
+
         $app['config']->set('database.connections.testing', [
             'driver' => 'sqlite',
             'database' => ':memory:',

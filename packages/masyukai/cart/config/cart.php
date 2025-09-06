@@ -118,7 +118,7 @@ return [
         'auto_format' => env('CART_AUTO_FORMAT', false),
         
         // Price transformer class
-        'transformer' => env('CART_PRICE_TRANSFORMER', \MasyukAI\Cart\PriceTransformers\DecimalPriceTransformer::class),
+        'transformer' => env('CART_PRICE_TRANSFORMER', \MasyukAI\Cart\PriceTransformers\IntegerPriceTransformer::class),
         
         // Currency and locale
         'currency' => env('CART_CURRENCY', 'USD'),

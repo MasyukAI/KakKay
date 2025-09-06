@@ -7,7 +7,7 @@
 [![PHP Version](https://img.shields.io/badge/php-%5E8.4-blue.svg?style=flat-square&logo=php)](https://php.net)
 [![Laravel Version](https://img.shields.io/badge/laravel-%5E12.0-red.svg?style=flat-square&logo=laravel)](https://laravel.com)
 [![Livewire Version](https://img.shields.io/badge/livewire-%5E3.0-purple.svg?style=flat-square)](https://livewire.laravel.com)
-[![Tests](https://img.shields.io/badge/tests-689%20passing-green.svg?style=flat-square&logo=checkmarx)](https://pestphp.com)
+[![Tests](https://img.shields.io/badge/tests-875%20passing-green.svg?style=flat-square&logo=checkmarx)](https://pestphp.com)
 [![Coverage](https://img.shields.io/badge/coverage-comprehensive-brightgreen.svg?style=flat-square&logo=codecov)](https://pestphp.com)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
 
@@ -24,7 +24,7 @@
 <td align="center" width="33%">
 
 ### 🏆 **Production Ready**
-**689 tests** • **Comprehensive coverage**  
+**875 tests** • **Comprehensive coverage**  
 Enterprise-grade reliability with comprehensive test suite covering all scenarios
 
 </td>
@@ -48,7 +48,7 @@ Clean, modern API with extensive guides and real-world examples
 ### ✨ **Standout Features**
 
 - 🛒 **Advanced Cart Operations** - Add, update, remove with bulk operations and smart merging
-- 🏷️ **Powerful Conditions System** - Apply discounts, taxes, fees with complex business rules  
+- 🏷️ **Powerful Conditions System** - Apply discounts, taxes, fees with complex business rules & dynamic auto-conditions
 - 📦 **Flexible Storage** - Session, database, cache with automatic fallbacks
 - 🔄 **Multi-Instance Support** - Separate carts for main, wishlist, comparison, B2B scenarios
 - 🎨 **Ready-to-Use UI** - Drop-in Livewire components with reactive updates
@@ -353,6 +353,13 @@ Cart::addCondition(
         'description' => 'Net 30 payment terms',
         'due_date' => now()->addDays(30)
     ])
+);
+
+// Dynamic conditions - automatically applied based on rules
+Cart::registerDynamicCondition(
+    new CartCondition('volume-discount', 'discount', 'total', '-10%', 
+        rules: [fn($cart) => $cart->getItems()->count() >= 5]
+    )
 );
 ```
 
