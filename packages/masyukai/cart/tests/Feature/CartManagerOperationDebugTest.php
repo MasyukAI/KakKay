@@ -14,31 +14,34 @@ it('can debug cart manager instance behavior during operations', function () {
     $guestCart = Cart::setInstance('guest_123');
     expect($guestCart)->toBeInstanceOf(\MasyukAI\Cart\CartManager::class);
     
-    echo "Current instance after setInstance: " . Cart::instance() . "\n";
+    // Verify instance is set correctly
+    expect(Cart::instance())->toBe('guest_123');
     
     $result = Cart::add('product_1', 'Product 1', 10.99, 2);
-    echo "Add result: " . get_class($result) . "\n";
-    echo "Count after add: " . Cart::count() . "\n";
+    expect($result)->toBeObject();
+    expect(Cart::count())->toBe(2);
     
     // Switch to user cart and verify it's empty
     $userCart = Cart::setInstance('user_1');
     expect($userCart)->toBeInstanceOf(\MasyukAI\Cart\CartManager::class);
-    echo "User cart count: " . Cart::count() . "\n";
+    expect(Cart::count())->toBe(0);
     
     // Now manually do what mergeCartInstances does
     Cart::setInstance('guest_123');
-    echo "Source cart instance: " . Cart::instance() . "\n";
-    echo "Source cart content count: " . Cart::getItems()->count() . "\n";
+    expect(Cart::instance())->toBe('guest_123');
+    expect(Cart::getItems())->toHaveCount(1);
     
     $sourceItems = Cart::getItems();
     
     foreach ($sourceItems as $sourceItem) {
-        echo "Processing item: {$sourceItem->id} - {$sourceItem->name} - Qty: {$sourceItem->quantity}\n";
+        expect($sourceItem->id)->toBe('product_1');
+        expect($sourceItem->name)->toBe('Product 1');
+        expect($sourceItem->quantity)->toBe(2);
         
         // Switch to target cart
         Cart::setInstance('user_1');
-        echo "Switched to user cart. Instance: " . Cart::instance() . "\n";
-        echo "Target cart count before add: " . Cart::count() . "\n";
+        expect(Cart::instance())->toBe('user_1');
+        expect(Cart::count())->toBe(0);
         
         // Add item to target cart
         $newItem = Cart::add(
@@ -49,13 +52,12 @@ it('can debug cart manager instance behavior during operations', function () {
             $sourceItem->attributes->toArray()
         );
         
-        echo "Added item. New item class: " . get_class($newItem) . "\n";
-        echo "Target cart count after add: " . Cart::count() . "\n";
-        echo "Target cart content: " . Cart::getItems()->count() . " items\n";
+        expect($newItem)->toBeObject();
+        expect(Cart::count())->toBe(2);
+        expect(Cart::getItems())->toHaveCount(1);
     }
     
-    echo "Final user cart count: " . Cart::setInstance('user_1')->count() . "\n";
-    echo "Final guest cart count: " . Cart::setInstance('guest_123')->count() . "\n";
-    
-    expect(Cart::setInstance('user_1')->count())->toBeGreaterThan(0);
+    // Verify final state
+    expect(Cart::setInstance('user_1')->count())->toBe(2);
+    expect(Cart::setInstance('guest_123')->count())->toBe(2);
 });

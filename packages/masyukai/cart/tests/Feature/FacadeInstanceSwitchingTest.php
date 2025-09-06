@@ -14,33 +14,34 @@ it('can test facade instance switching behavior', function () {
     Cart::setInstance('guest_123');
     expect(Cart::instance())->toBe('guest_123');
     Cart::add('product_1', 'Product 1', 10.99, 2);
-    expect(Cart::count())->toBe(2);
+    Cart::add('product_2', 'Product 2', 15.99, 1);
+    expect(Cart::count())->toBe(3); // 2 + 1 = 3 total items
     
     // Test assignment vs non-assignment
-    echo "Test 1 - Direct call:\n";
+    // Test 1 - Direct call:
     Cart::setInstance('user_1');
-    echo "Instance after direct call: " . Cart::instance() . "\n";
+    expect(Cart::instance())->toBe('user_1');
     
-    echo "Test 2 - Assignment:\n";
+    // Test 2 - Assignment:
     $result = Cart::setInstance('guest_123');
-    echo "Instance after assignment: " . Cart::instance() . "\n";
-    echo "Result type: " . get_class($result) . "\n";
+    expect(Cart::instance())->toBe('guest_123');
+    expect(get_class($result))->toContain('CartManager');
     
-    echo "Test 3 - Chaining:\n";
+    // Test 3 - Chaining:
     Cart::setInstance('user_1')->count();
-    echo "Instance after chaining: " . Cart::instance() . "\n";
+    expect(Cart::instance())->toBe('user_1');
     
-    echo "Test 4 - Testing the merge logic approach:\n";
+    // Test 4 - Testing the merge logic approach:
     
     // Correct approach - don't assign the result
     Cart::setInstance('guest_123');
-    echo "Guest instance: " . Cart::instance() . "\n";
+    expect(Cart::instance())->toBe('guest_123');
     $sourceItems = Cart::getItems();
-    echo "Source items count: " . $sourceItems->count() . "\n";
+    expect($sourceItems->count())->toBe(2);
     
     Cart::setInstance('user_1');
-    echo "User instance: " . Cart::instance() . "\n";
-    echo "User cart count before: " . Cart::count() . "\n";
+    expect(Cart::instance())->toBe('user_1');
+    $initialUserCount = Cart::count();
     
     foreach ($sourceItems as $sourceItem) {
         $newItem = Cart::add(
@@ -50,8 +51,9 @@ it('can test facade instance switching behavior', function () {
             $sourceItem->quantity,
             $sourceItem->attributes->toArray()
         );
-        echo "Added item, user cart count now: " . Cart::count() . "\n";
+        expect(Cart::count())->toBeGreaterThan($initialUserCount);
+        $initialUserCount = Cart::count();
     }
     
-    expect(Cart::count())->toBeGreaterThan(0);
+    expect(Cart::count())->toBeGreaterThan(0);;
 });

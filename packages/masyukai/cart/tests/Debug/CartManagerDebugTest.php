@@ -24,21 +24,19 @@ it('debugs cart manager behavior', function () {
     
     // Test 4: Check current instance
     $currentInstance = Cart::instance();
-    dump("Current instance: $currentInstance");
+    expect($currentInstance)->toBeString();
     
     // Test 5: Check global state
     Cart::setInstance('global');
     $globalInstance = Cart::instance();
-    dump("Global instance after setInstance: $globalInstance");
+    expect($globalInstance)->toBe('global');
     
     // Test 6: Check if calling setInstance twice in a row works
     $test1CountAgain = Cart::setInstance('test1')->count();
-    dump("Test1 count again: $test1CountAgain");
     expect($test1CountAgain)->toBe(1);
     
     // Test 7: Check what happens if we call count() without chaining 
     Cart::setInstance('test1');
     $directCount = Cart::count();
-    dump("Direct count after switching to test1: $directCount");
     expect($directCount)->toBe(1);
 });

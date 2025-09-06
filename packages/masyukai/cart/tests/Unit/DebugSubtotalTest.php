@@ -17,32 +17,27 @@ it('debugs subtotal calculation step by step', function () {
     $cartItem = $cartInstance->getItems()->first();
     
     // Debug the exact values and transformations
-    dump('=== Cart Item Details ===');
-    dump('Cart item price (property):', $cartItem->price);
-    dump('Cart item quantity:', $cartItem->quantity);
+    expect($cartItem->price)->toBeFloat();
+    expect($cartItem->quantity)->toBe(1);
     
     // Get the raw sum before formatting
     $rawSum = $cartItem->getPriceSum();
-    dump('Raw price sum from getPriceSum():', $rawSum);
-    dump('Type of raw sum:', gettype($rawSum));
+    expect($rawSum)->toBeFloat();
+    expect(gettype($rawSum))->toBe('double');
     
     // Debug formatter behavior
     $formatter = \MasyukAI\Cart\Support\PriceFormatManager::getFormatter();
-    dump('=== Formatter Debug ===');
-    dump('Formatter class:', get_class($formatter));
+    expect(get_class($formatter))->toContain('PriceFormatterService');
     
     // Test the exact formatter flow
-    dump('=== Formatter Flow ===');
-    dump('format(' . $rawSum . '):', $formatter->format($rawSum));
+    expect($formatter->format($rawSum))->toBeString();
     
     // Now test the cart subtotal
-    dump('=== Cart Subtotal ===');
-    dump('Cart subtotal():', $cartManager->subtotal());
+    expect($cartManager->subtotal())->toBeFloat();
     
     // Enable formatting and test again
-    dump('=== With Formatting Enabled ===');
     $cartManager->formatted();
-    dump('Cart subtotal() after formatted():', $cartManager->subtotal());
+    expect($cartManager->subtotal())->toBeString();
     
     expect(true)->toBeTrue();
 });

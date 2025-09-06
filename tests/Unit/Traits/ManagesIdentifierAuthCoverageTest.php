@@ -6,6 +6,7 @@ use MasyukAI\Cart\Traits\ManagesIdentifier;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
+pest()->extend(Tests\TestCase::class);
 uses(RefreshDatabase::class);
 
 describe('ManagesIdentifier Authentication Coverage Tests', function () {
@@ -90,4 +91,4 @@ describe('ManagesIdentifier Authentication Coverage Tests', function () {
         expect($identifier)->toBeString();
         expect($identifier)->not->toBeEmpty();
     });
-})->group('integration')->extends(Tests\TestCase::class);
+})->group('integration');

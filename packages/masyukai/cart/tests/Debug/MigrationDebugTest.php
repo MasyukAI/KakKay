@@ -24,12 +24,12 @@ it('debugs migration step by step', function () {
     
     // Debug: Check what identifier Cart is actually using
     $currentIdentifier = session()->getId();
-    dump("Current session identifier: $currentIdentifier");
+    expect($currentIdentifier)->toBeString();
     
     // Debug: Check what's in storage
     $storage = Cart::storage();
     $actualGuestItems = $storage->getItems($currentIdentifier, 'default');
-    dump("Items found in storage for identifier '$currentIdentifier': " . count($actualGuestItems));
+    expect(count($actualGuestItems))->toBe(2);
     
     // Check initial state - guest has items, user (ID 1) has none
     $guestCount = Cart::count(); // Current session (guest_123)
@@ -39,13 +39,12 @@ it('debugs migration step by step', function () {
     $userItems = $storage->getItems('1', 'default'); // User ID 1, default instance
     $userCount = array_sum(array_column($userItems, 'quantity'));
     
-    dump("Before migration - Guest: $guestCount, User: $userCount");
     expect($guestCount)->toBe(3);
     expect($userCount)->toBe(0);
     
     // Perform actual migration: use the ACTUAL session identifier, not hardcoded 'guest_123'
     $result = $cartMigration->migrateGuestCartToUser(1, 'default', $currentIdentifier);
-    dump("Migration result: " . ($result ? 'true' : 'false'));
+    expect($result)->toBeTrue();
     
     // Check final state - guest should be empty, user should have the items
     $guestCountAfter = Cart::count(); // Still on guest session
@@ -53,12 +52,12 @@ it('debugs migration step by step', function () {
     $userItemsAfter = $storage->getItems('1', 'default'); 
     $userCountAfter = array_sum(array_column($userItemsAfter, 'quantity'));
     
-    dump("After migration - Guest: $guestCountAfter, User: $userCountAfter");
-    
     // Check actual items in user cart by accessing storage directly
-    dump("User cart items after migration:");
+    expect($userItemsAfter)->toHaveCount(2);
     foreach ($userItemsAfter as $itemData) {
-        dump("- {$itemData['id']}: {$itemData['name']} (qty: {$itemData['quantity']})");
+        expect($itemData['id'])->toBeString();
+        expect($itemData['name'])->toBeString();
+        expect($itemData['quantity'])->toBeInt();
     }
     
     expect($result)->toBeTrue();

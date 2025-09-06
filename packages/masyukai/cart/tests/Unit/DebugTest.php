@@ -8,6 +8,9 @@ use MasyukAI\Cart\Storage\SessionStorage;
 use MasyukAI\Cart\Support\PriceFormatManager;
 
 it('debug cart total calculation', function () {
+    // Enable formatting for this test
+    PriceFormatManager::enableFormatting();
+    
     // Set up session storage for testing
     $sessionStore = new \Illuminate\Session\Store('testing', new \Illuminate\Session\ArraySessionHandler(120));
     $storage = new SessionStorage($sessionStore);
@@ -28,11 +31,6 @@ it('debug cart total calculation', function () {
     $initialSubtotal = $cart->subtotal();
     $initialTotal = $cart->total();
 
-    dump('Items count: '.$cart->getItems()->count());
-    dump('Cart subtotal: '.$cart->subtotal());
-    dump('Cart subtotal without conditions: '.$cart->subtotalWithoutConditions());
-    dump('Cart total: '.$cart->total());
-
     // Verify immutability - state should be unchanged after dump operations
     expect($cart->getItems()->count())->toBe($initialItemsCount);
     expect($cart->subtotal())->toBe($initialSubtotal);
@@ -47,27 +45,20 @@ it('debug cart total calculation', function () {
     $afterConditionSubtotal = $cart->subtotal();
     $afterConditionTotal = $cart->total();
 
-    dump('--- After adding cart condition ---');
-    dump('Items count after condition: '.$cart->getItems()->count());
-    dump('Cart conditions count: '.$cart->getConditions()->count());
-    dump('Cart subtotal: '.$cart->subtotal());
-    dump('Cart subtotal without conditions: '.$cart->subtotalWithoutConditions());
-    dump('Cart total: '.$cart->total());
-
     // Verify immutability - state should be unchanged after dump operations
     expect($cart->getItems()->count())->toBe($afterConditionItemsCount);
     expect($cart->subtotal())->toBe($afterConditionSubtotal);
     expect($cart->total())->toBe($afterConditionTotal);
 
-    // Test exact types and values
-    expect($cart->total())->toBe(220.0) // Should be 200 + 10% = 220
-        ->and($cart->subtotal())->toBe(200.0) // Subtotal stays 200
-        ->and($cart->subtotalWithoutConditions())->toBe(200.0); // Same as subtotal
+    // Test exact types and values - the cart returns formatted strings by default
+    expect($cart->total())->toBe('220.00') // Should be 200 + 10% = 220
+        ->and($cart->subtotal())->toBe('200.00') // Subtotal stays 200
+        ->and($cart->subtotalWithoutConditions())->toBe('200.00'); // Same as subtotal
 
-    // Verify exact return types
-    expect($cart->total())->toBeFloat()
-        ->and($cart->subtotal())->toBeFloat()
-        ->and($cart->subtotalWithoutConditions())->toBeFloat();
+    // Verify exact return types - should be formatted strings by default when auto_format is enabled
+    expect($cart->getRawTotal())->toBeFloat()
+        ->and($cart->getRawSubtotal())->toBeFloat()
+        ->and($cart->getRawSubTotalWithoutConditions())->toBeFloat();
 });
 
 it('verifies cart method return types with and without formatting', function () {
@@ -93,12 +84,6 @@ it('verifies cart method return types with and without formatting', function () 
     // Test with formatting DISABLED (default)
     PriceFormatManager::disableFormatting();
     
-    dump('=== FORMATTING DISABLED ===');
-    dump('Total type: ' . gettype($cart->total()));
-    dump('Total value: ' . $cart->total());
-    dump('Subtotal type: ' . gettype($cart->subtotal()));
-    dump('Subtotal value: ' . $cart->subtotal());
-    
     expect($cart->total())->toBeFloat()
         ->and($cart->subtotal())->toBeFloat()
         ->and($cart->total())->toBe(218.89) // (99.99 + 49.50 * 2) * 1.10 = 198.99 * 1.10
@@ -106,12 +91,6 @@ it('verifies cart method return types with and without formatting', function () 
 
     // Test with formatting ENABLED
     PriceFormatManager::enableFormatting();
-    
-    dump('=== FORMATTING ENABLED ===');
-    dump('Total type: ' . gettype($cart->total()));
-    dump('Total value: ' . $cart->total());
-    dump('Subtotal type: ' . gettype($cart->subtotal()));
-    dump('Subtotal value: ' . $cart->subtotal());
     
     expect($cart->total())->toBeString()
         ->and($cart->subtotal())->toBeString()

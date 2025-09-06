@@ -18,31 +18,16 @@ it('can debug detailed migration process step by step', function (): void {
     expect(Cart::count())->toBe(3);
     expect(Cart::content()['items'])->toHaveCount(2);
     
-    echo "Before migration:
-";
-    echo "Guest cart count: " . Cart::count() . "
-";
-    
     // Store current session ID for migration
     $currentSessionId = session()->getId();
     
     // Test migration from current session to user 1
     $result = $cartMigration->migrateGuestCartToUser(1, 'default', $currentSessionId);
     
-    echo "Migration result: " . ($result ? 'true' : 'false') . "
-";
-    
     // Check if migration worked by counting items under user context
     // After migration, original session cart should be empty, and user cart should have items
     $userCartCount = Cart::storage()->getItems('1', 'default');
     $userItemCount = array_sum(array_column($userCartCount, 'quantity'));
-    
-    echo "After migration:
-";
-    echo "Guest cart count: " . Cart::count() . "
-";
-    echo "User cart count: " . $userItemCount . "
-";
     
     expect($result)->toBeTrue();
     expect($userItemCount)->toBe(3);
