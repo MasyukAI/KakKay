@@ -13,26 +13,26 @@ describe('CartItem Raw Methods', function () {
     });
 
     it('returns correct raw price without conditions', function () {
-        expect($this->item->getRawPrice())->toBe(100.00);
+        expect($this->item->getRawPriceWithoutConditions())->toBe(100.00);
 
-        // Adding conditions shouldn't affect raw price
-        $itemWithConditions = $this->item->addCondition($this->discount);
-        expect($itemWithConditions->getRawPrice())->toBe(100.00);
+        // Adding conditions shouldn't affect raw price without conditions
+        $item = $this->item->addCondition($this->discount);
+        expect($item->getRawPriceWithoutConditions())->toBe(100.00);
     });
 
     it('calculates raw price with single condition correctly', function () {
         $itemWithDiscount = $this->item->addCondition($this->discount);
 
         // Raw price with conditions: 100 - 20% = 80
-        expect($itemWithDiscount->getRawPriceWithConditions())->toBe(80.00);
+        expect($itemWithDiscount->getRawPrice())->toBe(80.00);
     });
 
     it('calculates raw price with multiple conditions correctly', function () {
-        $itemWithConditions = $this->item
+        $item = $this->item
             ->addCondition($this->discount)  // 100 - 20% = 80
             ->addCondition($this->tax);      // 80 + 10% = 88
 
-        expect($itemWithConditions->getRawPriceWithConditions())->toBe(88.00);
+        expect($item->getRawPrice())->toBe(88.00);
     });
 
     it('calculates raw price sum without conditions correctly', function () {
@@ -40,40 +40,40 @@ describe('CartItem Raw Methods', function () {
         expect($this->item->getRawPriceSumWithoutConditions())->toBe(200.00);
 
         // Adding conditions shouldn't affect raw price sum without conditions
-        $itemWithConditions = $this->item->addCondition($this->discount);
-        expect($itemWithConditions->getRawPriceSumWithoutConditions())->toBe(200.00);
+        $item = $this->item->addCondition($this->discount);
+        expect($item->getRawPriceSumWithoutConditions())->toBe(200.00);
     });
 
     it('calculates raw price sum with conditions correctly', function () {
         $itemWithDiscount = $this->item->addCondition($this->discount);
 
         // (100 - 20%) * 2 = 80 * 2 = 160
-        expect($itemWithDiscount->getRawPriceSumWithConditions())->toBe(160.00);
+        expect($itemWithDiscount->getRawPriceSum())->toBe(160.00);
     });
 
     it('calculates raw price sum with multiple conditions correctly', function () {
-        $itemWithConditions = $this->item
+        $item = $this->item
             ->addCondition($this->discount)  // 100 - 20% = 80
             ->addCondition($this->tax);      // 80 + 10% = 88
 
         // 88 * 2 = 176
-        expect($itemWithConditions->getRawPriceSumWithConditions())->toBe(176.00);
+        expect($item->getRawPriceSum())->toBe(176.00);
     });
 
     it('ensures raw methods return floats', function () {
+        expect($this->item->getRawPriceWithoutConditions())->toBeFloat();
         expect($this->item->getRawPrice())->toBeFloat();
-        expect($this->item->getRawPriceWithConditions())->toBeFloat();
         expect($this->item->getRawPriceSumWithoutConditions())->toBeFloat();
-        expect($this->item->getRawPriceSumWithConditions())->toBeFloat();
+        expect($this->item->getRawPriceSum())->toBeFloat();
     });
 
     it('handles edge cases with zero prices', function () {
         $freeItem = new CartItem('free-item', 'Free Item', 0.00, 1);
 
+        expect($freeItem->getRawPriceWithoutConditions())->toBe(0.00);
         expect($freeItem->getRawPrice())->toBe(0.00);
-        expect($freeItem->getRawPriceWithConditions())->toBe(0.00);
         expect($freeItem->getRawPriceSumWithoutConditions())->toBe(0.00);
-        expect($freeItem->getRawPriceSumWithConditions())->toBe(0.00);
+        expect($freeItem->getRawPriceSum())->toBe(0.00);
     });
 
     it('prevents negative prices from conditions', function () {
@@ -81,8 +81,8 @@ describe('CartItem Raw Methods', function () {
         $itemWithHeavyDiscount = $this->item->addCondition($heavyDiscount);
 
         // Should not go below 0
-        expect($itemWithHeavyDiscount->getRawPriceWithConditions())->toBe(0.00);
-        expect($itemWithHeavyDiscount->getRawPriceSumWithConditions())->toBe(0.00);
+        expect($itemWithHeavyDiscount->getRawPrice())->toBe(0.00);
+        expect($itemWithHeavyDiscount->getRawPriceSum())->toBe(0.00);
     });
 
     it('calculates discount amount correctly', function () {

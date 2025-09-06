@@ -158,10 +158,10 @@ describe('Missing Features Compatibility Tests', function () {
             $this->cart->addItemCondition('1', $condition);
 
             $subtotalWithoutConditions = $this->cart->subtotalWithoutConditions();
-            $subtotalWithConditions = $this->cart->subtotal(); // Now includes item conditions by default
+            $subtotal = $this->cart->subtotal(); // Now includes item conditions by default
 
             expect($subtotalWithoutConditions)->toBe(20.0); // 10 * 2
-            expect($subtotalWithConditions)->toBe(16.0); // 20 - 20% = 16
+            expect($subtotal)->toBe(16.0); // 20 - 20% = 16
         });
     });
 
