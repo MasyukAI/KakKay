@@ -51,7 +51,7 @@ it('handles complex condition chains bulletproof', function () {
     ];
 
     foreach ($conditions as $condition) {
-        Cart::condition($condition);
+        Cart::addCondition($condition);
     }
 
     expect(Cart::getConditions())->toHaveCount(5);
@@ -198,7 +198,7 @@ it('handles precision and floating point calculations bulletproof', function () 
         '15.555%' // Problematic percentage
     );
 
-    Cart::condition($taxCondition);
+    Cart::addCondition($taxCondition);
 
     $totalWithTax = Cart::getTotal();
     expect($totalWithTax)->toBeFloat();
@@ -227,8 +227,8 @@ it('provides comprehensive cart state serialization', function () {
     ]);
 
     // Add conditions
-    Cart::condition(new \MasyukAI\Cart\Conditions\CartCondition('bulk-discount', 'discount', 'subtotal', '-10%'));
-    Cart::condition(new \MasyukAI\Cart\Conditions\CartCondition('express-shipping', 'shipping', 'subtotal', '+15.00'));
+    Cart::addCondition(new \MasyukAI\Cart\Conditions\CartCondition('bulk-discount', 'discount', 'subtotal', '-10%'));
+    Cart::addCondition(new \MasyukAI\Cart\Conditions\CartCondition('express-shipping', 'shipping', 'subtotal', '+15.00'));
 
     // Test toArray serialization
     $cartArray = Cart::toArray();

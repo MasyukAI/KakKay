@@ -425,8 +425,8 @@ describe('Cart conditions', function () {
         $tax = new CartCondition('tax', 'tax', 'subtotal', '+10%');
         $shipping = new CartCondition('shipping', 'charge', 'subtotal', '+5.99');
 
-        $this->cart->condition($tax);
-        $this->cart->condition($shipping);
+        $this->cart->addCondition($tax);
+        $this->cart->addCondition($shipping);
 
         expect($this->cart->getConditions())->toHaveCount(2);
         expect($this->cart->getCondition('tax'))->toBeInstanceOf(CartCondition::class);
@@ -440,8 +440,8 @@ describe('Cart conditions', function () {
         $tax = new CartCondition('tax', 'tax', 'subtotal', '+10%');
         $discount = new CartCondition('discount', 'discount', 'subtotal', '-5%');
 
-        $this->cart->condition($tax);
-        $this->cart->condition($discount);
+        $this->cart->addCondition($tax);
+        $this->cart->addCondition($discount);
 
         expect($this->cart->getConditions())->toHaveCount(2);
 
@@ -458,8 +458,8 @@ describe('Cart conditions', function () {
         $tax = new CartCondition('tax', 'tax', 'subtotal', '+10%');
         $discount = new CartCondition('discount', 'discount', 'subtotal', '-5%');
 
-        $this->cart->condition($tax);
-        $this->cart->condition($discount);
+        $this->cart->addCondition($tax);
+        $this->cart->addCondition($discount);
 
         expect($this->cart->getConditions())->toHaveCount(2);
 
@@ -474,9 +474,9 @@ describe('Cart conditions', function () {
         $tax = new CartCondition('tax', 'tax', 'subtotal', '+15%'); // +27 (on discounted amount)
         $shipping = new CartCondition('shipping', 'charge', 'subtotal', '+9.99');
 
-        $this->cart->condition($discount);
-        $this->cart->condition($tax);
-        $this->cart->condition($shipping);
+        $this->cart->addCondition($discount);
+        $this->cart->addCondition($tax);
+        $this->cart->addCondition($shipping);
 
         // 200 - 20 = 180, then +15% = 207, then +9.99 = 216.99
         expect($this->cart->getSubTotal())->toBe(200.00);
@@ -644,7 +644,7 @@ describe('Edge cases and stress tests', function () {
         ];
 
         foreach ($conditions as $condition) {
-            $this->cart->condition($condition);
+            $this->cart->addCondition($condition);
         }
 
         expect($this->cart->getConditions())->toHaveCount(5);
@@ -1177,7 +1177,7 @@ describe('Associated model validation', function () {
 describe('Edge cases for 100% coverage', function () {
     it('handles condition validation properly', function () {
         // Test invalid condition type (line 396)
-        expect(fn () => $this->cart->condition(['invalid_condition']))
+        expect(fn () => $this->cart->addCondition(['invalid_condition']))
             ->toThrow(\MasyukAI\Cart\Exceptions\InvalidCartConditionException::class);
     });
 

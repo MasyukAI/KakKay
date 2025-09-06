@@ -967,10 +967,10 @@ Add condition(s) to cart.
 
 ```php
 $tax = new CartCondition('tax', 'tax', 'subtotal', '+10%');
-Cart::condition($tax);
+Cart::addCondition($tax);
 
 // Multiple conditions
-Cart::condition([$tax, $shipping, $discount]);
+Cart::addCondition([$tax, $shipping, $discount]);
 ```
 
 #### `getConditions(): CartConditionCollection`
@@ -1500,7 +1500,7 @@ use MasyukAI\Cart\Facades\Cart;
 // All methods available on Cart class
 Cart::add('id', 'name', 99.99);
 Cart::getTotal();
-Cart::condition($taxCondition);
+Cart::addCondition($taxCondition);
 // etc.
 ```
 
@@ -1653,7 +1653,7 @@ class CurrencyCartManager
                 $prefix = str_starts_with($condition->getValue(), '-') ? '-' : '+';
                 
                 Cart::removeCondition($condition->getName());
-                Cart::condition(new CartCondition(
+                Cart::addCondition(new CartCondition(
                     $condition->getName(),
                     $condition->getType(),
                     $condition->getTarget(),

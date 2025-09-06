@@ -194,7 +194,7 @@ it('can remove condition', function (): void {
         'subtotal',
         '-10%'
     );
-    Cart::condition($condition);
+    Cart::addCondition($condition);
     
     $request = Request::create('/remove-condition', 'POST', [
         'name' => 'test-discount'

@@ -100,7 +100,7 @@ it('works with cart conditions', function () {
         value: '10%'
     );
 
-    Cart::condition($taxCondition);
+    Cart::addCondition($taxCondition);
 
     expect(Cart::getConditions())->toHaveCount(1);
     expect(Cart::getTotal())->toBe(110.00); // 100 + 10% tax

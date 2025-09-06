@@ -69,8 +69,8 @@ it('provides comprehensive bulletproof cart package summary', function () {
         ['description' => 'Express shipping fee']
     );
 
-    Cart::condition($discountCondition);
-    Cart::condition($shippingCondition);
+    Cart::addCondition($discountCondition);
+    Cart::addCondition($shippingCondition);
 
     expect(Cart::getConditions())->toHaveCount(2);
 

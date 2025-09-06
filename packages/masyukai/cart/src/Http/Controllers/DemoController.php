@@ -115,7 +115,7 @@ class DemoController extends Controller
             value: $request->value
         );
 
-        Cart::condition($condition);
+        Cart::addCondition($condition);
 
         return response()->json([
             'success' => true,

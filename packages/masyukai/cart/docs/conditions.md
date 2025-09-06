@@ -80,7 +80,7 @@ use MasyukAI\Cart\Facades\Cart;
 
 // Single condition
 $tax = new CartCondition('tax', 'tax', 'subtotal', '+8%');
-Cart::condition($tax);
+Cart::addCondition($tax);
 
 // Multiple conditions
 $conditions = [
@@ -88,7 +88,7 @@ $conditions = [
     new CartCondition('shipping', 'shipping', 'subtotal', '+15'),
     new CartCondition('discount', 'discount', 'subtotal', '-10%')
 ];
-Cart::condition($conditions);
+Cart::addCondition($conditions);
 ```
 
 ### Item-level Conditions
@@ -146,7 +146,7 @@ $shipping = new CartCondition('shipping', 'shipping', 'subtotal', '+5', [], 2);
 $discount = new CartCondition('discount', 'discount', 'subtotal', '-20%', [], 0);
 
 // Applied in order: discount (0), tax (1), shipping (2)
-Cart::condition([$tax, $shipping, $discount]);
+Cart::addCondition([$tax, $shipping, $discount]);
 ```
 
 ### Condition Attributes
@@ -166,7 +166,7 @@ $shipping = new CartCondition(
     ]
 );
 
-Cart::condition($shipping);
+Cart::addCondition($shipping);
 
 // Access attributes
 $condition = Cart::getCondition('express-shipping');
@@ -182,7 +182,7 @@ $condition = new CartCondition('bulk-discount', 'discount', 'subtotal', '-10%');
 
 // Only apply if cart total > $100
 if (Cart::getSubTotal() > 100) {
-    Cart::condition($condition);
+    Cart::addCondition($condition);
 }
 ```
 
@@ -249,11 +249,11 @@ Returns:
 $subtotal = Cart::getSubTotal();
 
 if ($subtotal >= 500) {
-    Cart::condition(new CartCondition('vip-discount', 'discount', 'subtotal', '-20%'));
+    Cart::addCondition(new CartCondition('vip-discount', 'discount', 'subtotal', '-20%'));
 } elseif ($subtotal >= 200) {
-    Cart::condition(new CartCondition('premium-discount', 'discount', 'subtotal', '-15%'));
+    Cart::addCondition(new CartCondition('premium-discount', 'discount', 'subtotal', '-15%'));
 } elseif ($subtotal >= 100) {
-    Cart::condition(new CartCondition('standard-discount', 'discount', 'subtotal', '-10%'));
+    Cart::addCondition(new CartCondition('standard-discount', 'discount', 'subtotal', '-10%'));
 }
 ```
 
@@ -271,7 +271,7 @@ $conditions[] = new CartCondition('city-tax', 'tax', 'total', '+2%', [], 2);
 // Federal tax (applied last)
 $conditions[] = new CartCondition('federal-tax', 'tax', 'total', '+1%', [], 3);
 
-Cart::condition($conditions);
+Cart::addCondition($conditions);
 ```
 
 ### Shipping Calculator
@@ -293,7 +293,7 @@ $shipping = new CartCondition(
     ['weight' => $weight]
 );
 
-Cart::condition($shipping);
+Cart::addCondition($shipping);
 ```
 
 ### Buy X Get Y Free
@@ -317,8 +317,8 @@ Understanding how conditions affect calculations:
 ```php
 // Add items and conditions
 Cart::add('product-1', 'Item', 100.00, 2); // $200 subtotal
-Cart::condition(new CartCondition('tax', 'tax', 'subtotal', '+10%'));
-Cart::condition(new CartCondition('discount', 'discount', 'subtotal', '-50'));
+Cart::addCondition(new CartCondition('tax', 'tax', 'subtotal', '+10%'));
+Cart::addCondition(new CartCondition('discount', 'discount', 'subtotal', '-50'));
 
 // Get different totals
 $subtotal = Cart::getSubTotal();                    // $200.00 (base)
@@ -356,7 +356,7 @@ function applyCoupon(string $code): bool
         ['coupon_id' => $coupon->id]
     );
     
-    Cart::condition($condition);
+    Cart::addCondition($condition);
     return true;
 }
 ```
@@ -371,7 +371,7 @@ if (auth()->user()?->isMember()) {
         'subtotal',
         '-10%'
     );
-    Cart::condition($memberDiscount);
+    Cart::addCondition($memberDiscount);
 }
 ```
 

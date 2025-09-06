@@ -83,7 +83,7 @@ class CartComponent extends Component
                 "-{$discount}%"
             );
             
-            Cart::condition($condition);
+            Cart::addCondition($condition);
             $this->refreshCart();
             $this->couponCode = '';
             

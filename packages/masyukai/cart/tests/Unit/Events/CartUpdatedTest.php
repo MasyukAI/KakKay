@@ -186,7 +186,7 @@ it('cart condition updates can trigger manual CartUpdated', function (): void {
         '-10%'
     );
 
-    $cart->condition($condition);
+    $cart->addCondition($condition);
 
     // Manually dispatch CartUpdated event after cart state change
     $event = new CartUpdated(

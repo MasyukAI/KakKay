@@ -70,7 +70,7 @@ describe('Refactored Cart Storage Structure', function () {
             target: 'total',
             value: '10%'
         );
-        $cart->condition($taxCondition);
+        $cart->addCondition($taxCondition);
 
         // Get the actual identifier used by cart
         $identifier = $getIdentifierMethod->invoke($cart);
@@ -206,7 +206,7 @@ describe('Refactored Cart Storage Structure', function () {
             value: '-10'
         );
 
-        $cart->condition([$taxCondition, $discountCondition]);
+        $cart->addCondition([$taxCondition, $discountCondition]);
 
         // Verify conditions are stored and can be retrieved
         expect($cart->getConditions())->toHaveCount(2);

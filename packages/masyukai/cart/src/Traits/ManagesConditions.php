@@ -24,7 +24,7 @@ trait ManagesConditions
     /**
      * Add condition to cart
      */
-    public function condition(CartCondition|array $condition): static
+    public function addCondition(CartCondition|array $condition): static
     {
         $conditions = is_array($condition) ? $condition : [$condition];
 
@@ -201,7 +201,7 @@ trait ManagesConditions
             $value = '-'.$value;
         }
         $condition = new CartCondition($name, 'discount', $target, $value);
-        $this->condition($condition);
+        $this->addCondition($condition);
 
         return $this;
     }
@@ -212,7 +212,7 @@ trait ManagesConditions
     public function addFee(string $name, string $value, string $target = 'subtotal'): static
     {
         $condition = new CartCondition($name, 'fee', $target, $value);
-        $this->condition($condition);
+        $this->addCondition($condition);
 
         return $this;
     }
@@ -223,7 +223,7 @@ trait ManagesConditions
     public function addTax(string $name, string $value, string $target = 'subtotal'): static
     {
         $condition = new CartCondition($name, 'tax', $target, $value);
-        $this->condition($condition);
+        $this->addCondition($condition);
 
         return $this;
     }
@@ -260,7 +260,7 @@ trait ManagesConditions
             value: $value,
             attributes: $shippingAttributes
         );
-        $this->condition($condition);
+        $this->addCondition($condition);
 
         return $this;
     }

@@ -137,7 +137,7 @@ it('handles cart with conditions correctly', function (): void {
         'subtotal',
         '+10%'
     );
-    Cart::condition($condition);
+    Cart::addCondition($condition);
     
     $component = Livewire::test(CartSummary::class);
     

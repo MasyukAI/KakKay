@@ -28,7 +28,7 @@ it('debug cart total calculation', function () {
 
     // Add condition
     $condition = new CartCondition('tax', 'tax', 'subtotal', '+10%');
-    $cart->condition($condition);
+    $cart->addCondition($condition);
 
     dump('--- After adding cart condition ---');
     dump('Items count after condition: '.$cart->getItems()->count());

@@ -114,7 +114,7 @@ trait ManagesStorage
             foreach ($otherConditions as $conditionData) {
                 if (is_array($conditionData) && isset($conditionData['name'])) {
                     $condition = CartCondition::fromArray($conditionData);
-                    $this->condition($condition);
+                    $this->addCondition($condition);
                 }
             }
         }

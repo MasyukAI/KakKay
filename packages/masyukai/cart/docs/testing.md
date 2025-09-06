@@ -77,7 +77,7 @@ describe('Shopping Cart', function () {
         Cart::add('product-1', 'Test Product', 100.00, 2);
         
         $tax = new CartCondition('tax', 'tax', 'subtotal', '+10%');
-        Cart::condition($tax);
+        Cart::addCondition($tax);
         
         expect(Cart::getSubTotal())->toBe(200.00)
             ->and(Cart::getTotal())->toBe(220.00);

@@ -56,7 +56,7 @@ describe('Missing Features Compatibility Tests', function () {
 
         it('can remove cart condition by name', function () {
             $condition = new CartCondition('tax', 'tax', 'subtotal', '+10%');
-            $this->cart->condition($condition);
+            $this->cart->addCondition($condition);
 
             $result = $this->cart->removeCondition('tax');
 
@@ -68,7 +68,7 @@ describe('Missing Features Compatibility Tests', function () {
             $tax = new CartCondition('tax', 'tax', 'subtotal', '+10%');
             $shipping = new CartCondition('shipping', 'shipping', 'subtotal', '+5.00');
 
-            $this->cart->condition([$tax, $shipping]);
+            $this->cart->addCondition([$tax, $shipping]);
 
             $result = $this->cart->clearConditions();
 
@@ -81,7 +81,7 @@ describe('Missing Features Compatibility Tests', function () {
             $shipping = new CartCondition('shipping', 'shipping', 'subtotal', '+5.00');
             $discount = new CartCondition('discount', 'discount', 'subtotal', '-5.00');
 
-            $this->cart->condition([$tax, $shipping, $discount]);
+            $this->cart->addCondition([$tax, $shipping, $discount]);
 
             $taxConditions = $this->cart->getConditionsByType('tax');
             $shippingConditions = $this->cart->getConditionsByType('shipping');
@@ -98,7 +98,7 @@ describe('Missing Features Compatibility Tests', function () {
             $tax2 = new CartCondition('tax2', 'tax', 'subtotal', '+5%');
             $shipping = new CartCondition('shipping', 'shipping', 'subtotal', '+5.00');
 
-            $this->cart->condition([$tax1, $tax2, $shipping]);
+            $this->cart->addCondition([$tax1, $tax2, $shipping]);
 
             $result = $this->cart->removeConditionsByType('tax');
 
