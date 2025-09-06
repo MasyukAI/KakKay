@@ -317,6 +317,80 @@ try {
 }
 ```
 
+## Cart Metadata
+
+Cart metadata allows you to store additional information about the cart that doesn't belong to individual items.
+
+### Setting Metadata
+
+```php
+// Store user information
+Cart::setMetadata('user_id', auth()->id());
+Cart::setMetadata('currency', 'USD');
+Cart::setMetadata('notes', 'Gift wrap requested');
+
+// Store complex data
+Cart::setMetadata('preferences', [
+    'theme' => 'dark',
+    'language' => 'en'
+]);
+```
+
+### Getting Metadata
+
+```php
+// Retrieve metadata with optional default
+$userId = Cart::getMetadata('user_id');
+$currency = Cart::getMetadata('currency', 'USD');
+
+// Check if metadata exists
+if (Cart::hasMetadata('coupon_code')) {
+    $coupon = Cart::getMetadata('coupon_code');
+}
+```
+
+### Batch Operations
+
+```php
+// Set multiple values at once
+Cart::setMetadataBatch([
+    'session_id' => session()->getId(),
+    'ip_address' => request()->ip(),
+    'created_at' => now()->toISOString(),
+]);
+
+// Remove metadata
+Cart::removeMetadata('temporary_flag');
+```
+
+### Method Chaining
+
+```php
+// All metadata methods support chaining
+Cart::setMetadata('step', 'checkout')
+    ->setMetadata('payment_method', 'stripe')
+    ->removeMetadata('old_data');
+```
+
+### Common Use Cases
+
+```php
+// Checkout workflow
+Cart::setMetadata('checkout_step', 'shipping_address');
+
+// Promotional campaigns  
+Cart::setMetadata('coupon_applied', 'SAVE20');
+Cart::setMetadata('discount_amount', 15.50);
+
+// User preferences
+Cart::setMetadata('delivery_instructions', 'Leave at front door');
+Cart::setMetadata('gift_wrap', true);
+
+// Analytics tracking
+Cart::setMetadata('utm_source', request()->get('utm_source'));
+Cart::setMetadata('referrer', request()->headers->get('referer'));
+```
+
 ## Next Steps
 
 - Learn about [Conditions System](conditions.md) for discounts and taxes

@@ -617,6 +617,78 @@ if (Cart::count() >= 5) {
 }
 ```
 
+### **Cart Metadata Management**
+
+Store and retrieve additional cart-related information that doesn't belong to individual items:
+
+```php
+// Basic metadata operations
+Cart::setMetadata('user_id', auth()->id());
+Cart::setMetadata('currency', 'USD');
+Cart::setMetadata('notes', 'Gift wrap requested');
+
+// Retrieve metadata with optional defaults
+$userId = Cart::getMetadata('user_id');
+$currency = Cart::getMetadata('currency', 'USD');
+
+// Check existence and remove metadata
+if (Cart::hasMetadata('coupon_code')) {
+    $coupon = Cart::getMetadata('coupon_code');
+}
+Cart::removeMetadata('temporary_flag');
+
+// Batch operations for efficiency
+Cart::setMetadataBatch([
+    'session_id' => session()->getId(),
+    'ip_address' => request()->ip(),
+    'created_at' => now()->toISOString(),
+    'preferences' => ['theme' => 'dark', 'language' => 'en'],
+]);
+
+// Method chaining support
+Cart::setMetadata('step', 'checkout')
+    ->setMetadata('payment_method', 'credit_card')
+    ->setMetadata('shipping_method', 'express');
+```
+
+**Common Use Cases:**
+
+```php
+// 🛒 Cart abandonment tracking
+Cart::setMetadata('last_activity', now()->timestamp);
+Cart::setMetadata('abandoned', false);
+
+// 🎯 Promotional campaigns
+Cart::setMetadata('referral_source', 'email_campaign');
+Cart::setMetadata('coupon_applied', 'SAVE20');
+Cart::setMetadata('discount_amount', 15.50);
+
+// 👤 User preferences
+Cart::setMetadata('delivery_instructions', 'Leave at front door');
+Cart::setMetadata('gift_wrap', true);
+Cart::setMetadata('preferred_delivery_time', 'evening');
+
+// 📊 Analytics tracking
+Cart::setMetadata('utm_source', request()->get('utm_source'));
+Cart::setMetadata('landing_page', request()->headers->get('referer'));
+
+// 🔄 Checkout workflow
+Cart::setMetadata('checkout_step', 'shipping_address');
+Cart::setMetadata('requires_approval', Cart::subtotal() > 1000);
+
+// 💾 Temporary data storage
+Cart::setMetadata('temp_billing_data', request()->only([
+    'billing_name', 'billing_street', 'billing_city'
+]));
+```
+
+**Features:**
+- ✅ **Type Safe** - Supports strings, numbers, booleans, arrays, and objects
+- ✅ **Instance Isolated** - Metadata is separate between cart instances
+- ✅ **Persistent** - Survives cart operations (add, update, remove items)
+- ✅ **Fluent Interface** - Method chaining for clean code
+- ✅ **Cleared with Cart** - Removed when `Cart::clear()` is called
+
 ---
 ## 🔧 Configuration & Customization
 

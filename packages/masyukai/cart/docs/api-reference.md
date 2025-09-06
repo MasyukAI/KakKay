@@ -100,6 +100,13 @@ class CartInstance
     public function whereIn(string $key, array $values): Collection
     public function whereNotIn(string $key, array $values): Collection
     
+    // Metadata Management
+    public function setMetadata(string $key, mixed $value): self
+    public function getMetadata(string $key, mixed $default = null): mixed
+    public function hasMetadata(string $key): bool
+    public function removeMetadata(string $key): self
+    public function setMetadataBatch(array $metadata): self
+    
     // Instance Operations
     public function merge(string $fromInstance, string $strategy = 'add_quantities'): bool
     public function copy(string $toInstance): bool
@@ -579,6 +586,190 @@ class CartMigrator
 'cart.migration.failed'     // If migration fails
 'cart.migration.rollback'   // During rollback operation
 ```
+
+---
+
+## 🏷️ Metadata Management
+
+Cart metadata provides a flexible way to store additional cart-related information that doesn't belong to individual items.
+
+### Metadata Methods
+
+#### `setMetadata(string $key, mixed $value): static`
+Store metadata value for the cart.
+
+**Parameters:**
+- `$key` - Metadata key (string)
+- `$value` - Metadata value (any type: string, int, float, bool, array, object)
+
+**Returns:** Cart instance for method chaining
+
+```php
+// Basic usage
+Cart::setMetadata('user_id', 123);
+Cart::setMetadata('currency', 'USD');
+Cart::setMetadata('notes', 'Gift wrap requested');
+
+// Method chaining
+Cart::setMetadata('step', 'checkout')
+    ->setMetadata('payment_method', 'credit_card');
+
+// Complex data types
+Cart::setMetadata('preferences', [
+    'theme' => 'dark',
+    'language' => 'en',
+    'notifications' => ['email' => true, 'sms' => false]
+]);
+```
+
+#### `getMetadata(string $key, mixed $default = null): mixed`
+Retrieve metadata value from the cart.
+
+**Parameters:**
+- `$key` - Metadata key (string)
+- `$default` - Default value if key doesn't exist (optional)
+
+**Returns:** Metadata value or default if not found
+
+```php
+// Basic retrieval
+$userId = Cart::getMetadata('user_id');
+$currency = Cart::getMetadata('currency', 'USD'); // with default
+
+// Check result
+if ($userId !== null) {
+    // User ID exists
+}
+```
+
+#### `hasMetadata(string $key): bool`
+Check if metadata key exists in the cart.
+
+**Parameters:**
+- `$key` - Metadata key (string)
+
+**Returns:** True if key exists, false otherwise
+
+```php
+if (Cart::hasMetadata('coupon_code')) {
+    $coupon = Cart::getMetadata('coupon_code');
+    // Apply coupon logic...
+}
+
+// Guard against missing data
+if (Cart::hasMetadata('shipping_address')) {
+    $address = Cart::getMetadata('shipping_address');
+    // Process shipping...
+}
+```
+
+#### `removeMetadata(string $key): static`
+Remove metadata key from the cart.
+
+**Parameters:**
+- `$key` - Metadata key to remove (string)
+
+**Returns:** Cart instance for method chaining
+
+```php
+// Remove temporary data
+Cart::removeMetadata('temp_data');
+Cart::removeMetadata('checkout_step');
+
+// Method chaining
+Cart::removeMetadata('old_key')
+    ->setMetadata('new_key', 'new_value');
+```
+
+#### `setMetadataBatch(array $metadata): static`
+Set multiple metadata values at once.
+
+**Parameters:**
+- `$metadata` - Array of key-value pairs
+
+**Returns:** Cart instance for method chaining
+
+```php
+// Batch setting for efficiency
+Cart::setMetadataBatch([
+    'session_id' => session()->getId(),
+    'ip_address' => request()->ip(),
+    'user_agent' => request()->userAgent(),
+    'created_at' => now()->toISOString(),
+    'preferences' => ['theme' => 'dark'],
+]);
+
+// Workflow state
+Cart::setMetadataBatch([
+    'checkout_step' => 'payment',
+    'payment_method' => 'credit_card',
+    'billing_same_as_shipping' => true,
+]);
+```
+
+### Metadata Use Cases
+
+#### Cart Analytics & Tracking
+```php
+Cart::setMetadataBatch([
+    'utm_source' => request()->get('utm_source'),
+    'utm_campaign' => request()->get('utm_campaign'),
+    'referrer' => request()->headers->get('referer'),
+    'landing_page' => url()->current(),
+]);
+```
+
+#### Abandonment Tracking
+```php
+Cart::setMetadata('created_at', now()->timestamp);
+Cart::setMetadata('last_activity', now()->timestamp);
+Cart::setMetadata('abandonment_emails_sent', 0);
+
+// Later, in scheduled task
+$lastActivity = Cart::getMetadata('last_activity');
+if ($lastActivity && (time() - $lastActivity) > 3600) {
+    Cart::setMetadata('abandoned', true);
+}
+```
+
+#### Checkout Workflow
+```php
+// Multi-step checkout
+Cart::setMetadata('checkout_step', 'shipping');
+Cart::setMetadata('shipping_address', $validatedAddress);
+
+// Next step
+Cart::setMetadata('checkout_step', 'payment');
+Cart::setMetadata('payment_method', 'stripe');
+```
+
+#### User Preferences
+```php
+Cart::setMetadataBatch([
+    'delivery_instructions' => 'Leave at front door',
+    'preferred_delivery_time' => 'evening',
+    'gift_wrap' => true,
+    'gift_message' => 'Happy Birthday!',
+    'newsletter_signup' => false,
+]);
+```
+
+#### Business Logic Flags
+```php
+Cart::setMetadata('requires_approval', Cart::subtotal() > 1000);
+Cart::setMetadata('bulk_discount_eligible', Cart::count() >= 10);
+Cart::setMetadata('free_shipping_eligible', Cart::subtotal() >= 50);
+Cart::setMetadata('vip_customer', auth()->user()?->isVip() ?? false);
+```
+
+### Metadata Behavior
+
+- **✅ Type Safe** - Supports all PHP data types (string, int, float, bool, array, object)
+- **✅ Instance Isolated** - Each cart instance has separate metadata
+- **✅ Persistent** - Survives cart operations (add, update, remove items)  
+- **✅ Storage Integrated** - Persisted with your chosen storage driver
+- **✅ Cleared with Cart** - Removed when `Cart::clear()` is called
+- **✅ Fluent Interface** - Method chaining support for clean code
 
 ---
 

@@ -45,6 +45,11 @@ use Illuminate\Support\Facades\Facade;
  * @method static int countItems()
  * @method static array toArray()
  * @method static string getCurrentInstance()
+ * @method static static setMetadata(string $key, mixed $value)
+ * @method static mixed getMetadata(string $key, mixed $default = null)
+ * @method static bool hasMetadata(string $key)
+ * @method static static removeMetadata(string $key)
+ * @method static static setMetadataBatch(array $metadata)
  *
  * @see \MasyukAI\Cart\CartManager
  */
