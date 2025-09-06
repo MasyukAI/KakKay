@@ -1,464 +1,434 @@
-# Events
+# Cart Events System
 
-The MasyukAI Cart package provides a comprehensive event system that allows you to hook into cart operations and execute custom logic.
+The MasyukAI Cart package provides a comprehensive event system that allows you to listen for and respond to various cart operations. Events are dispatched automatically when cart operations occur, enabling you to implement custom business logic, analytics tracking, notifications, and integrations.
 
-## Available Events
+## Event Overview
 
-All events are located in the `MasyukAI\Cart\Events` namespace:
+The cart package dispatches the following events:
 
-- `CartCreated` - Fired when a new cart instance is created
-- `CartUpdated` - Fired when cart contents change
-- `CartCleared` - Fired when cart is completely cleared
-- `ItemAdded` - Fired when an item is added to the cart
-- `ItemUpdated` - Fired when an item is updated
-- `ItemRemoved` - Fired when an item is removed from the cart
+### Core Cart Events
+- **`CartCreated`** - When a new cart instance is created
+- **`CartUpdated`** - When cart contents or totals change
+- **`CartCleared`** - When all items are removed from the cart
+- **`CartMerged`** - When two cart instances are merged
 
-## Event Data
+### Item Events
+- **`ItemAdded`** - When an item is added to the cart
+- **`ItemUpdated`** - When an existing item's quantity or attributes change
+- **`ItemRemoved`** - When an item is removed from the cart
 
-Each event contains relevant data about the operation:
+### Condition Events *(New in v2.0)*
+- **`ConditionAdded`** - When a condition (discount, tax, fee) is added
+- **`ConditionRemoved`** - When a condition is removed
 
-### CartCreated Event
+## Event Configuration
 
-```php
-use MasyukAI\Cart\Events\CartCreated;
-
-// Event properties
-$event->cart;           // Cart instance
-$event->instanceName;   // Cart instance name
-```
-
-### CartUpdated Event
+Events are enabled by default but can be controlled through cart configuration:
 
 ```php
-use MasyukAI\Cart\Events\CartUpdated;
+// Enable/disable events globally
+$cart = new Cart(
+    storage: $storage,
+    events: $eventDispatcher,
+    eventsEnabled: true  // Set to false to disable events
+);
 
-// Event properties
-$event->cart;           // Cart instance
-$event->instanceName;   // Cart instance name
-$event->action;         // Action performed ('item_added', 'item_updated', etc.)
-```
-
-### CartCleared Event
-
-```php
-use MasyukAI\Cart\Events\CartCleared;
-
-// Event properties
-$event->cart;           // Cart instance (now empty)
-$event->instanceName;   // Cart instance name
-$event->previousCount;  // Number of items that were cleared
-```
-
-### ItemAdded Event
-
-```php
-use MasyukAI\Cart\Events\ItemAdded;
-
-// Event properties
-$event->cart;           // Cart instance
-$event->item;           // CartItem that was added
-$event->instanceName;   // Cart instance name
-```
-
-### ItemUpdated Event
-
-```php
-use MasyukAI\Cart\Events\ItemUpdated;
-
-// Event properties
-$event->cart;           // Cart instance
-$event->item;           // Updated CartItem
-$event->previousItem;   // Previous state of the item
-$event->instanceName;   // Cart instance name
-$event->changes;        // Array of changed properties
-```
-
-### ItemRemoved Event
-
-```php
-use MasyukAI\Cart\Events\ItemRemoved;
-
-// Event properties
-$event->cart;           // Cart instance
-$event->item;           // CartItem that was removed
-$event->instanceName;   // Cart instance name
+// Or via facade configuration
+Cart::setEventsEnabled(false);
 ```
 
 ## Listening to Events
 
-### Using Event Listeners
+### Using Laravel Event Listeners
 
-Create event listeners using Artisan:
+#### 1. Create Event Listeners
 
 ```bash
-php artisan make:listener UpdateInventory --event=ItemAdded
+php artisan make:listener TrackCartAnalytics --event="MasyukAI\Cart\Events\ItemAdded"
+php artisan make:listener ProcessDiscountUsage --event="MasyukAI\Cart\Events\ConditionAdded"
 ```
 
+#### 2. Register in EventServiceProvider
+
 ```php
-<?php
-
-namespace App\Listeners;
-
+// app/Providers/EventServiceProvider.php
 use MasyukAI\Cart\Events\ItemAdded;
-use App\Models\Product;
+use MasyukAI\Cart\Events\ConditionAdded;
+use MasyukAI\Cart\Events\ConditionRemoved;
 
-class UpdateInventory
-{
-    public function handle(ItemAdded $event): void
-    {
-        // Update product inventory when item added to cart
-        if ($event->item->associatedModel instanceof Product) {
-            $product = $event->item->associatedModel;
-            $product->decrement('stock', $event->item->quantity);
-        }
-    }
-}
-```
-
-Register the listener in `app/Providers/EventServiceProvider.php`:
-
-```php
 protected $listen = [
-    \MasyukAI\Cart\Events\ItemAdded::class => [
-        \App\Listeners\UpdateInventory::class,
+    ItemAdded::class => [
+        TrackCartAnalytics::class,
+        SendCartAbandonmentEmail::class,
     ],
-    \MasyukAI\Cart\Events\ItemRemoved::class => [
-        \App\Listeners\RestoreInventory::class,
+    ConditionAdded::class => [
+        ProcessDiscountUsage::class,
+        TrackPromotionalCodes::class,
+    ],
+    ConditionRemoved::class => [
+        LogConditionRemovals::class,
     ],
 ];
 ```
 
-### Using Closures
-
-You can also listen to events using closures:
+#### 3. Implement Listener Logic
 
 ```php
-use Illuminate\Support\Facades\Event;
-use MasyukAI\Cart\Events\ItemAdded;
-
-Event::listen(ItemAdded::class, function (ItemAdded $event) {
-    logger('Item added to cart', [
-        'item_id' => $event->item->id,
-        'quantity' => $event->item->quantity,
-        'cart_instance' => $event->instanceName,
-    ]);
-});
+// app/Listeners/TrackCartAnalytics.php
+class TrackCartAnalytics
+{
+    public function handle(ItemAdded $event): void
+    {
+        Analytics::track('cart_item_added', [
+            'item_id' => $event->item->id,
+            'item_name' => $event->item->name,
+            'price' => $event->item->getRawPrice(),
+            'quantity' => $event->item->quantity,
+            'cart_total' => $event->cart->getRawTotal(),
+            'cart_items_count' => $event->cart->countItems(),
+        ]);
+    }
+}
 ```
 
-### In Service Providers
-
-Register event listeners in your service provider's `boot` method:
+### Using Closure-Based Listeners
 
 ```php
+// app/Providers/AppServiceProvider.php
+use Illuminate\Support\Facades\Event;
+use MasyukAI\Cart\Events\ConditionAdded;
+
 public function boot(): void
 {
-    Event::listen(
-        \MasyukAI\Cart\Events\CartCleared::class,
-        fn($event) => Cache::forget("cart_summary_{$event->instanceName}")
-    );
+    Event::listen(ConditionAdded::class, function (ConditionAdded $event) {
+        // Track promotional code usage
+        if ($event->condition->getType() === 'discount') {
+            Log::info('Discount applied', [
+                'code' => $event->condition->getName(),
+                'value' => $event->condition->getValue(),
+                'impact' => $event->getConditionImpact(),
+                'cart_instance' => $event->cart->getStorageInstanceName(),
+            ]);
+        }
+    });
 }
 ```
 
-## Common Use Cases
+## Event Details
 
-### Inventory Management
+### ItemAdded Event
+
+Dispatched when an item is added to the cart.
 
 ```php
-// app/Listeners/InventoryManager.php
-use MasyukAI\Cart\Events\{ItemAdded, ItemUpdated, ItemRemoved};
-
-class InventoryManager
+class ItemAdded
 {
-    public function handleItemAdded(ItemAdded $event): void
-    {
-        $this->reserveStock($event->item);
-    }
-    
-    public function handleItemUpdated(ItemUpdated $event): void
-    {
-        $quantityDiff = $event->item->quantity - $event->previousItem->quantity;
-        if ($quantityDiff > 0) {
-            $this->reserveStock($event->item, $quantityDiff);
-        } else {
-            $this->releaseStock($event->item, abs($quantityDiff));
-        }
-    }
-    
-    public function handleItemRemoved(ItemRemoved $event): void
-    {
-        $this->releaseStock($event->item);
-    }
-    
-    private function reserveStock($item, $quantity = null): void
-    {
-        if ($item->associatedModel) {
-            $item->associatedModel->decrement('available_stock', $quantity ?? $item->quantity);
-        }
-    }
-    
-    private function releaseStock($item, $quantity = null): void
-    {
-        if ($item->associatedModel) {
-            $item->associatedModel->increment('available_stock', $quantity ?? $item->quantity);
-        }
-    }
+    public readonly CartItem $item;    // The added item
+    public readonly Cart $cart;        // Cart instance
 }
 ```
 
-### Analytics and Tracking
-
+**Example Usage:**
 ```php
-use MasyukAI\Cart\Events\ItemAdded;
-
 Event::listen(ItemAdded::class, function (ItemAdded $event) {
-    // Track cart additions in analytics
-    Analytics::track('cart_item_added', [
-        'item_id' => $event->item->id,
-        'item_name' => $event->item->name,
-        'price' => $event->item->price,
-        'quantity' => $event->item->quantity,
-        'user_id' => auth()->id(),
-        'session_id' => session()->getId(),
-    ]);
+    // Send real-time notification
+    broadcast(new CartUpdatedEvent($event->cart->toArray()));
+    
+    // Track inventory
+    Inventory::reserve($event->item->id, $event->item->quantity);
+    
+    // Trigger upsell recommendations
+    RecommendationEngine::generateUpsells($event->cart);
 });
 ```
+
+### ConditionAdded Event
+
+Dispatched when a condition is added to the cart or an item.
+
+```php
+class ConditionAdded
+{
+    public readonly CartCondition $condition; // The added condition
+    public readonly Cart $cart;               // Cart instance
+    public readonly ?string $target;          // Item ID if item-level condition
+    
+    public function getConditionImpact(): float;  // Monetary impact
+    public function isItemCondition(): bool;      // Check if item-level
+    public function toArray(): array;             // Event data for logging
+}
+```
+
+**Example Usage:**
+```php
+Event::listen(ConditionAdded::class, function (ConditionAdded $event) {
+    // Track promotional code usage
+    if ($event->condition->getType() === 'discount') {
+        PromoCode::incrementUsage($event->condition->getName());
+        
+        // Alert for high-value discounts
+        if (abs($event->getConditionImpact()) > 100) {
+            Notification::route('slack', config('alerts.slack_webhook'))
+                ->notify(new HighValueDiscountAlert($event));
+        }
+    }
+    
+    // Log tax applications for compliance
+    if ($event->condition->getType() === 'tax') {
+        TaxLog::create([
+            'cart_id' => $event->cart->getIdentifier(),
+            'jurisdiction' => $event->condition->getAttribute('jurisdiction'),
+            'rate' => $event->condition->getValue(),
+            'amount' => $event->getConditionImpact(),
+        ]);
+    }
+});
+```
+
+### ConditionRemoved Event
+
+Dispatched when a condition is removed from the cart or an item.
+
+```php
+class ConditionRemoved
+{
+    public readonly CartCondition $condition; // The removed condition
+    public readonly Cart $cart;               // Cart instance
+    public readonly ?string $target;          // Item ID if item-level condition
+    public readonly ?string $reason;          // Removal reason
+    
+    public function getConditionImpact(): float;  // Former monetary impact
+    public function getLostSavings(): float;      // Lost savings amount
+    public function isItemCondition(): bool;      // Check if item-level
+    public function toArray(): array;             // Event data for logging
+}
+```
+
+**Example Usage:**
+```php
+Event::listen(ConditionRemoved::class, function (ConditionRemoved $event) {
+    // Track promotional code removals
+    if ($event->condition->getType() === 'discount') {
+        Analytics::track('promo_code_removed', [
+            'code' => $event->condition->getName(),
+            'reason' => $event->reason ?? 'user_action',
+            'savings_lost' => $event->getLostSavings(),
+        ]);
+        
+        // Offer alternative discount
+        if ($event->getLostSavings() > 20) {
+            AlternativeDiscountService::suggest($event->cart);
+        }
+    }
+});
+```
+
+## Advanced Event Usage
 
 ### Cart Abandonment Tracking
 
 ```php
-use MasyukAI\Cart\Events\{ItemAdded, CartCleared};
-
-Event::listen(ItemAdded::class, function (ItemAdded $event) {
-    // Schedule cart abandonment email
-    if (auth()->check()) {
-        CartAbandonmentEmail::dispatch(auth()->user())
-            ->delay(now()->addHours(24));
-    }
+Event::listen([ItemAdded::class, ItemUpdated::class], function ($event) {
+    // Reset abandonment timer when cart is modified
+    CartAbandonmentService::resetTimer($event->cart->getIdentifier());
 });
 
 Event::listen(CartCleared::class, function (CartCleared $event) {
-    // Cancel abandonment email if cart is cleared (purchased)
-    if (auth()->check()) {
-        // Cancel scheduled job logic here
-    }
+    // Cancel abandonment tracking when cart is cleared
+    CartAbandonmentService::cancelTracking($event->cart->getIdentifier());
 });
 ```
 
-### Cache Management
+### Real-time Cart Synchronization
 
 ```php
-use MasyukAI\Cart\Events\CartUpdated;
-use Illuminate\Support\Facades\Cache;
-
-Event::listen(CartUpdated::class, function (CartUpdated $event) {
-    // Clear cart-related cache when cart changes
-    $userId = auth()->id();
-    Cache::forget("cart_summary_{$userId}");
-    Cache::forget("cart_recommendations_{$userId}");
+Event::listen([
+    ItemAdded::class,
+    ItemUpdated::class,
+    ItemRemoved::class,
+    ConditionAdded::class,
+    ConditionRemoved::class,
+], function ($event) {
+    // Broadcast cart updates to connected clients
+    broadcast(new CartSyncEvent([
+        'cart_id' => $event->cart->getIdentifier(),
+        'instance' => $event->cart->getStorageInstanceName(),
+        'data' => $event->cart->toArray(),
+        'timestamp' => now()->toISOString(),
+    ]));
 });
 ```
 
-### Real-time Updates
+### Inventory Management
 
 ```php
-use MasyukAI\Cart\Events\ItemAdded;
-use Illuminate\Support\Facades\Broadcast;
-
 Event::listen(ItemAdded::class, function (ItemAdded $event) {
-    // Broadcast cart updates to connected users
-    if (auth()->check()) {
-        Broadcast::channel("cart.{auth()->id()}")
-            ->send('CartUpdated', [
-                'action' => 'item_added',
-                'item' => $event->item->toArray(),
-                'cart_count' => $event->cart->count(),
-                'cart_total' => $event->cart->total(),
-            ]);
-    }
+    InventoryService::reserve($event->item->id, $event->item->quantity);
 });
-```
 
-### Automatic Condition Application
-
-```php
-use MasyukAI\Cart\Events\CartUpdated;
-use MasyukAI\Cart\Conditions\CartCondition;
-
-Event::listen(CartUpdated::class, function (CartUpdated $event) {
-    $cart = $event->cart;
+Event::listen(ItemUpdated::class, function (ItemUpdated $event) {
+    // Adjust inventory reservations based on quantity changes
+    $oldItem = $event->cart->getItems()->get($event->item->id);
+    $quantityDifference = $event->item->quantity - $oldItem->quantity;
     
-    // Auto-apply free shipping for orders over $100
-    if ($cart->subtotal() >= 100 && !$cart->getCondition('free-shipping')) {
-        $freeShipping = new CartCondition(
-            'free-shipping',
-            'shipping',
-            'subtotal',
-            '-0', // Free
-            ['description' => 'Free shipping on orders over $100']
-        );
-        $cart->condition($freeShipping);
+    if ($quantityDifference > 0) {
+        InventoryService::reserve($event->item->id, $quantityDifference);
+    } else {
+        InventoryService::release($event->item->id, abs($quantityDifference));
     }
-    
-    // Remove free shipping if under $100
-    if ($cart->subtotal() < 100 && $cart->getCondition('free-shipping')) {
-        $cart->removeCondition('free-shipping');
+});
+
+Event::listen(ItemRemoved::class, function (ItemRemoved $event) {
+    InventoryService::release($event->item->id, $event->item->quantity);
+});
+```
+
+### Business Intelligence & Analytics
+
+```php
+Event::listen(ConditionAdded::class, function (ConditionAdded $event) {
+    if ($event->condition->getType() === 'discount') {
+        BusinessIntelligence::record([
+            'event_type' => 'discount_applied',
+            'discount_code' => $event->condition->getName(),
+            'discount_value' => $event->condition->getValue(),
+            'impact_amount' => $event->getConditionImpact(),
+            'cart_value_before' => $event->cart->getRawSubtotal(),
+            'cart_value_after' => $event->cart->getRawTotal(),
+            'customer_segment' => CustomerSegmentation::getSegment(auth()->id()),
+            'timestamp' => now(),
+        ]);
     }
 });
 ```
 
-### Notification System
+## Event Testing
+
+### Testing Event Dispatching
 
 ```php
-use MasyukAI\Cart\Events\ItemAdded;
-use App\Notifications\ItemAddedToCart;
-
-Event::listen(ItemAdded::class, function (ItemAdded $event) {
-    if (auth()->check()) {
-        // Notify user about cart addition
-        auth()->user()->notify(new ItemAddedToCart($event->item));
-        
-        // Notify admin about high-value additions
-        if ($event->item->getPriceSum() > 1000) {
-            User::where('role', 'admin')->each(function ($admin) use ($event) {
-                $admin->notify(new HighValueCartAddition($event->item, auth()->user()));
-            });
-        }
-    }
-});
-```
-
-## Disabling Events
-
-You can disable events globally or for specific operations:
-
-### Global Event Disabling
-
-```php
-// In configuration
-'events' => false,
-
-// Or in .env
-CART_EVENTS_ENABLED=false
-```
-
-### Runtime Event Disabling
-
-```php
-use MasyukAI\Cart\Cart;
-use MasyukAI\Cart\Storage\SessionStorage;
-
-// Create cart with events disabled
-$cart = new Cart(
-    storage: new SessionStorage(session()),
-    events: null,
-    eventsEnabled: false
-);
-
-// Or disable events for specific instance
-$cart = Cart::instance('silent');
-// Configure this instance to not fire events
-```
-
-### Conditional Event Disabling
-
-```php
-Event::listen(ItemAdded::class, function (ItemAdded $event) {
-    // Only process during business hours
-    if (now()->between('09:00', '17:00')) {
-        $this->processInventory($event->item);
-    }
-});
-```
-
-## Testing Events
-
-### Testing Event Dispatch
-
-```php
+// tests/Feature/CartEventsTest.php
 use Illuminate\Support\Facades\Event;
 use MasyukAI\Cart\Events\ItemAdded;
+use MasyukAI\Cart\Events\ConditionAdded;
 
-it('dispatches item added event', function () {
-    Event::fake();
+class CartEventsTest extends TestCase
+{
+    public function test_item_added_event_is_dispatched(): void
+    {
+        Event::fake();
+        
+        Cart::add('product-123', 'Test Product', 99.99, 1);
+        
+        Event::assertDispatched(ItemAdded::class, function (ItemAdded $event) {
+            return $event->item->id === 'product-123'
+                && $event->item->name === 'Test Product';
+        });
+    }
     
-    Cart::add('product-1', 'Test Product', 99.99, 1);
-    
-    Event::assertDispatched(ItemAdded::class, function ($event) {
-        return $event->item->id === 'product-1' 
-            && $event->item->name === 'Test Product';
-    });
-});
+    public function test_condition_added_event_includes_impact_data(): void
+    {
+        Event::fake();
+        
+        Cart::add('product-123', 'Test Product', 100.00, 1);
+        Cart::addDiscount('test-discount', '-20%');
+        
+        Event::assertDispatched(ConditionAdded::class, function (ConditionAdded $event) {
+            return $event->condition->getName() === 'test-discount'
+                && $event->getConditionImpact() === -20.00;
+        });
+    }
+}
 ```
 
 ### Testing Event Listeners
 
 ```php
-use MasyukAI\Cart\Events\ItemAdded;
-use App\Listeners\UpdateInventory;
-
-it('updates inventory when item added', function () {
-    $product = Product::factory()->create(['stock' => 10]);
-    $listener = new UpdateInventory();
-    
-    $item = new CartItem('test', 'Test', 10.00, 2, [], [], $product);
-    $event = new ItemAdded(Cart::instance(), $item, 'default');
-    
-    $listener->handle($event);
-    
-    expect($product->fresh()->stock)->toBe(8);
-});
-```
-
-## Custom Events
-
-You can create custom events that extend the cart functionality:
-
-```php
-namespace App\Events;
-
-use MasyukAI\Cart\Cart;
-use MasyukAI\Cart\Models\CartItem;
-
-class ItemWishlisted
+// tests/Unit/Listeners/TrackCartAnalyticsTest.php
+class TrackCartAnalyticsTest extends TestCase
 {
-    public function __construct(
-        public Cart $cart,
-        public CartItem $item,
-        public string $instanceName = 'default'
-    ) {}
-}
-```
-
-Dispatch custom events:
-
-```php
-use App\Events\ItemWishlisted;
-
-// Custom method to add to wishlist
-class CartService
-{
-    public function addToWishlist(string $id, string $name, float $price): void
+    public function test_tracks_item_added_analytics(): void
     {
-        $wishlistCart = Cart::instance('wishlist');
-        $item = $wishlistCart->add($id, $name, $price, 1);
+        Analytics::shouldReceive('track')
+            ->once()
+            ->with('cart_item_added', Mockery::subset([
+                'item_id' => 'product-123',
+                'item_name' => 'Test Product',
+            ]));
         
-        // Dispatch custom event
-        event(new ItemWishlisted($wishlistCart, $item, 'wishlist'));
+        $listener = new TrackCartAnalytics();
+        $event = new ItemAdded($item, $cart);
+        
+        $listener->handle($event);
     }
 }
 ```
 
 ## Best Practices
 
-1. **Keep listeners lightweight**: Don't perform heavy operations in event listeners
-2. **Use queued listeners**: For time-consuming operations, use queued event listeners
-3. **Handle failures gracefully**: Event listeners should not break cart operations
-4. **Test thoroughly**: Always test event listeners with unit tests
-5. **Use appropriate events**: Choose the right event for your use case
-6. **Consider performance**: Too many listeners can impact performance
+### 1. Keep Listeners Fast
+```php
+// Good: Queue heavy operations
+Event::listen(ItemAdded::class, function (ItemAdded $event) {
+    SendCartAbandonmentEmail::dispatch($event->cart)->delay(now()->addHours(2));
+});
 
-## Next Steps
+// Avoid: Synchronous heavy operations
+Event::listen(ItemAdded::class, function (ItemAdded $event) {
+    // Don't do this - it slows down cart operations
+    EmailService::sendComplexAnalyticsReport($event);
+});
+```
 
-- Learn about [Livewire Integration](livewire.md) for reactive cart UIs
-- Explore [Storage](storage.md) for cart persistence
-- Check out [Testing](testing.md) for comprehensive test coverage
+### 2. Handle Exceptions Gracefully
+```php
+Event::listen(ConditionAdded::class, function (ConditionAdded $event) {
+    try {
+        ExternalAnalyticsService::track($event->toArray());
+    } catch (Exception $e) {
+        Log::warning('Analytics tracking failed', [
+            'event' => $event->toArray(),
+            'error' => $e->getMessage(),
+        ]);
+        // Don't rethrow - don't break cart operations
+    }
+});
+```
+
+### 3. Use Event Data Efficiently
+```php
+Event::listen(ItemAdded::class, function (ItemAdded $event) {
+    // Cache commonly used calculations
+    $cartData = $event->cart->toArray();
+    
+    // Batch related operations
+    DB::transaction(function () use ($event, $cartData) {
+        InventoryService::reserve($event->item->id, $event->item->quantity);
+        Analytics::track('item_added', $cartData);
+        RecommendationService::updateProfile(auth()->id(), $cartData);
+    });
+});
+```
+
+## Event Troubleshooting
+
+### Common Issues
+
+1. **Events not firing**: Ensure `eventsEnabled` is `true` and event dispatcher is properly configured
+2. **Missing event data**: Check that the event instance has access to all required cart/item data
+3. **Performance issues**: Move heavy operations to queued jobs
+4. **Memory leaks**: Avoid storing large objects in event listeners
+
+### Debug Events
+
+```php
+// Log all cart events for debugging
+Event::listen('MasyukAI\Cart\Events\*', function (string $eventName, array $data) {
+    Log::debug('Cart event fired', [
+        'event' => $eventName,
+        'data' => $data[0]->toArray() ?? 'No data',
+    ]);
+});
+```
+
+This comprehensive event system provides powerful hooks for integrating cart operations with your application's business logic, analytics, and external services.

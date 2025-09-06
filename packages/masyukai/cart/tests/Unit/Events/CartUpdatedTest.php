@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Event;
 use MasyukAI\Cart\Cart;
-use MasyukAI\Cart\Collections\CartCollection;
-use MasyukAI\Cart\Collections\CartConditionCollection;
 use MasyukAI\Cart\Events\CartUpdated;
 use MasyukAI\Cart\Events\ItemUpdated;
 use MasyukAI\Cart\Storage\StorageInterface;
@@ -112,32 +110,28 @@ beforeEach(function (): void {
 });
 
 it('can be instantiated with required parameters', function (): void {
-    $items = new CartCollection;
-    $conditions = new CartConditionCollection;
-    $instance = 'default';
-    $total = 250.0;
+    $cart = app(Cart::class);
+    $cart->add('product-1', 'Product 1', 100, 2);
+    $reason = 'item_added';
 
-    $event = new CartUpdated($items, $conditions, $instance, $total);
+    $event = new CartUpdated($cart, $reason);
 
-    expect($event->items)->toBe($items)
-        ->and($event->conditions)->toBe($conditions)
-        ->and($event->instance)->toBe($instance)
-        ->and($event->total)->toBe($total);
+    expect($event->cart)->toBe($cart)
+        ->and($event->reason)->toBe($reason);
 });
 
 it('can be dispatched manually', function (): void {
     Event::fake();
 
-    $items = new CartCollection;
-    $conditions = new CartConditionCollection;
-    $instance = 'default';
-    $total = 250.0;
+    $cart = app(Cart::class);
+    $cart->add('product-1', 'Product 1', 100, 2);
+    $reason = 'manual_test';
 
-    $event = new CartUpdated($items, $conditions, $instance, $total);
+    $event = new CartUpdated($cart, $reason);
     event($event);
 
-    Event::assertDispatched(CartUpdated::class, function (CartUpdated $event) {
-        return $event->instance === 'default' && $event->total === 250.0;
+    Event::assertDispatched(CartUpdated::class, function (CartUpdated $event) use ($cart, $reason) {
+        return $event->cart === $cart && $event->reason === $reason;
     });
 });
 
@@ -145,15 +139,12 @@ it('contains proper cart data when event is created', function (): void {
     $cart = app(Cart::class);
     $cart->add('product-1', 'Product 1', 100, 2);
 
-    $items = $cart->getItems();
-    $conditions = $cart->getConditions();
-    $total = $cart->getRawTotal();
+    $event = new CartUpdated($cart, 'test_update');
 
-    $event = new CartUpdated($items, $conditions, $cart->instance(), $total);
-
-    expect($event->total)->toBe(200.0)
-        ->and($event->items->has('product-1'))->toBeTrue()
-        ->and($event->instance)->toBe('default');
+    expect($event->cart->getRawTotal())->toBe(200.0)
+        ->and($event->cart->has('product-1'))->toBeTrue()
+        ->and($event->cart->getCurrentInstance())->toBe('default')
+        ->and($event->reason)->toBe('test_update');
 });
 
 it('cart update triggers ItemUpdated event which could fire CartUpdated', function (): void {
@@ -189,28 +180,20 @@ it('cart condition updates can trigger manual CartUpdated', function (): void {
     $cart->addCondition($condition);
 
     // Manually dispatch CartUpdated event after cart state change
-    $event = new CartUpdated(
-        $cart->getItems(),
-        $cart->getConditions(),
-        $cart->instance(),
-        $cart->getRawTotal()
-    );
+    $event = new CartUpdated($cart, 'condition_added');
     event($event);
 
     Event::assertDispatched(CartUpdated::class);
 });
 
 it('preserves event data immutability', function (): void {
-    $items = new CartCollection;
-    $conditions = new CartConditionCollection;
-    $instance = 'test-instance';
-    $total = 150.50;
+    $cart = app(Cart::class);
+    $cart->add('product-1', 'Product 1', 100, 2);
+    $reason = 'immutability_test';
 
-    $event = new CartUpdated($items, $conditions, $instance, $total);
+    $event = new CartUpdated($cart, $reason);
 
-    // Check that all properties are accessible (readonly classes expose public properties)
-    expect($event->items)->toBe($items)
-        ->and($event->conditions)->toBe($conditions)
-        ->and($event->instance)->toBe($instance)
-        ->and($event->total)->toBe($total);
+    // Check that all properties are accessible (readonly properties)
+    expect($event->cart)->toBe($cart)
+        ->and($event->reason)->toBe($reason);
 });

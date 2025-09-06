@@ -182,33 +182,58 @@ foreach (Cart::content() as $item) {
 
 ### **💡 API Conventions**
 
-The cart package follows intuitive naming conventions:
+The cart package implements a **dual API approach** for maximum flexibility:
 
-#### **Cart-level Methods**
+#### **🎨 Formatted Methods (User-Facing)**
+Perfect for display, templates, and user interfaces. Return `string|int|float` with currency formatting applied.
+
 ```php
-// These include item-level conditions by default (user-friendly)
-Cart::subtotal()    // subtotal with item-level conditions applied
-Cart::total()       // final total with all conditions applied
+// Cart-level formatted methods
+Cart::subtotal()                    // "$1,499.97" - with item-level conditions
+Cart::subtotalWithoutConditions()   // "$1,749.97" - raw base prices
+Cart::total()                       // "$1,362.34" - with all conditions applied
+Cart::totalWithoutConditions()      // "$1,749.97" - raw base prices
+Cart::savings()                     // "$387.63" - total discount amount
 
-// Raw values without conditions (for calculations)
-Cart::subtotalWithoutConditions()  // raw subtotal, no conditions
-Cart::totalWithoutConditions()     // raw total, no conditions
+// Item-level formatted methods
+$item->getPrice()                   // "$899.99" - single price with conditions
+$item->getPriceWithoutConditions()  // "$999.99" - single price without conditions
+$item->getPriceSum()                // "$1,799.98" - line total (price × qty) with conditions
+$item->getPriceSumWithoutConditions() // "$1,999.98" - line total without conditions
+$item->subtotal()                   // "$1,799.98" - alias for getPriceSum()
+$item->discountAmount()             // "$200.00" - item-level discount amount
 ```
 
-#### **Item-level Methods**
-```php
-// These include item-level conditions by default (user-friendly)
-$item->getPrice()           // formatted price with conditions applied
-$item->getPriceSum()        // formatted total (price × quantity) with conditions
+#### **🔧 Raw Methods (Internal/Calculations)**
+Perfect for calculations, events, serialization, and system operations. Always return `float` values.
 
-// Raw values without conditions (for calculations)
-$item->getPriceWithoutConditions()     // formatted price without conditions
-$item->getPriceSumWithoutConditions()  // formatted total without conditions
-$item->subtotal()                      // formatted total with conditions (alias)
-$item->subtotalWithoutConditions()     // formatted total without conditions
+```php
+// Cart-level raw methods
+Cart::getRawSubtotal()              // 1499.97 - with item-level conditions
+Cart::getRawSubTotalWithoutConditions() // 1749.97 - raw base prices
+Cart::getRawTotal()                 // 1362.34 - with all conditions applied
+Cart::getRawSavings()               // 387.63 - total discount amount
+
+// Item-level raw methods
+$item->getRawPrice()                // 899.99 - single price with conditions
+$item->getRawPriceWithoutConditions() // 999.99 - single price without conditions
+$item->getRawPriceSum()             // 1799.98 - line total with conditions
+$item->getRawPriceSumWithoutConditions() // 1999.98 - line total without conditions
+$item->getRawDiscountAmount()       // 200.00 - item-level discount amount
 ```
 
-> **Principle**: Methods without "WithoutConditions" suffix apply item-level conditions by default, giving users the expected calculated prices.
+#### **📋 Usage Guidelines**
+
+| **Use Case** | **Method Type** | **Example** |
+|-------------|----------------|-------------|
+| **Templates & Views** | Formatted | `{{ Cart::total() }}` → `$1,362.34` |
+| **API Responses** | Both | `['total_formatted' => Cart::total(), 'total_raw' => Cart::getRawTotal()]` |
+| **Tax Calculations** | Raw | `$tax = Cart::getRawSubtotal() * 0.0825` |
+| **Event Handling** | Raw | `Analytics::track('cart_value', Cart::getRawTotal())` |
+| **Database Storage** | Raw | `['total' => Cart::getRawTotal()]` |
+| **Condition Logic** | Raw | `if (Cart::getRawSubtotal() >= 100) { /* free shipping */ }` |
+
+> **💡 Key Principle**: Use **formatted methods** for user-facing display and **raw methods** for internal calculations and system operations.
 
 ### **Advanced Use Cases**
 
@@ -531,49 +556,6 @@ $recurring = Cart::instance('subscription');   // Recurring orders
 // User-specific carts
 $guestCart = Cart::instance('guest_' . session()->getId());
 $userCart = Cart::instance('user_' . auth()->id());
-
-// Merge guest cart to user cart on login
-if (auth()->check()) {
-    $userCart->merge($guestCart->instance());
-    $guestCart->clear();
-}
-```
-
-### **Guest-to-User Cart Migration**
-
-```php
-use MasyukAI\Cart\Services\CartMigrationService;
-
-$migrationService = app(CartMigrationService::class);
-
-// Automatic migration on user login
-$migrationService->migrateGuestCartToUser(
-    userId: auth()->id(),
-    instance: 'default',
-    oldSessionId: session()->getId()
-);
-
-// Migrate specific user and instance
-$migrationService->migrateGuestCartForUser(
-    user: $user,
-    instance: 'wishlist',
-    oldSessionId: 'guest_session_abc123'
-);
-
-// Migrate all instances for a user
-$results = $migrationService->migrateAllGuestInstances(
-    userId: auth()->id(),
-    oldSessionId: session()->getId()
-);
-
-// Get appropriate cart identifier
-$identifier = $migrationService->getIdentifier(
-    userId: auth()->id(),
-    sessionId: session()->getId()
-);
-
-// Handle cart switching on authentication state changes
-$migrationService->autoSwitchCartIdentifier(); // Auto switches based on auth state
 ```
 
 ### **Advanced Condition System**
@@ -748,9 +730,18 @@ return [
     
     // Migration settings
     'migration' => [
-        'auto_migrate_on_login' => true,
-        'merge_strategy' => 'add_quantities', // add_quantities, keep_highest, replace_with_guest, keep_user
-        'clear_guest_cart_after_merge' => true,
+        // Automatically migrate guest cart to user cart on login
+        'auto_migrate_on_login' => env('CART_AUTO_MIGRATE_ON_LOGIN', true),
+
+        // Backup user cart to guest session on logout
+        'backup_on_logout' => env('CART_BACKUP_ON_LOGOUT', false),
+
+        // Strategy for handling conflicts when merging carts
+        // Options: 'add_quantities', 'keep_highest_quantity', 'keep_user_cart', 'replace_with_guest'
+        'merge_strategy' => env('CART_MERGE_STRATEGY', 'add_quantities'),
+
+        // Automatically switch cart instances based on auth status
+        'auto_switch_instances' => env('CART_AUTO_SWITCH_INSTANCES', true),
     ],
     
     // Validation rules
@@ -791,7 +782,6 @@ Cart::add('1', 'Product', 100, 1);              // Cleaner syntax
 Cart::getItems();                                // Just items
 Cart::getConditions();                           // Just conditions  
 Cart::addDiscount('sale', '20%');                // Simplified conditions
-Cart::merge('guest-cart');                       // Instance merging
 ```
 
 **Migration steps:**
@@ -819,7 +809,6 @@ $cart->total();                                      // ✅ Same
 $cart->addDiscount('welcome', '10%');               // 🆕 Simplified conditions
 $cart->search(fn($item) => $item->price > 50);      // 🆕 Modern syntax
 $cart->content()->groupByAttribute('category');      // 🆕 Advanced collections
-$cart->instance('wishlist')->merge('main');         // 🆕 Instance management
 ```
 
 </details>

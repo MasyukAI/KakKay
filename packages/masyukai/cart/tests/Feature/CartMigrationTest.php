@@ -242,8 +242,8 @@ it('dispatches cart merged event on successful migration', function () {
     $this->cartMigration->migrateGuestCartToUser(1, 'default', $guestSessionId);
 
     Event::assertDispatched(CartMerged::class, function ($event) {
-        return $event->targetInstance === 'default' &&
-               $event->sourceInstance === 'default' &&
+        return $event->targetCart->getCurrentInstance() === 'default' &&
+               $event->sourceCart->getCurrentInstance() === 'default' &&
                $event->totalItemsMerged === 2;
     });
 });

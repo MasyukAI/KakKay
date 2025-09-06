@@ -28,21 +28,18 @@ describe('Additional Coverage Tests', function () {
         $cartManager = app('cart');
         $targetCart = $cartManager->getCartInstance('target');
         $sourceCart = $cartManager->getCartInstance('source');
-        $mergedItems = new \MasyukAI\Cart\Collections\CartCollection;
 
         $event = new CartMerged(
             $targetCart,
             $sourceCart,
-            $mergedItems,
-            'target-instance',
-            'source-instance',
             0,
+            'add_quantities',
             false
         );
 
-        expect($event->targetInstance)->toBe('target-instance');
-        expect($event->sourceInstance)->toBe('source-instance');
         expect($event->totalItemsMerged)->toBe(0);
+        expect($event->mergeStrategy)->toBe('add_quantities');
+        expect($event->hadConflicts)->toBeFalse();
     });
 
     it('can instantiate CartCreated event', function () {

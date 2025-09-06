@@ -6,6 +6,8 @@ namespace MasyukAI\Cart\Traits;
 
 use MasyukAI\Cart\Collections\CartConditionCollection;
 use MasyukAI\Cart\Conditions\CartCondition;
+use MasyukAI\Cart\Events\ConditionAdded;
+use MasyukAI\Cart\Events\ConditionRemoved;
 use MasyukAI\Cart\Exceptions\InvalidCartConditionException;
 
 trait ManagesConditions
@@ -19,6 +21,11 @@ trait ManagesConditions
         $conditions->put($condition->getName(), $condition);
         $conditionsArray = $conditions->toArray();
         $this->storage->putConditions($this->getIdentifier(), $this->getStorageInstanceName(), $conditionsArray);
+
+        // Dispatch condition added event
+        if ($this->eventsEnabled && $this->events) {
+            $this->events->dispatch(new ConditionAdded($condition, $this));
+        }
     }
 
     /**
@@ -81,9 +88,17 @@ trait ManagesConditions
             return false;
         }
 
+        // Get the condition before removing it for the event
+        $removedCondition = $conditions->get($name);
+
         $conditions->forget($name);
         $conditionsArray = $conditions->toArray();
         $this->storage->putConditions($this->getIdentifier(), $this->getStorageInstanceName(), $conditionsArray);
+
+        // Dispatch condition removed event
+        if ($this->eventsEnabled && $this->events && $removedCondition) {
+            $this->events->dispatch(new ConditionRemoved($removedCondition, $this));
+        }
 
         return true;
     }
@@ -144,6 +159,11 @@ trait ManagesConditions
         $cartItems->put($itemId, $item);
         $this->save($cartItems);
 
+        // Dispatch condition added event for item-level condition
+        if ($this->eventsEnabled && $this->events) {
+            $this->events->dispatch(new ConditionAdded($condition, $this, $itemId));
+        }
+
         return true;
     }
 
@@ -165,9 +185,17 @@ trait ManagesConditions
             return false;
         }
 
+        // Get the condition before removing it for the event
+        $removedCondition = $item->conditions->get($conditionName);
+
         $item = $item->removeCondition($conditionName);
         $cartItems->put($itemId, $item);
         $this->save($cartItems);
+
+        // Dispatch condition removed event for item-level condition
+        if ($this->eventsEnabled && $this->events && $removedCondition) {
+            $this->events->dispatch(new ConditionRemoved($removedCondition, $this, $itemId));
+        }
 
         return true;
     }

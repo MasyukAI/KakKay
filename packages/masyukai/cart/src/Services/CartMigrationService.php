@@ -90,17 +90,12 @@ class CartMigrationService
         $cartManager = Cart::getFacadeRoot();
         $targetCartInstance = $cartManager->getCartInstance($instance);
 
-        // Convert merged items array to CartCollection for the event
-        $mergedItemsCollection = new CartCollection($mergedItems);
-
         // Dispatch cart merged event
         event(new CartMerged(
             targetCart: $targetCartInstance,
             sourceCart: $targetCartInstance, // Limited by design
-            mergedItems: $mergedItemsCollection,
-            targetInstance: $instance,
-            sourceInstance: $instance,
             totalItemsMerged: array_sum(array_column($mergedItems, 'quantity')),
+            mergeStrategy: $this->config['merge_strategy'] ?? 'add_quantities',
             hadConflicts: count($mergedItems) > count($guestItems)
         ));
 
