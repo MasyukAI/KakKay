@@ -153,7 +153,7 @@ describe('Adding items', function () {
         expect($item->name)->toBe('Test Product');
         expect($item->price)->toBe(10.00);
         expect($item->quantity)->toBe(2);
-        expect($item->getRawPriceSumWithConditions())->toBe(20.00);
+        expect($item->getRawPriceSum())->toBe(20.00);
 
         expect($cart->getTotalQuantity())->toBe(2);
         expect($cart->total())->toBe(20.00);
@@ -218,7 +218,7 @@ describe('Adding items', function () {
 
         expect($item->getConditions())->toHaveCount(2);
         // 100 - 15% = 85, then +20% = 102
-        expect($item->getRawPriceSumWithConditions())->toBe(102.00);
+        expect($item->getRawPriceSum())->toBe(102.00);
     });
 
     it('merges quantities when adding existing items', function () {
@@ -278,7 +278,7 @@ describe('Adding items', function () {
 
         expect($item->price)->toBe(9999.99);
         expect($item->quantity)->toBe(1000);
-        expect($item->getRawPriceSumWithConditions())->toBe(9999990.0);
+        expect($item->getRawPriceSum())->toBe(9999990.0);
         expect($this->cart->total())->toBe(9999990.0);
     });
 
@@ -490,7 +490,7 @@ describe('Cart conditions', function () {
 
         $item = $this->cart->get('product-1');
         expect($item->getConditions())->toHaveCount(1);
-        expect($item->getRawPriceSumWithConditions())->toBe(80.00); // 100 - 20%
+        expect($item->getRawPriceSum())->toBe(80.00); // 100 - 20%
 
         // Adding to non-existent item should fail
         $result = $this->cart->addItemCondition('nonexistent', $itemDiscount);
@@ -553,7 +553,7 @@ describe('Cart information and calculations', function () {
         expect($item->name)->toBe('Product 1');
         expect($item->price)->toBe(10.99);
         expect($item->quantity)->toBe(2);
-        expect($item->getRawPriceSumWithConditions())->toBe(21.98);
+        expect($item->getRawPriceSum())->toBe(21.98);
 
         expect($this->cart->get('nonexistent'))->toBeNull();
     });

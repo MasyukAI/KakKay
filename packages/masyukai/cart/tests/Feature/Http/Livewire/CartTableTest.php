@@ -192,7 +192,7 @@ it('gets item price with conditions when enabled', function (): void {
 
     // The price should be calculated with conditions
     $price = $component->instance()->getItemPrice($item);
-    expect($price)->toBe($item->getRawPriceWithConditions()); // Use actual calculated price
+    expect($price)->toBe($item->getRawPrice()); // Use actual calculated price
 });
 
 it('gets item total without conditions by default', function (): void {
@@ -222,7 +222,7 @@ it('gets item total with conditions when enabled', function (): void {
         ->set('showConditions', true);
 
     $total = $component->instance()->getItemTotal($item);
-    expect($total)->toBe($item->getRawPriceSumWithConditions()); // Use actual calculated total
+    expect($total)->toBe($item->getRawPriceSum()); // Use actual calculated total
 });
 
 it('handles multiple quantity operations correctly', function (): void {

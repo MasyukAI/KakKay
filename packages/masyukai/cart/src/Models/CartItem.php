@@ -241,7 +241,7 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
      */
     public function getPriceSum(): string|int|float
     {
-        return $this->formatPriceValue($this->getRawPriceSumWithConditions());
+        return $this->formatPriceValue($this->getRawPriceSum());
     }
 
     /**
@@ -255,9 +255,9 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
     /**
      * Get raw price sum (price × quantity) with item-level conditions applied (internal use)
      */
-    public function getRawPriceSumWithConditions(): float
+    public function getRawPriceSum(): float
     {
-        return $this->getRawPriceWithConditions() * $this->quantity;
+        return $this->getRawPrice() * $this->quantity;
     }
 
     /**
@@ -269,9 +269,17 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
     }
 
     /**
-     * Get raw single price with conditions applied (internal use)
+     * Get raw single price without conditions (internal use)
      */
-    public function getRawPriceWithConditions(): float
+    public function getRawPriceWithoutConditions(): float
+    {
+        return $this->price;
+    }
+
+    /**
+     * Get raw single price with conditions applied (for internal use like calculations)
+     */
+    public function getRawPrice(): float
     {
         $price = $this->price;
 
@@ -283,43 +291,11 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
     }
 
     /**
-     * Get raw single price without conditions (internal use)
-     */
-    protected function getRawPriceWithoutConditions(): float
-    {
-        return $this->price;
-    }
-
-    /**
-     * Get raw single price without conditions (for internal use like calculations)
-     */
-    public function getRawPrice(): float
-    {
-        return $this->getRawPriceWithoutConditions();
-    }
-
-    /**
-     * @deprecated Use getPriceSum() instead
-     */
-    public function getPriceWithConditions(): float
-    {
-        return $this->getRawPriceWithConditions();
-    }
-
-    /**
-     * @deprecated Use getPriceSum() instead
-     */
-    public function getPriceSumWithConditions(): float
-    {
-        return $this->getRawPriceSumWithConditions();
-    }
-
-    /**
      * Get discount amount
      */
     public function getDiscountAmount(): float
     {
-        return $this->getRawPriceSumWithoutConditions() - $this->getRawPriceSumWithConditions();
+        return $this->getRawPriceSumWithoutConditions() - $this->getRawPriceSum();
     }
 
     /**
@@ -335,7 +311,7 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
      */
     public function getPrice(): string|int|float
     {
-        return $this->formatPriceValue($this->getRawPriceWithConditions());
+        return $this->formatPriceValue($this->getRawPrice());
     }
 
     /**
@@ -351,7 +327,7 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
      */
     public function subtotal(): string|int|float
     {
-        return $this->formatPriceValue($this->getRawPriceSumWithConditions());
+        return $this->formatPriceValue($this->getRawPriceSum());
     }
 
     /**
@@ -368,22 +344,6 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
     public function total(): string|int|float
     {
         return $this->subtotal();
-    }
-
-    /**
-     * @deprecated Use subtotal() instead
-     */
-    public function subtotalWithConditions(): string|int|float
-    {
-        return $this->subtotal();
-    }
-
-    /**
-     * @deprecated Use getRawPriceSumWithConditions() instead
-     */
-    public function finalTotal(): float
-    {
-        return $this->getRawPriceSumWithConditions();
     }
 
     /**

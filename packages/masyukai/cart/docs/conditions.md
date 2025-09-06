@@ -322,7 +322,7 @@ Cart::addCondition(new CartCondition('discount', 'discount', 'subtotal', '-50'))
 
 // Get different totals
 $subtotal = Cart::subtotal();                    // $200.00 (base)
-$subtotalWithConditions = Cart::subtotalWithConditions(); // $200.00 (no item conditions)
+$subtotal = Cart::subtotal(); // $200.00 (no item conditions)
 $total = Cart::total();                          // $165.00 (200 - 50 + 10% of 150)
 ```
 

@@ -121,7 +121,7 @@ it('can calculate price with conditions', function (): void {
         conditions: [$this->condition1] // -10%
     );
 
-    expect($item->getRawPriceWithConditions())->toBe(90.0);
+    expect($item->getRawPrice())->toBe(90.0);
 });
 
 it('can calculate price sum with conditions', function (): void {
@@ -133,7 +133,7 @@ it('can calculate price sum with conditions', function (): void {
         conditions: [$this->condition1] // -10%
     );
 
-    expect($item->getRawPriceSumWithConditions())->toBe(180.0);
+    expect($item->getRawPriceSum())->toBe(180.0);
 });
 
 it('can calculate discount amount', function (): void {
@@ -325,7 +325,7 @@ it('handles complex conditions correctly', function (): void {
     // Price after 20% discount: 80.0
     // Price after $5 charge: 85.0
     // Sum with conditions: 85.0 * 2 = 170.0
-    expect($item->getRawPriceSumWithConditions())->toBe(170.0)
+    expect($item->getRawPriceSum())->toBe(170.0)
         ->and($item->getDiscountAmount())->toBe(30.0); // 200 - 170
 });
 

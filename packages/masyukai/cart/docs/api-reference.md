@@ -946,11 +946,11 @@ Get cart subtotal (before conditions).
 $subtotal = Cart::subtotal();
 ```
 
-#### `getSubTotalWithConditions(): float`
+#### `getSubTotal(): float`
 Get subtotal with item-level conditions applied.
 
 ```php
-$subtotalWithConditions = Cart::subtotalWithConditions();
+$subtotal = Cart::subtotal();
 ```
 
 #### `getTotal(): float`
@@ -1114,18 +1114,18 @@ Get total price (price × quantity).
 $total = $item->getPriceSum();
 ```
 
-#### `getPriceWithConditions(): float`
+#### `getPrice(): float`
 Get single unit price with conditions applied.
 
 ```php
-$priceWithConditions = $item->getPriceWithConditions();
+$price = $item->getPrice();
 ```
 
-#### `getPriceSumWithConditions(): float`
+#### `getPriceSum(): float`
 Get total price with conditions applied.
 
 ```php
-$totalWithConditions = $item->getPriceSumWithConditions();
+$total = $item->getPriceSum();
 ```
 
 #### `getDiscountAmount(): float`
@@ -1553,7 +1553,7 @@ class CheckoutService
                 'price' => $item->price,
                 'quantity' => $item->quantity,
                 'attributes' => $item->attributes->toArray(),
-                'total' => $item->getPriceSumWithConditions(),
+                'total' => $item->getPriceSum(),
             ]);
         }
         
@@ -1734,14 +1734,14 @@ class SubscriptionCartManager
     {
         return Cart::getItems()
             ->reject(fn($item) => $item->getAttribute('one_time'))
-            ->sum(fn($item) => $item->getPriceSumWithConditions());
+            ->sum(fn($item) => $item->getPriceSum());
     }
     
     public function calculateOneTimeTotal(): float
     {
         return Cart::getItems()
             ->filter(fn($item) => $item->getAttribute('one_time'))
-            ->sum(fn($item) => $item->getPriceSumWithConditions());
+            ->sum(fn($item) => $item->getPriceSum());
     }
     
     protected function clearSubscriptionItems(): void

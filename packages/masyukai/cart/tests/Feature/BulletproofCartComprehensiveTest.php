@@ -74,9 +74,9 @@ it('provides comprehensive bulletproof cart package summary', function () {
 
     expect(Cart::getConditions())->toHaveCount(2);
 
-    $totalWithConditions = Cart::total();
-    expect($totalWithConditions)->toBeFloat();
-    expect($totalWithConditions)->toBeGreaterThan(0);
+    $total = Cart::total();
+    expect($total)->toBeFloat();
+    expect($total)->toBeGreaterThan(0);
 
     // 6. SEARCH AND FILTERING - Bulletproof ✅
     $expensiveItems = Cart::search(function ($item) {

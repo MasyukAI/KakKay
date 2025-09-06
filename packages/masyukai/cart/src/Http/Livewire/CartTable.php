@@ -101,12 +101,12 @@ class CartTable extends Component
 
     public function getItemPrice(CartItem $item): float
     {
-        return $this->showConditions ? $item->getRawPriceWithConditions() : $item->price;
+        return $this->showConditions ? $item->getRawPrice() : $item->price;
     }
 
     public function getItemTotal(CartItem $item): float
     {
-        return $this->showConditions ? $item->getRawPriceSumWithConditions() : $item->getPriceSum();
+        return $this->showConditions ? $item->getRawPriceSum() : $item->getPriceSum();
     }
 
     public function render(): \Illuminate\View\View

@@ -56,7 +56,7 @@ class CartCollection extends Collection
      */
     protected function getSubTotal(): float
     {
-        return $this->sum(fn ($item) => $item->getRawPriceSumWithConditions());
+        return $this->sum(fn ($item) => $item->getRawPriceSum());
     }
 
     /**

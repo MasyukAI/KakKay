@@ -109,8 +109,8 @@ describe('Enhanced Cart API', function () {
         expect($newItem->quantity)->toBe(5)
             ->and($item->quantity)->toBe(2); // Original unchanged
 
-        // Test deprecated finalTotal alias
-        expect($item->finalTotal())->toBe(20.00);
+        // Test getRawPriceSum method
+        expect($item->getRawPriceSum())->toBe(20.00);
 
         // Test discountAmount alias
         expect($item->discountAmount())->toBe(0.00);

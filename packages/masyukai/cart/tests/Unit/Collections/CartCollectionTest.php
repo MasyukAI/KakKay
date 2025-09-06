@@ -538,7 +538,7 @@ it('can check if collection has items with conditions', function (): void {
     $this->collection->addItem($this->item2);
 
     // Since items don't have conditions yet, should be false
-    expect($this->collection->hasItemsWithConditions())->toBeFalse();
+    expect($this->collection->hasItems())->toBeFalse();
 });
 
 it('can get total discount amount', function (): void {

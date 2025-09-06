@@ -15,7 +15,7 @@ trait CalculatesTotals
      */
     protected function getSubTotal(): float
     {
-        return $this->getItems()->sum(fn (CartItem $item) => $item->getRawPriceSumWithConditions());
+        return $this->getItems()->sum(fn (CartItem $item) => $item->getRawPriceSum());
     }
 
     /**
