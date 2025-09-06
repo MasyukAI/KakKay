@@ -627,7 +627,7 @@ describe('Edge cases and stress tests', function () {
         // Verify we can access any item
         expect($this->cart->get('product-50'))->toBeInstanceOf(CartItem::class);
         expect($this->cart->get('product-50')->name)->toBe('Product 50');
-    });
+    })->skip(fn() => !env('RUN_STRESS_TESTS', false), 'Stress test skipped by default - set RUN_STRESS_TESTS=true to include');
 
     it('handles complex condition chains', function () {
         $this->cart->add('product-1', 'Product', 100.00, 1);
@@ -670,7 +670,7 @@ describe('Edge cases and stress tests', function () {
 
         expect($this->cart->getItems()->count())->toBeLessThan(50);
         expect($this->cart->isEmpty())->toBeFalse();
-    });
+    })->skip(fn() => !env('RUN_STRESS_TESTS', false), 'Stress test skipped by default - set RUN_STRESS_TESTS=true to include');
 
     it('maintains data integrity during concurrent-like operations', function () {
         $originalItem = $this->cart->add('integrity-test', 'Test Product', 25.99, 3);

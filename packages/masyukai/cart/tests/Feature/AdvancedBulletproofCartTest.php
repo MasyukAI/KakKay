@@ -32,7 +32,7 @@ it('performs stress testing with large datasets', function () {
 
     Cart::clear();
     expect(Cart::isEmpty())->toBeTrue();
-});
+})->skip(fn() => !env('RUN_STRESS_TESTS', false), 'Stress test skipped by default - set RUN_STRESS_TESTS=true to include');
 
 it('handles complex condition chains bulletproof', function () {
     Cart::clear();

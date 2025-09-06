@@ -178,4 +178,4 @@ it('demonstrates bulletproof cart performance under stress', function () {
     expect(Cart::getItems())->toHaveCount(400); // 500 - 100 removed
 
     Cart::clear();
-});
+})->skip(fn() => !env('RUN_STRESS_TESTS', false), 'Stress test skipped by default - set RUN_STRESS_TESTS=true to include');
