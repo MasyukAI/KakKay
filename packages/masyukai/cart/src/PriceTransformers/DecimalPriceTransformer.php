@@ -26,7 +26,7 @@ class DecimalPriceTransformer extends BasePriceTransformer
             // Remove thousands separators (commas) but preserve decimal points
             $price = str_replace(',', '', $price);
         }
-        
+
         return (float) $price;
     }
 }

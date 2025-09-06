@@ -30,7 +30,7 @@ it('can add shipping conditions using addShipping method', function () {
         ->and($cart->getShippingValue())->toBe(15.99)
         ->and($cart->getShipping()->getAttribute('estimated_days'))->toBe(1)
         ->and($cart->getShipping()->getAttribute('carrier'))->toBe('UPS')
-        ->and($cart->getTotal())->toBe(115.99); // 100 + 15.99
+        ->and($cart->total())->toBe(115.99); // 100 + 15.99
 });
 
 it('can remove shipping conditions using removeShipping method', function () {
@@ -49,7 +49,7 @@ it('can remove shipping conditions using removeShipping method', function () {
     $cart->addShipping('Standard Shipping', 9.99);
 
     expect($cart->getShipping())->not->toBeNull()
-        ->and($cart->getTotal())->toBe(109.99);
+        ->and($cart->total())->toBe(109.99);
 
     // Remove shipping
     $cart->removeShipping();
@@ -57,7 +57,7 @@ it('can remove shipping conditions using removeShipping method', function () {
     expect($cart->getShipping())->toBeNull()
         ->and($cart->getShippingMethod())->toBeNull()
         ->and($cart->getShippingValue())->toBeNull()
-        ->and($cart->getTotal())->toBe(100.00);
+        ->and($cart->total())->toBe(100.00);
 });
 
 it('replaces existing shipping when adding new shipping', function () {
@@ -84,7 +84,7 @@ it('replaces existing shipping when adding new shipping', function () {
     expect($cart->getShippingMethod())->toBe('express')
         ->and($cart->getShippingValue())->toBe(19.99)
         ->and($cart->getConditions()->count())->toBe(1) // Only one shipping condition
-        ->and($cart->getTotal())->toBe(119.99); // 100 + 19.99
+        ->and($cart->total())->toBe(119.99); // 100 + 19.99
 });
 
 it('handles string and numeric shipping values correctly', function () {

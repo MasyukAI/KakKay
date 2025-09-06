@@ -13,8 +13,8 @@ it('provides comprehensive bulletproof cart package summary', function () {
     expect(Cart::isEmpty())->toBeTrue();
     expect(Cart::getItems())->toHaveCount(0);
     expect(Cart::getTotalQuantity())->toBe(0);
-    expect(Cart::getSubTotal())->toBe(0.0);
-    expect(Cart::getTotal())->toBe(0.0);
+    expect(Cart::subtotal())->toBe(0.0);
+    expect(Cart::total())->toBe(0.0);
 
     // 2. ITEM MANAGEMENT - Bulletproof ✅
     $item1 = Cart::add('bulletproof-1', 'Bulletproof Item 1', 25.99, 2);
@@ -23,8 +23,8 @@ it('provides comprehensive bulletproof cart package summary', function () {
     expect(Cart::getItems())->toHaveCount(2);
     expect(Cart::getTotalQuantity())->toBe(5);
     // Use approximate comparison for floating point
-    expect(Cart::getSubTotal())->toBeGreaterThan(98.40);
-    expect(Cart::getSubTotal())->toBeLessThan(98.50);
+    expect(Cart::subtotal())->toBeGreaterThan(98.40);
+    expect(Cart::subtotal())->toBeLessThan(98.50);
 
     // 3. ITEM UPDATES - Bulletproof ✅
     Cart::update('bulletproof-1', ['quantity' => 3]); // Adds 3 to existing 2 = 5
@@ -74,7 +74,7 @@ it('provides comprehensive bulletproof cart package summary', function () {
 
     expect(Cart::getConditions())->toHaveCount(2);
 
-    $totalWithConditions = Cart::getTotal();
+    $totalWithConditions = Cart::total();
     expect($totalWithConditions)->toBeFloat();
     expect($totalWithConditions)->toBeGreaterThan(0);
 
@@ -120,8 +120,8 @@ it('provides comprehensive bulletproof cart package summary', function () {
     // 10. CART STATE MANAGEMENT - Bulletproof ✅
     $itemCount = Cart::getItems()->count();
     $totalQuantity = Cart::getTotalQuantity();
-    $subtotal = Cart::getSubTotal();
-    $total = Cart::getTotal();
+    $subtotal = Cart::subtotal();
+    $total = Cart::total();
 
     expect($itemCount)->toBeGreaterThan(100);
     expect($totalQuantity)->toBeGreaterThan(100);
@@ -138,8 +138,8 @@ it('provides comprehensive bulletproof cart package summary', function () {
     expect(Cart::isEmpty())->toBeTrue();
     expect(Cart::getItems())->toHaveCount(0);
     expect(Cart::getTotalQuantity())->toBe(0);
-    expect(Cart::getSubTotal())->toBe(0.0);
-    expect(Cart::getTotal())->toBe(0.0);
+    expect(Cart::subtotal())->toBe(0.0);
+    expect(Cart::total())->toBe(0.0);
     expect(Cart::getConditions())->toHaveCount(0);
 });
 

@@ -50,19 +50,57 @@ class CartCollection extends Collection
     }
 
     /**
-     * Get subtotal of all items
+     * Get subtotal of all items with item-level conditions applied (raw value)
+     *
+     * @internal For internal calculations only
      */
-    public function getSubTotal(): float
+    protected function getSubTotal(): float
     {
-        return $this->sum(fn (CartItem $item) => $item->getPriceSum());
+        return $this->sum(fn ($item) => $item->getRawPriceSumWithConditions());
     }
 
     /**
-     * Get subtotal with conditions applied
+     * Get subtotal of all items without any conditions (raw value)
+     *
+     * @internal For internal calculations only
      */
-    public function getSubTotalWithConditions(): float
+    protected function getSubTotalWithoutConditions(): float
     {
-        return $this->sum(fn (CartItem $item) => $item->getPriceSumWithConditions());
+        return $this->sum(fn ($item) => $item->getRawPriceSumWithoutConditions());
+    }
+
+    /**
+     * Get subtotal of all items (with item-level conditions applied)
+     */
+    public function subtotal(): mixed
+    {
+        // For collection, we don't have formatting config, so just return the raw value
+        // Individual Cart instances would handle formatting
+        return $this->getSubTotal();
+    }
+
+    /**
+     * Get subtotal without any conditions (raw base prices)
+     */
+    public function subtotalWithoutConditions(): mixed
+    {
+        return $this->getSubTotalWithoutConditions();
+    }
+
+    /**
+     * Get total (alias for subtotal since collections only have item-level conditions)
+     */
+    public function total(): mixed
+    {
+        return $this->subtotal();
+    }
+
+    /**
+     * Get total without any conditions (alias for subtotalWithoutConditions)
+     */
+    public function totalWithoutConditions(): mixed
+    {
+        return $this->subtotalWithoutConditions();
     }
 
     /**
@@ -74,7 +112,8 @@ class CartCollection extends Collection
             'items' => $this->map(fn (CartItem $item) => $item->toArray())->toArray(),
             'total_quantity' => $this->getTotalQuantity(),
             'subtotal' => $this->getSubTotal(),
-            'subtotal_with_conditions' => $this->getSubTotalWithConditions(),
+            'total' => $this->getSubTotal(),
+            'total_without_conditions' => $this->getSubTotalWithoutConditions(),
             'count' => $this->count(),
             'is_empty' => $this->isEmpty(),
         ];
@@ -219,7 +258,7 @@ class CartCollection extends Collection
             'highest_price' => $this->max('price'),
             'lowest_price' => $this->min('price'),
             'total_value' => $this->getSubTotal(),
-            'total_with_conditions' => $this->getSubTotalWithConditions(),
+            'total_with_conditions' => $this->getSubTotal(), // Same as total_value since subtotal now includes conditions
             'items_with_conditions' => $this->filter(fn (CartItem $item) => $item->hasConditions())->count(),
         ];
     }

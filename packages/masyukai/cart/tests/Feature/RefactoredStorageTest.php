@@ -106,7 +106,7 @@ describe('Refactored Cart Storage Structure', function () {
         expect($newCart->getItems())->toHaveCount(2);
         expect($newCart->getConditions())->toHaveCount(1);
         expect($newCart->getTotalQuantity())->toBe(3);
-        expect($newCart->getSubTotal())->toBe(35.00);
+        expect($newCart->subtotal())->toBe(35.00);
     });
 
     it('uses session ID for guest users', function () {

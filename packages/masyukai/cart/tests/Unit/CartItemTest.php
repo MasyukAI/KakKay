@@ -40,7 +40,7 @@ it('can create cart item with basic data', function (): void {
 });
 
 it('can create cart item with all data', function (): void {
-    $model = new stdClass();
+    $model = new stdClass;
     $model->id = 123;
 
     $item = new CartItem(
@@ -88,7 +88,7 @@ it('can get single attribute', function (): void {
 });
 
 it('can check if associated with model', function (): void {
-    $model = new stdClass();
+    $model = new stdClass;
     $model->id = 123;
 
     $item = new CartItem(
@@ -121,7 +121,7 @@ it('can calculate price with conditions', function (): void {
         conditions: [$this->condition1] // -10%
     );
 
-    expect($item->getPriceWithConditions())->toBe(90.0);
+    expect($item->getRawPriceWithConditions())->toBe(90.0);
 });
 
 it('can calculate price sum with conditions', function (): void {
@@ -133,7 +133,7 @@ it('can calculate price sum with conditions', function (): void {
         conditions: [$this->condition1] // -10%
     );
 
-    expect($item->getPriceSumWithConditions())->toBe(180.0);
+    expect($item->getRawPriceSumWithConditions())->toBe(180.0);
 });
 
 it('can calculate discount amount', function (): void {
@@ -149,7 +149,7 @@ it('can calculate discount amount', function (): void {
 });
 
 it('can convert to array', function (): void {
-    $model = new stdClass();
+    $model = new stdClass;
     $model->id = 123;
 
     $item = new CartItem(
@@ -167,15 +167,26 @@ it('can convert to array', function (): void {
     expect($array)->toBeArray()
         ->and($array['id'])->toBe('product-1')
         ->and($array['name'])->toBe('Test Product')
-        ->and($array['price'])->toBe(100.0)
+        ->and($array['price'])->toBe(100.0) // Raw price (not calculated)
         ->and($array['quantity'])->toBe(2)
         ->and($array['attributes'])->toBe(['color' => 'red'])
         ->and($array['conditions'])->toBeArray()
-        ->and($array['associated_model'])->toBeArray() // Model gets serialized to array
-        ->and($array['price_sum'])->toBe(200.0)
-        ->and($array['price_with_conditions'])->toBe(90.0)
-        ->and($array['price_sum_with_conditions'])->toBe(180.0)
-        ->and($array['discount_amount'])->toBe(20.0);
+        ->and($array['associated_model'])->toBeArray(); // Model gets serialized to array
+
+    // Verify legacy fields are no longer present
+    expect($array)->not->toHaveKeys([
+        'price_sum',
+        'price_without_conditions',
+        'price_sum_without_conditions',
+        'subtotal_without_conditions',
+        'discount_amount',
+    ]);
+
+    // But calculated values are still accessible via methods
+    expect($item->getPriceSum())->toBe(180.0); // (100 - 10%) * 2 = 180
+    expect($item->getPriceWithoutConditions())->toBe(100.0); // Original price
+    expect($item->getPriceSumWithoutConditions())->toBe(200.0); // Original total
+    expect($item->getDiscountAmount())->toBe(20.0);
 });
 
 it('can set new quantity', function (): void {
@@ -226,28 +237,28 @@ it('can add and remove conditions', function (): void {
 });
 
 it('validates required fields on creation', function (): void {
-    expect(fn() => new CartItem(
+    expect(fn () => new CartItem(
         id: '',
         name: 'Test Product',
         price: 99.99,
         quantity: 1
     ))->toThrow(\MasyukAI\Cart\Exceptions\InvalidCartItemException::class);
 
-    expect(fn() => new CartItem(
+    expect(fn () => new CartItem(
         id: 'product-1',
         name: '',
         price: 99.99,
         quantity: 1
     ))->toThrow(\MasyukAI\Cart\Exceptions\InvalidCartItemException::class);
 
-    expect(fn() => new CartItem(
+    expect(fn () => new CartItem(
         id: 'product-1',
         name: 'Test Product',
         price: -10.0,
         quantity: 1
     ))->toThrow(\MasyukAI\Cart\Exceptions\InvalidCartItemException::class);
 
-    expect(fn() => new CartItem(
+    expect(fn () => new CartItem(
         id: 'product-1',
         name: 'Test Product',
         price: 99.99,
@@ -294,7 +305,7 @@ it('handles complex conditions correctly', function (): void {
         target: 'subtotal',
         value: '-20%'
     );
-    
+
     $chargeCondition = new CartCondition(
         name: 'handling',
         type: 'charge',
@@ -311,10 +322,10 @@ it('handles complex conditions correctly', function (): void {
     );
 
     // Original: 200.0
-    // Price after 20% discount: 80.0 
+    // Price after 20% discount: 80.0
     // Price after $5 charge: 85.0
     // Sum with conditions: 85.0 * 2 = 170.0
-    expect($item->getPriceSumWithConditions())->toBe(170.0)
+    expect($item->getRawPriceSumWithConditions())->toBe(170.0)
         ->and($item->getDiscountAmount())->toBe(30.0); // 200 - 170
 });
 
@@ -343,8 +354,8 @@ it('validates name when setting', function (): void {
         quantity: 2
     );
 
-    expect(fn() => $item->setName(''))->toThrow(\MasyukAI\Cart\Exceptions\InvalidCartItemException::class)
-        ->and(fn() => $item->setName('   '))->toThrow(\MasyukAI\Cart\Exceptions\InvalidCartItemException::class);
+    expect(fn () => $item->setName(''))->toThrow(\MasyukAI\Cart\Exceptions\InvalidCartItemException::class)
+        ->and(fn () => $item->setName('   '))->toThrow(\MasyukAI\Cart\Exceptions\InvalidCartItemException::class);
 });
 
 it('can set item price', function (): void {
@@ -372,7 +383,7 @@ it('validates price when setting', function (): void {
         quantity: 2
     );
 
-    expect(fn() => $item->setPrice(-10.0))->toThrow(\MasyukAI\Cart\Exceptions\InvalidCartItemException::class);
+    expect(fn () => $item->setPrice(-10.0))->toThrow(\MasyukAI\Cart\Exceptions\InvalidCartItemException::class);
 });
 
 it('validates quantity when setting', function (): void {
@@ -383,7 +394,7 @@ it('validates quantity when setting', function (): void {
         quantity: 2
     );
 
-    expect(fn() => $item->setQuantity(-1))->toThrow(\MasyukAI\Cart\Exceptions\InvalidCartItemException::class);
+    expect(fn () => $item->setQuantity(-1))->toThrow(\MasyukAI\Cart\Exceptions\InvalidCartItemException::class);
 });
 
 it('can set item attributes', function (): void {
@@ -467,7 +478,7 @@ it('handles removing non-existent attributes gracefully', function (): void {
 });
 
 it('can check if associated with model class', function (): void {
-    $modelInstance = new stdClass();
+    $modelInstance = new stdClass;
     $modelInstance->id = 123;
 
     $itemWithStringModel = new CartItem(
@@ -500,7 +511,7 @@ it('can check if associated with model class', function (): void {
 });
 
 it('can get associated model', function (): void {
-    $modelInstance = new stdClass();
+    $modelInstance = new stdClass;
     $modelInstance->id = 123;
 
     $item = new CartItem(
@@ -515,7 +526,7 @@ it('can get associated model', function (): void {
 });
 
 it('throws exception when creating item with non-existent model class', function (): void {
-    expect(fn() => new CartItem(
+    expect(fn () => new CartItem(
         id: 'product-1',
         name: 'Test Product',
         price: 100.0,

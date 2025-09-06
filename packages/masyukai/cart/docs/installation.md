@@ -72,59 +72,37 @@ This creates `config/cart.php`:
 <?php
 
 return [
-    // Default cart instance name
-    'default_instance' => 'main',
-    
-    // Storage configuration
-    'storage' => [
-        'driver' => env('CART_STORAGE_DRIVER', 'session'),
-        
-        'session' => [
-            'key' => 'shopping_cart',
-        ],
-        
-        'database' => [
-            'connection' => env('CART_DB_CONNECTION'),
-            'table' => 'cart_storage',
-        ],
-        
-        'cache' => [
-            'store' => env('CART_CACHE_STORE'),
-            'prefix' => 'cart',
-            'ttl' => 86400, // 24 hours
-        ],
+    // Storage driver: 'session', 'database', 'cache'
+    'storage' => env('CART_STORAGE_DRIVER', 'session'),
+
+    // Session storage configuration
+    'session' => [
+        'key' => env('CART_SESSION_KEY', 'cart'),
     ],
-    
-    // Cart behavior
-    'cart' => [
-        'decimals' => 2,
-        'decimal_point' => '.',
-        'thousands_separator' => ',',
-        'format_numbers' => true,
-        'throw_exceptions' => true,
+
+    // Database storage configuration
+    'database' => [
+        'table' => env('CART_DB_TABLE', 'carts'),
     ],
-    
+
+    // Cache storage configuration
+    'cache' => [
+        'prefix' => env('CART_CACHE_PREFIX', 'cart'),
+        'ttl' => env('CART_CACHE_TTL', 86400),
+    ],
+
     // Event system
-    'events' => [
-        'enabled' => true,
-        'listeners' => [],
-    ],
-    
-    // Migration settings
+    'events' => env('CART_EVENTS_ENABLED', true),
+
+    // Validation
+    'strict_validation' => env('CART_STRICT_VALIDATION', true),
+
+    // Migration settings for guest-to-user cart migration
     'migration' => [
-        'auto_migrate_on_login' => true,
-        'merge_strategy' => 'add_quantities',
-        'clear_guest_cart_after_merge' => true,
-    ],
-    
-    // Validation rules
-    'validation' => [
-        'item_id_max_length' => 255,
-        'item_name_max_length' => 255,
-        'max_quantity_per_item' => 9999,
-        'max_items_in_cart' => 100,
-        'min_price' => 0.01,
-        'max_price' => 999999.99,
+        'auto_migrate_on_login' => env('CART_AUTO_MIGRATE_ON_LOGIN', true),
+        'backup_on_logout' => env('CART_BACKUP_ON_LOGOUT', false),
+        'merge_strategy' => env('CART_MERGE_STRATEGY', 'add_quantities'),
+        'auto_switch_instances' => env('CART_AUTO_SWITCH_INSTANCES', true),
     ],
 ];
 ```

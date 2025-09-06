@@ -14,13 +14,13 @@ it('demonstrates that core cart package shipping methods work perfectly', functi
     // Using core Cart package methods (the only approach now)
     Cart::addShipping('Express Shipping', 15.99, 'express', [
         'carrier' => 'UPS',
-        'estimated_days' => 1
+        'estimated_days' => 1,
     ]);
 
     $shipping = Cart::getShipping();
     $method = Cart::getShippingMethod();
     $value = Cart::getShippingValue();
-    $total = Cart::getTotal();
+    $total = Cart::total();
 
     // Verify all shipping functionality works correctly
     expect($shipping)->not->toBeNull()
@@ -34,17 +34,17 @@ it('demonstrates that core cart package shipping methods work perfectly', functi
 
     // Test replacement functionality
     Cart::addShipping('Standard Shipping', 9.99, 'standard');
-    
+
     expect(Cart::getShippingMethod())->toBe('standard')
         ->and(Cart::getShippingValue())->toBe(9.99)
-        ->and(Cart::getTotal())->toBe(109.99) // 100 + 9.99
+        ->and(Cart::total())->toBe(109.99) // 100 + 9.99
         ->and(Cart::getConditions()->count())->toBe(1); // Only one shipping condition
 
     // Test removal
     Cart::removeShipping();
-    
+
     expect(Cart::getShipping())->toBeNull()
         ->and(Cart::getShippingMethod())->toBeNull()
         ->and(Cart::getShippingValue())->toBeNull()
-        ->and(Cart::getTotal())->toBe(100.00); // Back to original total
+        ->and(Cart::total())->toBe(100.00); // Back to original total
 });

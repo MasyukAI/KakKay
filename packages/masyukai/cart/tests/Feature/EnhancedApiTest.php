@@ -20,7 +20,7 @@ describe('Enhanced Cart API', function () {
         // Test items() for item collection (CORRECTED: content() now returns full cart content)
         $items = $this->cart->getItems();
         expect($items)->toHaveCount(2);
-        
+
         // Test content() returns complete cart content
         $content = $this->cart->content();
         expect($content)->toBeArray()
@@ -109,7 +109,7 @@ describe('Enhanced Cart API', function () {
         expect($newItem->quantity)->toBe(5)
             ->and($item->quantity)->toBe(2); // Original unchanged
 
-        // Test finalTotal alias
+        // Test deprecated finalTotal alias
         expect($item->finalTotal())->toBe(20.00);
 
         // Test discountAmount alias

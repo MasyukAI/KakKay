@@ -1,14 +1,14 @@
 # 🛒 MasyukAI Cart Package
 
-**The Ultimate Laravel Shopping Cart Package** - Production-ready, feature-rich cart solution with 96.2% test coverage, modern architecture, and comprehensive Livewire integration for Laravel 12+.
+**The Ultimate Laravel Shopping Cart Package** - Production-ready, feature-rich cart solution with comprehensive test coverage, modern architecture, and comprehensive Livewire integration for Laravel 12+.
 
 <div align="center">
 
 [![PHP Version](https://img.shields.io/badge/php-%5E8.4-blue.svg?style=flat-square&logo=php)](https://php.net)
 [![Laravel Version](https://img.shields.io/badge/laravel-%5E12.0-red.svg?style=flat-square&logo=laravel)](https://laravel.com)
 [![Livewire Version](https://img.shields.io/badge/livewire-%5E3.0-purple.svg?style=flat-square)](https://livewire.laravel.com)
-[![Tests](https://img.shields.io/badge/tests-562%20passing-green.svg?style=flat-square&logo=checkmarx)](https://pestphp.com)
-[![Coverage](https://img.shields.io/badge/coverage-96.2%25-brightgreen.svg?style=flat-square&logo=codecov)](https://pestphp.com)
+[![Tests](https://img.shields.io/badge/tests-689%20passing-green.svg?style=flat-square&logo=checkmarx)](https://pestphp.com)
+[![Coverage](https://img.shields.io/badge/coverage-comprehensive-brightgreen.svg?style=flat-square&logo=codecov)](https://pestphp.com)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
 
 **[📖 Documentation](docs/) • [🚀 Quick Start](docs/quick-start.md) • [🎨 Demo](docs/demo.md) • [💬 Community](../../discussions)**
@@ -24,7 +24,7 @@
 <td align="center" width="33%">
 
 ### 🏆 **Production Ready**
-**562 tests** • **96.2% coverage**  
+**689 tests** • **Comprehensive coverage**  
 Enterprise-grade reliability with comprehensive test suite covering all scenarios
 
 </td>
@@ -166,16 +166,49 @@ Cart::addFee('express-shipping', '12.99');
 
 // 3. Get results
 echo "Items: " . Cart::count() . "\n";           // Items: 3
-echo "Subtotal: $" . Cart::subtotal() . "\n";   // Subtotal: $1,499.97
-echo "Total: $" . Cart::total() . "\n";         // Total: $1,362.34
+echo "Subtotal: $" . Cart::subtotal() . "\n";   // Subtotal: $1,499.97 (includes item-level conditions)
+echo "Total: $" . Cart::total() . "\n";         // Total: $1,362.34 (all conditions applied)
 
 // 4. Access rich data
 foreach (Cart::content() as $item) {
     echo "{$item->name} x{$item->quantity} = ${$item->getPriceSum()}\n";
-    // iPhone 15 Pro x1 = $999.99
-    // AirPods Pro (2nd gen) x2 = $499.98
+    // iPhone 15 Pro x1 = $999.99 (with item-level conditions applied)
+    // AirPods Pro (2nd gen) x2 = $499.98 (with item-level conditions applied)
+    
+    // For raw prices without conditions:
+    echo "Raw price: ${$item->getPriceSumWithoutConditions()}\n";
 }
 ```
+
+### **💡 API Conventions**
+
+The cart package follows intuitive naming conventions:
+
+#### **Cart-level Methods**
+```php
+// These include item-level conditions by default (user-friendly)
+Cart::subtotal()    // subtotal with item-level conditions applied
+Cart::total()       // final total with all conditions applied
+
+// Raw values without conditions (for calculations)
+Cart::subtotalWithoutConditions()  // raw subtotal, no conditions
+Cart::totalWithoutConditions()     // raw total, no conditions
+```
+
+#### **Item-level Methods**
+```php
+// These include item-level conditions by default (user-friendly)
+$item->getPrice()           // formatted price with conditions applied
+$item->getPriceSum()        // formatted total (price × quantity) with conditions
+
+// Raw values without conditions (for calculations)
+$item->getPriceWithoutConditions()     // formatted price without conditions
+$item->getPriceSumWithoutConditions()  // formatted total without conditions
+$item->subtotal()                      // formatted total with conditions (alias)
+$item->subtotalWithoutConditions()     // formatted total without conditions
+```
+
+> **Principle**: Methods without "WithoutConditions" suffix apply item-level conditions by default, giving users the expected calculated prices.
 
 ### **Advanced Use Cases**
 
@@ -506,6 +539,43 @@ if (auth()->check()) {
 }
 ```
 
+### **Guest-to-User Cart Migration**
+
+```php
+use MasyukAI\Cart\Services\CartMigrationService;
+
+$migrationService = app(CartMigrationService::class);
+
+// Automatic migration on user login
+$migrationService->migrateGuestCartToUser(
+    userId: auth()->id(),
+    instance: 'default',
+    oldSessionId: session()->getId()
+);
+
+// Migrate specific user and instance
+$migrationService->migrateGuestCartForUser(
+    user: $user,
+    instance: 'wishlist',
+    oldSessionId: 'guest_session_abc123'
+);
+
+// Migrate all instances for a user
+$results = $migrationService->migrateAllGuestInstances(
+    userId: auth()->id(),
+    oldSessionId: session()->getId()
+);
+
+// Get appropriate cart identifier
+$identifier = $migrationService->getIdentifier(
+    userId: auth()->id(),
+    sessionId: session()->getId()
+);
+
+// Handle cart switching on authentication state changes
+$migrationService->autoSwitchCartIdentifier(); // Auto switches based on auth state
+```
+
 ### **Advanced Condition System**
 
 ```php
@@ -519,6 +589,21 @@ Cart::addFee('handling', '2.5%');               // 2.5% handling fee
 // Fixed amount conditions
 Cart::addDiscount('loyalty-discount', '50.00');  // $50 off
 Cart::addFee('express-shipping', '15.99');       // $15.99 shipping
+
+// Shipping management
+Cart::addShipping('Standard Shipping', 9.99, 'standard');
+Cart::addShipping('Express Shipping', 19.99, 'express', [
+    'delivery_time' => '1-2 business days',
+    'tracking' => true
+]);
+
+// Get shipping information
+$shipping = Cart::getShipping();              // Get shipping condition
+$method = Cart::getShippingMethod();          // 'standard', 'express', etc.
+$cost = Cart::getShippingValue();             // 9.99
+
+// Remove shipping
+Cart::removeShipping();
 
 // Complex conditional logic
 $bulkDiscount = new CartCondition(
@@ -754,6 +839,118 @@ php artisan cart:export --format=json --output=cart_backup.json
 
 ---
 
+## 📊 Events & Analytics
+
+### **Built-in Cart Events**
+
+The package dispatches events for all major cart operations, perfect for analytics, logging, and integrations:
+
+```php
+use MasyukAI\Cart\Events\{ItemAdded, ItemUpdated, ItemRemoved, CartCleared, CartUpdated, CartCreated, CartMerged};
+
+// Listen to cart events in your EventServiceProvider
+protected $listen = [
+    ItemAdded::class => [
+        TrackItemAddedToCart::class,
+        UpdateInventoryCount::class,
+        SendToAnalytics::class,
+    ],
+    
+    ItemRemoved::class => [
+        TrackItemRemovedFromCart::class,
+        RestoreInventoryCount::class,
+    ],
+    
+    CartCleared::class => [
+        TrackCartAbandonment::class,
+        ClearRelatedData::class,
+    ],
+    
+    CartMerged::class => [
+        TrackUserLogin::class,
+        UpdateUserPreferences::class,
+    ],
+];
+```
+
+### **Analytics Integration Examples**
+
+```php
+// Google Analytics 4 integration
+class TrackItemAddedToCart
+{
+    public function handle(ItemAdded $event): void
+    {
+        $item = $event->item;
+        
+        // Send to GA4
+        Analytics::track('add_to_cart', [
+            'currency' => 'USD',
+            'value' => $item->price,
+            'items' => [
+                [
+                    'item_id' => $item->id,
+                    'item_name' => $item->name,
+                    'price' => $item->price,
+                    'quantity' => $item->quantity,
+                ]
+            ]
+        ]);
+    }
+}
+
+// Custom analytics dashboard
+class CartAnalyticsListener
+{
+    public function handle($event): void
+    {
+        match (get_class($event)) {
+            ItemAdded::class => $this->trackAddToCart($event),
+            ItemRemoved::class => $this->trackRemoveFromCart($event),
+            CartCleared::class => $this->trackCartClear($event),
+            CartMerged::class => $this->trackCartMerge($event),
+        };
+    }
+    
+    private function trackAddToCart(ItemAdded $event): void
+    {
+        CartAnalytics::create([
+            'event_type' => 'item_added',
+            'cart_id' => $event->cart->getCurrentInstance(),
+            'item_id' => $event->item->id,
+            'quantity' => $event->item->quantity,
+            'price' => $event->item->price,
+            'user_id' => auth()->id(),
+            'session_id' => session()->getId(),
+            'timestamp' => now(),
+        ]);
+    }
+}
+```
+
+### **Real-time Cart Statistics**
+
+```php
+// Get comprehensive cart analytics
+$stats = Cart::content()->getStatistics();
+// Returns: total_items, total_quantity, average_price, price_range, category_breakdown
+
+// Track cart behavior patterns
+$behavior = [
+    'session_id' => session()->getId(),
+    'user_id' => auth()->id(),
+    'cart_value' => Cart::total(),
+    'item_count' => Cart::count(),
+    'unique_categories' => Cart::content()->pluck('attributes.category')->unique()->count(),
+    'session_duration' => now()->diffInMinutes(session()->get('cart_started_at')),
+];
+
+// Send to your analytics service
+AnalyticsService::track('cart_state', $behavior);
+```
+
+---
+
 ## 📊 Performance & Scalability
 
 ### **Performance Benchmarks**
@@ -874,7 +1071,7 @@ dispatch(new CleanupAbandonedCartsJob());
 | 💪 **Stress Tests** | 15+ | 89.1% | Performance and load testing |
 | 🚨 **Edge Cases** | 45+ | 97.3% | Error handling and boundary conditions |
 
-**📊 Overall: 562 Tests • 96.2% Coverage • 1,856 Assertions**
+**📊 Overall: 689 Tests • Comprehensive Coverage • 2,061 Assertions**
 
 </div>
 

@@ -566,61 +566,67 @@ class EncryptedCartStorage implements CartStorageInterface
 
 ## Audit Logging
 
-### 1. Security Event Logging
+### Security Event Logging
 
-**Log security-relevant events:**
+**Example: Log security-relevant events using Laravel's Log facade:**
 
 ```php
-class CartSecurityLogger
-{
-    public static function logSuspiciousActivity(string $event, array $context = []): void
-    {
-        Log::warning("Cart Security Event: {$event}", array_merge([
-            'user_id' => auth()->id(),
-            'session_id' => session()->getId(),
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-            'timestamp' => now()->toISOString(),
-        ], $context));
-    }
-}
+// Example implementation for logging suspicious cart activity
+// This is not included in the package - implement as needed
 
-// Usage examples
-CartSecurityLogger::logSuspiciousActivity('rapid_quantity_changes', [
+use Illuminate\Support\Facades\Log;
+
+// Log rapid quantity changes
+Log::warning('Cart Security Event: rapid_quantity_changes', [
+    'user_id' => auth()->id(),
+    'session_id' => session()->getId(),
+    'ip_address' => request()->ip(),
+    'user_agent' => request()->userAgent(),
     'item_id' => $itemId,
     'old_quantity' => $oldQuantity,
     'new_quantity' => $newQuantity,
+    'timestamp' => now()->toISOString(),
 ]);
 
-CartSecurityLogger::logSuspiciousActivity('unusual_price_detected', [
+// Log unusual price detection
+Log::warning('Cart Security Event: unusual_price_detected', [
+    'user_id' => auth()->id(),
+    'session_id' => session()->getId(),
+    'ip_address' => request()->ip(),
     'item_id' => $itemId,
     'expected_price' => $expectedPrice,
     'submitted_price' => $submittedPrice,
+    'timestamp' => now()->toISOString(),
 ]);
 ```
 
-### 2. Failed Attempt Monitoring
+### Failed Attempt Monitoring
 
-**Monitor and respond to failed attempts:**
+**Example: Monitor and respond to failed attempts:**
 
 ```php
-class SecurityMonitor
+// Example implementation - not included in the package
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Mail;
+
+// In your exception handler or middleware
+public function monitorFailedAttempts(Exception $exception, Request $request): void
 {
-    public function monitorFailedAttempts(Exception $exception, Request $request): void
-    {
-        $attempts = Cache::increment("failed_cart:{$request->ip()}", 1, 3600);
+    $attempts = Cache::increment("failed_cart:{$request->ip()}", 1, 3600);
+    
+    if ($attempts > 50) {
+        // Block IP temporarily
+        Cache::put("blocked_ip:{$request->ip()}", true, 3600);
         
-        if ($attempts > 50) {
-            // Block IP temporarily
-            Cache::put("blocked_ip:{$request->ip()}", true, 3600);
-            
-            // Alert administrators
-            Mail::to(config('app.admin_email'))->send(
-                new SuspiciousActivityAlert($request->ip(), $attempts)
-            );
-        }
+        // Log the incident
+        Log::warning('Suspicious cart activity detected', [
+            'ip' => $request->ip(),
+            'attempts' => $attempts,
+            'user_agent' => $request->userAgent(),
+        ]);
     }
 }
+```
 ```
 
 ## Security Checklist

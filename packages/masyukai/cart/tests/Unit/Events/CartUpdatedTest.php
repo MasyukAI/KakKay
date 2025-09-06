@@ -147,7 +147,7 @@ it('contains proper cart data when event is created', function (): void {
 
     $items = $cart->getItems();
     $conditions = $cart->getConditions();
-    $total = $cart->getTotal();
+    $total = $cart->getRawTotal();
 
     $event = new CartUpdated($items, $conditions, $cart->instance(), $total);
 
@@ -193,7 +193,7 @@ it('cart condition updates can trigger manual CartUpdated', function (): void {
         $cart->getItems(),
         $cart->getConditions(),
         $cart->instance(),
-        $cart->getTotal()
+        $cart->getRawTotal()
     );
     event($event);
 

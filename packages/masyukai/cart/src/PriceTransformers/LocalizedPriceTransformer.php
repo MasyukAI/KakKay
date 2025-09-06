@@ -35,7 +35,7 @@ class LocalizedPriceTransformer extends BasePriceTransformer
         // Remove thousands separators and normalize decimal separator
         $normalized = str_replace($this->thousandsSeparator, '', (string) $price);
         $normalized = str_replace($this->decimalSeparator, '.', $normalized);
-        
+
         return $this->roundToPrecision((float) $normalized);
     }
 

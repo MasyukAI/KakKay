@@ -943,26 +943,26 @@ $totalQuantity = Cart::getTotalQuantity();
 Get cart subtotal (before conditions).
 
 ```php
-$subtotal = Cart::getSubTotal();
+$subtotal = Cart::subtotal();
 ```
 
 #### `getSubTotalWithConditions(): float`
 Get subtotal with item-level conditions applied.
 
 ```php
-$subtotalWithConditions = Cart::getSubTotalWithConditions();
+$subtotalWithConditions = Cart::subtotalWithConditions();
 ```
 
 #### `getTotal(): float`
 Get final total with all conditions applied.
 
 ```php
-$total = Cart::getTotal();
+$total = Cart::total();
 ```
 
 ### Conditions Management
 
-#### `condition(CartCondition|array $condition): static`
+#### `addCondition(CartCondition|array $condition): static`
 Add condition(s) to cart.
 
 ```php
@@ -1499,7 +1499,7 @@ use MasyukAI\Cart\Facades\Cart;
 
 // All methods available on Cart class
 Cart::add('id', 'name', 99.99);
-Cart::getTotal();
+Cart::total();
 Cart::addCondition($taxCondition);
 // etc.
 ```
@@ -1538,10 +1538,10 @@ class CheckoutService
         // Create order
         $order = Order::create([
             'user_id' => $user->id,
-            'subtotal' => $cart->getSubTotal(),
-            'tax_amount' => $cart->getConditions()->getByType('tax')->sum(fn($c) => $c->apply($cart->getSubTotal())),
+            'subtotal' => $cart->subtotal(),
+            'tax_amount' => $cart->getConditions()->getByType('tax')->sum(fn($c) => $c->apply($cart->subtotal())),
             'shipping_amount' => $shippingCost,
-            'total' => $cart->getTotal(),
+            'total' => $cart->total(),
             'items_count' => $cart->count(),
         ]);
         
@@ -1836,9 +1836,9 @@ class CartAnalytics
         $riskScore = 0;
         
         // High value cart (lower abandonment risk)
-        if ($cart->getTotal() > 500) {
+        if ($cart->total() > 500) {
             $riskScore -= 10;
-        } elseif ($cart->getTotal() < 50) {
+        } elseif ($cart->total() < 50) {
             $riskScore += 15;
         }
         
@@ -1862,8 +1862,8 @@ class CartAnalytics
         // Shipping cost impact
         $shippingConditions = $cart->getConditions()->getByType('shipping');
         if ($shippingConditions->isNotEmpty()) {
-            $shippingCost = $shippingConditions->sum(fn($c) => $c->apply($cart->getSubTotal()));
-            $shippingPercentage = $shippingCost / $cart->getSubTotal() * 100;
+            $shippingCost = $shippingConditions->sum(fn($c) => $c->apply($cart->subtotal()));
+            $shippingPercentage = $shippingCost / $cart->subtotal() * 100;
             
             if ($shippingPercentage > 15) {
                 $riskScore += 15; // High shipping costs increase abandonment
@@ -1933,7 +1933,7 @@ class RobustCartManager
                 'success' => true,
                 'message' => 'Product added to cart successfully',
                 'cart_count' => Cart::count(),
-                'cart_total' => Cart::getTotal(),
+                'cart_total' => Cart::total(),
             ];
             
         } catch (ModelNotFoundException $e) {
@@ -1986,7 +1986,7 @@ class CartTest extends TestCase
         Cart::add($product->id, $product->name, $product->price, 2);
         
         $this->assertEquals(2, Cart::count());
-        $this->assertEquals(199.98, Cart::getTotal());
+        $this->assertEquals(199.98, Cart::total());
         $this->assertTrue(Cart::has($product->id));
     }
     
@@ -1997,8 +1997,8 @@ class CartTest extends TestCase
         // Add 10% discount
         Cart::addDiscount('sale', '10%');
         
-        $this->assertEquals(100, Cart::getSubTotal());
-        $this->assertEquals(90, Cart::getTotal());
+        $this->assertEquals(100, Cart::subtotal());
+        $this->assertEquals(90, Cart::total());
     }
     
     public function test_handles_multiple_instances(): void
@@ -2008,8 +2008,8 @@ class CartTest extends TestCase
         $wishlist = Cart::instance('wishlist');
         $wishlist->add('product-2', 'Product 2', 75, 1);
         
-        $this->assertEquals(50, Cart::getTotal());
-        $this->assertEquals(75, $wishlist->getTotal());
+        $this->assertEquals(50, Cart::total());
+        $this->assertEquals(75, $wishlist->total());
     }
 }
 ```

@@ -13,12 +13,13 @@ class PriceFormatterService
 
     public function __construct(?PriceTransformerInterface $transformer = null)
     {
-        $this->transformer = $transformer ?? new DecimalPriceTransformer();
+        $this->transformer = $transformer ?? new DecimalPriceTransformer;
     }
 
     public function setTransformer(PriceTransformerInterface $transformer): self
     {
         $this->transformer = $transformer;
+
         return $this;
     }
 
@@ -32,6 +33,7 @@ class PriceFormatterService
     {
         // For input values, normalize then display
         $normalized = $this->transformer->toStorage($price);
+
         return $this->transformer->toDisplay($normalized);
     }
 
@@ -53,6 +55,7 @@ class PriceFormatterService
     public function setCurrency(string $currency): self
     {
         $this->transformer->setCurrency($currency);
+
         return $this;
     }
 

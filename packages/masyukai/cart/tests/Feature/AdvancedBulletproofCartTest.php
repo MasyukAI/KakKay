@@ -14,7 +14,7 @@ it('performs stress testing with large datasets', function () {
 
     expect(Cart::getItems())->toHaveCount(1000);
     expect(Cart::getTotalQuantity())->toBeGreaterThan(1000);
-    expect(Cart::getSubTotal())->toBeGreaterThan(10000.00);
+    expect(Cart::subtotal())->toBeGreaterThan(10000.00);
 
     // Test search performance on large dataset
     $expensiveItems = Cart::search(function ($item) {
@@ -56,7 +56,7 @@ it('handles complex condition chains bulletproof', function () {
 
     expect(Cart::getConditions())->toHaveCount(5);
 
-    $total = Cart::getTotal();
+    $total = Cart::total();
     expect($total)->toBeFloat();
     expect($total)->toBeGreaterThan(0);
 
@@ -64,14 +64,14 @@ it('handles complex condition chains bulletproof', function () {
     Cart::removeCondition('bulk-discount');
     expect(Cart::getConditions())->toHaveCount(4);
 
-    $newTotal = Cart::getTotal();
+    $newTotal = Cart::total();
     expect($newTotal)->toBeFloat();
     expect($newTotal)->toBeGreaterThan(0);
 
     // Clear all conditions
     Cart::clearConditions();
     expect(Cart::getConditions())->toHaveCount(0);
-    expect(Cart::getTotal())->toBe(Cart::getSubTotal());
+    expect(Cart::total())->toBe(Cart::subtotal());
 });
 
 it('handles edge cases and invalid operations gracefully', function () {
@@ -128,7 +128,7 @@ it('maintains data integrity under concurrent-like operations', function () {
 
     // Simulate rapid operations that might cause race conditions
     $baseItem = Cart::add('concurrent-test', 'Concurrent Test Item', 25.50, 3);
-    $originalTotal = Cart::getSubTotal();
+    $originalTotal = Cart::subtotal();
 
     // Perform rapid updates
     for ($i = 1; $i <= 50; $i++) {
@@ -146,7 +146,7 @@ it('maintains data integrity under concurrent-like operations', function () {
 
     // Verify cart totals are consistent
     $calculatedTotal = $finalItem->price * $finalItem->quantity;
-    expect(Cart::getSubTotal())->toBe($calculatedTotal);
+    expect(Cart::subtotal())->toBe($calculatedTotal);
 
     // Test with attributes during rapid updates
     for ($i = 1; $i <= 25; $i++) {
@@ -185,7 +185,7 @@ it('handles precision and floating point calculations bulletproof', function () 
     expect(Cart::getItems())->toHaveCount(6);
 
     // Ensure all calculations are stable
-    $total = Cart::getSubTotal();
+    $total = Cart::subtotal();
     expect($total)->toBeFloat();
     expect(is_finite($total))->toBeTrue(); // Check if number is finite
     expect($total)->toBeGreaterThan(0);
@@ -200,7 +200,7 @@ it('handles precision and floating point calculations bulletproof', function () 
 
     Cart::addCondition($taxCondition);
 
-    $totalWithTax = Cart::getTotal();
+    $totalWithTax = Cart::total();
     expect($totalWithTax)->toBeFloat();
     expect(is_finite($totalWithTax))->toBeTrue(); // Check if number is finite
     expect($totalWithTax)->toBeGreaterThan($total);

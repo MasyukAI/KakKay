@@ -272,7 +272,7 @@ Event::listen(ItemAdded::class, function (ItemAdded $event) {
                 'action' => 'item_added',
                 'item' => $event->item->toArray(),
                 'cart_count' => $event->cart->count(),
-                'cart_total' => $event->cart->getTotal(),
+                'cart_total' => $event->cart->total(),
             ]);
     }
 });
@@ -288,7 +288,7 @@ Event::listen(CartUpdated::class, function (CartUpdated $event) {
     $cart = $event->cart;
     
     // Auto-apply free shipping for orders over $100
-    if ($cart->getSubTotal() >= 100 && !$cart->getCondition('free-shipping')) {
+    if ($cart->subtotal() >= 100 && !$cart->getCondition('free-shipping')) {
         $freeShipping = new CartCondition(
             'free-shipping',
             'shipping',
@@ -300,7 +300,7 @@ Event::listen(CartUpdated::class, function (CartUpdated $event) {
     }
     
     // Remove free shipping if under $100
-    if ($cart->getSubTotal() < 100 && $cart->getCondition('free-shipping')) {
+    if ($cart->subtotal() < 100 && $cart->getCondition('free-shipping')) {
         $cart->removeCondition('free-shipping');
     }
 });

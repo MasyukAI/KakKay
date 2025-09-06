@@ -22,8 +22,8 @@ class HandleUserLogout implements ShouldQueue
         // Optionally backup user cart to guest session
         if (config('cart.migration.backup_on_logout', false)) {
             $this->migrationService->backupUserCartToGuest(
-                $event->user->getAuthIdentifier(), 
-                'default', 
+                $event->user->getAuthIdentifier(),
+                'default',
                 session()->getId()
             );
         }

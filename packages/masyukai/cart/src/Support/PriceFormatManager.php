@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace MasyukAI\Cart\Support;
 
-use MasyukAI\Cart\Services\PriceFormatterService;
 use MasyukAI\Cart\PriceTransformers\DecimalPriceTransformer;
+use MasyukAI\Cart\Services\PriceFormatterService;
 
 class PriceFormatManager
 {
     private static ?PriceFormatterService $formatter = null;
+
     private static bool $globalFormatOverride = false;
+
     private static ?string $globalCurrencyOverride = null;
+
     private static ?string $lastTransformerClass = null;
 
     /**
@@ -20,7 +23,7 @@ class PriceFormatManager
     public static function getFormatter(): PriceFormatterService
     {
         $currentTransformerClass = self::getConfig('cart.price_formatting.transformer', DecimalPriceTransformer::class);
-        
+
         // Recreate formatter if transformer class changed or no formatter exists
         if (self::$formatter === null || self::$lastTransformerClass !== $currentTransformerClass) {
             // Create transformer based on class type
@@ -39,7 +42,7 @@ class PriceFormatManager
                     self::getConfig('cart.price_formatting.precision', 2)
                 );
             }
-            
+
             self::$formatter = new PriceFormatterService($transformer);
             self::$lastTransformerClass = $currentTransformerClass;
         }
@@ -60,7 +63,7 @@ class PriceFormatManager
      */
     public static function formatPrice(int|float|string $value, bool $withCurrency = false): string|int|float
     {
-        if (!self::shouldFormat()) {
+        if (! self::shouldFormat()) {
             return self::getFormatter()->normalize($value);
         }
 
@@ -76,7 +79,7 @@ class PriceFormatManager
      */
     public static function formatInputPrice(int|float|string $value, bool $withCurrency = false): string|int|float
     {
-        if (!self::shouldFormat()) {
+        if (! self::shouldFormat()) {
             return self::getFormatter()->normalize($value);
         }
 

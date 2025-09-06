@@ -24,7 +24,7 @@ it('can use shipping methods through the Cart facade', function () {
         ->and(Cart::getShippingValue())->toBe(12.99)
         ->and(Cart::getShipping()->getAttribute('carrier'))->toBe('FedEx')
         ->and(Cart::getShipping()->getAttribute('tracking'))->toBe(true)
-        ->and(Cart::getTotal())->toBe(112.99); // 100 + 12.99
+        ->and(Cart::total())->toBe(112.99); // 100 + 12.99
 
     // Test facade removeShipping method
     Cart::removeShipping();
@@ -32,5 +32,5 @@ it('can use shipping methods through the Cart facade', function () {
     expect(Cart::getShipping())->toBeNull()
         ->and(Cart::getShippingMethod())->toBeNull()
         ->and(Cart::getShippingValue())->toBeNull()
-        ->and(Cart::getTotal())->toBe(100.00);
+        ->and(Cart::total())->toBe(100.00);
 });

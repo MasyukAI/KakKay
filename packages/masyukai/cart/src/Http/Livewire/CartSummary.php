@@ -32,11 +32,11 @@ class CartSummary extends Component
     }
 
     #[Computed]
-    public function subtotal(): float
+    public function subtotal()
     {
-        return Cart::getSubTotal();
+        return Cart::subtotal();
     }
-    
+
     #[Computed]
     public function shippingValue(): float
     {
@@ -46,7 +46,7 @@ class CartSummary extends Component
     #[Computed]
     public function total(): float
     {
-        return Cart::getTotal();
+        return Cart::total();
     }
 
     #[Computed]
@@ -57,7 +57,7 @@ class CartSummary extends Component
 
     public function toggleDetails(): void
     {
-        $this->showDetails = !$this->showDetails;
+        $this->showDetails = ! $this->showDetails;
     }
 
     #[On('cart-updated')]

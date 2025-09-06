@@ -1,32 +1,49 @@
-# Laravel Cart Package Guidelines
+# MasyukAI Cart Package Guidelines
 
 ## Overview
-This application uses `joelwmale/laravel-cart` for shopping cart functionality. This is a robust cart implementation for Laravel with support for conditions, database storage, and events.
+This application uses the custom `masyukai/cart` package for shopping cart functionality. This is a modern, production-ready cart implementation built specifically for Laravel 12+ with comprehensive Livewire integration, advanced condition system, and 96.2% test coverage.
 
-**Package Version**: Latest (supports Laravel 10, 11, and 12)  
-**Repository**: https://github.com/joelwmale/laravel-cart  
+**Package Location**: `packages/masyukai/cart/`  
+**Namespace**: `MasyukAI\Cart`  
+**Facade**: `MasyukAI\Cart\Facades\Cart`
+
+## Key Features
+- ✅ **Modern API**: Clean, intuitive methods with consistent naming
+- ✅ **Advanced Conditions**: Flexible discount, tax, and fee system
+- ✅ **Multiple Storage**: Session, database, and cache storage options
+- ✅ **Livewire Integration**: Ready-to-use reactive components
+- ✅ **Event System**: Comprehensive cart and item events
+- ✅ **Price Formatting**: Automatic price formatting with multiple transformers
+- ✅ **Instance Management**: Multi-cart support for complex scenarios
+- ✅ **Migration Tools**: Guest-to-user cart migration utilities
 
 ## Installation & Configuration
 
-### Installation
-```bash
-composer require joelwmale/laravel-cart
-```
+### Basic Setup
+The package is already installed as a local package. Configuration file is at `config/cart.php`:
 
-### Configuration
-Publish the configuration file:
-```bash
-php artisan vendor:publish --provider="Joelwmale\Cart\CartServiceProvider" --tag="config"
-```
-
-### Configuration Options
 ```php
 // config/cart.php
 return [
-    'format_numbers' => env('LARAVEL_CART_FORMAT_VALUES', false),
-    'decimals' => env('LARAVEL_CART_DECIMALS', 2),
-    'round_mode' => env('LARAVEL_CART_ROUND_MODE', 'down'),
+    'storage' => [
+        'driver' => 'session', // session, database, cache
+        'key' => 'cart',
+    ],
+    'formatting' => [
+        'enabled' => true,
+        'transformer' => 'integer', // integer, localized
+        'currency' => 'MYR',
+        'decimals' => 2,
+    ],
+    'events' => ['enabled' => true],
 ];
+```
+
+### Database Storage (Optional)
+For persistent carts:
+```bash
+php artisan vendor:publish --tag=cart-migrations
+php artisan migrate
 ```
 
 ## Basic Usage
@@ -35,488 +52,388 @@ return [
 
 #### Simple Product
 ```php
+use MasyukAI\Cart\Facades\Cart;
+
 Cart::add(
-    455, // product id
-    'Sample Item', // product name
-    100.99, // product price
-    2, // quantity
-    [] // optional attributes
+    'iphone-15-pro',    // product id  
+    'iPhone 15 Pro',    // product name
+    999.99,             // product price
+    1,                  // quantity
+    [                   // optional attributes
+        'color' => 'Natural Titanium',
+        'storage' => '256GB'
+    ]
 );
 ```
 
-#### Array Format
+#### Multiple Items
 ```php
 Cart::add([
-    456, // product id
-    'Leather Shoes', // product name
-    187, // product price
-    1, // quantity
-    [] // optional attributes
+    'id' => 'laptop-pro',
+    'name' => 'MacBook Pro',
+    'price' => 2499.99,
+    'quantity' => 1,
+    'attributes' => ['model' => '16-inch', 'color' => 'Space Gray']
+], [
+    'id' => 'mouse-mx',
+    'name' => 'MX Master 3',
+    'price' => 99.99,
+    'quantity' => 2,
+    'attributes' => ['color' => 'Graphite']
 ]);
-```
-
-#### With Attributes
-```php
-Cart::add([
-    457, // product id
-    'T-Shirt', // product name
-    29.99, // product price
-    1, // quantity
-    [
-        'size' => 'L',
-        'color' => 'Blue'
-    ] // attributes
-]);
-```
-
-#### Multiple Items at Once
-```php
-Cart::add(
-    [
-        456, // product id
-        'Leather Shoes', // product name
-        187, // product price
-        1, // quantity
-        [] // optional attributes
-    ],
-    [
-        431, // product id
-        'Leather Jacket', // product name
-        254.50, // product price
-        1, // quantity
-        [] // optional attributes
-    ]
-);
-```
-
-### Updating Cart Items
-
-#### Update Item Details
-```php
-Cart::update(
-    456, // product id
-    [   
-        'name' => 'New Item Name', // new item name
-        'price' => 98.67, // new item price
-    ]
-);
-```
-
-#### Update Quantity (Relative)
-```php
-// Add to existing quantity
-Cart::update(
-    456, // product id
-    [
-        'quantity' => 2, // adds 2 to current quantity
-    ]
-);
-
-// Reduce quantity
-Cart::update(
-    456, 
-    [
-        'quantity' => -1, // reduces by 1
-    ]
-);
-```
-
-#### Update Quantity (Absolute)
-```php
-Cart::update(
-    456, // product id
-    [
-        'quantity' => [
-            'relative' => false,
-            'value' => 5 // sets quantity to exactly 5
-        ],
-    ]
-);
 ```
 
 ### Retrieving Cart Data
 
 #### Get Cart Contents
 ```php
-$cartContents = Cart::getContent();
-
-// Transform to array or JSON
-$cartArray = $cartContents->toArray();
-$cartJson = $cartContents->toJson();
-
-// Count items (not quantity)
-$itemCount = $cartContents->count();
+$cartItems = Cart::content();           // CartCollection
+$cartArray = Cart::content()->toArray(); 
+$itemCount = Cart::countItems();        // Number of unique items
+$totalQuantity = Cart::count();         // Total quantity of all items
 ```
 
 #### Get Specific Item
 ```php
-$item = Cart::get(456);
-
-// Get item's total price
-$summedPrice = Cart::get($itemId)->getPriceSum();
+$item = Cart::get('iphone-15-pro');
+$itemPrice = $item->getPriceSum();      // Item total (price × quantity)
+$itemWithConditions = $item->getPriceSumWithConditions();
 ```
 
 #### Get Cart Totals
 ```php
-// Total quantity of all items
-$totalQuantity = Cart::getTotalQuantity();
+// ⚠️ IMPORTANT: New API uses formatted methods for user-facing values
+$subtotal = Cart::subtotal();                    // Formatted subtotal (no conditions)
+$subtotalWithConditions = Cart::subtotalWithConditions(); // With item-level conditions
+$total = Cart::total();                          // Final total (all conditions applied)
 
-// Subtotal (without conditions)
-$subTotal = Cart::getSubTotal();
+// Raw values for internal calculations (events, etc.)
+$rawSubtotal = Cart::getRawSubtotal();           // Float value
+$rawTotal = Cart::getRawTotal();                 // Float value
+```
 
-// Subtotal without any conditions applied
-$subTotalWithoutConditions = Cart::getSubTotalWithoutConditions();
+### Updating Cart Items
 
-// Final total (with all conditions)
-$total = Cart::getTotal();
+#### Update Item Details
+```php
+Cart::update('iphone-15-pro', [
+    'name' => 'iPhone 15 Pro Max',
+    'price' => 1199.99,
+    'quantity' => 2,
+    'attributes' => ['storage' => '512GB']
+]);
+```
+
+#### Update Quantity Only
+```php
+// Relative quantity change
+Cart::updateQuantity('iphone-15-pro', 2);       // Add 2 more
+Cart::updateQuantity('iphone-15-pro', -1);      // Remove 1
+
+// Absolute quantity
+Cart::setQuantity('iphone-15-pro', 5);          // Set to exactly 5
 ```
 
 ### Removing Items
 ```php
-// Remove specific item
-Cart::remove(456);
-
-// Check if cart is empty
-$isEmpty = Cart::isEmpty();
-
-// Clear entire cart
-Cart::clear();
-
-// Clear items only (keep conditions)
-Cart::clearItems();
+Cart::remove('iphone-15-pro');                  // Remove specific item
+Cart::clear();                                  // Clear entire cart
+Cart::isEmpty();                                // Check if cart is empty
 ```
 
-## Session Management
+## Advanced Conditions System
 
-### Cart Session Keys
-```php
-// Bind cart to specific user
-Cart::setSessionKey(User::first()->id);
-
-// Use before any other cart methods
-Cart::setSessionKey($sessionKey);
-```
-
-## Conditions System
-
-Conditions are powerful for adding discounts, taxes, shipping, etc. They can be applied at cart level or item level.
+The package uses a powerful condition system for discounts, taxes, fees, and other cart modifications.
 
 ### Cart-Level Conditions
 
 #### Basic Condition
 ```php
-$condition = new \Joelwmale\Cart\CartCondition([
-    'name' => 'Tax: 10%',
-    'type' => 'tax',
-    'target' => 'subtotal', // applied to cart subtotal
-    'value' => '10%',
-    'attributes' => [
-        'description' => 'Compulsory tax',
-    ]
-]);
+use MasyukAI\Cart\Conditions\CartCondition;
 
-Cart::condition($condition);
+$taxCondition = new CartCondition(
+    'gst-6',                    // name
+    'tax',                      // type
+    'subtotal',                 // target
+    '6%',                       // value
+    ['description' => 'GST 6%'] // attributes (optional)
+);
+
+Cart::addCondition($taxCondition);
+```
+
+#### Convenience Methods
+```php
+// Quick discount
+Cart::addDiscount('welcome-10', '10%');
+
+// Quick tax
+Cart::addTax('gst', '6%');
+
+// Quick fee
+Cart::addFee('shipping', '15.00');
 ```
 
 #### Multiple Conditions with Order
 ```php
-$tax = new \Joelwmale\Cart\CartCondition([
-    'name' => 'Tax: 10%',
-    'type' => 'tax',
-    'target' => 'subtotal',
-    'value' => '10%',
-    'order' => 2
-]);
+$shipping = new CartCondition('shipping', 'fee', 'subtotal', '+12.00', [], 1);
+$discount = new CartCondition('save10', 'discount', 'subtotal', '-10%', [], 2);
+$tax = new CartCondition('gst', 'tax', 'subtotal', '6%', [], 3);
 
-$shipping = new \Joelwmale\Cart\CartCondition([
-    'name' => 'Shipping: $15',
-    'type' => 'shipping',
-    'target' => 'subtotal',
-    'value' => '+15',
-    'order' => 1
-]);
-
-// Add individually or as array
-Cart::condition($tax);
-Cart::condition($shipping);
-// OR
-Cart::condition([$tax, $shipping]);
-```
-
-#### Conditions with Minimum/Maximum Values
-```php
-// Activate only after minimum amount
-$tenPercentOff = new CartCondition([
-    'name' => '10% Off',
-    'type' => 'discount',
-    'target' => 'subtotal',
-    'value' => '-10%',
-    'minimum' => 120, // activate only if subtotal >= 120
-    'order' => 1,
-]);
-
-// Activate only up to maximum amount
-$shipping = new CartCondition([
-    'name' => 'Shipping',
-    'type' => 'shipping',
-    'target' => 'subtotal',
-    'value' => '12',
-    'maximum' => 200, // activate only if subtotal <= 200
-    'order' => 1,
-]);
+Cart::addCondition([$shipping, $discount, $tax]);
 ```
 
 ### Item-Level Conditions
 
-#### Adding Conditions During Item Creation
+#### Add Condition to Specific Item
 ```php
-$saleCondition = new \Joelwmale\Cart\CartCondition([
-    'name' => '50% Off',
-    'type' => 'sale',
-    'value' => '-50%',
-]);
-
-$product = [
-    'id' => 456,
-    'name' => 'Sample Item 1',
-    'price' => 100,
-    'quantity' => 1,
-    'attributes' => [],
-    'conditions' => $saleCondition
-];
-
-Cart::add($product);
+$saleCondition = new CartCondition('flash-sale', 'discount', 'item', '-25%');
+Cart::addItemCondition('iphone-15-pro', $saleCondition);
 ```
 
-#### Multiple Item Conditions
+#### Add Conditions During Item Creation
 ```php
-$saleCondition = new \Joelwmale\Cart\CartCondition([
-    'name' => 'SALE 5%',
-    'type' => 'sale',
-    'value' => '-5%',
-]);
+$bulkDiscount = new CartCondition('bulk-discount', 'discount', 'item', '-15%');
 
-$discountCode = new CartCondition([
-    'name' => 'Discount Code',
-    'type' => 'promo',
-    'value' => '-25',
-]);
-
-$item = [
-    'id' => 456,
-    'name' => 'Sample Item 1',
-    'price' => 100,
-    'quantity' => 1,
-    'attributes' => [],
-    'conditions' => [$saleCondition, $discountCode]
-];
-
-Cart::add($item);
-```
-
-#### Adding Conditions to Existing Items
-```php
-$condition = new CartCondition([
-    'name' => 'COUPON 101',
-    'type' => 'coupon',
-    'value' => '-5%',
-]);
-
-Cart::addItemCondition(456, $condition);
+Cart::add('bulk-item', 'Bulk Product', 50.00, 10, [], [$bulkDiscount]);
 ```
 
 ### Managing Conditions
 
-#### Retrieving Conditions
+#### Retrieve Conditions
 ```php
-// Get all cart conditions
-$cartConditions = Cart::getConditions();
-
-foreach($cartConditions as $condition) {
-    $condition->getTarget();
-    $condition->getName();
-    $condition->getType();
-    $condition->getValue();
-    $condition->getOrder();
-    $condition->getMinimum();
-    $condition->getMaximum();
-    $condition->getAttributes();
-}
-
-// Get conditions as array (useful for Livewire)
-$cartConditions = Cart::getConditions(true);
-
-// Get specific condition by name
-$condition = Cart::getCondition('GST');
-
-// Get only active conditions
-$activeConditions = Cart::getConditions(active: true);
-
-// Get conditions by type
-$taxConditions = Cart::getConditionsByType('tax');
+$cartConditions = Cart::getConditions();                    // All cart conditions
+$taxConditions = Cart::getConditionsByType('tax');          // Conditions by type
+$specificCondition = Cart::getCondition('gst-6');           // Specific condition
+$itemConditions = Cart::getItemConditions('iphone-15-pro'); // Item conditions
 ```
 
-#### Calculating Condition Values
+#### Remove Conditions
 ```php
-// Method 1: Using condition instance
-$subTotal = Cart::getSubTotal();
-$condition = Cart::getCondition('10% GST');
-$conditionValue = $condition->getCalculatedValue($subTotal);
-
-// Method 2: Using cart method
-$conditionValue = Cart::getCalculatedValueForCondition('Coupon Discount');
+Cart::removeCondition('welcome-10');                        // Remove specific
+Cart::removeConditionsByType('discount');                   // Remove by type
+Cart::clearConditions();                                    // Clear all cart conditions
+Cart::clearItemConditions('iphone-15-pro');                 // Clear item conditions
 ```
 
-#### Removing Conditions
+## Instance Management
+
+For multi-cart scenarios (guest carts, vendor separation, etc.):
+
 ```php
-// Remove specific cart condition
-Cart::removeCartCondition('Summer Sale 5%');
+// Switch to specific cart instance
+Cart::instance('guest_' . session()->getId());
+Cart::add('product-1', 'Product 1', 99.99, 1);
 
-// Remove specific item condition
-Cart::removeItemCondition(456, 'SALE 5%');
+// Switch to user cart
+Cart::instance('user_' . auth()->id());
+Cart::add('product-2', 'Product 2', 149.99, 1);
 
-// Clear all item conditions for specific item
-Cart::clearItemConditions(456);
+// Get current instance name
+$currentInstance = Cart::getCurrentInstance();
 
-// Clear all cart conditions
-Cart::clearCartConditions();
-
-// Clear all conditions (cart + items)
-Cart::clearAllConditions();
-
-// Remove conditions by type
-Cart::removeConditionsByType('tax');
+// Merge instances
+Cart::instance('user_' . auth()->id())
+    ->merge(Cart::instance('guest_' . session()->getId()));
 ```
 
-## Item Methods
+## Cart Migration
 
-### Item Price Methods
+For guest-to-user cart transfers:
+
 ```php
-$item = Cart::get(456);
+use MasyukAI\Cart\Services\CartMigrationService;
 
-// Price without conditions
-$item->getPriceSum();
+$migrationService = app(CartMigrationService::class);
 
-// Price with item conditions
-$item->getPriceWithConditions();
+// Migrate guest cart to user cart
+$migrationService->migrateCart(
+    'guest_' . session()->getId(),  // source instance
+    'user_' . auth()->id(),         // target instance
+    'add_quantities'                // merge strategy
+);
 
-// Sum with item conditions
-$item->getPriceSumWithConditions();
+// Available merge strategies:
+// - 'add_quantities': Add quantities together
+// - 'keep_highest': Keep highest quantity
+// - 'keep_user': Keep user cart items
+// - 'replace_with_guest': Replace with guest items
+```
+
+## Events
+
+The package fires comprehensive events for cart operations:
+
+### Available Events
+```php
+use MasyukAI\Cart\Events\{CartCreated, CartUpdated, ItemAdded, ItemUpdated, ItemRemoved};
+
+Event::listen(CartCreated::class, function ($event) {
+    Log::info('Cart created', ['instance' => $event->instance]);
+});
+
+Event::listen(ItemAdded::class, function ($event) {
+    Log::info('Item added', ['item' => $event->item->toArray()]);
+});
+
+Event::listen(CartUpdated::class, function ($event) {
+    // $event->items (CartCollection)
+    // $event->conditions (CartConditionCollection) 
+    // $event->instance (string)
+    // $event->total (float)
+});
+```
+
+## Livewire Integration
+
+Ready-to-use Livewire components:
+
+### Add to Cart Component
+```php
+<livewire:add-to-cart 
+    :product-id="$product->id"
+    :product-name="$product->name"
+    :product-price="$product->price"
+    :max-quantity="$product->stock"
+    :show-form="true" />
+```
+
+### Cart Summary Component
+```php
+<livewire:cart-summary :show-details="true" />
+```
+
+### Cart Table Component
+```php
+<livewire:cart-table :show-conditions="true" />
 ```
 
 ## Storage Options
 
 ### Session Storage (Default)
-Cart data is stored in Laravel's session by default.
+```php
+// config/cart.php
+'storage' => ['driver' => 'session']
+```
 
 ### Database Storage
-For persistent cart storage across sessions:
-
-#### Create Cart Model
 ```php
-// Migration
-$table->string('session_id');
-$table->text('items');
-$table->text('conditions');
+// config/cart.php
+'storage' => ['driver' => 'database']
+```
 
-// Model
-class Cart extends Model
+### Cache Storage
+```php
+// config/cart.php
+'storage' => ['driver' => 'cache', 'ttl' => 3600]
+```
+
+## Price Formatting
+
+The package supports automatic price formatting:
+
+### Configuration
+```php
+// config/cart.php
+'formatting' => [
+    'enabled' => true,
+    'transformer' => 'integer',     // or 'localized'
+    'currency' => 'MYR',
+    'decimals' => 2,
+],
+```
+
+### Integer Transformer (Default)
+Converts prices to integers for storage (cents) and formats for display:
+```php
+Cart::add('item', 'Item', 29.99, 1);   // Stored as 2999 cents
+echo Cart::subtotal();                  // Displays "29.99"
+```
+
+### Localized Transformer
+Respects locale formatting:
+```php
+// For Malaysian locale
+echo Cart::total();                     // "RM 1,234.56"
+```
+
+## Testing
+
+### Basic Test Setup
+```php
+use MasyukAI\Cart\Facades\Cart;
+
+class CartTest extends TestCase
 {
-    protected $guarded = [];
+    protected function setUp(): void
+    {
+        parent::setUp();
+        Cart::clear(); // Clear cart before each test
+    }
 
-    protected $casts = [
-        'items' => 'array',
-        'conditions' => 'array',
-    ];
+    public function test_can_add_item_to_cart()
+    {
+        Cart::add('test-item', 'Test Item', 99.99, 1);
+        
+        $this->assertEquals(1, Cart::countItems());
+        $this->assertEquals('99.99', Cart::subtotal());
+    }
 }
 ```
 
-#### Update Configuration
+### Testing with Conditions
 ```php
-// config/cart.php
-return [
-    'driver' => 'database',
-    'storage' => [
-        'database' => [
-            'model' => \App\Models\Cart::class,
-            'id' => 'session_id',
-            'items' => 'items',
-            'conditions' => 'conditions',
-        ],
-    ],
-];
-```
-
-## Events
-
-Laravel Cart fires several events you can listen to:
-
-### Available Events
-```php
-// Cart lifecycle
-Event::listen('LaravelCart.Created', function () {
-    // cart was created
-});
-
-// Item management
-Event::listen('LaravelCart.Adding', function ($item) {
-    // item is being added
-});
-
-Event::listen('LaravelCart.Added', function ($item) {
-    // item was added
-});
-
-Event::listen('LaravelCart.Updating', function ($item) {
-    // item is being updated
-});
-
-Event::listen('LaravelCart.Updated', function ($item) {
-    // item was updated
-});
-
-Event::listen('LaravelCart.Removing', function ($item) {
-    // item is being removed
-});
-
-Event::listen('LaravelCart.Removed', function ($item) {
-    // item was removed
-});
-
-// Cart clearing
-Event::listen('LaravelCart.Clearing', function () {
-    // cart is being cleared
-});
-
-Event::listen('LaravelCart.Cleared', function () {
-    // cart was cleared
-});
+public function test_applies_discount_correctly()
+{
+    Cart::add('item', 'Item', 100.00, 1);
+    Cart::addDiscount('test-discount', '10%');
+    
+    $this->assertEquals('100.00', Cart::subtotal());
+    $this->assertEquals('90.00', Cart::total());
+}
 ```
 
 ## Best Practices
 
-### 1. Always Use Session Keys for Multi-User Applications
+### 1. Always Use Instance Management
 ```php
-// In your controller or middleware
-Cart::setSessionKey(auth()->user()->id ?? session()->getId());
+// In controllers or middleware
+$instanceKey = auth()->check() 
+    ? 'user_' . auth()->id() 
+    : 'guest_' . session()->getId();
+    
+Cart::instance($instanceKey);
 ```
 
-### 2. Add Conditions Before Calculating Totals
+### 2. Handle Cart Migration on Login
 ```php
-// Add all cart-level conditions first
-Cart::condition($taxCondition);
-Cart::condition($shippingCondition);
-
-// Then calculate totals
-$subtotal = Cart::getSubTotal();
-$total = Cart::getTotal();
+// In your authentication logic
+public function handleUserLogin(User $user)
+{
+    $guestInstance = 'guest_' . session()->getId();
+    $userInstance = 'user_' . $user->id;
+    
+    if (!Cart::instance($guestInstance)->isEmpty()) {
+        app(CartMigrationService::class)->migrateCart(
+            $guestInstance, 
+            $userInstance, 
+            'add_quantities'
+        );
+    }
+    
+    Cart::instance($userInstance);
+}
 ```
 
-### 3. Use Events for Logging or Analytics
+### 3. Use Events for Analytics
 ```php
-Event::listen('LaravelCart.Added', function ($item) {
-    Log::info('Item added to cart', ['item' => $item]);
-    // Track analytics
+Event::listen(ItemAdded::class, function ($event) {
+    Analytics::track('cart_item_added', [
+        'item_id' => $event->item->id,
+        'item_name' => $event->item->name,
+        'price' => $event->item->price,
+        'quantity' => $event->item->quantity,
+    ]);
 });
 ```
 
@@ -526,114 +443,78 @@ public function addToCart(Request $request)
 {
     $request->validate([
         'product_id' => 'required|exists:products,id',
-        'quantity' => 'required|integer|min:1',
+        'quantity' => 'required|integer|min:1|max:10',
     ]);
 
-    $product = Product::find($request->product_id);
-
-    Cart::add([
-        'id' => $product->id,
-        'name' => $product->name,
-        'price' => $product->price,
-        'quantity' => $request->quantity,
-        'attributes' => [
-            'image' => $product->image,
-            'slug' => $product->slug,
-        ]
-    ]);
-}
-```
-
-### 5. Handle Cart Persistence
-```php
-// For guest users, transfer cart on login
-public function transferGuestCart(User $user)
-{
-    $guestSessionId = session()->getId();
-    Cart::setSessionKey($guestSessionId);
-    $guestCart = Cart::getContent();
-
-    Cart::setSessionKey($user->id);
+    $product = Product::findOrFail($request->product_id);
     
-    foreach ($guestCart as $item) {
-        Cart::add([
-            'id' => $item->id,
-            'name' => $item->name,
-            'price' => $item->price,
-            'quantity' => $item->quantity,
-            'attributes' => $item->attributes->toArray(),
+    // Check stock availability
+    if ($product->stock < $request->quantity) {
+        throw ValidationException::withMessages([
+            'quantity' => 'Insufficient stock available.'
         ]);
     }
 
-    // Clear guest cart
-    Cart::setSessionKey($guestSessionId);
-    Cart::clear();
+    Cart::add(
+        $product->id,
+        $product->name,
+        $product->price,
+        $request->quantity,
+        ['sku' => $product->sku, 'image' => $product->image]
+    );
 }
+```
+
+### 5. Use Raw Methods for Internal Calculations
+```php
+// ❌ Don't use formatted methods for calculations
+$tax = Cart::total() * 0.06;  // Will fail if total() returns "1,234.56"
+
+// ✅ Use raw methods for calculations
+$tax = Cart::getRawTotal() * 0.06;  // Correct: uses float value
 ```
 
 ## Common Use Cases
 
-### E-commerce Cart with Tax and Shipping
+### E-commerce with Tax and Shipping
 ```php
 // Add products
-Cart::add([
-    'id' => 1,
-    'name' => 'T-Shirt',
-    'price' => 2999, // RM 29.99
-    'quantity' => 2,
-    'attributes' => ['size' => 'L', 'color' => 'Blue']
-]);
+Cart::add('shirt', 'Cotton Shirt', 29.99, 2);
+Cart::add('pants', 'Denim Pants', 79.99, 1);
 
-// Add tax condition
-$tax = new CartCondition([
-    'name' => 'GST 6%',
-    'type' => 'tax',
-    'target' => 'subtotal',
-    'value' => '6%',
-    'order' => 1,
-]);
+// Apply business rules
+Cart::addTax('gst', '6%');
+Cart::addFee('shipping', '12.00');
 
-// Add shipping condition
-$shipping = new CartCondition([
-    'name' => 'Standard Shipping',
-    'type' => 'shipping',
-    'target' => 'subtotal',
-    'value' => '+15.00',
-    'maximum' => 100, // Free shipping over RM 100
-    'order' => 2,
-]);
-
-Cart::condition([$tax, $shipping]);
+// Apply customer discount
+if (auth()->user()->isVip()) {
+    Cart::addDiscount('vip-discount', '15%');
+}
 
 // Get totals
-$subtotal = Cart::getSubTotal(); // RM 59.98
-$total = Cart::getTotal(); // RM 78.58 (with tax + shipping)
+$subtotal = Cart::subtotal();           // "139.97"
+$total = Cart::total();                 // Final amount with all conditions
 ```
 
-### Discount Codes
+### Multi-vendor Marketplace
 ```php
-// Apply percentage discount
-$discountCondition = new CartCondition([
-    'name' => 'SAVE10',
-    'type' => 'discount',
-    'target' => 'subtotal',
-    'value' => '-10%',
-    'minimum' => 50, // Only for orders above RM 50
-]);
+$vendors = ['vendor_a', 'vendor_b'];
 
-Cart::condition($discountCondition);
+foreach ($vendors as $vendorId) {
+    Cart::instance("vendor_{$vendorId}");
+    
+    // Add vendor-specific items
+    Cart::add("product_{$vendorId}", "Vendor Product", 99.99, 1);
+    
+    // Apply vendor-specific conditions
+    Cart::addFee('vendor_fee', VendorService::getFee($vendorId));
+}
+
+// Calculate grand total
+$grandTotal = 0;
+foreach ($vendors as $vendorId) {
+    $grandTotal += Cart::instance("vendor_{$vendorId}")->getRawTotal();
+}
 ```
 
-### Buy One Get One (BOGO)
-```php
-// Apply BOGO as item condition
-$bogoCondition = new CartCondition([
-    'name' => 'BOGO 50% Off',
-    'type' => 'discount',
-    'value' => '-50%',
-]);
-
-Cart::addItemCondition($productId, $bogoCondition);
-```
-
-This package provides a robust and flexible cart system that integrates well with Laravel applications. Use it for any e-commerce or shopping cart functionality in this application.
+This package provides a robust, modern cart solution that integrates seamlessly with Laravel applications. Use it for any e-commerce or shopping cart functionality in this application.

@@ -23,7 +23,9 @@ class AddToCart extends Component
     public int $quantity = 1;
 
     public array $productAttributes = [];
+
     public ?string $associatedModel = null;
+
     public bool $showForm = false;
 
     public function mount(
@@ -67,7 +69,7 @@ class AddToCart extends Component
             }
 
         } catch (\Exception $e) {
-            session()->flash('cart.error', 'Failed to add item to cart: ' . $e->getMessage());
+            session()->flash('cart.error', 'Failed to add item to cart: '.$e->getMessage());
         }
     }
 
@@ -75,6 +77,7 @@ class AddToCart extends Component
     {
         if (empty($this->productId) || empty($this->productName) || $this->productPrice < 0) {
             session()->flash('cart.error', 'Invalid product data for quick add.');
+
             return;
         }
 
@@ -83,7 +86,7 @@ class AddToCart extends Component
 
     public function toggleForm(): void
     {
-        $this->showForm = !$this->showForm;
+        $this->showForm = ! $this->showForm;
     }
 
     public function increaseQuantity(): void

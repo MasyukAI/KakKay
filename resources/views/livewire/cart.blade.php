@@ -188,7 +188,7 @@ new class extends Component {
     #[Computed]
     public function getSubtotal(): int
     {
-        return (int) Cart::getSubTotal(); // Keep in cents
+        return (int) Cart::subtotal(); // Keep in cents
     }
 
     // #[Computed]

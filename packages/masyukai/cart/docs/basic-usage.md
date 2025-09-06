@@ -162,13 +162,13 @@ Cart::clear();
 
 ```php
 // Get subtotal (before conditions)
-$subtotal = Cart::getSubTotal();
+$subtotal = Cart::subtotal();
 
 // Get subtotal with item-level conditions applied
-$subtotalWithConditions = Cart::getSubTotalWithConditions();
+$subtotalWithConditions = Cart::subtotalWithConditions();
 
 // Get final total (with all conditions)
-$total = Cart::getTotal();
+$total = Cart::total();
 ```
 
 ### Get Quantities

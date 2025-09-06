@@ -20,7 +20,7 @@ describe('Missing Features Compatibility Tests', function () {
         $this->cart->add('1', 'Product 1', 10.00, 2);
         $this->cart->add('2', 'Product 2', 15.00, 1);
 
-        $subtotal = $this->cart->getSubTotalWithoutConditions();
+        $subtotal = $this->cart->subtotalWithoutConditions();
 
         expect($subtotal)->toBe(35.0); // (10 * 2) + (15 * 1)
     });
@@ -139,12 +139,12 @@ describe('Missing Features Compatibility Tests', function () {
 
     describe('Enhanced Calculation Methods', function () {
 
-        it('ensures getSubTotal and getSubTotalWithoutConditions return same value', function () {
+        it('ensures subtotal() and subtotalWithoutConditions() return same value when no conditions', function () {
             $this->cart->add('1', 'Product 1', 10.00, 2);
             $this->cart->add('2', 'Product 2', 15.00, 1);
 
-            $subtotal = $this->cart->getSubTotal();
-            $subtotalWithoutConditions = $this->cart->getSubTotalWithoutConditions();
+            $subtotal = $this->cart->subtotal();
+            $subtotalWithoutConditions = $this->cart->subtotalWithoutConditions();
 
             expect($subtotal)->toBe($subtotalWithoutConditions);
             expect($subtotal)->toBe(35.0);
@@ -157,8 +157,8 @@ describe('Missing Features Compatibility Tests', function () {
             $condition = new CartCondition('item_discount', 'discount', 'subtotal', '-20%');
             $this->cart->addItemCondition('1', $condition);
 
-            $subtotalWithoutConditions = $this->cart->getSubTotalWithoutConditions();
-            $subtotalWithConditions = $this->cart->getSubTotalWithConditions();
+            $subtotalWithoutConditions = $this->cart->subtotalWithoutConditions();
+            $subtotalWithConditions = $this->cart->subtotal(); // Now includes item conditions by default
 
             expect($subtotalWithoutConditions)->toBe(20.0); // 10 * 2
             expect($subtotalWithConditions)->toBe(16.0); // 20 - 20% = 16
@@ -187,8 +187,8 @@ describe('Missing Features Compatibility Tests', function () {
 
             expect($defaultCart->getItems())->toHaveCount(1);
             expect($wishlistCart->getItems())->toHaveCount(1);
-            expect($defaultCart->getTotal())->toBe(10.0);
-            expect($wishlistCart->getTotal())->toBe(15.0);
+            expect($defaultCart->total())->toBe(10.0);
+            expect($wishlistCart->total())->toBe(15.0);
         });
     });
 });

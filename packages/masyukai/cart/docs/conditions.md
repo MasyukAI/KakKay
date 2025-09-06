@@ -181,7 +181,7 @@ Create conditions with custom logic:
 $condition = new CartCondition('bulk-discount', 'discount', 'subtotal', '-10%');
 
 // Only apply if cart total > $100
-if (Cart::getSubTotal() > 100) {
+if (Cart::subtotal() > 100) {
     Cart::addCondition($condition);
 }
 ```
@@ -246,7 +246,7 @@ Returns:
 ### Progressive Discount System
 
 ```php
-$subtotal = Cart::getSubTotal();
+$subtotal = Cart::subtotal();
 
 if ($subtotal >= 500) {
     Cart::addCondition(new CartCondition('vip-discount', 'discount', 'subtotal', '-20%'));
@@ -321,9 +321,9 @@ Cart::addCondition(new CartCondition('tax', 'tax', 'subtotal', '+10%'));
 Cart::addCondition(new CartCondition('discount', 'discount', 'subtotal', '-50'));
 
 // Get different totals
-$subtotal = Cart::getSubTotal();                    // $200.00 (base)
-$subtotalWithConditions = Cart::getSubTotalWithConditions(); // $200.00 (no item conditions)
-$total = Cart::getTotal();                          // $165.00 (200 - 50 + 10% of 150)
+$subtotal = Cart::subtotal();                    // $200.00 (base)
+$subtotalWithConditions = Cart::subtotalWithConditions(); // $200.00 (no item conditions)
+$total = Cart::total();                          // $165.00 (200 - 50 + 10% of 150)
 ```
 
 ## Best Practices

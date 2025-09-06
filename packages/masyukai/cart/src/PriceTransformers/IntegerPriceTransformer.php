@@ -24,7 +24,7 @@ class IntegerPriceTransformer extends BasePriceTransformer
     public function toDisplay(int|float|string $price): string
     {
         $numericPrice = (float) $price;
-        
+
         // Detect if the value is already in display format
         // Display format values are typically < 1000 and have decimal places
         // Storage format values are typically >= 100 (for prices > $1.00)
@@ -37,7 +37,7 @@ class IntegerPriceTransformer extends BasePriceTransformer
             // This looks like a storage format value (e.g., 1999)
             $decimal = (int) $price / $this->multiplier;
         }
-        
+
         return number_format($decimal, $this->precision, '.', '');
     }
 
@@ -47,7 +47,7 @@ class IntegerPriceTransformer extends BasePriceTransformer
             // Remove thousands separators (commas) but preserve decimal points
             $price = str_replace(',', '', $price);
         }
-        
+
         return (int) round((float) $price * $this->multiplier);
     }
 
@@ -57,7 +57,7 @@ class IntegerPriceTransformer extends BasePriceTransformer
             // Remove thousands separators (commas) but preserve decimal points
             $price = str_replace(',', '', $price);
         }
-        
+
         // Always treat stored values as cents and convert to dollars
         return (float) ((int) $price) / $this->multiplier;
     }

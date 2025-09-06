@@ -250,13 +250,13 @@ trait ManagesItems
             if (is_string($price)) {
                 $price = str_replace(',', '', $price);
             }
-            
+
             return round((float) $price, $this->config['decimals']);
         }
 
         // Use the price transformer for proper normalization
         $normalized = PriceFormatManager::getFormatter()->normalize($price);
-        
+
         // Ensure we return a float
         return (float) $normalized;
     }

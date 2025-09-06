@@ -22,6 +22,8 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - pestphp/pest (PEST) - v4
 - phpunit/phpunit (PHPUNIT) - v12
 - tailwindcss (TAILWINDCSS) - v4
+- masyukai/cart (CART) - local package for shopping cart functionality
+- masyukai/chip (CART) - local package for payment gateway functionality
 
 
 ## Conventions

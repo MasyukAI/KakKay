@@ -37,15 +37,14 @@ new class extends Component {
         $this->loadPaymentMethods();
     }
 
-    public function loadCartItems(): void
+    public function loadCartItems()
     {
         try {
             // Middleware handles cart instance switching
             $cartContents = Cart::getItems();
 
             if ($cartContents->isEmpty()) {
-                $this->redirect(route('cart'));
-                return;
+                return $this->redirect(route('cart'));
             }
 
             $this->cartItems = $cartContents->map(function ($item) {
@@ -59,7 +58,7 @@ new class extends Component {
             })->values()->toArray();
         } catch (\Exception $e) {
             Log::error('Checkout loading error: ' . $e->getMessage());
-            $this->redirect(route('cart'));
+            return $this->redirect(route('cart'));
         }
     }
 
@@ -111,7 +110,7 @@ new class extends Component {
     #[Computed]
     public function getSubtotal(): int
     {
-        return collect($this->cartItems)->sum(fn($item) => $item['price'] * $item['quantity']);
+        return (int) Cart::subtotal(); // Use Cart facade for consistency
     }
 
     #[Computed]
@@ -140,7 +139,7 @@ new class extends Component {
     public function getTotal(): int
     {
         // is there a native function from Cart package
-        $cartTotal = Cart::getTotal();
+        $cartTotal = Cart::total();
         return $cartTotal - $this->getSavings() + $this->getShipping() + $this->getTax();
     }
 
@@ -179,7 +178,7 @@ new class extends Component {
         return $groupNames[$group] ?? ucfirst($group);
     }
 
-    public function processCheckout(): void
+    public function processCheckout()
     {
         $this->validate([
             'form.name' => 'required|string|max:255',
@@ -231,7 +230,7 @@ new class extends Component {
                 ]);
 
                 // Redirect to CHIP checkout
-                $this->redirect($result['checkout_url']);
+                return $this->redirect($result['checkout_url']);
             } else {
                 session()->flash('error', 'Gagal memproses pembayaran: ' . $result['error']);
             }
@@ -254,7 +253,7 @@ new class extends Component {
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
                     <a href="{{ route('home') }}" class="cart-brand">
-                        <flux:icon name="home" class="h-8 w-8" />
+                        <flux:icon.home class="h-8 w-8" />
                         <span>Kak Kay</span>
                     </a>
                 </div>
@@ -288,20 +287,20 @@ new class extends Component {
                     <ol class="flex items-center justify-center w-full max-w-2xl mx-auto text-center text-sm font-medium text-gray-300 sm:text-base">
                         <li class="flex items-center text-pink-400 after:mx-6 after:hidden after:h-1 after:w-full after:border-b after:border-gray-600 sm:after:inline-block sm:after:content-[''] md:w-full xl:after:mx-10">
                             <span class="flex items-center after:mx-2 after:text-gray-500 after:content-['/'] sm:after:hidden">
-                                <flux:icon name="check-circle" class="me-2 h-4 w-4 sm:h-5 sm:w-5" />
+                                <flux:icon.check-circle class="me-2 h-4 w-4 sm:h-5 sm:w-5" />
                                 Troli
                             </span>
                         </li>
 
                         <li class="flex items-center text-pink-400 after:mx-6 after:hidden after:h-1 after:w-full after:border-b after:border-gray-600 sm:after:inline-block sm:after:content-[''] md:w-full xl:after:mx-10">
                             <span class="flex items-center after:mx-2 after:text-gray-500 after:content-['/'] sm:after:hidden">
-                                <flux:icon name="check-circle" class="me-2 h-4 w-4 sm:h-5 sm:w-5" />
+                                <flux:icon.check-circle class="me-2 h-4 w-4 sm:h-5 sm:w-5" />
                                 Bayaran
                             </span>
                         </li>
 
                         <li class="flex shrink-0 items-center text-gray-400">
-                            <flux:icon name="clock" class="me-2 h-4 w-4 sm:h-5 sm:w-5" />
+                            <flux:icon.clock class="me-2 h-4 w-4 sm:h-5 sm:w-5" />
                             Ringkasan Pesanan
                         </li>
                     </ol>
@@ -470,7 +469,7 @@ new class extends Component {
                                                                 <div class="text-sm text-gray-400">{{ $method['description'] }}</div>
                                                             </div>
                                                             @if(in_array($method['id'], $form['payment_method_whitelist'] ?? []))
-                                                                <flux:icon name="check-circle" class="h-5 w-5 text-green-400" />
+                                                                <flux:icon.check-circle class="h-5 w-5 text-green-400" />
                                                             @endif
                                                         </div>
                                                     </div>
@@ -625,7 +624,7 @@ new class extends Component {
 
                             <div class="space-y-3 mt-6">
                                 <flux:button type="submit" variant="primary" class="cursor-pointer w-full cart-button-primary py-3">
-                                    <flux:icon name="credit-card" class="h-5 w-5 mr-2" />
+                                    <flux:icon.credit-card class="h-5 w-5 mr-2" />
                                     Teruskan ke Pembayaran
                                 </flux:button>
 

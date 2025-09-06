@@ -6,10 +6,8 @@ namespace MasyukAI\Cart\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
-use MasyukAI\Cart\Facades\Cart;
 use MasyukAI\Cart\Conditions\CartCondition;
+use MasyukAI\Cart\Facades\Cart;
 use MasyukAI\Cart\Services\CartMigrationService;
 
 class DemoController extends Controller
@@ -25,7 +23,7 @@ class DemoController extends Controller
 
         return view('cart::demo.index', compact(
             'products',
-            'cartItems', 
+            'cartItems',
             'cartCount',
             'cartSubtotal',
             'cartTotal',
@@ -57,7 +55,7 @@ class DemoController extends Controller
             'success' => true,
             'message' => 'Item added to cart successfully',
             'cart_count' => Cart::count(),
-            'cart_total' => Cart::total()
+            'cart_total' => Cart::total(),
         ]);
     }
 
@@ -79,7 +77,7 @@ class DemoController extends Controller
             'success' => true,
             'message' => 'Cart updated successfully',
             'cart_count' => Cart::count(),
-            'cart_total' => Cart::total()
+            'cart_total' => Cart::total(),
         ]);
     }
 
@@ -95,7 +93,7 @@ class DemoController extends Controller
             'success' => true,
             'message' => 'Item removed from cart',
             'cart_count' => Cart::count(),
-            'cart_total' => Cart::total()
+            'cart_total' => Cart::total(),
         ]);
     }
 
@@ -120,7 +118,7 @@ class DemoController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Condition applied successfully',
-            'cart_total' => Cart::total()
+            'cart_total' => Cart::total(),
         ]);
     }
 
@@ -135,7 +133,7 @@ class DemoController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Condition removed successfully',
-            'cart_total' => Cart::total()
+            'cart_total' => Cart::total(),
         ]);
     }
 
@@ -147,7 +145,7 @@ class DemoController extends Controller
             'success' => true,
             'message' => 'Cart cleared successfully',
             'cart_count' => 0,
-            'cart_total' => 0
+            'cart_total' => 0,
         ]);
     }
 
@@ -162,7 +160,7 @@ class DemoController extends Controller
             $instanceData[$instance] = [
                 'count' => Cart::count(),
                 'total' => Cart::total(),
-                'items' => Cart::getItems()
+                'items' => Cart::getItems(),
             ];
         }
 
@@ -185,7 +183,7 @@ class DemoController extends Controller
             'success' => true,
             'message' => "Switched to {$request->instance} cart",
             'cart_count' => Cart::count(),
-            'cart_total' => Cart::total()
+            'cart_total' => Cart::total(),
         ]);
     }
 
@@ -193,15 +191,15 @@ class DemoController extends Controller
     {
         $guestCartItems = collect();
         $userCartItems = collect();
-        
+
         // Get guest cart items
         Cart::setInstance('guest_demo');
         $guestCartItems = Cart::getItems();
-        
+
         // Get user cart items
         Cart::setInstance('user_demo');
         $userCartItems = Cart::getItems();
-        
+
         // Reset to default
         Cart::setInstance('default');
 
@@ -211,7 +209,7 @@ class DemoController extends Controller
     public function setupMigrationDemo(Request $request): \Illuminate\Http\JsonResponse
     {
         $type = $request->input('type', 'guest');
-        
+
         if ($type === 'guest') {
             Cart::setInstance('guest_demo');
             // Add some sample items to guest cart
@@ -228,7 +226,7 @@ class DemoController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => ucfirst($type) . ' cart setup completed'
+            'message' => ucfirst($type).' cart setup completed',
         ]);
     }
 
@@ -238,21 +236,21 @@ class DemoController extends Controller
             'strategy' => 'required|string|in:add_quantities,keep_highest_quantity,keep_user_cart,replace_with_guest',
         ]);
 
-        $migrationService = new CartMigrationService();
-        
+        $migrationService = new CartMigrationService;
+
         // Store original strategy
         $originalStrategy = config('cart.migration.merge_strategy');
         config(['cart.migration.merge_strategy' => $request->strategy]);
-        
+
         $success = $migrationService->migrateGuestCartToUser(999, 'default', 'guest_demo'); // Demo user ID
-        
+
         // Restore original strategy
         config(['cart.migration.merge_strategy' => $originalStrategy]);
 
         return response()->json([
             'success' => $success,
             'message' => $success ? 'Migration completed successfully' : 'No items to migrate',
-            'strategy_used' => $request->strategy
+            'strategy_used' => $request->strategy,
         ]);
     }
 
@@ -268,8 +266,8 @@ class DemoController extends Controller
                 'attributes' => [
                     'color' => ['Silver', 'Space Gray', 'Rose Gold'],
                     'storage' => ['256GB', '512GB', '1TB'],
-                    'ram' => ['8GB', '16GB', '32GB']
-                ]
+                    'ram' => ['8GB', '16GB', '32GB'],
+                ],
             ],
             [
                 'id' => 'wireless-headphones',
@@ -279,8 +277,8 @@ class DemoController extends Controller
                 'image' => 'https://via.placeholder.com/200x200/28a745/ffffff?text=Headphones',
                 'attributes' => [
                     'color' => ['Black', 'White', 'Blue'],
-                    'type' => ['Over-ear', 'On-ear']
-                ]
+                    'type' => ['Over-ear', 'On-ear'],
+                ],
             ],
             [
                 'id' => 'smartphone-x',
@@ -290,8 +288,8 @@ class DemoController extends Controller
                 'image' => 'https://via.placeholder.com/200x200/dc3545/ffffff?text=Phone',
                 'attributes' => [
                     'color' => ['Black', 'White', 'Blue', 'Red'],
-                    'storage' => ['128GB', '256GB', '512GB']
-                ]
+                    'storage' => ['128GB', '256GB', '512GB'],
+                ],
             ],
             [
                 'id' => 'gaming-mouse',
@@ -301,8 +299,8 @@ class DemoController extends Controller
                 'image' => 'https://via.placeholder.com/200x200/ffc107/000000?text=Mouse',
                 'attributes' => [
                     'color' => ['Black', 'White'],
-                    'dpi' => ['12000', '16000', '20000']
-                ]
+                    'dpi' => ['12000', '16000', '20000'],
+                ],
             ],
             [
                 'id' => 'mechanical-keyboard',
@@ -312,8 +310,8 @@ class DemoController extends Controller
                 'image' => 'https://via.placeholder.com/200x200/6f42c1/ffffff?text=Keyboard',
                 'attributes' => [
                     'switch' => ['Blue', 'Brown', 'Red'],
-                    'layout' => ['Full', 'TKL', '60%']
-                ]
+                    'layout' => ['Full', 'TKL', '60%'],
+                ],
             ],
             [
                 'id' => 'monitor-4k',
@@ -323,9 +321,9 @@ class DemoController extends Controller
                 'image' => 'https://via.placeholder.com/200x200/17a2b8/ffffff?text=Monitor',
                 'attributes' => [
                     'size' => ['24"', '27"', '32"'],
-                    'panel' => ['IPS', 'VA', 'TN']
-                ]
-            ]
+                    'panel' => ['IPS', 'VA', 'TN'],
+                ],
+            ],
         ];
     }
 }

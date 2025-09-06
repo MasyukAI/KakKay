@@ -37,7 +37,7 @@ it('ensures price does not go negative with conditions', function (): void {
         conditions: [$negativeCondition]
     );
 
-    expect($item->getPriceWithConditions())->toBe(0.0); // Should not go negative
+    expect($item->getRawPriceWithConditions())->toBe(0.0); // Should not go negative
 });
 
 it('can clear all conditions', function (): void {
@@ -128,8 +128,8 @@ it('can use final total alias method', function (): void {
         conditions: [$this->condition1] // -10%
     );
 
-    expect($item->finalTotal())->toBe(180.0) // Same as getPriceSumWithConditions()
-        ->and($item->finalTotal())->toBe($item->getPriceSumWithConditions());
+    expect($item->finalTotal())->toBe(180.0) // Same as getRawPriceSumWithConditions()
+        ->and($item->finalTotal())->toBe($item->getRawPriceSumWithConditions());
 });
 
 it('can use withQuantity method (shopping cart style)', function (): void {

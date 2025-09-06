@@ -61,7 +61,7 @@ describe('Shopping Cart', function () {
         
         expect(Cart::count())->toBe(1)
             ->and(Cart::getTotalQuantity())->toBe(2)
-            ->and(Cart::getSubTotal())->toBe(199.98);
+            ->and(Cart::subtotal())->toBe(199.98);
     });
 
     it('can update item quantities', function () {
@@ -70,7 +70,7 @@ describe('Shopping Cart', function () {
         
         $item = Cart::get('product-1');
         expect($item->quantity)->toBe(3)
-            ->and(Cart::getSubTotal())->toBe(299.97);
+            ->and(Cart::subtotal())->toBe(299.97);
     });
 
     it('applies conditions correctly', function () {
@@ -79,8 +79,8 @@ describe('Shopping Cart', function () {
         $tax = new CartCondition('tax', 'tax', 'subtotal', '+10%');
         Cart::addCondition($tax);
         
-        expect(Cart::getSubTotal())->toBe(200.00)
-            ->and(Cart::getTotal())->toBe(220.00);
+        expect(Cart::subtotal())->toBe(200.00)
+            ->and(Cart::total())->toBe(220.00);
     });
 });
 ```
@@ -274,7 +274,7 @@ it('handles large number of items efficiently', function () {
     
     // Calculate total
     $startTime = microtime(true);
-    $total = Cart::getTotal();
+    $total = Cart::total();
     $calculateTime = microtime(true) - $startTime;
     
     expect($addTime)->toBeLessThan(1.0) // Should add 1000 items in under 1 second

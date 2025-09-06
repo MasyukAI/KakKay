@@ -105,7 +105,7 @@ class CartComponent extends Component
     public function refreshCart()
     {
         $this->cartItems = Cart::getItems()->toArray();
-        $this->cartTotal = Cart::getTotal();
+        $this->cartTotal = Cart::total();
         $this->cartCount = Cart::count();
     }
 
@@ -357,7 +357,7 @@ new class extends Component {
     public function refreshCart()
     {
         $this->cartCount = Cart::count();
-        $this->cartTotal = Cart::getTotal();
+        $this->cartTotal = Cart::total();
     }
 } ?>
 
