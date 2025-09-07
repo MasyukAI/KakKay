@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Saiffil Fariz',
             'email' => 'saiffil@gmail.com',
             'password' => bcrypt('111111'),
+            'is_admin' => true,
         ]);
 
         // Seed books and categories
