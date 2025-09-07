@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7a2af1fa2a1627423953df91fc241494",
+    "content-hash": "5471557c3738a0f365199da373eae7ba",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -4166,6 +4166,77 @@
                 "laravel",
                 "malaysia",
                 "payment"
+            ],
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "masyukai/filament-cart-plugin",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "./packages/masyukai/filament-cart-plugin",
+                "reference": "ae264c07d941ecbfd2d4d061b9fb8f0f67a7ceb7"
+            },
+            "require": {
+                "filament/filament": "^4.0",
+                "masyukai/cart": "^1.0",
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "laravel/framework": "^12.0",
+                "laravel/pint": "^1.18",
+                "livewire/livewire": "^3.0",
+                "orchestra/testbench": "^10.0",
+                "pestphp/pest": "^4.0",
+                "pestphp/pest-plugin-laravel": "^4.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "MasyukAI\\FilamentCartPlugin\\FilamentCartServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "MasyukAI\\FilamentCartPlugin\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "MasyukAI\\FilamentCartPlugin\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "vendor/bin/pest"
+                ],
+                "format": [
+                    "vendor/bin/pint"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "MasyukAI",
+                    "email": "info@masyukai.com"
+                }
+            ],
+            "description": "A comprehensive Filament admin interface for managing shopping carts created by the MasyukAI Cart package",
+            "keywords": [
+                "admin",
+                "cart",
+                "e-commerce",
+                "filament",
+                "laravel",
+                "masyukai",
+                "plugin",
+                "shopping-cart"
             ],
             "transport-options": {
                 "relative": true
@@ -13134,7 +13205,8 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "masyukai/cart": 20,
-        "masyukai/chip": 20
+        "masyukai/chip": 20,
+        "masyukai/filament-cart-plugin": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

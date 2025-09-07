@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Carts\Tables;
+namespace MasyukAI\FilamentCartPlugin\Resources\CartResource\Tables;
 
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Actions\Action;

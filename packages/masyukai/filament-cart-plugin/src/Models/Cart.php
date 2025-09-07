@@ -1,14 +1,24 @@
 <?php
 
-namespace App\Models;
+declare(strict_types=1);
 
+namespace MasyukAI\FilamentCartPlugin\Models;
+
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Cart extends Model
 {
     use HasFactory;
+
+    /**
+     * Create a new factory instance for the model.
+     */
+    protected static function newFactory(): \MasyukAI\FilamentCartPlugin\Database\Factories\CartFactory
+    {
+        return \MasyukAI\FilamentCartPlugin\Database\Factories\CartFactory::new();
+    }
 
     /**
      * The table associated with the model.
@@ -96,34 +106,34 @@ class Cart extends Model
     /**
      * Scope to filter by instance.
      */
-    public function scopeInstance($query, string $instance)
+    public function scopeInstance($query, string $instance): void
     {
-        return $query->where('instance', $instance);
+        $query->where('instance', $instance);
     }
 
     /**
      * Scope to filter by identifier.
      */
-    public function scopeByIdentifier($query, string $identifier)
+    public function scopeByIdentifier($query, string $identifier): void
     {
-        return $query->where('identifier', $identifier);
+        $query->where('identifier', $identifier);
     }
 
     /**
      * Scope to get non-empty carts.
      */
-    public function scopeNotEmpty($query)
+    public function scopeNotEmpty($query): void
     {
-        return $query->whereNotNull('items')
-                    ->where('items', '!=', '[]')
-                    ->where('items', '!=', '{}');
+        $query->whereNotNull('items')
+              ->where('items', '!=', '[]')
+              ->where('items', '!=', '{}');
     }
 
     /**
      * Scope to get recent carts.
      */
-    public function scopeRecent($query, int $days = 7)
+    public function scopeRecent($query, int $days = 7): void
     {
-        return $query->where('updated_at', '>=', now()->subDays($days));
+        $query->where('updated_at', '>=', now()->subDays($days));
     }
 }

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Widgets;
+namespace MasyukAI\FilamentCartPlugin\Widgets;
 
-use App\Models\Cart;
+use MasyukAI\FilamentCartPlugin\Models\Cart;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Filament\Support\Icons\Heroicon;

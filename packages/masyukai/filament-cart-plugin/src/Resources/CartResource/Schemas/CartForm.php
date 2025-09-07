@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Carts\Schemas;
+namespace MasyukAI\FilamentCartPlugin\Resources\CartResource\Schemas;
 
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Grid;

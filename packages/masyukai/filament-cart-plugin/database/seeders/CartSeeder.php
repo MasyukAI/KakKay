@@ -1,8 +1,8 @@
 <?php
 
-namespace Database\Seeders;
+namespace MasyukAI\FilamentCartPlugin\Database\Seeders;
 
-use App\Models\Cart;
+use MasyukAI\FilamentCartPlugin\Models\Cart;
 use Illuminate\Database\Seeder;
 
 class CartSeeder extends Seeder

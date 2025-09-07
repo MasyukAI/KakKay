@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Filament\Resources\Carts;
+namespace MasyukAI\FilamentCartPlugin\Resources;
 
-use App\Filament\Resources\Carts\Pages\CreateCart;
-use App\Filament\Resources\Carts\Pages\EditCart;
-use App\Filament\Resources\Carts\Pages\ListCarts;
-use App\Filament\Resources\Carts\Pages\ViewCart;
-use App\Filament\Resources\Carts\Schemas\CartForm;
-use App\Filament\Resources\Carts\Schemas\CartInfolist;
-use App\Filament\Resources\Carts\Tables\CartsTable;
-use App\Models\Cart;
+use MasyukAI\FilamentCartPlugin\Resources\CartResource\Pages\CreateCart;
+use MasyukAI\FilamentCartPlugin\Resources\CartResource\Pages\EditCart;
+use MasyukAI\FilamentCartPlugin\Resources\CartResource\Pages\ListCarts;
+use MasyukAI\FilamentCartPlugin\Resources\CartResource\Pages\ViewCart;
+use MasyukAI\FilamentCartPlugin\Resources\CartResource\Schemas\CartForm;
+use MasyukAI\FilamentCartPlugin\Resources\CartResource\Schemas\CartInfolist;
+use MasyukAI\FilamentCartPlugin\Resources\CartResource\Tables\CartsTable;
+use MasyukAI\FilamentCartPlugin\Models\Cart;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;

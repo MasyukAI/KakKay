@@ -1,12 +1,12 @@
 <?php
 
-namespace Database\Factories;
+namespace MasyukAI\FilamentCartPlugin\Database\Factories;
 
-use App\Models\Cart;
+use MasyukAI\FilamentCartPlugin\Models\Cart;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Cart>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\MasyukAI\FilamentCartPlugin\Models\Cart>
  */
 class CartFactory extends Factory
 {
