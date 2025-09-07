@@ -29,7 +29,7 @@ class CartServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/cart.php', 'cart');
+        $this->mergeConfigFrom(__DIR__.'/config/cart.php', 'cart');
 
         $this->registerStorageDrivers();
         $this->registerCartManager();
@@ -165,7 +165,7 @@ class CartServiceProvider extends ServiceProvider
     protected function publishConfig(): void
     {
         $this->publishes([
-            __DIR__.'/../config/cart.php' => config_path('cart.php'),
+            __DIR__.'/config/cart.php' => config_path('cart.php'),
         ], 'cart-config');
     }
 

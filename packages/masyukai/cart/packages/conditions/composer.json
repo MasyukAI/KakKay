@@ -1,0 +1,13 @@
+{
+    "name": "masyukai/cart-condition",
+    "require": {
+        "php": "^8.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "MasyukAI\\Cart\\Conditions\\": "src",
+            "MasyukAI\\Cart\\Collections\\": "src/Collections"
+        }
+    },
+        "version": "1.0.0"
+}
