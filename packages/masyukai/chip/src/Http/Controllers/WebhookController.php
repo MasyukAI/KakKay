@@ -21,25 +21,10 @@ class WebhookController extends Controller
     public function handle(WebhookRequest $request): Response
     {
         try {
-            $payload = $request->getWebhookPayload();
-            $headers = $request->getHeaders();
+            // Use the webhook service to process the webhook
+            $this->webhookService->processWebhook($request);
 
-            Log::channel(config('chip.logging.channel'))
-                ->info('CHIP Webhook received', [
-                    'event_type' => $payload->event_type ?? 'unknown',
-                    'payload' => $payload,
-                ]);
-
-            // Dispatch the webhook event
-            if (config('chip.events.dispatch_webhook_events')) {
-                event(new WebhookReceived(
-                    eventType: $payload->event_type ?? 'unknown',
-                    payload: $payload,
-                    headers: $headers
-                ));
-            }
-
-            return response('OK', 200);
+            return response()->json(['status' => 'success'], 200);
         } catch (\Exception $e) {
             Log::channel(config('chip.logging.channel'))
                 ->error('CHIP Webhook processing failed', [
@@ -47,7 +32,7 @@ class WebhookController extends Controller
                     'trace' => $e->getTraceAsString(),
                 ]);
 
-            return response('Error processing webhook', 400);
+            return response()->json(['status' => 'error', 'message' => 'Error processing webhook'], 400);
         }
     }
 
@@ -58,14 +43,14 @@ class WebhookController extends Controller
             $payload = $request->getContent();
 
             if (!$signature || !$payload) {
-                return response('Missing signature or payload', 400);
+                return response()->json(['status' => 'error', 'message' => 'Missing signature or payload'], 400);
             }
 
             // Verify signature using general public key
             $publicKey = $this->webhookService->getPublicKey();
             
             if (!$this->webhookService->verifySignature($payload, $signature, $publicKey)) {
-                return response('Invalid signature', 401);
+                return response()->json(['status' => 'error', 'message' => 'Invalid signature'], 401);
             }
 
             $parsedPayload = $this->webhookService->parsePayload($payload);
@@ -84,7 +69,7 @@ class WebhookController extends Controller
                 ));
             }
 
-            return response('OK', 200);
+            return response()->json(['status' => 'success'], 200);
         } catch (\Exception $e) {
             Log::channel(config('chip.logging.channel'))
                 ->error('CHIP Success callback processing failed', [
@@ -92,7 +77,7 @@ class WebhookController extends Controller
                     'trace' => $e->getTraceAsString(),
                 ]);
 
-            return response('Error processing callback', 400);
+            return response()->json(['status' => 'error', 'message' => 'Error processing callback'], 400);
         }
     }
 }
