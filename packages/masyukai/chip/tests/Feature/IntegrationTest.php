@@ -3,6 +3,11 @@
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\DB;
+use Masyukai\Chip\Events\PurchaseCreated;
+use Masyukai\Chip\Events\PurchasePaid;
+use Masyukai\Chip\Events\WebhookReceived;
 use Masyukai\Chip\Tests\TestCase;
 
 class FeatureTestCase extends TestCase
@@ -162,7 +167,8 @@ describe('Package Integration Tests', function () {
     it('registers package routes', function () {
         $routes = collect(app('router')->getRoutes())->map(fn($route) => $route->uri());
         
-        expect($routes->contains('chip/webhook'))->toBeTrue();
+        expect($routes->contains('chip/webhooks/{webhook_id}'))->toBeTrue();
+        expect($routes->contains('chip/webhooks/success'))->toBeTrue();
     });
 
     it('publishes package migrations', function () {
@@ -191,7 +197,7 @@ describe('End-to-End Webhook Processing', function () {
         $webhookPayload = $this->testCase->createWebhookPayload('purchase.created', $purchaseData);
         $signature = $this->testCase->signWebhookPayload($webhookPayload);
 
-        $response = $this->testCase->postJson('/chip/webhook', $webhookPayload, [
+        $response = $this->testCase->postJson('/chip/webhooks/test_webhook_id', $webhookPayload, [
             'X-Signature' => $signature
         ]);
 
@@ -207,7 +213,7 @@ describe('End-to-End Webhook Processing', function () {
         $webhookPayload = $this->testCase->createWebhookPayload('purchase.paid', $purchaseData);
         $signature = $this->testCase->signWebhookPayload($webhookPayload);
 
-        $response = $this->testCase->postJson('/chip/webhook', $webhookPayload, [
+        $response = $this->testCase->postJson('/chip/webhooks/test_webhook_id', $webhookPayload, [
             'X-Signature' => $signature
         ]);
 
@@ -220,7 +226,7 @@ describe('End-to-End Webhook Processing', function () {
         $purchaseData = $this->testCase->createTestPurchase();
         $webhookPayload = $this->testCase->createWebhookPayload('purchase.created', $purchaseData);
 
-        $response = $this->testCase->postJson('/chip/webhook', $webhookPayload, [
+        $response = $this->testCase->postJson('/chip/webhooks/test_webhook_id', $webhookPayload, [
             'X-Signature' => 'invalid_signature'
         ]);
 
@@ -252,19 +258,24 @@ describe('Database Persistence Integration', function () {
 
     it('stores purchase data in database', function () {
         $purchaseData = [
-            'purchase_id' => 'purchase_123',
-            'amount_in_cents' => 10000,
+            'chip_id' => 'purchase_123',
+            'amount_cents' => 10000,
             'currency' => 'MYR',
             'reference' => 'ORDER_001',
             'status' => 'created',
+            'client_details' => json_encode(['name' => 'Test Client']),
+            'purchase_details' => json_encode(['description' => 'Test purchase']),
+            'brand_id' => 'test_brand',
+            'chip_created_at' => now(),
+            'chip_updated_at' => now(),
             'metadata' => json_encode(['order_id' => '456']),
         ];
 
         DB::table('chip_purchases')->insert($purchaseData);
 
         $this->testCase->assertDatabaseHasChipRecord('purchases', [
-            'purchase_id' => 'purchase_123',
-            'amount_in_cents' => 10000,
+            'chip_id' => 'purchase_123',
+            'amount_cents' => 10000,
             'status' => 'created',
         ]);
     });
