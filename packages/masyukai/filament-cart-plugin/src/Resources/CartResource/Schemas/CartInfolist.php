@@ -2,12 +2,11 @@
 
 namespace MasyukAI\FilamentCartPlugin\Resources\CartResource\Schemas;
 
-use Filament\Infolists\Components\Grid;
 use Filament\Infolists\Components\KeyValueEntry;
 use Filament\Infolists\Components\RepeatableEntry;
-use Filament\Infolists\Components\Section;
-use Filament\Infolists\Components\Split;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 
@@ -16,12 +15,12 @@ class CartInfolist
     public static function configure(Schema $schema): Schema
     {
         return $schema
-            ->schema([
+            ->components([
                 Section::make('Cart Overview')
                     ->schema([
-                        Split::make([
-                            Grid::make(2)
-                                ->schema([
+//                        Split::make([
+//                            Grid::make(2)
+//                                ->schema([
                                     TextEntry::make('identifier')
                                         ->label('Cart ID')
                                         ->copyable()
@@ -54,18 +53,18 @@ class CartInfolist
                                         ->label('Created')
                                         ->dateTime()
                                         ->icon(Heroicon::OutlinedCalendar),
-                                ]),
-                        ]),
+//                                ]),
+//                        ]),
                     ]),
-
+//
                 Section::make('Cart Items')
                     ->schema([
                         RepeatableEntry::make('items')
                             ->label('')
                             ->schema([
-                                Split::make([
-                                    Grid::make(2)
-                                        ->schema([
+//                                Split::make([
+//                                    Grid::make(2)
+//                                        ->schema([
                                             TextEntry::make('id')
                                                 ->label('Product ID')
                                                 ->copyable(),
@@ -82,13 +81,13 @@ class CartInfolist
                                                 ->label('Unit Price')
                                                 ->money('USD')
                                                 ->icon(Heroicon::OutlinedCurrencyDollar),
-                                        ]),
+//                                        ]),
 
-                                    Grid::make(1)
-                                        ->schema([
+//                                    Grid::make(1)
+//                                        ->schema([
                                             TextEntry::make('subtotal')
                                                 ->label('Subtotal')
-                                                ->getStateUsing(fn (array $state): string => 
+                                                ->getStateUsing(fn (array $state): string =>
                                                     '$' . number_format(($state['price'] ?? 0) * ($state['quantity'] ?? 0), 2)
                                                 )
                                                 ->color('success')
@@ -96,11 +95,11 @@ class CartInfolist
 
                                             KeyValueEntry::make('attributes')
                                                 ->label('Attributes')
-                                                ->visible(fn (array $state): bool => 
+                                                ->visible(fn (array $state): bool =>
                                                     !empty($state['attributes'])
                                                 ),
-                                        ]),
-                                ]),
+//                                        ]),
+//                                ]),
                             ])
                             ->contained(false)
                             ->visible(fn ($record): bool => !$record->isEmpty()),
@@ -113,8 +112,8 @@ class CartInfolist
                         RepeatableEntry::make('conditions')
                             ->label('')
                             ->schema([
-                                Grid::make(4)
-                                    ->schema([
+//                                Grid::make(4)
+//                                    ->schema([
                                         TextEntry::make('name')
                                             ->label('Name')
                                             ->weight('semibold'),
@@ -137,15 +136,15 @@ class CartInfolist
                                         TextEntry::make('description')
                                             ->label('Description')
                                             ->limit(50),
-                                    ]),
+//                                    ]),
                             ])
                             ->contained(false)
-                            ->visible(fn ($record): bool => 
+                            ->visible(fn ($record): bool =>
                                 is_array($record->conditions) && !empty($record->conditions)
                             ),
                     ])
                     ->collapsible()
-                    ->visible(fn ($record): bool => 
+                    ->visible(fn ($record): bool =>
                         is_array($record->conditions) && !empty($record->conditions)
                     ),
 
@@ -155,7 +154,7 @@ class CartInfolist
                             ->label('Additional Information'),
                     ])
                     ->collapsible()
-                    ->visible(fn ($record): bool => 
+                    ->visible(fn ($record): bool =>
                         is_array($record->metadata) && !empty($record->metadata)
                     ),
 
