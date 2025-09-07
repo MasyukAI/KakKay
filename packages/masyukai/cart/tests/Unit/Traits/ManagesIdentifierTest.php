@@ -4,238 +4,294 @@ declare(strict_types=1);
 
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
 use Illuminate\Contracts\Auth\Guard;
-use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Container\Container;
 use Illuminate\Session\SessionManager;
 use MasyukAI\Cart\Traits\ManagesIdentifier;
 
-describe('ManagesIdentifier Enhanced Trait', function () {
-    beforeEach(function () {
-        $this->trait = new class
+beforeEach(function () {
+    $this->trait = new class
+    {
+        use ManagesIdentifier;
+
+        // Make protected methods public for testing
+        public function publicGetAuthenticatedUserId(Container $app): ?string
         {
-            use ManagesIdentifier;
+            return $this->getAuthenticatedUserId($app);
+        }
 
-            protected $mockApp;
+        public function publicGetSessionId(Container $app): ?string
+        {
+            return $this->getSessionId($app);
+        }
 
-            public function setMockApplication($app): void
-            {
-                $this->mockApp = $app;
-            }
+        public function publicGetApplication(): Container
+        {
+            return $this->getApplication();
+        }
+    };
+});
 
-            protected function getApplication(): Application
-            {
-                return $this->mockApp ?? app();
-            }
-
-            public function callGetIdentifier(): string
-            {
-                return $this->getIdentifier();
-            }
-
-            public function callGetAuthenticatedUserId($app): ?string
-            {
-                return $this->getAuthenticatedUserId($app);
-            }
-
-            public function callGetSessionId($app): ?string
-            {
-                return $this->getSessionId($app);
-            }
-
-            public function callIsTestingEnvironment($app): bool
-            {
-                return $this->isTestingEnvironment($app);
-            }
-        };
-    });
-
+describe('ManagesIdentifier Trait', function () {
     describe('getIdentifier method', function () {
         it('returns authenticated user ID when user is logged in', function () {
-            $mockGuard = mock(Guard::class);
+            // Mock the application container
+            $mockApp = Mockery::mock(Container::class);
+
+            // Mock auth factory and guard
+            $mockAuth = Mockery::mock(AuthFactory::class);
+            $mockGuard = Mockery::mock(Guard::class);
+
+            $mockApp->shouldReceive('bound')->with('auth')->andReturn(true);
+            $mockApp->shouldReceive('make')->with(AuthFactory::class)->andReturn($mockAuth);
+            $mockAuth->shouldReceive('guard')->andReturn($mockGuard);
             $mockGuard->shouldReceive('check')->andReturn(true);
             $mockGuard->shouldReceive('id')->andReturn(123);
 
-            $mockAuth = mock(AuthFactory::class);
-            $mockAuth->shouldReceive('guard')->andReturn($mockGuard);
+            // Mock the getApplication method
+            $trait = new class
+            {
+                use ManagesIdentifier;
 
-            $mockApp = mock(Application::class);
-            $mockApp->shouldReceive('bound')->with('auth')->andReturn(true);
-            $mockApp->shouldReceive('make')->with(AuthFactory::class)->andReturn($mockAuth);
+                protected function getApplication(): Container
+                {
+                    global $mockApp;
 
-            $this->trait->setMockApplication($mockApp);
+                    return $mockApp;
+                }
+            };
 
-            expect($this->trait->callGetIdentifier())->toBe('123');
+            $GLOBALS['mockApp'] = $mockApp;
+
+            expect($trait->getIdentifier())->toBe('123');
         });
 
         it('returns session ID when user is not authenticated', function () {
-            $mockGuard = mock(Guard::class);
-            $mockGuard->shouldReceive('check')->andReturn(false);
+            // Mock the application container
+            $mockApp = Mockery::mock(Container::class);
 
-            $mockAuth = mock(AuthFactory::class);
-            $mockAuth->shouldReceive('guard')->andReturn($mockGuard);
+            // Mock auth (returning null for unauthenticated user)
+            $mockAuth = Mockery::mock(AuthFactory::class);
+            $mockGuard = Mockery::mock(Guard::class);
 
-            $mockSession = mock(SessionManager::class);
-            $mockSession->shouldReceive('getId')->andReturn('session_abc123');
-
-            $mockApp = mock(Application::class);
             $mockApp->shouldReceive('bound')->with('auth')->andReturn(true);
             $mockApp->shouldReceive('make')->with(AuthFactory::class)->andReturn($mockAuth);
+            $mockAuth->shouldReceive('guard')->andReturn($mockGuard);
+            $mockGuard->shouldReceive('check')->andReturn(false);
+
+            // Mock session manager
+            $mockSession = Mockery::mock(SessionManager::class);
             $mockApp->shouldReceive('bound')->with('session')->andReturn(true);
             $mockApp->shouldReceive('make')->with(SessionManager::class)->andReturn($mockSession);
+            $mockSession->shouldReceive('getId')->andReturn('session_abc123');
 
-            $this->trait->setMockApplication($mockApp);
+            // Mock the getApplication method
+            $trait = new class
+            {
+                use ManagesIdentifier;
 
-            expect($this->trait->callGetIdentifier())->toBe('session_abc123');
+                protected function getApplication(): Container
+                {
+                    global $mockApp;
+
+                    return $mockApp;
+                }
+            };
+
+            $GLOBALS['mockApp'] = $mockApp;
+
+            expect($trait->getIdentifier())->toBe('session_abc123');
         });
 
-        it('returns test identifier in testing environment', function () {
-            $mockApp = mock(Application::class);
+        it('throws exception when neither auth nor session are available', function () {
+            // Mock the application container
+            $mockApp = Mockery::mock(Container::class);
+
+            // Mock auth not bound
             $mockApp->shouldReceive('bound')->with('auth')->andReturn(false);
+
+            // Mock session not bound
             $mockApp->shouldReceive('bound')->with('session')->andReturn(false);
-            $mockApp->shouldReceive('environment')->with('testing')->andReturn(true);
 
-            $this->trait->setMockApplication($mockApp);
+            // Mock the getApplication method
+            $trait = new class
+            {
+                use ManagesIdentifier;
 
-            expect($this->trait->callGetIdentifier())->toBe('test_session_id');
+                protected function getApplication(): Container
+                {
+                    global $mockApp;
+
+                    return $mockApp;
+                }
+            };
+
+            $GLOBALS['mockApp'] = $mockApp;
+
+            expect(fn () => $trait->getIdentifier())
+                ->toThrow(RuntimeException::class, 'Cart identifier cannot be determined: neither auth nor session services are available');
         });
 
-        it('throws exception when services are unavailable in production', function () {
-            $mockApp = mock(Application::class);
-            $mockApp->shouldReceive('bound')->with('auth')->andReturn(false);
-            $mockApp->shouldReceive('bound')->with('session')->andReturn(false);
-            $mockApp->shouldReceive('environment')->with('testing')->andReturn(false);
+        it('returns session ID when auth service throws exception', function () {
+            // Mock the application container
+            $mockApp = Mockery::mock(Container::class);
 
-            $this->trait->setMockApplication($mockApp);
+            // Mock auth throwing exception
+            $mockApp->shouldReceive('bound')->with('auth')->andReturn(true);
+            $mockApp->shouldReceive('make')->with(AuthFactory::class)->andThrow(new Exception('Auth service error'));
 
-            expect(fn () => $this->trait->callGetIdentifier())
-                ->toThrow(\RuntimeException::class, 'Cart identifier cannot be determined: neither auth nor session services are available');
+            // Mock session manager
+            $mockSession = Mockery::mock(SessionManager::class);
+            $mockApp->shouldReceive('bound')->with('session')->andReturn(true);
+            $mockApp->shouldReceive('make')->with(SessionManager::class)->andReturn($mockSession);
+            $mockSession->shouldReceive('getId')->andReturn('fallback_session');
+
+            // Mock the getApplication method
+            $trait = new class
+            {
+                use ManagesIdentifier;
+
+                protected function getApplication(): Container
+                {
+                    global $mockApp;
+
+                    return $mockApp;
+                }
+            };
+
+            $GLOBALS['mockApp'] = $mockApp;
+
+            expect($trait->getIdentifier())->toBe('fallback_session');
+        });
+
+        it('throws exception when both auth and session services throw exceptions', function () {
+            // Mock the application container
+            $mockApp = Mockery::mock(Container::class);
+
+            // Mock auth throwing exception
+            $mockApp->shouldReceive('bound')->with('auth')->andReturn(true);
+            $mockApp->shouldReceive('make')->with(AuthFactory::class)->andThrow(new Exception('Auth service error'));
+
+            // Mock session throwing exception
+            $mockApp->shouldReceive('bound')->with('session')->andReturn(true);
+            $mockApp->shouldReceive('make')->with(SessionManager::class)->andThrow(new Exception('Session service error'));
+
+            // Mock the getApplication method
+            $trait = new class
+            {
+                use ManagesIdentifier;
+
+                protected function getApplication(): Container
+                {
+                    global $mockApp;
+
+                    return $mockApp;
+                }
+            };
+
+            $GLOBALS['mockApp'] = $mockApp;
+
+            expect(fn () => $trait->getIdentifier())
+                ->toThrow(RuntimeException::class, 'Cart identifier cannot be determined: neither auth nor session services are available');
         });
     });
 
     describe('getAuthenticatedUserId method', function () {
-        it('returns null when auth is not bound', function () {
-            $mockApp = mock(Application::class);
+        it('returns null when auth service is not bound', function () {
+            $mockApp = Mockery::mock(Container::class);
             $mockApp->shouldReceive('bound')->with('auth')->andReturn(false);
 
-            expect($this->trait->callGetAuthenticatedUserId($mockApp))->toBeNull();
+            $result = $this->trait->publicGetAuthenticatedUserId($mockApp);
+
+            expect($result)->toBeNull();
         });
 
-        it('returns user ID when user is authenticated', function () {
-            $mockGuard = mock(Guard::class);
+        it('returns user ID as string when user is authenticated', function () {
+            $mockApp = Mockery::mock(Container::class);
+            $mockAuth = Mockery::mock(AuthFactory::class);
+            $mockGuard = Mockery::mock(Guard::class);
+
+            $mockApp->shouldReceive('bound')->with('auth')->andReturn(true);
+            $mockApp->shouldReceive('make')->with(AuthFactory::class)->andReturn($mockAuth);
+            $mockAuth->shouldReceive('guard')->andReturn($mockGuard);
             $mockGuard->shouldReceive('check')->andReturn(true);
             $mockGuard->shouldReceive('id')->andReturn(456);
 
-            $mockAuth = mock(AuthFactory::class);
-            $mockAuth->shouldReceive('guard')->andReturn($mockGuard);
+            $result = $this->trait->publicGetAuthenticatedUserId($mockApp);
 
-            $mockApp = mock(Application::class);
-            $mockApp->shouldReceive('bound')->with('auth')->andReturn(true);
-            $mockApp->shouldReceive('make')->with(AuthFactory::class)->andReturn($mockAuth);
-
-            expect($this->trait->callGetAuthenticatedUserId($mockApp))->toBe('456');
+            expect($result)->toBe('456');
         });
 
         it('returns null when user is not authenticated', function () {
-            $mockGuard = mock(Guard::class);
-            $mockGuard->shouldReceive('check')->andReturn(false);
+            $mockApp = Mockery::mock(Container::class);
+            $mockAuth = Mockery::mock(AuthFactory::class);
+            $mockGuard = Mockery::mock(Guard::class);
 
-            $mockAuth = mock(AuthFactory::class);
-            $mockAuth->shouldReceive('guard')->andReturn($mockGuard);
-
-            $mockApp = mock(Application::class);
             $mockApp->shouldReceive('bound')->with('auth')->andReturn(true);
             $mockApp->shouldReceive('make')->with(AuthFactory::class)->andReturn($mockAuth);
+            $mockAuth->shouldReceive('guard')->andReturn($mockGuard);
+            $mockGuard->shouldReceive('check')->andReturn(false);
 
-            expect($this->trait->callGetAuthenticatedUserId($mockApp))->toBeNull();
+            $result = $this->trait->publicGetAuthenticatedUserId($mockApp);
+
+            expect($result)->toBeNull();
         });
 
         it('returns null when auth service throws exception', function () {
-            $mockApp = mock(Application::class);
-            $mockApp->shouldReceive('bound')->with('auth')->andReturn(true);
-            $mockApp->shouldReceive('make')->with(AuthFactory::class)->andThrow(new \Exception('Auth error'));
-            $mockApp->shouldReceive('environment')->with('testing')->andReturn(true);
+            $mockApp = Mockery::mock(Container::class);
 
-            expect($this->trait->callGetAuthenticatedUserId($mockApp))->toBeNull();
+            $mockApp->shouldReceive('bound')->with('auth')->andReturn(true);
+            $mockApp->shouldReceive('make')->with(AuthFactory::class)->andThrow(new Exception('Auth service error'));
+
+            $result = $this->trait->publicGetAuthenticatedUserId($mockApp);
+
+            expect($result)->toBeNull();
         });
     });
 
     describe('getSessionId method', function () {
-        it('returns null when session is not bound', function () {
-            $mockApp = mock(Application::class);
+        it('returns null when session service is not bound', function () {
+            $mockApp = Mockery::mock(Container::class);
             $mockApp->shouldReceive('bound')->with('session')->andReturn(false);
 
-            expect($this->trait->callGetSessionId($mockApp))->toBeNull();
+            $result = $this->trait->publicGetSessionId($mockApp);
+
+            expect($result)->toBeNull();
         });
 
-        it('returns session ID when session is available', function () {
-            $mockSession = mock(SessionManager::class);
-            $mockSession->shouldReceive('getId')->andReturn('session_xyz789');
+        it('returns session ID when session service is available', function () {
+            $mockApp = Mockery::mock(Container::class);
+            $mockSession = Mockery::mock(SessionManager::class);
 
-            $mockApp = mock(Application::class);
             $mockApp->shouldReceive('bound')->with('session')->andReturn(true);
             $mockApp->shouldReceive('make')->with(SessionManager::class)->andReturn($mockSession);
+            $mockSession->shouldReceive('getId')->andReturn('test_session_id');
 
-            expect($this->trait->callGetSessionId($mockApp))->toBe('session_xyz789');
+            $result = $this->trait->publicGetSessionId($mockApp);
+
+            expect($result)->toBe('test_session_id');
         });
 
         it('returns null when session service throws exception', function () {
-            $mockApp = mock(Application::class);
-            $mockApp->shouldReceive('bound')->with('session')->andReturn(true);
-            $mockApp->shouldReceive('make')->with(SessionManager::class)->andThrow(new \Exception('Session error'));
-            $mockApp->shouldReceive('environment')->with('testing')->andReturn(true);
+            $mockApp = Mockery::mock(Container::class);
 
-            expect($this->trait->callGetSessionId($mockApp))->toBeNull();
+            $mockApp->shouldReceive('bound')->with('session')->andReturn(true);
+            $mockApp->shouldReceive('make')->with(SessionManager::class)->andThrow(new Exception('Session service error'));
+
+            $result = $this->trait->publicGetSessionId($mockApp);
+
+            expect($result)->toBeNull();
         });
     });
 
-    describe('isTestingEnvironment method', function () {
-        it('returns true when environment is testing', function () {
-            $mockApp = mock(Application::class);
-            $mockApp->shouldReceive('environment')->with('testing')->andReturn(true);
+    describe('getApplication method', function () {
+        it('returns the Laravel application instance', function () {
+            $result = $this->trait->publicGetApplication();
 
-            expect($this->trait->callIsTestingEnvironment($mockApp))->toBeTrue();
-        });
-
-        it('returns false when environment is production', function () {
-            $mockApp = mock(Application::class);
-            $mockApp->shouldReceive('environment')->with('testing')->andReturn(false);
-
-            expect($this->trait->callIsTestingEnvironment($mockApp))->toBeFalse();
+            expect($result)->toBeInstanceOf(Container::class);
         });
     });
+});
 
-    describe('edge cases and error handling', function () {
-        it('handles auth check returning false and falls back to session', function () {
-            $mockGuard = mock(Guard::class);
-            $mockGuard->shouldReceive('check')->andReturn(false);
-
-            $mockAuth = mock(AuthFactory::class);
-            $mockAuth->shouldReceive('guard')->andReturn($mockGuard);
-
-            $mockSession = mock(SessionManager::class);
-            $mockSession->shouldReceive('getId')->andReturn('fallback_session_id');
-
-            $mockApp = mock(Application::class);
-            $mockApp->shouldReceive('bound')->with('auth')->andReturn(true);
-            $mockApp->shouldReceive('make')->with(AuthFactory::class)->andReturn($mockAuth);
-            $mockApp->shouldReceive('bound')->with('session')->andReturn(true);
-            $mockApp->shouldReceive('make')->with(SessionManager::class)->andReturn($mockSession);
-
-            $this->trait->setMockApplication($mockApp);
-
-            expect($this->trait->callGetIdentifier())->toBe('fallback_session_id');
-        });
-
-        it('handles both auth and session failure in testing environment', function () {
-            $mockApp = mock(Application::class);
-            $mockApp->shouldReceive('bound')->with('auth')->andReturn(true);
-            $mockApp->shouldReceive('make')->with(AuthFactory::class)->andThrow(new \Exception('Auth error'));
-            $mockApp->shouldReceive('bound')->with('session')->andReturn(true);
-            $mockApp->shouldReceive('make')->with(SessionManager::class)->andThrow(new \Exception('Session error'));
-            $mockApp->shouldReceive('environment')->with('testing')->andReturn(true);
-
-            $this->trait->setMockApplication($mockApp);
-
-            expect($this->trait->callGetIdentifier())->toBe('test_session_id');
-        });
-    });
+afterEach(function () {
+    Mockery::close();
 });

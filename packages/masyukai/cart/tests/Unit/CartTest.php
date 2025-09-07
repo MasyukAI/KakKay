@@ -627,7 +627,7 @@ describe('Edge cases and stress tests', function () {
         // Verify we can access any item
         expect($this->cart->get('product-50'))->toBeInstanceOf(CartItem::class);
         expect($this->cart->get('product-50')->name)->toBe('Product 50');
-    })->skip(fn() => !env('RUN_STRESS_TESTS', false), 'Stress test skipped by default - set RUN_STRESS_TESTS=true to include');
+    })->skip(fn () => ! env('RUN_STRESS_TESTS', false), 'Stress test skipped by default - set RUN_STRESS_TESTS=true to include');
 
     it('handles complex condition chains', function () {
         $this->cart->add('product-1', 'Product', 100.00, 1);
@@ -670,7 +670,7 @@ describe('Edge cases and stress tests', function () {
 
         expect($this->cart->getItems()->count())->toBeLessThan(50);
         expect($this->cart->isEmpty())->toBeFalse();
-    })->skip(fn() => !env('RUN_STRESS_TESTS', false), 'Stress test skipped by default - set RUN_STRESS_TESTS=true to include');
+    })->skip(fn () => ! env('RUN_STRESS_TESTS', false), 'Stress test skipped by default - set RUN_STRESS_TESTS=true to include');
 
     it('maintains data integrity during concurrent-like operations', function () {
         $originalItem = $this->cart->add('integrity-test', 'Test Product', 25.99, 3);
@@ -888,58 +888,6 @@ describe('Cart instance management', function () {
     });
 });
 
-describe('Cart merge operations', function () {
-    it('can merge items from another cart instance', function () {
-        // Add items to current instance
-        $this->cart->add('item-1', 'Item 1', 10.00, 2);
-
-        // Switch to another instance and add different items
-        $otherCart = $this->cart->setInstance('merge_source');
-        $otherCart->add('item-2', 'Item 2', 20.00, 1);
-        $otherCart->add('item-3', 'Item 3', 15.00, 3);
-
-        // Switch back to original and merge
-        $originalCart = $otherCart->setInstance('bulletproof_test');
-        $result = $originalCart->merge('merge_source');
-
-        expect($result)->toBeInstanceOf(Cart::class);
-        expect($originalCart->getItems())->toHaveCount(3);
-        expect($originalCart->getTotalQuantity())->toBe(6); // 2 + 1 + 3
-        expect($originalCart->subtotal())->toBe(85.00); // 2*10 + 1*20 + 3*15
-
-        // Source cart should be cleared after merge
-        $sourceCart = $originalCart->setInstance('merge_source');
-        expect($sourceCart->getItems())->toHaveCount(0);
-    });
-
-    it('merges quantities when items have same ID', function () {
-        // Add item to current instance
-        $this->cart->add('item-1', 'Item 1', 10.00, 2);
-
-        // Add same item to another instance
-        $otherCart = $this->cart->setInstance('merge_source_2');
-        $otherCart->add('item-1', 'Item 1', 10.00, 3);
-
-        // Merge should combine quantities
-        $originalCart = $otherCart->setInstance('bulletproof_test');
-        $originalCart->merge('merge_source_2');
-
-        expect($originalCart->getItems())->toHaveCount(1);
-        expect($originalCart->get('item-1')->quantity)->toBe(5); // 2 + 3
-    });
-
-    it('handles merging empty instances gracefully', function () {
-        $this->cart->add('item-1', 'Item 1', 10.00, 1);
-        $originalCount = $this->cart->getItems()->count();
-
-        // Merge empty instance
-        $result = $this->cart->merge('empty_instance');
-
-        expect($result)->toBeInstanceOf(Cart::class);
-        expect($this->cart->getItems())->toHaveCount($originalCount);
-    });
-});
-
 describe('Cart store and restore operations', function () {
     it('can explicitly store cart data', function () {
         $this->cart->add('item-1', 'Item 1', 10.00, 1);
@@ -1099,22 +1047,28 @@ describe('Advanced update operations', function () {
         $this->cart->add('item-1', 'Item 1', 10.00, 5);
 
         // When quantity array is empty, it defaults to 0, which should remove the item
-        // However, the current implementation creates CartItem with 0 first, which throws
-        expect(fn () => $this->cart->update('item-1', ['quantity' => []]))
-            ->toThrow(InvalidCartItemException::class);
+        // With improved implementation, this now gracefully removes the item instead of throwing
+        $result = $this->cart->update('item-1', ['quantity' => []]);
+        expect($result)->toBeInstanceOf(CartItem::class);
+        expect($this->cart->getItems()->count())->toBe(0);
     });
 
     it('removes item when updated quantity becomes zero or negative', function () {
         $this->cart->add('item-1', 'Item 1', 10.00, 2);
 
         // Test with negative relative quantity that results in <= 0
-        // Current implementation will throw because it tries to create CartItem with negative/zero quantity
-        expect(fn () => $this->cart->update('item-1', ['quantity' => -5]))
-            ->toThrow(InvalidCartItemException::class);
+        // With improved implementation, this now gracefully removes the item instead of throwing
+        $result = $this->cart->update('item-1', ['quantity' => -5]);
+        expect($result)->toBeInstanceOf(CartItem::class);
+        expect($this->cart->getItems()->count())->toBe(0);
+
+        // Add item again for second test
+        $this->cart->add('item-2', 'Item 2', 10.00, 2);
 
         // Test another approach - reduce quantity to exactly 0
-        expect(fn () => $this->cart->update('item-1', ['quantity' => -2]))
-            ->toThrow(InvalidCartItemException::class);
+        $result = $this->cart->update('item-2', ['quantity' => -2]);
+        expect($result)->toBeInstanceOf(CartItem::class);
+        expect($this->cart->getItems()->count())->toBe(0);
     });
 
     it('updates price with string normalization', function () {
@@ -1201,9 +1155,9 @@ describe('Edge cases for 100% coverage', function () {
         expect($result)->toBeInstanceOf(CartItem::class);
         expect($result->quantity)->toBe(1);
 
-        // Now update to remove it completely (this should trigger line 174)
-        // But this will throw because setQuantity is called with 0
-        expect(fn () => $this->cart->update('item-1', ['quantity' => -1]))
-            ->toThrow(InvalidCartItemException::class);
+        // Now update to remove it completely - should gracefully remove the item
+        $result = $this->cart->update('item-1', ['quantity' => -1]);
+        expect($result)->toBeInstanceOf(CartItem::class);
+        expect($this->cart->getItems()->count())->toBe(0);
     });
 });

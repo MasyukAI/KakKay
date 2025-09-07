@@ -108,7 +108,6 @@ class CartInstance
     public function setMetadataBatch(array $metadata): self
     
     // Instance Operations
-    public function merge(string $fromInstance, string $strategy = 'add_quantities'): bool
     public function copy(string $toInstance): bool
     public function duplicate(string $newInstance): bool
     

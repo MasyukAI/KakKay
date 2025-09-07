@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace MasyukAI\Cart\Traits;
 
 use MasyukAI\Cart\Collections\CartCollection;
-use MasyukAI\Cart\Conditions\CartCondition;
 use MasyukAI\Cart\Models\CartItem;
 
 trait ManagesStorage
@@ -78,50 +77,6 @@ trait ManagesStorage
     public function getContent(): array
     {
         return $this->content();
-    }
-
-    /**
-     * Merge another cart instance with this one (shopping-cart style)
-     */
-    public function merge(string $instanceName): static
-    {
-        // Get the items from the other instance
-        $otherItems = $this->storage->getItems($this->getIdentifier(), $instanceName);
-
-        // Get the conditions from the other instance
-        $otherConditions = $this->storage->getConditions($this->getIdentifier(), $instanceName);
-
-        // Merge items
-        if ($otherItems && is_array($otherItems)) {
-            foreach ($otherItems as $itemData) {
-                if (is_array($itemData) && isset($itemData['id'])) {
-                    $this->add(
-                        $itemData['id'],
-                        $itemData['name'],
-                        $itemData['price'],
-                        $itemData['quantity'],
-                        $itemData['attributes'] ?? [],
-                        $itemData['conditions'] ?? [],
-                        $itemData['associated_model'] ?? null // Use snake_case to match storage format
-                    );
-                }
-            }
-        }
-
-        // Merge conditions
-        if ($otherConditions && is_array($otherConditions)) {
-            foreach ($otherConditions as $conditionData) {
-                if (is_array($conditionData) && isset($conditionData['name'])) {
-                    $condition = CartCondition::fromArray($conditionData);
-                    $this->addCondition($condition);
-                }
-            }
-        }
-
-        // Clear the merged cart
-        $this->storage->forget($this->getIdentifier(), $instanceName);
-
-        return $this;
     }
 
     /**

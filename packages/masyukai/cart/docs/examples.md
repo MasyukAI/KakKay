@@ -1224,36 +1224,7 @@ class CartApiController extends Controller
             'cart' => new CartResource(Cart::instance($instance)->content())
         ]);
     }
-    
-    public function merge(Request $request)
-    {
-        $validated = $request->validate([
-            'from_instance' => 'required|string',
-            'to_instance' => 'string',
-            'strategy' => 'in:add_quantities,keep_highest,replace'
-        ]);
-        
-        $toInstance = $validated['to_instance'] ?? 'default';
-        $strategy = $validated['strategy'] ?? 'add_quantities';
-        
-        $success = Cart::instance($toInstance)->merge(
-            $validated['from_instance'],
-            $strategy
-        );
-        
-        if ($success) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Carts merged successfully',
-                'cart' => new CartResource(Cart::instance($toInstance)->content())
-            ]);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to merge carts'
-            ], 400);
-        }
-    }
+
     
     public function search(Request $request)
     {

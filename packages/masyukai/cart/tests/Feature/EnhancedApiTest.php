@@ -78,29 +78,6 @@ describe('Enhanced Cart API', function () {
         expect($this->cart->total())->toBe(102.20);
     });
 
-    test('can merge cart instances', function () {
-        // Add items to default cart
-        $this->cart->add('item1', 'Product 1', 10.00, 2);
-
-        // Create another cart instance and add items
-        $cart2 = $this->cart->setInstance('temp');
-        $cart2->add('item2', 'Product 2', 15.00, 1);
-        $cart2->add('item3', 'Product 3', 20.00, 1);
-
-        // Switch back to default and merge
-        $this->cart = $this->cart->setInstance('default');
-        $this->cart->merge('temp');
-
-        // Check merged content
-        expect($this->cart->count())->toBe(4) // 2 + 1 + 1
-            ->and($this->cart->countItems())->toBe(3)
-            ->and($this->cart->total())->toBe(55.00); // 20 + 15 + 20
-
-        // Check that temp cart is cleared
-        $tempCart = $this->cart->setInstance('temp');
-        expect($tempCart->isEmpty())->toBeTrue();
-    });
-
     test('can use shopping-cart style item methods', function () {
         $item = $this->cart->add('item1', 'Product 1', 10.00, 2);
 

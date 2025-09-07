@@ -119,7 +119,12 @@ trait ManagesItems
                 $newQuantity = $item->quantity + $quantity;
             }
 
-            $item = $item->setQuantity(max(0, $newQuantity));
+            // Check for removal BEFORE creating new CartItem to avoid exceptions
+            if ($newQuantity <= 0) {
+                return $this->remove($id);
+            }
+
+            $item = $item->setQuantity($newQuantity);
         }
 
         // Update other properties
@@ -129,11 +134,6 @@ trait ManagesItems
                 $value = $property === 'price' ? $this->normalizePrice($data[$property]) : $data[$property];
                 $item = $item->$method($value);
             }
-        }
-
-        // Remove item if quantity is 0
-        if ($item->quantity <= 0) {
-            return $this->remove($id);
         }
 
         // Update cart

@@ -235,26 +235,4 @@ class CartConditionCollection extends Collection
     {
         return $this->reject(fn (CartCondition $condition) => $condition->getTarget() === $target);
     }
-
-    /**
-     * Clone collection with new conditions
-     */
-    public function merge(mixed $items): static
-    {
-        $merged = clone $this;
-
-        if ($items instanceof static) {
-            foreach ($items as $condition) {
-                $merged->addCondition($condition);
-            }
-        } elseif (is_array($items)) {
-            foreach ($items as $condition) {
-                if ($condition instanceof CartCondition) {
-                    $merged->addCondition($condition);
-                }
-            }
-        }
-
-        return $merged;
-    }
 }

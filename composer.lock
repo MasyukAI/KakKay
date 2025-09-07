@@ -4006,22 +4006,20 @@
         },
         {
             "name": "masyukai/cart",
-            "version": "dev-main",
+            "version": "1.0.0",
             "dist": {
                 "type": "path",
                 "url": "./packages/masyukai/cart",
-                "reference": "cb74baa68d053552f94250afcbb631f24918904f"
+                "reference": "ecb09a86337e0d9dad8a684525ae1b86f04bb6cc"
             },
             "require": {
-                "laravel/framework": "^12.0",
-                "livewire/livewire": "^3.0",
-                "livewire/volt": "^1.0",
                 "php": "^8.4"
             },
             "require-dev": {
                 "driftingly/rector-laravel": "^2.0",
                 "larastan/larastan": "^3.0",
                 "laravel/pint": "^1.18",
+                "livewire/livewire": "^3.0",
                 "mockery/mockery": "^1.6",
                 "nunomaduro/collision": "^8.6",
                 "orchestra/testbench": "^10.0",
@@ -4029,22 +4027,23 @@
                 "pestphp/pest-plugin-browser": "^4.0",
                 "pestphp/pest-plugin-laravel": "^4.0",
                 "pestphp/pest-plugin-type-coverage": "^4.0",
-                "phpunit/phpunit": "^12.3"
+                "phpunit/phpunit": "^12.3",
+                "symplify/monorepo-builder": "^12.2"
             },
             "type": "library",
             "extra": {
                 "laravel": {
-                    "providers": [
-                        "MasyukAI\\Cart\\CartServiceProvider"
-                    ],
                     "aliases": {
                         "Cart": "MasyukAI\\Cart\\Facades\\Cart"
-                    }
+                    },
+                    "providers": [
+                        "MasyukAI\\Cart\\CartServiceProvider"
+                    ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "MasyukAI\\Cart\\": "src/"
+                    "MasyukAI\\Cart\\": "packages/core/src"
                 }
             },
             "autoload-dev": {
@@ -4278,16 +4277,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "3.10.2",
+            "version": "3.10.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/CarbonPHP/carbon.git",
-                "reference": "76b5c07b8a9d2025ed1610e14cef1f3fd6ad2c24"
+                "reference": "8e3643dcd149ae0fe1d2ff4f2c8e4bbfad7c165f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/CarbonPHP/carbon/zipball/76b5c07b8a9d2025ed1610e14cef1f3fd6ad2c24",
-                "reference": "76b5c07b8a9d2025ed1610e14cef1f3fd6ad2c24",
+                "url": "https://api.github.com/repos/CarbonPHP/carbon/zipball/8e3643dcd149ae0fe1d2ff4f2c8e4bbfad7c165f",
+                "reference": "8e3643dcd149ae0fe1d2ff4f2c8e4bbfad7c165f",
                 "shasum": ""
             },
             "require": {
@@ -4305,13 +4304,13 @@
             "require-dev": {
                 "doctrine/dbal": "^3.6.3 || ^4.0",
                 "doctrine/orm": "^2.15.2 || ^3.0",
-                "friendsofphp/php-cs-fixer": "^3.75.0",
+                "friendsofphp/php-cs-fixer": "^v3.87.1",
                 "kylekatarnls/multi-tester": "^2.5.3",
                 "phpmd/phpmd": "^2.15.0",
                 "phpstan/extension-installer": "^1.4.3",
-                "phpstan/phpstan": "^2.1.17",
-                "phpunit/phpunit": "^10.5.46",
-                "squizlabs/php_codesniffer": "^3.13.0"
+                "phpstan/phpstan": "^2.1.22",
+                "phpunit/phpunit": "^10.5.53",
+                "squizlabs/php_codesniffer": "^3.13.4"
             },
             "bin": [
                 "bin/carbon"
@@ -4379,7 +4378,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-08-02T09:36:06+00:00"
+            "time": "2025-09-06T13:39:36+00:00"
         },
         {
             "name": "nette/php-generator",

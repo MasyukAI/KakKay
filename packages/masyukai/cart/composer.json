@@ -18,8 +18,7 @@
         }
     ],
     "require": {
-        "php": "^8.4",
-        "masyukai/cart-condition": "self.version"
+        "php": "^8.4"
     },
     "require-dev": {
         "livewire/livewire": "^3.0",
@@ -33,20 +32,21 @@
         "pestphp/pest-plugin-browser": "^4.0",
         "pestphp/pest-plugin-laravel": "^4.0",
         "pestphp/pest-plugin-type-coverage": "^4.0",
-        "phpunit/phpunit": "^12.3",
-        "symplify/monorepo-builder": "^12.2"
-    },
-    "repositories": {
-        "conditions": {
-            "type": "path",
-            "url": "packages/conditions"
-        }
+        "phpunit/phpunit": "^12.3"
     },
     "autoload": {
         "psr-4": {
-            "MasyukAI\\Cart\\": "packages/core/src",
-            "MasyukAI\\Cart\\Conditions\\": "packages/conditions/src",
-            "MasyukAI\\Cart\\Collections\\": "packages/conditions/src/Collections"
+            "MasyukAI\\Cart\\": "packages/core/src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "aliases": {
+                "Cart": "MasyukAI\\Cart\\Facades\\Cart"
+            },
+            "providers": [
+                "MasyukAI\\Cart\\CartServiceProvider"
+            ]
         }
     },
     "autoload-dev": {

@@ -2,8 +2,7 @@
     "name": "masyukai/cart",
     "require": {
         "php": "^8.4",
-        "livewire/livewire": "^3.0",
-        "masyukai/cart-condition": "self.version"
+        "livewire/livewire": "^3.0"
     },
     "extra": {
         "laravel": {
@@ -15,12 +14,6 @@
             ]
         }
     },
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../conditions"
-        }
-    ],
     "autoload": {
         "psr-4": {
             "MasyukAI\\Cart\\": "src"

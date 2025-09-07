@@ -10,7 +10,7 @@
     </testsuites>
     <source>
         <include>
-            <directory>src</directory>
+            <directory suffix=".php">packages/core/src</directory>
         </include>
     </source>
     <php>
