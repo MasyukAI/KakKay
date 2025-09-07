@@ -4010,10 +4010,10 @@
             "dist": {
                 "type": "path",
                 "url": "./packages/masyukai/cart",
-                "reference": "ecb09a86337e0d9dad8a684525ae1b86f04bb6cc"
+                "reference": "3c59fe867d625a5cafa8ecd570920b2e5f332430"
             },
             "require": {
-                "php": "^8.4"
+                "php": "^8.2"
             },
             "require-dev": {
                 "driftingly/rector-laravel": "^2.0",
@@ -4027,8 +4027,7 @@
                 "pestphp/pest-plugin-browser": "^4.0",
                 "pestphp/pest-plugin-laravel": "^4.0",
                 "pestphp/pest-plugin-type-coverage": "^4.0",
-                "phpunit/phpunit": "^12.3",
-                "symplify/monorepo-builder": "^12.2"
+                "phpunit/phpunit": "^12.3"
             },
             "type": "library",
             "extra": {
@@ -4090,11 +4089,11 @@
         },
         {
             "name": "masyukai/chip",
-            "version": "dev-main",
+            "version": "dev-copilot/fix-5",
             "dist": {
                 "type": "path",
                 "url": "./packages/masyukai/chip",
-                "reference": "0753ba08922bbf73197068f2be05bc3bde0fa878"
+                "reference": "3e0ab3df9ec89f267fdf49c20ed8a6290d71cab3"
             },
             "require": {
                 "ext-curl": "*",
@@ -4104,7 +4103,7 @@
                 "illuminate/queue": "^12.0",
                 "illuminate/support": "^12.0",
                 "illuminate/validation": "^12.0",
-                "php": "^8.4"
+                "php": "^8.2"
             },
             "require-dev": {
                 "laravel/framework": "^12.0",

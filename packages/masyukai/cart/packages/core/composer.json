@@ -1,7 +1,7 @@
 {
     "name": "masyukai/cart",
     "require": {
-        "php": "^8.4",
+        "php": "^8.2",
         "livewire/livewire": "^3.0"
     },
     "extra": {
