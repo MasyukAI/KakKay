@@ -13,6 +13,18 @@ use MasyukAI\Cart\Facades\Cart;
 class CartMigrationService
 {
     /**
+     * Configuration array for migration settings.
+     */
+    protected array $config = [];
+
+    /**
+     * Create a new cart migration service instance.
+     */
+    public function __construct(array $config = [])
+    {
+        $this->config = $config;
+    }
+    /**
      * Get the appropriate cart identifier for a user or guest session.
      *
      * NOTE: This returns an IDENTIFIER (user ID or session ID) that identifies WHO owns the cart,
@@ -355,5 +367,100 @@ class CartMigrationService
         }
 
         return $mergedItems;
+    }
+
+    /**
+     * Swap cart ownership by changing identifiers without merging.
+     * 
+     * This is a simple, fast operation that transfers cart ownership 
+     * from one identifier to another without any content modification.
+     *
+     * @param string $oldIdentifier The source identifier (e.g., session ID)
+     * @param string $newIdentifier The target identifier (e.g., user ID)
+     * @param string $instance The cart instance name (e.g., 'default', 'wishlist')
+     * @return bool True if swap was successful, false if source cart doesn't exist
+     */
+    public function swap(string $oldIdentifier, string $newIdentifier, string $instance = 'default'): bool
+    {
+        $storage = Cart::storage();
+
+        // Check if source cart exists
+        if (!$storage->has($oldIdentifier, $instance)) {
+            return false;
+        }
+
+        // Get all data from the old identifier
+        $items = $storage->getItems($oldIdentifier, $instance);
+        $conditions = $storage->getConditions($oldIdentifier, $instance);
+
+        // If source cart is empty, nothing to swap
+        if (empty($items) && empty($conditions)) {
+            return false;
+        }
+
+        // Store data under new identifier
+        $storage->putBoth($newIdentifier, $instance, $items, $conditions);
+
+        // Remove data from old identifier
+        $storage->forget($oldIdentifier, $instance);
+
+        return true;
+    }
+
+    /**
+     * Swap cart ownership for all instances from one identifier to another.
+     * 
+     * This swaps all cart instances (default, wishlist, etc.) from the old 
+     * identifier to the new identifier.
+     *
+     * @param string $oldIdentifier The source identifier (e.g., session ID)
+     * @param string $newIdentifier The target identifier (e.g., user ID)
+     * @return array Results for each instance swapped
+     */
+    public function swapAllInstances(string $oldIdentifier, string $newIdentifier): array
+    {
+        $storage = Cart::storage();
+        $instances = $storage->getInstances($oldIdentifier);
+        $results = [];
+
+        foreach ($instances as $instance) {
+            $results[$instance] = $this->swap($oldIdentifier, $newIdentifier, $instance);
+        }
+
+        return $results;
+    }
+
+    /**
+     * Swap guest cart to user cart when user logs in (simplified version of migration).
+     * 
+     * Unlike migration which merges carts, this simply transfers ownership 
+     * without any content modification.
+     *
+     * @param int $userId The user ID that will become the new cart owner
+     * @param string $instance The cart instance name (e.g., 'default', 'wishlist')
+     * @param string|null $oldSessionId The guest session ID to swap from
+     * @return bool True if swap was successful, false if source cart doesn't exist
+     */
+    public function swapGuestCartToUser(int $userId, string $instance = 'default', ?string $oldSessionId = null): bool
+    {
+        $guestIdentifier = $this->getIdentifier(null, $oldSessionId ?? session()->getId());
+        $userIdentifier = $this->getIdentifier($userId);
+
+        return $this->swap($guestIdentifier, $userIdentifier, $instance);
+    }
+
+    /**
+     * Swap all guest cart instances to user when user logs in.
+     * 
+     * @param int $userId The user ID that will become the new cart owner
+     * @param string|null $oldSessionId The guest session ID to swap from
+     * @return array Results for each instance swapped
+     */
+    public function swapAllGuestInstancesToUser(int $userId, ?string $oldSessionId = null): array
+    {
+        $guestIdentifier = $this->getIdentifier(null, $oldSessionId ?? session()->getId());
+        $userIdentifier = $this->getIdentifier($userId);
+
+        return $this->swapAllInstances($guestIdentifier, $userIdentifier);
     }
 }

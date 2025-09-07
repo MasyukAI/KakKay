@@ -135,4 +135,21 @@ class CartManager
     {
         return $this->currentCart->{$method}(...$arguments);
     }
+
+    /**
+     * Swap cart ownership by changing identifiers without merging.
+     * 
+     * This is a simple, fast operation that transfers cart ownership 
+     * from one identifier to another without any content modification.
+     *
+     * @param string $oldIdentifier The source identifier (e.g., session ID)
+     * @param string $newIdentifier The target identifier (e.g., user ID)
+     * @param string $instance The cart instance name (e.g., 'default', 'wishlist')
+     * @return bool True if swap was successful, false if source cart doesn't exist
+     */
+    public function swap(string $oldIdentifier, string $newIdentifier, string $instance = 'default'): bool
+    {
+        $migrationService = new \MasyukAI\Cart\Services\CartMigrationService();
+        return $migrationService->swap($oldIdentifier, $newIdentifier, $instance);
+    }
 }
