@@ -10,7 +10,7 @@ return [
     | for storing cart data. Supported drivers: "session", "database", "cache"
     |
     */
-    'storage' => env('CART_STORAGE_DRIVER', 'session'),
+    'storage' => env('CART_STORAGE_DRIVER', 'database'),
 
     /*
     |--------------------------------------------------------------------------
@@ -115,7 +115,7 @@ return [
     */
     'price_formatting' => [
         // Enable automatic formatting for all price outputs
-        'auto_format' => env('CART_AUTO_FORMAT', false),
+        'auto_format' => env('CART_AUTO_FORMAT', true),
 
         // Price transformer class
         'transformer' => env('CART_PRICE_TRANSFORMER', \MasyukAI\Cart\PriceTransformers\IntegerPriceTransformer::class),
