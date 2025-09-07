@@ -22,6 +22,7 @@ yarn-error.log
 /.vscode
 /.zed
 laradumps.yaml
+.DS_Store
 
 **/caddy
 frankenphp
