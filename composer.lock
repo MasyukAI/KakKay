@@ -4010,7 +4010,7 @@
             "dist": {
                 "type": "path",
                 "url": "./packages/masyukai/cart",
-                "reference": "ecb09a86337e0d9dad8a684525ae1b86f04bb6cc"
+                "reference": "f55be93379bab490fc619c24b2c76cb4d28e395f"
             },
             "require": {
                 "php": "^8.4"
@@ -4027,8 +4027,7 @@
                 "pestphp/pest-plugin-browser": "^4.0",
                 "pestphp/pest-plugin-laravel": "^4.0",
                 "pestphp/pest-plugin-type-coverage": "^4.0",
-                "phpunit/phpunit": "^12.3",
-                "symplify/monorepo-builder": "^12.2"
+                "phpunit/phpunit": "^12.3"
             },
             "type": "library",
             "extra": {

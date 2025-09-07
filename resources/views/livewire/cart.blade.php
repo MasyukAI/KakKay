@@ -28,7 +28,7 @@ new class extends Component {
                 return [
                     'id' => (string) $item->id,
                     'name' => (string) $item->name,
-                    'price' => (int) $item->price, // Keep in cents, don't convert
+                    'price' => (int) $item->getPrice(), // Keep in cents, don't convert
                     'quantity' => (int) $item->quantity,
                     'slug' => $item->attributes->get('slug', 'cara-bercinta'),
                 ];
