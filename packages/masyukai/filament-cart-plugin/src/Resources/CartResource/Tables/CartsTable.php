@@ -3,12 +3,12 @@
 namespace MasyukAI\FilamentCartPlugin\Resources\CartResource\Tables;
 
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Actions\Action;
-use Filament\Tables\Actions\ActionGroup;
-use Filament\Tables\Actions\BulkAction;
-use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\ViewAction;
+use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -60,14 +60,14 @@ class CartsTable
                         $query->orderByRaw('JSON_EXTRACT(items, "$[*].price") ' . $direction)
                     ),
 
-                IconColumn::make('isEmpty')
-                    ->label('Status')
-                    ->boolean()
-                    ->trueIcon(Heroicon::OutlinedXCircle)
-                    ->falseIcon(Heroicon::OutlinedCheckCircle)
-                    ->trueColor('danger')
-                    ->falseColor('success')
-                    ->tooltip(fn ($record): string => $record->isEmpty() ? 'Empty Cart' : 'Has Items'),
+                // IconColumn::make('isEmpty')
+                //     ->label('Status')
+                //     ->boolean()
+                //     ->trueIcon(Heroicon::OutlinedXCircle)
+                //     ->falseIcon(Heroicon::OutlinedCheckCircle)
+                //     ->trueColor('danger')
+                //     ->falseColor('success'),
+                    // ->tooltip(fn ($record): string => $record->isEmpty() ? 'Empty Cart' : 'Has Items'),
 
                 TextColumn::make('created_at')
                     ->label('Created')
@@ -106,7 +106,7 @@ class CartsTable
                         $query->whereDate('created_at', today())
                     ),
             ])
-            ->actions([
+            ->recordActions([
                 ViewAction::make()
                     ->icon(Heroicon::OutlinedEye),
                 
@@ -124,14 +124,14 @@ class CartsTable
                                 'items' => [],
                                 'conditions' => [],
                             ]);
-                        })
-                        ->visible(fn ($record) => !$record->isEmpty()),
+                        }),
+                        // ->visible(fn ($record) => !$record->isEmpty()),
 
                     Action::make('view_items')
                         ->label('View Items')
                         ->icon(Heroicon::OutlinedListBullet)
-                        ->url(fn ($record) => route('filament.admin.resources.carts.view', $record))
-                        ->visible(fn ($record) => !$record->isEmpty()),
+                        ->url(fn ($record) => route('filament.admin.resources.carts.view', $record)),
+                        // ->visible(fn ($record) => !$record->isEmpty()),
 
                     DeleteAction::make()
                         ->icon(Heroicon::OutlinedXMark),
@@ -139,7 +139,7 @@ class CartsTable
                 ->icon(Heroicon::OutlinedEllipsisVertical)
                 ->tooltip('More actions'),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 BulkAction::make('clear_selected')
                     ->label('Clear Selected Carts')
                     ->icon(Heroicon::OutlinedTrash)
@@ -154,14 +154,14 @@ class CartsTable
                         });
                     }),
 
-                BulkAction::make('delete_empty')
-                    ->label('Delete Empty Carts')
-                    ->icon(Heroicon::OutlinedXMark)
-                    ->color('danger')
-                    ->requiresConfirmation()
-                    ->action(function (Collection $records) {
-                        $records->filter(fn ($record) => $record->isEmpty())->each->delete();
-                    }),
+                // BulkAction::make('delete_empty')
+                //     ->label('Delete Empty Carts')
+                //     ->icon(Heroicon::OutlinedXMark)
+                //     ->color('danger')
+                //     ->requiresConfirmation()
+                //     ->action(function (Collection $records) {
+                //         $records->filter(fn ($record) => $record->isEmpty())->each->delete();
+                //     }),
             ])
             ->defaultSort('updated_at', 'desc')
             ->poll('30s')

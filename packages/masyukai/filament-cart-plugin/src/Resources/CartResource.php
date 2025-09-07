@@ -15,6 +15,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class CartResource extends Resource
 {
@@ -22,7 +23,7 @@ class CartResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShoppingCart;
 
-    protected static ?string $navigationGroup = 'E-commerce';
+    protected static string|UnitEnum|null $navigationGroup = 'E-commerce';
 
     protected static ?string $recordTitleAttribute = 'identifier';
 
