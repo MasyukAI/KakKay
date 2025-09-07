@@ -34,7 +34,6 @@ class CartServiceProvider extends ServiceProvider
         $this->registerStorageDrivers();
         $this->registerCartManager();
         $this->registerMigrationService();
-        $this->registerEventDispatcher();
         $this->registerPriceTransformers();
     }
 
@@ -43,18 +42,14 @@ class CartServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        try {
-            $this->publishConfig();
-            $this->publishMigrations();
-            $this->publishViews();
-            $this->loadViewsFrom(__DIR__.'/../resources/views', 'cart');
-            $this->registerEventListeners();
-            $this->registerLivewireComponents();
-            $this->loadDemoRoutes();
-            $this->registerMiddleware();
-        } catch (\Exception $e) {
-            // Skip boot operations if services are not available
-        }
+        $this->publishConfig();
+        $this->publishMigrations();
+        $this->publishViews();
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'cart');
+        $this->registerEventListeners();
+        $this->registerLivewireComponents();
+        $this->loadDemoRoutes();
+        $this->registerMiddleware();
     }
 
     protected function registerMiddleware(): void
@@ -70,26 +65,6 @@ class CartServiceProvider extends ServiceProvider
                 $middleware->web(append: [AutoSwitchCartInstance::class]);
             }
         });
-    }
-
-    /**
-     * Register event dispatcher for testing environments
-     */
-    protected function registerEventDispatcher(): void
-    {
-        // Ensure events binding for test environments
-        try {
-            $isTesting = $this->app->environment('testing');
-        } catch (\Exception $e) {
-            // If environment service is not available, assume we're in testing
-            $isTesting = true;
-        }
-
-        if ($isTesting && ! $this->app->bound('events')) {
-            $this->app->singleton('events', function (\Illuminate\Contracts\Foundation\Application $app) {
-                return new \Illuminate\Events\Dispatcher($app);
-            });
-        }
     }
 
     /**
@@ -245,13 +220,9 @@ class CartServiceProvider extends ServiceProvider
     protected function registerLivewireComponents(): void
     {
         if (class_exists(\Livewire\Livewire::class)) {
-            try {
-                \Livewire\Livewire::component('add-to-cart', \MasyukAI\Cart\Http\Livewire\AddToCart::class);
-                \Livewire\Livewire::component('cart-summary', \MasyukAI\Cart\Http\Livewire\CartSummary::class);
-                \Livewire\Livewire::component('cart-table', \MasyukAI\Cart\Http\Livewire\CartTable::class);
-            } catch (\Exception $e) {
-                // Skip Livewire registration if facade is not available
-            }
+            \Livewire\Livewire::component('add-to-cart', \MasyukAI\Cart\Http\Livewire\AddToCart::class);
+            \Livewire\Livewire::component('cart-summary', \MasyukAI\Cart\Http\Livewire\CartSummary::class);
+            \Livewire\Livewire::component('cart-table', \MasyukAI\Cart\Http\Livewire\CartTable::class);
         }
     }
 

@@ -114,6 +114,42 @@ it('can convert to formatted array with toFormattedArray method', function (): v
         ->and($formatted['is_empty'])->toBeFalse();
 });
 
+it('can get total with total method', function (): void {
+    $this->collection->addItem($this->item1); // 100 * 2 = 200
+    $this->collection->addItem($this->item2); // 50 * 3 = 150
+
+    expect($this->collection->total())->toBe(350.0);
+});
+
+it('can filter items by condition with filterByCondition method', function (): void {
+    $itemWithCondition = new CartItem(
+        id: 'item-3',
+        name: 'Item 3',
+        price: 75.0,
+        quantity: 1,
+        attributes: [],
+        conditions: [
+            'special' => [
+                'name' => 'special',
+                'type' => 'discount',
+                'target' => 'subtotal',
+                'value' => '-10',
+                'attributes' => [],
+                'order' => 0,
+            ],
+        ]
+    );
+
+    $this->collection->addItem($this->item1); // no conditions
+    $this->collection->addItem($itemWithCondition); // has 'special' condition
+
+    $filtered = $this->collection->filterByCondition('special');
+
+    expect($filtered->count())->toBe(1)
+        ->and($filtered->hasItem('item-3'))->toBeTrue()
+        ->and($filtered->hasItem('item-1'))->toBeFalse();
+});
+
 it('can filter items by attribute with filterByAttribute method', function (): void {
     $item3 = new CartItem(
         id: 'item-3',

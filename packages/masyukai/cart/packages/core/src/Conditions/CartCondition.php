@@ -331,13 +331,12 @@ class CartCondition implements Arrayable, Jsonable, JsonSerializable
      */
     private function parseValue(): float
     {
+
         $value = (string) $this->value;
 
         // Handle percentage
         if (str_ends_with($value, '%')) {
-            $numericValue = (float) substr($value, 0, -1);
-
-            return $numericValue / 100; // Convert to decimal
+            return $this->parsePercentValue($value);
         }
 
         // Handle operators
@@ -347,11 +346,28 @@ class CartCondition implements Arrayable, Jsonable, JsonSerializable
             $numericValue = (float) $value;
         }
 
-        if (! is_finite($numericValue)) {
+        // Explicitly check for INF, -INF, NAN as strings
+        if (
+            ! is_finite($numericValue) ||
+            in_array(strtoupper(trim($value)), ['INF', '-INF', 'INFINITY', '-INFINITY', 'NAN'], true)
+        ) {
             throw new InvalidCartConditionException("Invalid condition value: {$this->value}");
         }
 
         return $numericValue;
+    }
+
+    /**
+     * Parse a percentage value string (e.g., '10%')
+     */
+    private function parsePercentValue(string $value): float
+    {
+        $numericValue = (float) substr($value, 0, -1);
+        if (! is_finite($numericValue)) {
+            throw new InvalidCartConditionException("Invalid condition value: {$this->value}");
+        }
+
+        return $numericValue / 100;
     }
 
     /**

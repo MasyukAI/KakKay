@@ -5,6 +5,46 @@ declare(strict_types=1);
 use MasyukAI\Cart\Conditions\CartCondition;
 use MasyukAI\Cart\Exceptions\InvalidCartConditionException;
 
+it('parses valid and invalid percent values', function () {
+    // Valid percent (charge/fee)
+    $condition = new CartCondition(
+        name: 'Percent',
+        type: 'fee',
+        target: 'subtotal',
+        value: '25%'
+    );
+    expect($condition->getValue())->toBe('25%');
+    expect($condition->apply(200))->toBe(250.0); // 200 + 25% = 250
+
+    // Valid percent (discount)
+    $discountCondition = new CartCondition(
+        name: 'Discount',
+        type: 'discount',
+        target: 'subtotal',
+        value: '-25%'
+    );
+    expect($discountCondition->getValue())->toBe('-25%');
+    expect($discountCondition->apply(200))->toBe(150.0); // 200 - 25% = 150
+
+    // Invalid percent (non-finite)
+    expect(fn () => new CartCondition(
+        name: 'BadPercent',
+        type: 'discount',
+        target: 'subtotal',
+        value: '1e309%'
+    ))->toThrow(InvalidCartConditionException::class, 'Invalid condition value: 1e309%');
+});
+
+it('throws for non-finite numericValue in parseValue', function () {
+    // This will trigger the is_finite check and throw at the selected line
+    expect(fn () => new CartCondition(
+        name: 'TestNonFinite',
+        type: 'fee',
+        target: 'total',
+        value: '1e309' // Produces INF
+    ))->toThrow(InvalidCartConditionException::class, 'Invalid condition value: 1e309');
+});
+
 it('can create a cart condition', function () {
     $condition = new CartCondition(
         name: 'VAT 12.5%',
@@ -102,13 +142,13 @@ it('identifies discount conditions correctly', function () {
 
     expect($discount->isDiscount())->toBeTrue();
     expect($discount->isCharge())->toBeFalse();
-    
+
     expect($charge->isDiscount())->toBeFalse();
     expect($charge->isCharge())->toBeTrue();
 });
 
 it('validates condition properties', function () {
-    expect(fn() => new CartCondition(
+    expect(fn () => new CartCondition(
         name: '',
         type: 'tax',
         target: 'subtotal',
@@ -117,7 +157,7 @@ it('validates condition properties', function () {
 });
 
 it('validates condition target', function () {
-    expect(fn() => new CartCondition(
+    expect(fn () => new CartCondition(
         name: 'Invalid Target',
         type: 'tax',
         target: 'invalid',
@@ -155,7 +195,7 @@ it('can convert condition to array', function () {
 
     expect($array)->toHaveKeys([
         'name', 'type', 'target', 'value', 'attributes', 'order',
-        'operator', 'parsed_value', 'is_discount', 'is_charge', 'is_percentage'
+        'operator', 'parsed_value', 'is_discount', 'is_charge', 'is_percentage',
     ]);
 
     expect($array['name'])->toBe('Test Condition');
@@ -172,7 +212,7 @@ it('can get calculated value for display', function () {
     );
 
     $calculatedValue = $condition->getCalculatedValue(100.0);
-    
+
     expect($calculatedValue)->toBe(-10.0);
 });
 
@@ -183,14 +223,14 @@ it('identifies percentage-based conditions correctly', function () {
         target: 'total',
         value: '8.5%'
     );
-    
+
     $fixedCondition = new CartCondition(
         name: 'Fixed Fee',
         type: 'fee',
         target: 'total',
         value: '+15.00'
     );
-    
+
     expect($percentageCondition->isPercentage())->toBeTrue()
         ->and($fixedCondition->isPercentage())->toBeFalse();
 });
@@ -202,9 +242,9 @@ it('can create modified copy with with method', function () {
         target: 'subtotal',
         value: '-10%'
     );
-    
+
     $modified = $original->with(['name' => 'Modified', 'value' => '-20%']);
-    
+
     expect($modified->getName())->toBe('Modified')
         ->and($modified->getValue())->toBe('-20%')
         ->and($modified->getType())->toBe('discount') // unchanged
@@ -218,10 +258,10 @@ it('can convert to JSON', function () {
         target: 'subtotal',
         value: '-5%'
     );
-    
+
     $json = $condition->toJson();
     $decoded = json_decode($json, true);
-    
+
     expect($decoded['name'])->toBe('JSON Test')
         ->and($decoded['value'])->toBe('-5%');
 });
@@ -233,9 +273,9 @@ it('can be JSON serialized', function () {
         target: 'total',
         value: '10%'
     );
-    
+
     $serialized = $condition->jsonSerialize();
-    
+
     expect($serialized)->toBeArray()
         ->and($serialized['name'])->toBe('Serializable');
 });
@@ -247,28 +287,28 @@ it('has string representation', function () {
         target: 'subtotal',
         value: '-10%'
     );
-    
+
     $string = (string) $condition;
-    
+
     expect($string)->toBe('Test Condition (discount): -10%');
 });
 
 it('validates condition properties on creation', function () {
-    expect(fn() => new CartCondition(
+    expect(fn () => new CartCondition(
         name: '',
         type: 'discount',
         target: 'subtotal',
         value: '-10%'
     ))->toThrow(InvalidCartConditionException::class, 'Condition name cannot be empty');
-    
-    expect(fn() => new CartCondition(
+
+    expect(fn () => new CartCondition(
         name: 'Valid Name',
         type: '',
         target: 'subtotal',
         value: '-10%'
     ))->toThrow(InvalidCartConditionException::class, 'Condition type cannot be empty');
-    
-    expect(fn() => new CartCondition(
+
+    expect(fn () => new CartCondition(
         name: 'Valid Name',
         type: 'discount',
         target: '',
@@ -277,7 +317,7 @@ it('validates condition properties on creation', function () {
 });
 
 it('validates condition target values', function () {
-    expect(fn() => new CartCondition(
+    expect(fn () => new CartCondition(
         name: 'Invalid Target',
         type: 'discount',
         target: 'invalid_target',
@@ -286,13 +326,13 @@ it('validates condition target values', function () {
 });
 
 it('validates condition value is not empty', function () {
-    expect(fn() => new CartCondition(
+    expect(fn () => new CartCondition(
         name: 'Empty Value',
         type: 'discount',
         target: 'subtotal',
         value: ''
     ))->toThrow(InvalidCartConditionException::class, 'Condition value cannot be empty');
-    
+
     // '0' string should be valid because of the specific check in validation
     expect(new CartCondition(
         name: 'Zero String',
@@ -300,7 +340,7 @@ it('validates condition value is not empty', function () {
         target: 'subtotal',
         value: '0'
     ))->toBeInstanceOf(CartCondition::class);
-    
+
     // Note: Integer 0 has validation issues due to strict type checking
     // This is a known limitation in the validation logic
 });
@@ -313,7 +353,7 @@ it('validates condition values and handles edge cases', function () {
         target: 'total',
         value: 'abc'
     ))->toBeInstanceOf(CartCondition::class);
-    
+
     // Test that normal numeric strings work fine
     expect(new CartCondition(
         name: 'Numeric String',
@@ -330,35 +370,35 @@ it('handles different operators correctly', function () {
         target: 'total',
         value: '+15.00'
     );
-    
+
     $subtraction = new CartCondition(
         name: 'Subtract',
         type: 'discount',
         target: 'total',
         value: '-10.00'
     );
-    
+
     $multiplication = new CartCondition(
         name: 'Multiply',
         type: 'modifier',
         target: 'total',
         value: '*1.5'
     );
-    
+
     $division = new CartCondition(
         name: 'Divide',
         type: 'modifier',
         target: 'total',
         value: '/2'
     );
-    
+
     $noOperator = new CartCondition(
         name: 'No Operator',
         type: 'fee',
         target: 'total',
         value: '25.00'
     );
-    
+
     expect($addition->apply(100.0))->toBe(115.0)
         ->and($subtraction->apply(100.0))->toBe(90.0)
         ->and($multiplication->apply(100.0))->toBe(150.0)
@@ -373,7 +413,7 @@ it('handles division by zero safely', function () {
         target: 'total',
         value: '/0'
     );
-    
+
     // Should return original value when dividing by zero
     expect($divisionByZero->apply(100.0))->toBe(100.0);
 });
@@ -385,11 +425,11 @@ it('creates conditions from array with fromArray method', function () {
         'target' => 'subtotal',
         'value' => '-15%',
         'attributes' => ['source' => 'coupon'],
-        'order' => 3
+        'order' => 3,
     ];
-    
+
     $condition = CartCondition::fromArray($data);
-    
+
     expect($condition->getName())->toBe('Array Condition')
         ->and($condition->getType())->toBe('discount')
         ->and($condition->getTarget())->toBe('subtotal')
@@ -405,16 +445,148 @@ it('handles positive and negative percentage charges correctly', function () {
         target: 'total',
         value: '10%'
     );
-    
+
     $negativeDiscount = new CartCondition(
         name: 'Negative Discount',
         type: 'discount',
         target: 'total',
         value: '-15%'
     );
-    
+
     expect($positiveCharge->isCharge())->toBeTrue()
         ->and($positiveCharge->isDiscount())->toBeFalse()
         ->and($negativeDiscount->isDiscount())->toBeTrue()
         ->and($negativeDiscount->isCharge())->toBeFalse();
+});
+
+it('throws exception for non-finite condition values', function () {
+    // String 'INF'
+    expect(fn () => new CartCondition(
+        name: 'InfiniteStr',
+        type: 'fee',
+        target: 'total',
+        value: 'INF'
+    ))->toThrow(InvalidCartConditionException::class);
+
+    // String '-INF'
+    expect(fn () => new CartCondition(
+        name: 'NegativeInfiniteStr',
+        type: 'fee',
+        target: 'total',
+        value: '-INF'
+    ))->toThrow(InvalidCartConditionException::class);
+
+    // String 'NAN'
+    expect(fn () => new CartCondition(
+        name: 'NaNStr',
+        type: 'fee',
+        target: 'total',
+        value: 'NAN'
+    ))->toThrow(InvalidCartConditionException::class);
+
+    // Large exponent string (produces INF)
+    expect(fn () => new CartCondition(
+        name: 'ExponentInf',
+        type: 'fee',
+        target: 'total',
+        value: '1e309'
+    ))->toThrow(InvalidCartConditionException::class);
+});
+
+it('can get rules and check isDynamic', function () {
+    $static = new CartCondition(
+        name: 'Static',
+        type: 'fee',
+        target: 'total',
+        value: '+5'
+    );
+    expect($static->getRules())->toBeNull()
+        ->and($static->isDynamic())->toBeFalse();
+
+    $dynamic = new CartCondition(
+        name: 'Dynamic',
+        type: 'fee',
+        target: 'total',
+        value: '+5',
+        rules: [fn () => true]
+    );
+    expect($dynamic->getRules())->toBeArray()
+        ->and($dynamic->isDynamic())->toBeTrue();
+});
+
+it('shouldApply returns true for static and evaluates rules for dynamic', function () {
+    $static = new CartCondition(
+        name: 'Static',
+        type: 'fee',
+        target: 'total',
+        value: '+5'
+    );
+    $cart = new \MasyukAI\Cart\Cart(
+        storage: new class implements \MasyukAI\Cart\Storage\StorageInterface
+        {
+            public function has(string $identifier, string $instance): bool
+            {
+                return false;
+            }
+
+            public function forget(string $identifier, string $instance): void {}
+
+            public function flush(): void {}
+
+            public function getInstances(string $identifier): array
+            {
+                return [];
+            }
+
+            public function forgetIdentifier(string $identifier): void {}
+
+            public function getItems(string $identifier, string $instance): array
+            {
+                return [];
+            }
+
+            public function getConditions(string $identifier, string $instance): array
+            {
+                return [];
+            }
+
+            public function putItems(string $identifier, string $instance, array $items): void {}
+
+            public function putConditions(string $identifier, string $instance, array $conditions): void {}
+
+            public function putBoth(string $identifier, string $instance, array $items, array $conditions): void {}
+
+            public function putMetadata(string $identifier, string $instance, string $key, mixed $value): void {}
+
+            public function getMetadata(string $identifier, string $instance, string $key): mixed
+            {
+                return null;
+            }
+        }
+    );
+    $item = new \MasyukAI\Cart\Models\CartItem(
+        id: 'test',
+        name: 'Test',
+        price: 1.0,
+        quantity: 1
+    );
+    expect($static->shouldApply($cart, $item))->toBeTrue();
+
+    $dynamicTrue = new CartCondition(
+        name: 'DynamicTrue',
+        type: 'fee',
+        target: 'total',
+        value: '+5',
+        rules: [fn () => true]
+    );
+    expect($dynamicTrue->shouldApply($cart, $item))->toBeTrue();
+
+    $dynamicFalse = new CartCondition(
+        name: 'DynamicFalse',
+        type: 'fee',
+        target: 'total',
+        value: '+5',
+        rules: [fn () => false]
+    );
+    expect($dynamicFalse->shouldApply($cart, $item))->toBeFalse();
 });

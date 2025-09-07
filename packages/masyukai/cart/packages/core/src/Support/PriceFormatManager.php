@@ -22,15 +22,15 @@ class PriceFormatManager
      */
     public static function getFormatter(): PriceFormatterService
     {
-        $currentTransformerClass = self::getConfig('cart.price_formatting.transformer', DecimalPriceTransformer::class);
+        $currentTransformerClass = config('cart.price_formatting.transformer', DecimalPriceTransformer::class);
 
         // Recreate formatter if transformer class changed or no formatter exists
         if (self::$formatter === null || self::$lastTransformerClass !== $currentTransformerClass) {
             // Create transformer with standard parameters
             $transformer = new $currentTransformerClass(
-                self::getConfig('cart.price_formatting.currency', 'USD'),
-                self::getConfig('cart.price_formatting.locale', 'en_US'),
-                self::getConfig('cart.price_formatting.precision', 2)
+                config('cart.price_formatting.currency', 'USD'),
+                config('cart.price_formatting.locale', 'en_US'),
+                config('cart.price_formatting.precision', 2)
             );
 
             self::$formatter = new PriceFormatterService($transformer);
@@ -45,7 +45,7 @@ class PriceFormatManager
      */
     public static function shouldFormat(): bool
     {
-        return self::$globalFormatOverride || self::getConfig('cart.price_formatting.auto_format', false);
+        return self::$globalFormatOverride || config('cart.price_formatting.auto_format', false);
     }
 
     /**
@@ -117,15 +117,5 @@ class PriceFormatManager
         self::$lastTransformerClass = null;
     }
 
-    /**
-     * Safely get config value with fallback
-     */
-    private static function getConfig(string $key, mixed $default = null): mixed
-    {
-        try {
-            return config($key, $default);
-        } catch (\Throwable $e) {
-            return $default;
-        }
-    }
+    // getConfig method removed; use config() directly throughout
 }

@@ -334,5 +334,83 @@ describe('CartMigrationService Coverage Tests', function () {
             $result = $method->invokeArgs($this->service, ['conflict_source', 'conflict_target', 'default']);
             expect($result)->toBeInstanceOf(\Illuminate\Support\Collection::class);
         });
+
+        it('can resolve quantity conflicts for all strategies', function () {
+            $reflection = new ReflectionClass($this->service);
+            $method = $reflection->getMethod('resolveQuantityConflict');
+            $method->setAccessible(true);
+
+            $userQuantity = 5;
+            $guestQuantity = 3;
+
+            // add_quantities
+            $result = $method->invokeArgs($this->service, [$userQuantity, $guestQuantity, 'add_quantities']);
+            expect($result)->toBe(8);
+
+            // keep_highest_quantity
+            $result = $method->invokeArgs($this->service, [$userQuantity, $guestQuantity, 'keep_highest_quantity']);
+            expect($result)->toBe(5);
+
+            // keep_user_cart
+            $result = $method->invokeArgs($this->service, [$userQuantity, $guestQuantity, 'keep_user_cart']);
+            expect($result)->toBe(5);
+
+            // replace_with_guest
+            $result = $method->invokeArgs($this->service, [$userQuantity, $guestQuantity, 'replace_with_guest']);
+            expect($result)->toBe(3);
+
+            // default (unknown strategy)
+            $result = $method->invokeArgs($this->service, [$userQuantity, $guestQuantity, 'unknown_strategy']);
+            expect($result)->toBe(8);
+        });
+
+        it('merges items with all strategies in mergeCartData', function () {
+            $reflection = new ReflectionClass($this->service);
+            $method = $reflection->getMethod('mergeCartData');
+            $method->setAccessible(true);
+
+            $strategies = [
+                'add_quantities' => 8,
+                'keep_highest_quantity' => 5,
+                'keep_user_cart' => 5,
+                'replace_with_guest' => 3,
+                'unknown_strategy' => 8,
+            ];
+
+            foreach ($strategies as $strategy => $expectedQuantity) {
+                config(['cart.migration.merge_strategy' => $strategy]);
+
+                // Setup test data in storage
+                $storage = Cart::storage();
+                $sourceData = [
+                    'item1' => [
+                        'id' => 'item1',
+                        'name' => 'Product 1',
+                        'price' => 10.0,
+                        'quantity' => 3,
+                        'attributes' => [],
+                        'conditions' => [],
+                        'associated_model' => null,
+                    ],
+                ];
+                $targetData = [
+                    'item1' => [
+                        'id' => 'item1',
+                        'name' => 'Product 1',
+                        'price' => 10.0,
+                        'quantity' => 5,
+                        'attributes' => [],
+                        'conditions' => [],
+                        'associated_model' => null,
+                    ],
+                ];
+                $storage->putItems('source_id', 'default', $sourceData);
+                $storage->putItems('target_id', 'default', $targetData);
+
+                $result = $method->invokeArgs($this->service, ['source_id', 'target_id', 'default']);
+                expect($result)->toBeInstanceOf(\MasyukAI\Cart\Collections\CartCollection::class);
+                expect($result->get('item1')['quantity'])->toBe($expectedQuantity);
+            }
+        });
     });
 });
