@@ -1,10 +1,29 @@
 # Cart Swap Feature
 
-This document describes the new cart swapping functionality that allows simple transfer of cart ownership from one identifier to another without merging content.
+This document describes the new cart swapping functionality that provides a **super simple** way to transfer cart ownership by directly changing the identifier column value.
 
 ## Overview
 
-The cart swap feature provides a simple, fast, and effective way to transfer cart ownership by changing the cart identifier (e.g., from session ID to user ID) without modifying the cart contents. This is different from the existing migration functionality which merges cart contents and handles conflicts.
+The cart swap feature provides exactly what was requested: a "super stupid and simple solution" that just changes the cart's identifier column value. Instead of creating new carts, transferring content, and deleting old ones, this implementation directly updates the identifier in the storage layer.
+
+### How It Works
+
+For **database storage**, this translates to a simple SQL UPDATE:
+```sql
+UPDATE cart_storage 
+SET identifier = 'new_identifier' 
+WHERE identifier = 'old_identifier' AND instance = 'instance_name'
+```
+
+For **session/cache storage**, it falls back to the copy/delete approach since we can't directly rename keys.
+
+## Why This Approach is Better
+
+- ✅ **Super Simple**: Just changes one column value
+- ✅ **Super Fast**: Single database operation  
+- ✅ **Super Effective**: No data copying or merging complexity
+- ✅ **Atomic**: Either succeeds completely or fails completely
+- ✅ **Memory Efficient**: No temporary data structures needed
 
 ## Use Cases
 

@@ -374,6 +374,7 @@ class CartMigrationService
      * 
      * This is a simple, fast operation that transfers cart ownership 
      * from one identifier to another without any content modification.
+     * For database storage, this directly updates the identifier column.
      *
      * @param string $oldIdentifier The source identifier (e.g., session ID)
      * @param string $newIdentifier The target identifier (e.g., user ID)
@@ -384,34 +385,15 @@ class CartMigrationService
     {
         $storage = Cart::storage();
 
-        // Check if source cart exists
-        if (!$storage->has($oldIdentifier, $instance)) {
-            return false;
-        }
-
-        // Get all data from the old identifier
-        $items = $storage->getItems($oldIdentifier, $instance);
-        $conditions = $storage->getConditions($oldIdentifier, $instance);
-
-        // If source cart is empty, nothing to swap
-        if (empty($items) && empty($conditions)) {
-            return false;
-        }
-
-        // Store data under new identifier
-        $storage->putBoth($newIdentifier, $instance, $items, $conditions);
-
-        // Remove data from old identifier
-        $storage->forget($oldIdentifier, $instance);
-
-        return true;
+        // Use the new swapIdentifier method which is optimized for each storage type
+        return $storage->swapIdentifier($oldIdentifier, $newIdentifier, $instance);
     }
 
     /**
      * Swap cart ownership for all instances from one identifier to another.
      * 
      * This swaps all cart instances (default, wishlist, etc.) from the old 
-     * identifier to the new identifier.
+     * identifier to the new identifier using direct identifier updates.
      *
      * @param string $oldIdentifier The source identifier (e.g., session ID)
      * @param string $newIdentifier The target identifier (e.g., user ID)
@@ -424,7 +406,7 @@ class CartMigrationService
         $results = [];
 
         foreach ($instances as $instance) {
-            $results[$instance] = $this->swap($oldIdentifier, $newIdentifier, $instance);
+            $results[$instance] = $storage->swapIdentifier($oldIdentifier, $newIdentifier, $instance);
         }
 
         return $results;

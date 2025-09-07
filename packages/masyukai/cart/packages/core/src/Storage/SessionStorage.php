@@ -197,4 +197,33 @@ readonly class SessionStorage implements StorageInterface
     {
         return "{$this->keyPrefix}.{$identifier}.{$instance}.metadata.{$key}";
     }
+
+    /**
+     * Swap cart identifier for session storage.
+     * Since we can't directly rename session keys, we fall back to copy/delete approach.
+     */
+    public function swapIdentifier(string $oldIdentifier, string $newIdentifier, string $instance): bool
+    {
+        // Check if source cart exists
+        if (!$this->has($oldIdentifier, $instance)) {
+            return false;
+        }
+
+        // Get all data from the old identifier
+        $items = $this->getItems($oldIdentifier, $instance);
+        $conditions = $this->getConditions($oldIdentifier, $instance);
+
+        // If source cart is empty, nothing to swap
+        if (empty($items) && empty($conditions)) {
+            return false;
+        }
+
+        // Store data under new identifier
+        $this->putBoth($newIdentifier, $instance, $items, $conditions);
+
+        // Remove data from old identifier
+        $this->forget($oldIdentifier, $instance);
+
+        return true;
+    }
 }
