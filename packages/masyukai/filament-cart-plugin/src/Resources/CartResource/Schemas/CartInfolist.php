@@ -57,55 +57,55 @@ class CartInfolist
 //                        ]),
                     ]),
 //
-                Section::make('Cart Items')
-                    ->schema([
-                        RepeatableEntry::make('items')
-                            ->label('')
-                            ->schema([
-//                                Split::make([
-//                                    Grid::make(2)
-//                                        ->schema([
-                                            TextEntry::make('id')
-                                                ->label('Product ID')
-                                                ->copyable(),
-
-                                            TextEntry::make('name')
-                                                ->label('Product Name')
-                                                ->weight('semibold'),
-
-                                            TextEntry::make('quantity')
-                                                ->label('Quantity')
-                                                ->icon(Heroicon::OutlinedHashtag),
-
-                                            TextEntry::make('price')
-                                                ->label('Unit Price')
-                                                ->money('USD')
-                                                ->icon(Heroicon::OutlinedCurrencyDollar),
-//                                        ]),
-
-//                                    Grid::make(1)
-//                                        ->schema([
-                                            TextEntry::make('subtotal')
-                                                ->label('Subtotal')
-                                                ->getStateUsing(fn (array $state): string =>
-                                                    '$' . number_format(($state['price'] ?? 0) * ($state['quantity'] ?? 0), 2)
-                                                )
-                                                ->color('success')
-                                                ->weight('semibold'),
-
-                                            KeyValueEntry::make('attributes')
-                                                ->label('Attributes')
-                                                ->visible(fn (array $state): bool =>
-                                                    !empty($state['attributes'])
-                                                ),
-//                                        ]),
-//                                ]),
-                            ])
-                            ->contained(false)
-                            ->visible(fn ($record): bool => !$record->isEmpty()),
-                    ])
-                    ->collapsible()
-                    ->visible(fn ($record): bool => !$record->isEmpty()),
+//                Section::make('Cart Items')
+//                    ->schema([
+//                        RepeatableEntry::make('items')
+//                            ->label('')
+//                            ->schema([
+////                                Split::make([
+////                                    Grid::make(2)
+////                                        ->schema([
+//                                            TextEntry::make('id')
+//                                                ->label('Product ID')
+//                                                ->copyable(),
+//
+//                                            TextEntry::make('name')
+//                                                ->label('Product Name')
+//                                                ->weight('semibold'),
+//
+//                                            TextEntry::make('quantity')
+//                                                ->label('Quantity')
+//                                                ->icon(Heroicon::OutlinedHashtag),
+//
+//                                            TextEntry::make('price')
+//                                                ->label('Unit Price')
+//                                                ->money('USD')
+//                                                ->icon(Heroicon::OutlinedCurrencyDollar),
+////                                        ]),
+//
+////                                    Grid::make(1)
+////                                        ->schema([
+//                                            TextEntry::make('subtotal')
+//                                                ->label('Subtotal')
+//                                                ->getStateUsing(fn (array $state): string =>
+//                                                    '$' . number_format(($state['price'] ?? 0) * ($state['quantity'] ?? 0), 2)
+//                                                )
+//                                                ->color('success')
+//                                                ->weight('semibold'),
+//
+//                                            KeyValueEntry::make('attributes')
+//                                                ->label('Attributes')
+//                                                ->visible(fn (array $state): bool =>
+//                                                    !empty($state['attributes'])
+//                                                ),
+////                                        ]),
+////                                ]),
+//                            ])
+//                            ->contained(false)
+//                            ->visible(fn ($record): bool => !$record->isEmpty()),
+//                    ])
+//                    ->collapsible()
+//                    ->visible(fn ($record): bool => !$record->isEmpty()),
 
                 Section::make('Cart Conditions')
                     ->schema([
