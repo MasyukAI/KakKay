@@ -5,27 +5,15 @@ use Livewire\Attributes\Computed;
 use Illuminate\Support\Facades\Log;
 use MasyukAI\Cart\Facades\Cart;
 use App\Services\CheckoutService;
+use App\Schemas\CheckoutForm;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Forms\Form;
 
-new class extends Component {
+new class extends Component implements HasForms {
+    use InteractsWithForms;
 
-    public array $form = [
-        'name' => '',
-        'email' => '',
-        'phone' => '',
-        'country' => 'Malaysia',
-        'city' => 'Kuala Lumpur',
-        'state' => '',
-        'address' => '',
-        'address2' => '',
-        'postal_code' => '',
-        'company_name' => '',
-        'vat_number' => '',
-        'payment_method' => 'chip',
-        'payment_method_whitelist' => [],
-        'delivery_method' => 'standard',
-        'voucher_code' => '',
-    ];
-
+    public ?array $data = [];
     public array $cartItems = [];
     public string $selectedCountryCode = '+60';
     public array $availablePaymentMethods = [];
@@ -35,6 +23,18 @@ new class extends Component {
     {
         $this->loadCartItems();
         $this->loadPaymentMethods();
+        
+        // Initialize form with default values
+        $this->form->fill([
+            'country' => 'Malaysia',
+            'city' => 'Kuala Lumpur',
+            'delivery_method' => 'standard',
+        ]);
+    }
+
+    public function form(Form $form): Form
+    {
+        return CheckoutForm::configure($form);
     }
 
     public function loadCartItems()
@@ -99,12 +99,12 @@ new class extends Component {
             ->pluck('id')
             ->toArray();
             
-        $this->form['payment_method_whitelist'] = $groupMethods;
+        $this->data['payment_method_whitelist'] = $groupMethods;
     }
 
     public function selectPaymentMethod(string $methodId): void
     {
-        $this->form['payment_method_whitelist'] = [$methodId];
+        $this->data['payment_method_whitelist'] = [$methodId];
     }
 
     #[Computed]
@@ -122,7 +122,8 @@ new class extends Component {
     #[Computed]
     public function getShipping(): int
     {
-        return match($this->form['delivery_method']) {
+        $deliveryMethod = $this->data['delivery_method'] ?? 'standard';
+        return match($deliveryMethod) {
             'express' => 4900, // RM49
             'fast' => 1500,    // RM15
             default => 500,    // RM5 Standard shipping
@@ -150,8 +151,11 @@ new class extends Component {
 
     public function applyVoucher(): void
     {
-        // Voucher logic here
-        session()->flash('message', 'Kod voucher akan disemak...');
+        $voucherCode = $this->data['voucher_code'] ?? '';
+        if (!empty($voucherCode)) {
+            // Voucher logic here
+            session()->flash('message', 'Kod voucher akan disemak...');
+        }
     }
 
     #[Computed]
@@ -180,43 +184,39 @@ new class extends Component {
 
     public function processCheckout()
     {
-        $this->validate([
-            'form.name' => 'required|string|max:255',
-            'form.email' => 'required|email|max:255',
-            'form.phone' => 'required|string|max:20',
-            'form.address' => 'required|string|max:255',
-            'form.city' => 'required|string|max:100',
-            'form.country' => 'required|string|max:100',
-        ]);
+        // Validate form using Filament's validation
+        try {
+            $formData = $this->form->getState();
+        } catch (\Filament\Forms\ValidationException $e) {
+            return;
+        }
 
         try {
             $checkoutService = app(CheckoutService::class);
             
             // Prepare customer data with all required CHIP fields
             $customerData = [
-                'name' => $this->form['name'],
-                'email' => $this->form['email'],
-                'phone' => $this->selectedCountryCode . $this->form['phone'],
-                'country' => $this->form['country'],
-                'city' => $this->form['city'],
-                'address' => $this->form['address'],
-                'state' => $this->form['state'],
-                'zip' => $this->form['postal_code'],
-                'company_name' => $this->form['company_name'],
-                'vat_number' => $this->form['vat_number'],
+                'name' => $formData['name'],
+                'email' => $formData['email'],
+                'phone' => $this->selectedCountryCode . $formData['phone'],
+                'country' => $formData['country'],
+                'city' => $formData['city'],
+                'address' => $formData['address'],
+                'state' => $formData['state'] ?? '',
+                'zip' => $formData['postal_code'] ?? '',
+                'company_name' => $formData['company_name'] ?? '',
+                'vat_number' => $formData['vat_number'] ?? '',
                 // Required CHIP fields - use defaults if not provided by user
-                'personal_code' => $this->form['vat_number'] ?: 'PERSONAL', // Use VAT number or default
-                'brand_name' => $this->form['company_name'] ?: $this->form['name'], // Use company name or personal name
-                'legal_name' => $this->form['company_name'] ?: $this->form['name'],
-                'registration_number' => $this->form['vat_number'] ?: '',
-                'tax_number' => $this->form['vat_number'] ?: '',
+                'personal_code' => $formData['vat_number'] ?? 'PERSONAL',
+                'brand_name' => $formData['company_name'] ?? $formData['name'],
+                'legal_name' => $formData['company_name'] ?? $formData['name'],
+                'registration_number' => $formData['vat_number'] ?? '',
+                'tax_number' => $formData['vat_number'] ?? '',
                 // Add bank account information (required by CHIP API)
                 'bank_account' => 'default',
                 'bank_code' => 'default',
                 // Use empty array instead of null for payment_method_whitelist
-                'payment_method_whitelist' => !empty($this->form['payment_method_whitelist']) 
-                    ? $this->form['payment_method_whitelist'] 
-                    : [],
+                'payment_method_whitelist' => $this->data['payment_method_whitelist'] ?? [],
             ];
 
             // Create payment using the configured gateway
@@ -226,7 +226,7 @@ new class extends Component {
                 // Store purchase info in session
                 session([
                     'chip_purchase_id' => $result['purchase_id'],
-                    'checkout_data' => $this->form,
+                    'checkout_data' => $formData,
                 ]);
 
                 // Redirect to CHIP checkout
@@ -237,7 +237,7 @@ new class extends Component {
         } catch (\Exception $e) {
             Log::error('Checkout processing failed', [
                 'error' => $e->getMessage(),
-                'form_data' => $this->form,
+                'form_data' => $formData ?? [],
                 'cart_items' => $this->cartItems,
             ]);
             
@@ -327,124 +327,15 @@ new class extends Component {
                 <div class="lg:flex lg:items-start lg:gap-12 xl:gap-16">
                     <div class="min-w-0 flex-1 space-y-8">
                         
-                        <!-- Delivery Details -->
-                        <div class="cart-card p-6 space-y-4">
-                            <h2 class="text-xl font-semibold text-white" style="font-family: 'Caveat Brush', cursive;">
-                                Maklumat <span class="cart-text-accent">Penghantaran</span>
-                            </h2>
-
-                            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                <div>
-                                    <flux:field>
-                                        <flux:label>Nama Penuh *</flux:label>
-                                        <flux:input wire:model="form.name" placeholder="Nama penuh anda" required />
-                                        <flux:error name="form.name" />
-                                    </flux:field>
-                                </div>
-
-                                <div>
-                                    <flux:field>
-                                        <flux:label>Alamat Email *</flux:label>
-                                        <flux:input type="email" wire:model="form.email" placeholder="nama@email.com" required />
-                                        <flux:error name="form.email" />
-                                    </flux:field>
-                                </div>
-
-                                <div>
-                                    <flux:field>
-                                        <flux:label>Negara *</flux:label>
-                                        <flux:select wire:model="form.country" required>
-                                            <option value="Malaysia">Malaysia</option>
-                                            <option value="Singapore">Singapura</option>
-                                            <option value="Indonesia">Indonesia</option>
-                                            <option value="Thailand">Thailand</option>
-                                            <option value="Brunei">Brunei</option>
-                                        </flux:select>
-                                        <flux:error name="form.country" />
-                                    </flux:field>
-                                </div>
-
-                                <div>
-                                    <flux:field>
-                                        <flux:label>Bandar *</flux:label>
-                                        <flux:select wire:model="form.city" required>
-                                            <option value="Kuala Lumpur">Kuala Lumpur</option>
-                                            <option value="Johor Bahru">Johor Bahru</option>
-                                            <option value="Penang">Pulau Pinang</option>
-                                            <option value="Kota Kinabalu">Kota Kinabalu</option>
-                                            <option value="Kuching">Kuching</option>
-                                        </flux:select>
-                                        <flux:error name="form.city" />
-                                    </flux:field>
-                                </div>
-
-                                <div>
-                                    <flux:field>
-                                        <flux:label>Nombor Telefon *</flux:label>
-                                        <div class="flex">
-                                            <flux:select wire:model="selectedCountryCode" class="w-24 rounded-r-none">
-                                                <option value="+60">🇲🇾 +60</option>
-                                                <option value="+65">🇸🇬 +65</option>
-                                                <option value="+62">🇮🇩 +62</option>
-                                                <option value="+66">🇹🇭 +66</option>
-                                                <option value="+673">🇧🇳 +673</option>
-                                            </flux:select>
-                                            <flux:input wire:model="form.phone" placeholder="123456789" class="flex-1 rounded-l-none" required />
-                                        </div>
-                                        <flux:error name="form.phone" />
-                                    </flux:field>
-                                </div>
-
-                                <div class="sm:col-span-2">
-                                    <flux:field>
-                                        <flux:label>Alamat Baris 1 *</flux:label>
-                                        <flux:input wire:model="form.address" placeholder="Nombor rumah, nama jalan" required />
-                                        <flux:error name="form.address" />
-                                    </flux:field>
-                                </div>
-
-                                <div class="sm:col-span-2">
-                                    <flux:field>
-                                        <flux:label>Alamat Baris 2 (Opsional)</flux:label>
-                                        <flux:input wire:model="form.address2" placeholder="Taman, kawasan, dll" />
-                                        <flux:error name="form.address2" />
-                                    </flux:field>
-                                </div>
-
-                                <div>
-                                    <flux:field>
-                                        <flux:label>Negeri</flux:label>
-                                        <flux:input wire:model="form.state" placeholder="Contoh: Selangor" />
-                                        <flux:error name="form.state" />
-                                    </flux:field>
-                                </div>
-
-                                <div>
-                                    <flux:field>
-                                        <flux:label>Poskod</flux:label>
-                                        <flux:input wire:model="form.postal_code" placeholder="Contoh: 40000" />
-                                        <flux:error name="form.postal_code" />
-                                    </flux:field>
-                                </div>
-
-                                <div>
-                                    <flux:field>
-                                        <flux:label>Nama Syarikat (Opsional)</flux:label>
-                                        <flux:input wire:model="form.company_name" placeholder="Nama syarikat" />
-                                    </flux:field>
-                                </div>
-
-                                <div>
-                                    <flux:field>
-                                        <flux:label>VAT/SST Number (Opsional)</flux:label>
-                                        <flux:input wire:model="form.vat_number" placeholder="Nombor VAT/SST" />
-                                    </flux:field>
-                                </div>
+                        <!-- Filament Form -->
+                        <div class="relative">
+                            <div class="filament-checkout-form">
+                                {{ $this->form }}
                             </div>
                         </div>
 
-                        <!-- Payment Methods -->
-                        <div class="cart-card p-6 space-y-4 opacity-0">
+                        <!-- Payment Methods - Kept hidden for now -->
+                        <div class="cart-card p-6 space-y-4 opacity-0 hidden">
                             {{-- <h3 class="text-xl font-semibold text-white" style="font-family: 'Caveat Brush', cursive;">
                                 Cara <span class="cart-text-accent">Pembayaran</span>
                             </h3>

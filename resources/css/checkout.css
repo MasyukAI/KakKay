@@ -12,6 +12,56 @@
   --color-primary-900: #1e3a8a;
 }
 
+/* Enhanced Filament Form Styling for Checkout */
+.filament-checkout-form {
+  /* Make sections have better styling */
+}
+
+.filament-checkout-form .fi-section {
+  @apply bg-gradient-to-br from-gray-800/90 to-gray-900/90 border border-gray-600/50 rounded-xl backdrop-blur-lg shadow-2xl;
+}
+
+.filament-checkout-form .fi-section-header {
+  @apply bg-gradient-to-r from-pink-500/20 to-purple-600/20 border-b border-gray-600/50;
+}
+
+.filament-checkout-form .fi-section-header-heading {
+  @apply text-white font-bold text-xl;
+  font-family: 'Caveat Brush', cursive;
+}
+
+.filament-checkout-form .fi-section-header-description {
+  @apply text-gray-300;
+}
+
+.filament-checkout-form .fi-section-content {
+  @apply p-6;
+}
+
+.filament-checkout-form .fi-fo-field-wrp-label {
+  @apply text-gray-200 font-medium;
+}
+
+.filament-checkout-form .fi-input {
+  @apply bg-gray-800/50 border-gray-600 text-white placeholder-gray-400 focus:border-pink-500 focus:ring-pink-500/20;
+}
+
+.filament-checkout-form .fi-select-input {
+  @apply bg-gray-800/50 border-gray-600 text-white focus:border-pink-500 focus:ring-pink-500/20;
+}
+
+.filament-checkout-form .fi-select-option {
+  @apply bg-gray-800 text-white;
+}
+
+.filament-checkout-form .fi-fo-field-wrp-error-message {
+  @apply text-red-400;
+}
+
+.filament-checkout-form .fi-collapsible-trigger {
+  @apply text-white hover:text-pink-400 transition-colors;
+}
+
 .bg-primary-50 { background-color: var(--color-primary-50); }
 .bg-primary-100 { background-color: var(--color-primary-100); }
 .bg-primary-500 { background-color: var(--color-primary-500); }
