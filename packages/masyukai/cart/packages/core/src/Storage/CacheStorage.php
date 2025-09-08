@@ -163,4 +163,28 @@ readonly class CacheStorage implements StorageInterface
     {
         return "{$this->keyPrefix}.{$identifier}.{$instance}.metadata.{$key}";
     }
+
+    /**
+     * Swap cart identifier by transferring cart data from old identifier to new identifier.
+     * This changes cart ownership to ensure the new identifier has an active cart.
+     */
+    public function swapIdentifier(string $oldIdentifier, string $newIdentifier, string $instance): bool
+    {
+        // Check if source cart exists
+        if (!$this->has($oldIdentifier, $instance)) {
+            return false;
+        }
+
+        // Get all data from the source identifier
+        $items = $this->getItems($oldIdentifier, $instance);
+        $conditions = $this->getConditions($oldIdentifier, $instance);
+        
+        // Transfer source cart to new identifier (swap even if empty to ensure ownership)
+        $this->putBoth($newIdentifier, $instance, $items, $conditions);
+        
+        // Remove data from old identifier
+        $this->forget($oldIdentifier, $instance);
+        
+        return true;
+    }
 }

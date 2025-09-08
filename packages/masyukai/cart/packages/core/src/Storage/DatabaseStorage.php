@@ -188,4 +188,29 @@ readonly class DatabaseStorage implements StorageInterface
 
         return $metadata[$key] ?? null;
     }
+
+    /**
+     * Swap cart identifier by directly updating the identifier column.
+     * This transfers cart ownership from old identifier to new identifier.
+     * The objective is to change ownership to ensure target has an active cart.
+     */
+    public function swapIdentifier(string $oldIdentifier, string $newIdentifier, string $instance): bool
+    {
+        // Check if source cart exists
+        if (!$this->has($oldIdentifier, $instance)) {
+            return false;
+        }
+
+        // Simply update the identifier column - this is the "super stupid and simple" solution
+        // Swap even if cart is empty to ensure ownership transfer and prevent abandonment
+        $updated = $this->database->table($this->table)
+            ->where('identifier', $oldIdentifier)
+            ->where('instance', $instance)
+            ->update([
+                'identifier' => $newIdentifier,
+                'updated_at' => now(),
+            ]);
+
+        return $updated > 0;
+    }
 }

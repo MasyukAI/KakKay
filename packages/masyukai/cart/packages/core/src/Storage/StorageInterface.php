@@ -107,4 +107,16 @@ interface StorageInterface
      * @return mixed Metadata value or null if not found
      */
     public function getMetadata(string $identifier, string $instance, string $key): mixed;
+
+    /**
+     * Swap cart identifier to transfer cart ownership.
+     * This changes cart ownership from old identifier to new identifier by updating the identifier column.
+     * The objective is to ensure the new identifier has an active cart, preventing cart abandonment.
+     *
+     * @param  string  $oldIdentifier  The old identifier (e.g., guest session)
+     * @param  string  $newIdentifier  The new identifier (e.g., user ID)
+     * @param  string  $instance  Cart instance name
+     * @return bool True if swap was successful (new identifier now has the cart)
+     */
+    public function swapIdentifier(string $oldIdentifier, string $newIdentifier, string $instance): bool;
 }

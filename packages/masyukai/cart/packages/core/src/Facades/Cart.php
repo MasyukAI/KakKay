@@ -50,6 +50,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static bool hasMetadata(string $key)
  * @method static static removeMetadata(string $key)
  * @method static static setMetadataBatch(array $metadata)
+ * @method static bool swap(string $oldIdentifier, string $newIdentifier, string $instance = 'default')
  *
  * @see \MasyukAI\Cart\CartManager
  */

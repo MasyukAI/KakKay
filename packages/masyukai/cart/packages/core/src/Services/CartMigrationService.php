@@ -13,6 +13,18 @@ use MasyukAI\Cart\Facades\Cart;
 class CartMigrationService
 {
     /**
+     * Configuration array for migration settings.
+     */
+    protected array $config = [];
+
+    /**
+     * Create a new cart migration service instance.
+     */
+    public function __construct(array $config = [])
+    {
+        $this->config = $config;
+    }
+    /**
      * Get the appropriate cart identifier for a user or guest session.
      *
      * NOTE: This returns an IDENTIFIER (user ID or session ID) that identifies WHO owns the cart,
@@ -355,5 +367,83 @@ class CartMigrationService
         }
 
         return $mergedItems;
+    }
+
+    /**
+     * Swap cart ownership by transferring cart from old identifier to new identifier.
+     * 
+     * This ensures the new identifier has an active cart by transferring
+     * the cart from the old identifier, regardless of whether the new identifier
+     * already has a cart. This prevents cart abandonment by ensuring continued
+     * cart activity under the new identifier.
+     *
+     * @param string $oldIdentifier The old identifier (e.g., guest session)
+     * @param string $newIdentifier The new identifier (e.g., user ID)
+     * @param string $instance The cart instance name (e.g., 'default', 'wishlist')
+     * @return bool True if swap was successful (new identifier now has the cart)
+     */
+    public function swap(string $oldIdentifier, string $newIdentifier, string $instance = 'default'): bool
+    {
+        $storage = Cart::storage();
+
+        // Use the swapIdentifier method which simply transfers cart ownership
+        return $storage->swapIdentifier($oldIdentifier, $newIdentifier, $instance);
+    }
+
+    /**
+     * Swap cart ownership for all instances from one identifier to another.
+     * 
+     * This transfers all cart instances (default, wishlist, etc.) from the old
+     * identifier to the new identifier.
+     *
+     * @param string $oldIdentifier The old identifier (e.g., guest session)
+     * @param string $newIdentifier The new identifier (e.g., user ID)
+     * @return array Results for each instance swap
+     */
+    public function swapAllInstances(string $oldIdentifier, string $newIdentifier): array
+    {
+        $storage = Cart::storage();
+        $instances = $storage->getInstances($oldIdentifier);
+        $results = [];
+
+        foreach ($instances as $instance) {
+            $results[$instance] = $storage->swapIdentifier($oldIdentifier, $newIdentifier, $instance);
+        }
+
+        return $results;
+    }
+
+    /**
+     * Swap guest cart when user logs in (simplified version of migration).
+     * 
+     * Unlike migration which merges carts, this simply transfers the guest
+     * cart to the user identifier, ensuring the user gets an active cart.
+     *
+     * @param int $userId The user ID that will take over cart ownership
+     * @param string $instance The cart instance name (e.g., 'default', 'wishlist')
+     * @param string|null $guestSessionId The guest session ID to swap from
+     * @return bool True if swap was successful
+     */
+    public function swapGuestCartToUser(int $userId, string $instance = 'default', ?string $guestSessionId = null): bool
+    {
+        $guestIdentifier = $this->getIdentifier(null, $guestSessionId ?? session()->getId());
+        $userIdentifier = $this->getIdentifier($userId);
+
+        return $this->swap($guestIdentifier, $userIdentifier, $instance);
+    }
+
+    /**
+     * Swap all guest cart instances when user logs in.
+     * 
+     * @param int $userId The user ID that will take over cart ownership
+     * @param string|null $guestSessionId The guest session ID to swap from
+     * @return array Results for each instance swap
+     */
+    public function swapAllGuestInstancesToUser(int $userId, ?string $guestSessionId = null): array
+    {
+        $guestIdentifier = $this->getIdentifier(null, $guestSessionId ?? session()->getId());
+        $userIdentifier = $this->getIdentifier($userId);
+
+        return $this->swapAllInstances($guestIdentifier, $userIdentifier);
     }
 }
