@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7a2af1fa2a1627423953df91fc241494",
+    "content-hash": "5471557c3738a0f365199da373eae7ba",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -3647,16 +3647,16 @@
         },
         {
             "name": "livewire/flux",
-            "version": "v2.3.1",
+            "version": "v2.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/livewire/flux.git",
-                "reference": "d76c702806f48b75427226a81ffdbfb1d2b1b47d"
+                "reference": "e0704b125d5f9544aa32e0cfccb11baaf44d77a0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/livewire/flux/zipball/d76c702806f48b75427226a81ffdbfb1d2b1b47d",
-                "reference": "d76c702806f48b75427226a81ffdbfb1d2b1b47d",
+                "url": "https://api.github.com/repos/livewire/flux/zipball/e0704b125d5f9544aa32e0cfccb11baaf44d77a0",
+                "reference": "e0704b125d5f9544aa32e0cfccb11baaf44d77a0",
                 "shasum": ""
             },
             "require": {
@@ -3707,9 +3707,9 @@
             ],
             "support": {
                 "issues": "https://github.com/livewire/flux/issues",
-                "source": "https://github.com/livewire/flux/tree/v2.3.1"
+                "source": "https://github.com/livewire/flux/tree/v2.3.2"
             },
-            "time": "2025-09-05T03:49:53+00:00"
+            "time": "2025-09-08T01:11:34+00:00"
         },
         {
             "name": "livewire/livewire",
@@ -4010,10 +4010,10 @@
             "dist": {
                 "type": "path",
                 "url": "./packages/masyukai/cart",
-                "reference": "4679491d0512c23f9ffa6d1ab018375526ff088d"
+                "reference": "f55be93379bab490fc619c24b2c76cb4d28e395f"
             },
             "require": {
-                "php": "^8.3"
+                "php": "^8.4"
             },
             "require-dev": {
                 "driftingly/rector-laravel": "^2.0",
@@ -4089,11 +4089,11 @@
         },
         {
             "name": "masyukai/chip",
-            "version": "dev-copilot/fix-7",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./packages/masyukai/chip",
-                "reference": "473cac8d0ef598039725d42df862f02dcbc53dff"
+                "reference": "0753ba08922bbf73197068f2be05bc3bde0fa878"
             },
             "require": {
                 "ext-curl": "*",
@@ -4103,7 +4103,7 @@
                 "illuminate/queue": "^12.0",
                 "illuminate/support": "^12.0",
                 "illuminate/validation": "^12.0",
-                "php": "^8.3"
+                "php": "^8.4"
             },
             "require-dev": {
                 "laravel/framework": "^12.0",
@@ -4166,6 +4166,77 @@
                 "laravel",
                 "malaysia",
                 "payment"
+            ],
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "masyukai/filament-cart-plugin",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "./packages/masyukai/filament-cart-plugin",
+                "reference": "ae264c07d941ecbfd2d4d061b9fb8f0f67a7ceb7"
+            },
+            "require": {
+                "filament/filament": "^4.0",
+                "masyukai/cart": "^1.0",
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "laravel/framework": "^12.0",
+                "laravel/pint": "^1.18",
+                "livewire/livewire": "^3.0",
+                "orchestra/testbench": "^10.0",
+                "pestphp/pest": "^4.0",
+                "pestphp/pest-plugin-laravel": "^4.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "MasyukAI\\FilamentCartPlugin\\FilamentCartServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "MasyukAI\\FilamentCartPlugin\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "MasyukAI\\FilamentCartPlugin\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "vendor/bin/pest"
+                ],
+                "format": [
+                    "vendor/bin/pint"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "MasyukAI",
+                    "email": "info@masyukai.com"
+                }
+            ],
+            "description": "A comprehensive Filament admin interface for managing shopping carts created by the MasyukAI Cart package",
+            "keywords": [
+                "admin",
+                "cart",
+                "e-commerce",
+                "filament",
+                "laravel",
+                "masyukai",
+                "plugin",
+                "shopping-cart"
             ],
             "transport-options": {
                 "relative": true
@@ -13134,7 +13205,8 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "masyukai/cart": 20,
-        "masyukai/chip": 20
+        "masyukai/chip": 20,
+        "masyukai/filament-cart-plugin": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
