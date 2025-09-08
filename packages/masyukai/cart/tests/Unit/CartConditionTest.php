@@ -524,6 +524,13 @@ it('shouldApply returns true for static and evaluates rules for dynamic', functi
     $cart = new \MasyukAI\Cart\Cart(
         storage: new class implements \MasyukAI\Cart\Storage\StorageInterface
         {
+            public function get(string $identifier, string $instance): ?string
+            {
+                return null;
+            }
+
+            public function put(string $identifier, string $instance, string $content): void {}
+
             public function has(string $identifier, string $instance): bool
             {
                 return false;
@@ -561,6 +568,11 @@ it('shouldApply returns true for static and evaluates rules for dynamic', functi
             public function getMetadata(string $identifier, string $instance, string $key): mixed
             {
                 return null;
+            }
+
+            public function swapIdentifier(string $oldIdentifier, string $newIdentifier, string $instance): bool
+            {
+                return false;
             }
         }
     );

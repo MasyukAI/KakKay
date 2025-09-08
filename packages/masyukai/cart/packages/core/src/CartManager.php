@@ -150,7 +150,7 @@ class CartManager
      */
     public function swap(string $oldIdentifier, string $newIdentifier, string $instance = 'default'): bool
     {
-        $migrationService = new \MasyukAI\Cart\Services\CartMigrationService();
+        $migrationService = new \MasyukAI\Cart\Services\CartMigrationService([], $this->storage);
         return $migrationService->swap($oldIdentifier, $newIdentifier, $instance);
     }
 }

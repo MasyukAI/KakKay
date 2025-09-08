@@ -574,4 +574,17 @@ new class extends Component implements HasForms {
             </form>
         </div>
     </section>
+
+    <!-- Debug Authentication Status -->
+    <div style="background: rgba(0,0,0,0.3); border-top: 1px solid rgba(255,255,255,0.1); padding: 0.5rem 1rem; font-size: 0.8rem; color: rgba(255,255,255,0.7); text-align: center;">
+      <strong style="color: #ff69b4;">DEBUG:</strong>
+      @auth
+        <span style="color: #4ade80;">✓ Authenticated User</span> - 
+        <span>{{ auth()->user()->name ?? 'No Name' }}</span> 
+        (<span>{{ auth()->user()->email ?? 'No Email' }}</span>)
+      @else
+        <span style="color: #f87171;">✗ Guest User</span> - Not logged in
+      @endauth
+      | Role: {{ auth()->user()->role ?? 'guest' }}
+    </div>
 </div>

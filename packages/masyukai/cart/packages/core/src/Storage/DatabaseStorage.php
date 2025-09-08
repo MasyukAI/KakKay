@@ -201,16 +201,25 @@ readonly class DatabaseStorage implements StorageInterface
             return false;
         }
 
-        // Simply update the identifier column - this is the "super stupid and simple" solution
-        // Swap even if cart is empty to ensure ownership transfer and prevent abandonment
-        $updated = $this->database->table($this->table)
-            ->where('identifier', $oldIdentifier)
-            ->where('instance', $instance)
-            ->update([
-                'identifier' => $newIdentifier,
-                'updated_at' => now(),
-            ]);
+        // Use transaction to handle the swap safely
+        return $this->database->transaction(function () use ($oldIdentifier, $newIdentifier, $instance) {
+            // First, delete any existing cart with the target identifier
+            // This ensures the swap always succeeds by removing conflicts
+            $this->database->table($this->table)
+                ->where('identifier', $newIdentifier)
+                ->where('instance', $instance)
+                ->delete();
 
-        return $updated > 0;
+            // Now update the source cart to use the new identifier
+            $updated = $this->database->table($this->table)
+                ->where('identifier', $oldIdentifier)
+                ->where('instance', $instance)
+                ->update([
+                    'identifier' => $newIdentifier,
+                    'updated_at' => now(),
+                ]);
+
+            return $updated > 0;
+        });
     }
 }

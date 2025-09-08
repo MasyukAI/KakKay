@@ -18,11 +18,17 @@ class CartMigrationService
     protected array $config = [];
 
     /**
+     * Optional storage instance for testing.
+     */
+    protected $storage = null;
+
+    /**
      * Create a new cart migration service instance.
      */
-    public function __construct(array $config = [])
+    public function __construct(array $config = [], $storage = null)
     {
         $this->config = $config;
+        $this->storage = $storage;
     }
     /**
      * Get the appropriate cart identifier for a user or guest session.
@@ -384,7 +390,7 @@ class CartMigrationService
      */
     public function swap(string $oldIdentifier, string $newIdentifier, string $instance = 'default'): bool
     {
-        $storage = Cart::storage();
+        $storage = $this->storage ?: Cart::storage();
 
         // Use the swapIdentifier method which simply transfers cart ownership
         return $storage->swapIdentifier($oldIdentifier, $newIdentifier, $instance);
@@ -402,7 +408,7 @@ class CartMigrationService
      */
     public function swapAllInstances(string $oldIdentifier, string $newIdentifier): array
     {
-        $storage = Cart::storage();
+        $storage = $this->storage ?: Cart::storage();
         $instances = $storage->getInstances($oldIdentifier);
         $results = [];
 

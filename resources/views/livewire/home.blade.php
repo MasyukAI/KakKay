@@ -174,7 +174,7 @@ Kau tahu tak, wanita ni bukan sekadar pelengkap je… tapi dia boleh jadi punca 
             </a>
           </div>
         </div>
-        
+
         <!-- Policy Links Section - Centered Below -->
         <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1);">
           <div style="text-align: center; max-width: 800px; margin: 0 auto;">
@@ -189,7 +189,7 @@ Kau tahu tak, wanita ni bukan sekadar pelengkap je… tapi dia boleh jadi punca 
               <a href="/terms-of-service" style="color: rgba(255,233,245,0.8); text-decoration: none; font-size: 0.9rem; transition: all 0.3s; padding: 0.3rem 0;" onmouseover="this.style.color='#ff69b4'; this.style.transform='translateY(-2px)'" onmouseout="this.style.color='rgba(255,233,245,0.8)'; this.style.transform='translateY(0)'">Terma & Syarat</a>
             </div>
           </div>
-          
+
           <!-- Contact Info Footer -->
           <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; color: rgba(255,233,245,0.6); font-size: 0.8rem;">
             <p style="margin: 0.5rem 0;">&copy; 2025 Kamalia Kamal Research International (Kak Kay)</p>
@@ -208,4 +208,16 @@ Kau tahu tak, wanita ni bukan sekadar pelengkap je… tapi dia boleh jadi punca 
         </div>
       </div>
     </footer>
+
+    <!-- Debug Authentication Status -->
+    <div style="background: rgba(0,0,0,0.3); border-top: 1px solid rgba(255,255,255,0.1); padding: 0.5rem 1rem; font-size: 0.8rem; color: rgba(255,255,255,0.7); text-align: center;">
+      <strong style="color: #ff69b4;">DEBUG:</strong>
+      @auth
+        <span style="color: #4ade80;">✓ Authenticated User</span> -
+        <span>{{ auth()->user()->name ?? 'No Name' }}</span>
+        (<span>{{ auth()->user()->email ?? 'No Email' }}</span>)
+      @else
+        <span style="color: #f87171;">✗ Guest User</span> - Not logged in
+      @endauth
+    </div>
 </div>
