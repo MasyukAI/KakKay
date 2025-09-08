@@ -104,6 +104,40 @@ beforeEach(function (): void {
 
             return $data ? json_decode($data, true) : null;
         }
+
+        public function swapIdentifier(string $oldIdentifier, string $newIdentifier, string $instance): bool
+        {
+            $oldKey = "{$oldIdentifier}.{$instance}";
+            $newKey = "{$newIdentifier}.{$instance}";
+            
+            if (!isset($this->data[$oldKey])) {
+                return false;
+            }
+            
+            // Move data from old to new identifier
+            $this->data[$newKey] = $this->data[$oldKey];
+            unset($this->data[$oldKey]);
+            
+            // Also move conditions and metadata if they exist
+            $oldConditionsKey = "{$oldIdentifier}.{$instance}.conditions";
+            $newConditionsKey = "{$newIdentifier}.{$instance}.conditions";
+            if (isset($this->data[$oldConditionsKey])) {
+                $this->data[$newConditionsKey] = $this->data[$oldConditionsKey];
+                unset($this->data[$oldConditionsKey]);
+            }
+            
+            // Move metadata
+            foreach ($this->data as $key => $value) {
+                if (str_starts_with($key, "{$oldIdentifier}.{$instance}.metadata.")) {
+                    $metadataKeySuffix = substr($key, strlen("{$oldIdentifier}.{$instance}.metadata."));
+                    $newMetadataKey = "{$newIdentifier}.{$instance}.metadata.{$metadataKeySuffix}";
+                    $this->data[$newMetadataKey] = $value;
+                    unset($this->data[$key]);
+                }
+            }
+            
+            return true;
+        }
     };
 
     app()->bind(StorageInterface::class, fn () => $storage);

@@ -17,10 +17,6 @@ use MasyukAI\Cart\Facades\Cart;
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->cartMigration = new CartMigrationService;
-});
-
-it('transfers source cart to target identifier even when target exists', function () {
     // Create database storage for testing
     $connection = app('db')->connection();
     $connection->getSchemaBuilder()->dropIfExists('cart_storage_swap_test');
@@ -35,7 +31,18 @@ it('transfers source cart to target identifier even when target exists', functio
         $table->unique(['identifier', 'instance']);
     });
 
-    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'cart_storage_swap_test');
+    $this->storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'cart_storage_swap_test');
+    $this->cartMigration = new CartMigrationService([], $this->storage);
+});
+
+afterEach(function () {
+    // Clean up the test table
+    $connection = app('db')->connection();
+    $connection->getSchemaBuilder()->dropIfExists('cart_storage_swap_test');
+});
+
+it('transfers source cart to target identifier even when target exists', function () {
+    $storage = $this->storage;
     
     // Add items to guest cart (the source cart to transfer)
     $guestItems = [
@@ -102,21 +109,7 @@ it('transfers source cart to target identifier even when target exists', functio
 });
 
 it('transfers source cart when target cart does not exist', function () {
-    // Create database storage for testing
-    $connection = app('db')->connection();
-    $connection->getSchemaBuilder()->dropIfExists('cart_storage_swap_test_2');
-    $connection->getSchemaBuilder()->create('cart_storage_swap_test_2', function ($table) {
-        $table->id();
-        $table->string('identifier')->index();
-        $table->string('instance')->default('default')->index();
-        $table->longText('items')->nullable();
-        $table->longText('conditions')->nullable();
-        $table->longText('metadata')->nullable();
-        $table->timestamps();
-        $table->unique(['identifier', 'instance']);
-    });
-
-    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'cart_storage_swap_test_2');
+    $storage = $this->storage;
     
     // Add items to guest cart only (no user cart exists)
     $guestItems = [
@@ -178,21 +171,7 @@ it('transfers source cart when target cart does not exist', function () {
 });
 
 it('swaps even when source cart is empty', function () {
-    // Create database storage for testing
-    $connection = app('db')->connection();
-    $connection->getSchemaBuilder()->dropIfExists('cart_storage_swap_test_empty');
-    $connection->getSchemaBuilder()->create('cart_storage_swap_test_empty', function ($table) {
-        $table->id();
-        $table->string('identifier')->index();
-        $table->string('instance')->default('default')->index();
-        $table->longText('items')->nullable();
-        $table->longText('conditions')->nullable();
-        $table->longText('metadata')->nullable();
-        $table->timestamps();
-        $table->unique(['identifier', 'instance']);
-    });
-
-    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'cart_storage_swap_test_empty');
+    $storage = $this->storage;
     
     // Create an empty guest cart (cart exists but has no items)
     $storage->putBoth('guest_session_empty', 'default', [], []);
@@ -235,21 +214,7 @@ it('returns false when swapping non-existent cart', function () {
 });
 
 it('can swap cart ownership for specific instances', function () {
-    // Create database storage for testing
-    $connection = app('db')->connection();
-    $connection->getSchemaBuilder()->dropIfExists('cart_storage_swap_test_4');
-    $connection->getSchemaBuilder()->create('cart_storage_swap_test_4', function ($table) {
-        $table->id();
-        $table->string('identifier')->index();
-        $table->string('instance')->default('default')->index();
-        $table->longText('items')->nullable();
-        $table->longText('conditions')->nullable();
-        $table->longText('metadata')->nullable();
-        $table->timestamps();
-        $table->unique(['identifier', 'instance']);
-    });
-
-    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'cart_storage_swap_test_4');
+    $storage = $this->storage;
 
     // Add items to guest wishlist cart
     $wishlistItems = [
@@ -286,21 +251,7 @@ it('can swap cart ownership for specific instances', function () {
 });
 
 it('can swap all instances from one identifier to another', function () {
-    // Create database storage for testing
-    $connection = app('db')->connection();
-    $connection->getSchemaBuilder()->dropIfExists('cart_storage_swap_test_5');
-    $connection->getSchemaBuilder()->create('cart_storage_swap_test_5', function ($table) {
-        $table->id();
-        $table->string('identifier')->index();
-        $table->string('instance')->default('default')->index();
-        $table->longText('items')->nullable();
-        $table->longText('conditions')->nullable();
-        $table->longText('metadata')->nullable();
-        $table->timestamps();
-        $table->unique(['identifier', 'instance']);
-    });
-
-    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'cart_storage_swap_test_5');
+    $storage = $this->storage;
 
     // Add items to multiple cart instances for guest
     $defaultItems = [
@@ -352,21 +303,7 @@ it('can swap all instances from one identifier to another', function () {
 });
 
 it('can swap through cart facade', function () {
-    // Create database storage for testing
-    $connection = app('db')->connection();
-    $connection->getSchemaBuilder()->dropIfExists('cart_storage_swap_test_6');
-    $connection->getSchemaBuilder()->create('cart_storage_swap_test_6', function ($table) {
-        $table->id();
-        $table->string('identifier')->index();
-        $table->string('instance')->default('default')->index();
-        $table->longText('items')->nullable();
-        $table->longText('conditions')->nullable();
-        $table->longText('metadata')->nullable();
-        $table->timestamps();
-        $table->unique(['identifier', 'instance']);
-    });
-
-    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'cart_storage_swap_test_6');
+    $storage = $this->storage;
 
     // Add items to guest cart
     $guestItems = [
@@ -399,69 +336,40 @@ it('can swap through cart facade', function () {
 });
 
 it('can swap guest cart using convenience method', function () {
-    // Create database storage for testing
-    $connection = app('db')->connection();
-    $connection->getSchemaBuilder()->dropIfExists('cart_storage_swap_test_7');
-    $connection->getSchemaBuilder()->create('cart_storage_swap_test_7', function ($table) {
-        $table->id();
-        $table->string('identifier')->index();
-        $table->string('instance')->default('default')->index();
-        $table->longText('items')->nullable();
-        $table->longText('conditions')->nullable();
-        $table->longText('metadata')->nullable();
-        $table->timestamps();
-        $table->unique(['identifier', 'instance']);
-    });
+    $storage = $this->storage;
 
-    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'cart_storage_swap_test_7');
-
-    // Set up guest session manually
-    session(['id' => 'guest_convenience_test']);
-    
     // Add items to guest cart
     $guestItems = [
         'product-1' => [
             'id' => 'product-1',
             'name' => 'Convenience Test Product',
-            'price' => 30.00,
+            'price' => 12.50,
             'quantity' => 2,
             'attributes' => [],
             'conditions' => [],
         ],
     ];
 
-    // Store data with guest session
-    $guestSessionId = session()->getId();
-    $storage->putBoth($guestSessionId, 'default', $guestItems, []);
+    // Store data with guest identifier
+    $storage->putBoth('guest_session_conv', 'default', $guestItems, []);
 
     // Verify guest cart exists
-    expect($storage->getItems($guestSessionId, 'default'))->toHaveCount(1);
+    expect($storage->getItems('guest_session_conv', 'default'))->toHaveCount(1);
 
-    // Swap using convenience method
-    $result = $this->cartMigration->swapGuestCartToUser(42, 'default', $guestSessionId);
+    // Swap using convenience method  
+    $result = $this->cartMigration->swapGuestCartToUser(999, 'default', 'guest_session_conv');
     expect($result)->toBeTrue();
 
     // Verify results
-    expect($storage->getItems($guestSessionId, 'default'))->toBeEmpty();
-    expect($storage->getItems('42', 'default'))->toHaveCount(1);
+    expect($storage->getItems('guest_session_conv', 'default'))->toBeEmpty();
+    expect($storage->getItems('999', 'default'))->toHaveCount(1);
+    
+    $userItems = $storage->getItems('999', 'default');
+    expect($userItems['product-1']['name'])->toBe('Convenience Test Product');
 });
 
 it('can swap all guest instances using convenience method', function () {
-    // Create database storage for testing
-    $connection = app('db')->connection();
-    $connection->getSchemaBuilder()->dropIfExists('cart_storage_swap_test_8');
-    $connection->getSchemaBuilder()->create('cart_storage_swap_test_8', function ($table) {
-        $table->id();
-        $table->string('identifier')->index();
-        $table->string('instance')->default('default')->index();
-        $table->longText('items')->nullable();
-        $table->longText('conditions')->nullable();
-        $table->longText('metadata')->nullable();
-        $table->timestamps();
-        $table->unique(['identifier', 'instance']);
-    });
-
-    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'cart_storage_swap_test_8');
+    $storage = $this->storage;
 
     // Set up guest session manually
     session(['id' => 'guest_all_instances_test']);
