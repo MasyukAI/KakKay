@@ -14,40 +14,82 @@
 
 /* Enhanced Filament Form Styling for Checkout */
 .filament-checkout-form {
-  /* Make sections have better styling */
+  /* Container styling */
+  position: relative;
+}
+
+.filament-checkout-form::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%);
+  border-radius: 1rem;
+  pointer-events: none;
+  z-index: -1;
 }
 
 .filament-checkout-form .fi-section {
-  @apply bg-gradient-to-br from-gray-800/90 to-gray-900/90 border border-gray-600/50 rounded-xl backdrop-blur-lg shadow-2xl;
+  @apply bg-gradient-to-br from-gray-800/95 to-gray-900/95 border border-gray-600/40 rounded-2xl backdrop-blur-lg shadow-2xl mb-6 overflow-hidden;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
 .filament-checkout-form .fi-section-header {
-  @apply bg-gradient-to-r from-pink-500/20 to-purple-600/20 border-b border-gray-600/50;
+  @apply bg-gradient-to-r from-pink-500/30 to-purple-600/30 border-b border-gray-600/40 relative;
+  background-image: linear-gradient(135deg, rgba(236, 72, 153, 0.3), rgba(147, 51, 234, 0.3));
+}
+
+.filament-checkout-form .fi-section-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #ec4899, #9333ea, #3b82f6);
 }
 
 .filament-checkout-form .fi-section-header-heading {
   @apply text-white font-bold text-xl;
   font-family: 'Caveat Brush', cursive;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .filament-checkout-form .fi-section-header-description {
-  @apply text-gray-300;
+  @apply text-gray-300 text-sm;
 }
 
 .filament-checkout-form .fi-section-content {
-  @apply p-6;
+  @apply p-8;
+}
+
+.filament-checkout-form .fi-fo-field-wrp {
+  @apply mb-6;
 }
 
 .filament-checkout-form .fi-fo-field-wrp-label {
-  @apply text-gray-200 font-medium;
+  @apply text-gray-200 font-semibold mb-2 text-sm tracking-wide;
 }
 
 .filament-checkout-form .fi-input {
-  @apply bg-gray-800/50 border-gray-600 text-white placeholder-gray-400 focus:border-pink-500 focus:ring-pink-500/20;
+  @apply bg-gray-800/60 border-gray-600/60 text-white placeholder-gray-400 focus:border-pink-500 focus:ring-pink-500/30 transition-all duration-300 rounded-lg;
+  backdrop-filter: blur(10px);
+}
+
+.filament-checkout-form .fi-input:hover {
+  @apply bg-gray-800/80 border-gray-500/60;
 }
 
 .filament-checkout-form .fi-select-input {
-  @apply bg-gray-800/50 border-gray-600 text-white focus:border-pink-500 focus:ring-pink-500/20;
+  @apply bg-gray-800/60 border-gray-600/60 text-white focus:border-pink-500 focus:ring-pink-500/30 transition-all duration-300 rounded-lg;
+  backdrop-filter: blur(10px);
+}
+
+.filament-checkout-form .fi-select-input:hover {
+  @apply bg-gray-800/80 border-gray-500/60;
 }
 
 .filament-checkout-form .fi-select-option {
@@ -55,11 +97,29 @@
 }
 
 .filament-checkout-form .fi-fo-field-wrp-error-message {
-  @apply text-red-400;
+  @apply text-red-400 text-sm mt-1;
+}
+
+.filament-checkout-form .fi-fo-field-wrp-helper-text {
+  @apply text-gray-400 text-xs mt-1;
 }
 
 .filament-checkout-form .fi-collapsible-trigger {
-  @apply text-white hover:text-pink-400 transition-colors;
+  @apply text-white hover:text-pink-400 transition-colors duration-200;
+}
+
+.filament-checkout-form .fi-collapsible-trigger:hover {
+  transform: scale(1.02);
+}
+
+.filament-checkout-form .fi-grid {
+  @apply gap-6;
+}
+
+/* Icon styling */
+.filament-checkout-form .fi-section-header .fi-section-header-icon {
+  @apply text-pink-400;
+  filter: drop-shadow(0 2px 4px rgba(236, 72, 153, 0.3));
 }
 
 .bg-primary-50 { background-color: var(--color-primary-50); }

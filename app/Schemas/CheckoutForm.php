@@ -62,8 +62,8 @@ class CheckoutForm
                                     ->required()
                                     ->placeholder('123456789')
                                     ->tel()
-                                    ->prefix('+60')
-                                    ->maxLength(20),
+                                    ->maxLength(20)
+                                    ->helperText('Kod negara akan ditambah secara automatik'),
                             ]),
 
                         TextInput::make('address')
@@ -104,8 +104,8 @@ class CheckoutForm
                     ]),
 
                 Section::make('Cara Penghantaran')
-                    ->description('Pilih cara penghantaran')
-                    ->icon('heroicon-o-clock')
+                    ->description('Pilih cara penghantaran yang sesuai')
+                    ->icon('heroicon-o-truck')
                     ->components([
                         Select::make('delivery_method')
                             ->label('Kaedah Penghantaran')
@@ -117,7 +117,8 @@ class CheckoutForm
                                 'express' => 'RM49 - Penghantaran Ekspres (Hari yang sama)',
                             ])
                             ->live()
-                            ->native(false),
+                            ->native(false)
+                            ->helperText('Kos penghantaran akan dikira secara automatik'),
                     ]),
 
                 Section::make('Kod Promosi')

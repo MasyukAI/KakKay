@@ -332,6 +332,14 @@ new class extends Component implements HasForms {
                             <div class="filament-checkout-form">
                                 {{ $this->form }}
                             </div>
+                            
+                            <!-- Country Code Display -->
+                            <div class="mt-4 p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-lg">
+                                <div class="flex items-center gap-2 text-sm text-blue-200">
+                                    <flux:icon.information-circle class="h-4 w-4" />
+                                    <span>Kod negara terpilih: <strong>{{ $selectedCountryCode }}</strong></span>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Payment Methods - Kept hidden for now -->
