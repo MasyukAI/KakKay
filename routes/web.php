@@ -7,7 +7,7 @@ use App\Livewire\Home;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
-Route::get('/', Home::class)->name('home')->middleware('auth');
+Route::get('/', Home::class)->name('home');
 
 Volt::route('/cart', 'cart')->name('cart');
 

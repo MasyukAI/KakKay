@@ -222,30 +222,34 @@ new class extends Component {
 }; ?>
 
 <div class="min-h-screen">
+    <!-- Floating Bubbles Background Animation -->
+    <div class="floating-bubbles" aria-hidden="true">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
+
     <!-- Header Navigation -->
     <div class="cart-container">
         <header class="cart-header">
             <div class="flex items-center justify-between">
-                <div class="flex items-center">
-                    <a href="{{ route('home') }}" class="cart-brand">
-                        <flux:icon.home class="h-8 w-8" />
-                        <span>Kak Kay</span>
-                    </a>
+                <div class="brand">
+                    <div class="logo" aria-hidden="true"></div>
+                    <div>
+                        <h1>Kak Kay</h1>
+                        <div class="tagline">Counsellor • Therapist • KKDI Creator</div>
+                    </div>
                 </div>
 
-                <div class="flex items-center gap-6">
-                    {{-- <a href="{{ route('home') }}" class="cart-nav-link">
+                {{-- <div class="flex items-center gap-6">
+                    <a href="{{ route('home') }}" class="cart-nav-link">
                         ← Kembali Beli-belah
-                    </a> --}}
-
-                    {{-- <div class="relative">
-                        <flux:button variant="primary" href="{{ route('cart') }}" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-lg">
-                            <flux:icon.shopping-bag class="h-6 w-6" />
-                            <span class="hidden sm:inline font-medium mr-5">Troli</span>
-                            @livewire('cart-counter')
-                        </flux:button>
-                    </div> --}}
-                </div>
+                    </a>
+                </div> --}}
             </div>
         </header>
     </div>

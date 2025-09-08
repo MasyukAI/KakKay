@@ -1,4 +1,15 @@
-<div class="container" style="padding: 0 1rem;">
+<div class="container">
+    <!-- Floating Bubbles Background Animation -->
+    <div class="floating-bubbles" aria-hidden="true">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
+
     <header style="padding: 1.5rem 0;">
       <div class="brand">
         <div class="logo" aria-hidden="true"></div>
