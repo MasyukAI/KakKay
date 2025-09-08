@@ -5,6 +5,7 @@ namespace App\Providers\Filament;
 use App\Filament\Pages\Auth\Login;
 use Asmit\ResizedColumn\ResizedColumnPlugin;
 use MasyukAI\FilamentCartPlugin\FilamentCartPlugin;
+use MasyukAI\FilamentShippingPlugin\FilamentShippingPlugin;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Pages\Dashboard;
@@ -63,6 +64,7 @@ class AdminPanelProvider extends PanelProvider
             ->plugins([
                 ResizedColumnPlugin::make(),
                 FilamentCartPlugin::make(),
+                FilamentShippingPlugin::make(),
             ])
             ->authMiddleware([
                 Authenticate::class,

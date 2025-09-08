@@ -1,0 +1,79 @@
+{
+    "name": "masyukai/shipping",
+    "description": "A comprehensive shipping management package for Laravel with multi-carrier support, tracking, and notifications",
+    "license": "MIT",
+    "keywords": [
+        "laravel",
+        "laravel12",
+        "shipping",
+        "logistics",
+        "tracking",
+        "e-commerce",
+        "masyukai"
+    ],
+    "authors": [
+        {
+            "name": "MasyukAI",
+            "email": "info@masyukai.com"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "illuminate/support": "^12.0",
+        "illuminate/database": "^12.0",
+        "illuminate/notifications": "^12.0",
+        "illuminate/queue": "^12.0",
+        "guzzlehttp/guzzle": "^7.0"
+    },
+    "require-dev": {
+        "laravel/framework": "^12.0",
+        "orchestra/testbench": "^10.0",
+        "pestphp/pest": "^4.0",
+        "pestphp/pest-plugin-laravel": "^4.0",
+        "mockery/mockery": "^1.6",
+        "laravel/pint": "^1.18"
+    },
+    "autoload": {
+        "psr-4": {
+            "MasyukAI\\Shipping\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MasyukAI\\Shipping\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "MasyukAI\\Shipping\\ShippingServiceProvider"
+            ],
+            "aliases": {
+                "Shipping": "MasyukAI\\Shipping\\Facades\\Shipping"
+            }
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "scripts": {
+        "test": [
+            "vendor/bin/pest"
+        ],
+        "test-coverage": [
+            "vendor/bin/pest --coverage"
+        ],
+        "format": [
+            "vendor/bin/pint"
+        ],
+        "format-test": [
+            "vendor/bin/pint --test"
+        ]
+    },
+    "version": "1.0.0",
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

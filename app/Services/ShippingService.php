@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use MasyukAI\Shipping\Facades\Shipping;
+
 class ShippingService
 {
     /**
@@ -9,12 +11,11 @@ class ShippingService
      */
     public function calculateShipping(string $method, array $options = []): int
     {
-        return match ($method) {
-            'express' => 4900, // RM49
-            'fast' => 1500,    // RM15
-            'pickup' => 0,     // Free pickup
-            default => 500,    // RM5 Standard shipping
-        };
+        // Delegate to the new shipping package
+        $items = $options['items'] ?? [];
+        $destination = $options['destination'] ?? [];
+        
+        return Shipping::calculateCost($items, $method, $destination);
     }
 
     /**
@@ -22,36 +23,7 @@ class ShippingService
      */
     public function getAvailableShippingMethods(): array
     {
-        return [
-            [
-                'id' => 'standard',
-                'name' => 'Standard Shipping',
-                'description' => 'Standard shipping (3-5 business days)',
-                'price' => 500, // RM5
-                'estimated_days' => '3-5',
-            ],
-            [
-                'id' => 'fast',
-                'name' => 'Fast Shipping',
-                'description' => 'Next day delivery',
-                'price' => 1500, // RM15
-                'estimated_days' => '1',
-            ],
-            [
-                'id' => 'express',
-                'name' => 'Express Shipping',
-                'description' => 'Same day delivery',
-                'price' => 4900, // RM49
-                'estimated_days' => '0',
-            ],
-            [
-                'id' => 'pickup',
-                'name' => 'Store Pickup',
-                'description' => 'Pick up from our store',
-                'price' => 0,
-                'estimated_days' => '0',
-            ],
-        ];
+        return Shipping::getShippingMethods();
     }
 
     /**
@@ -61,13 +33,7 @@ class ShippingService
     {
         $methods = $this->getAvailableShippingMethods();
 
-        foreach ($methods as $method) {
-            if ($method['id'] === $id) {
-                return $method;
-            }
-        }
-
-        return null;
+        return $methods[$id] ?? null;
     }
 
     /**
@@ -75,17 +41,9 @@ class ShippingService
      */
     public function calculateShippingByWeight(int $totalWeight, string $method = 'standard'): int
     {
-        $baseShipping = $this->calculateShipping($method);
-
-        // Add weight-based surcharge for heavy items (over 2kg)
-        if ($totalWeight > 2000) { // 2kg in grams
-            $extraWeight = $totalWeight - 2000;
-            $weightSurcharge = ceil($extraWeight / 1000) * 500; // RM5 per extra kg
-
-            return $baseShipping + $weightSurcharge;
-        }
-
-        return $baseShipping;
+        $items = [['weight' => $totalWeight, 'quantity' => 1]];
+        
+        return Shipping::calculateCost($items, $method);
     }
 
     /**
@@ -101,5 +59,13 @@ class ShippingService
         }
 
         return false;
+    }
+
+    /**
+     * Get shipping quotes for the given items
+     */
+    public function getShippingQuotes(array $items, array $destination = []): array
+    {
+        return Shipping::getQuotes($items, $destination);
     }
 }
