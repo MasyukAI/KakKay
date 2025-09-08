@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use MasyukAI\Shipping\Traits\HasShipping;
 
 class Order extends Model
 {
-    use HasFactory;
+    use HasFactory, HasShipping;
 
     protected $fillable = [
         'order_number',
@@ -146,5 +147,46 @@ class Order extends Model
     public function getSubtotalAttribute(): int
     {
         return $this->orderItems->sum('total_price');
+    }
+
+    /**
+     * Get shipping items for rate calculation.
+     */
+    public function getShippingItems(): array
+    {
+        return $this->orderItems->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'quantity' => $item->quantity,
+                'weight' => $item->weight ?? 100, // default 100g
+                'is_digital' => $item->is_digital ?? false,
+            ];
+        })->toArray();
+    }
+
+    /**
+     * Create a shipment for this order.
+     */
+    public function ship(string $method = 'standard', string $provider = 'local'): \MasyukAI\Shipping\Models\Shipment
+    {
+        $destination = $this->address ? [
+            'name' => $this->address->name,
+            'line1' => $this->address->address_line_1,
+            'line2' => $this->address->address_line_2,
+            'city' => $this->address->city,
+            'state' => $this->address->state,
+            'postal_code' => $this->address->postal_code,
+            'country' => $this->address->country,
+        ] : [];
+
+        $shippingCost = $this->calculateShippingCost($method, $destination);
+
+        return $this->createShipment([
+            'provider' => $provider,
+            'method' => $method,
+            'destination_address' => $destination,
+            'weight' => $this->total_weight,
+            'cost' => $shippingCost,
+        ]);
     }
 }
