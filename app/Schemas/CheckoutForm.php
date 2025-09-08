@@ -4,22 +4,22 @@ namespace App\Schemas;
 
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
 
 class CheckoutForm
 {
-    public static function configure(Schema $schema): Schema
+    public static function configure(Form $form): Form
     {
-        return $schema
-            ->components([
+        return $form
+            ->schema([
                 Section::make('Maklumat Penghantaran')
                     ->description('Masukkan maklumat untuk penghantaran')
                     ->icon('heroicon-o-truck')
-                    ->components([
+                    ->schema([
                         Grid::make(2)
-                            ->components([
+                            ->schema([
                                 TextInput::make('name')
                                     ->label('Nama Penuh')
                                     ->required()
@@ -80,7 +80,7 @@ class CheckoutForm
                             ->columnSpanFull(),
 
                         Grid::make(2)
-                            ->components([
+                            ->schema([
                                 TextInput::make('state')
                                     ->label('Negeri')
                                     ->placeholder('Contoh: Selangor')
@@ -106,7 +106,7 @@ class CheckoutForm
                 Section::make('Cara Penghantaran')
                     ->description('Pilih cara penghantaran yang sesuai')
                     ->icon('heroicon-o-truck')
-                    ->components([
+                    ->schema([
                         Select::make('delivery_method')
                             ->label('Kaedah Penghantaran')
                             ->required()
@@ -124,7 +124,7 @@ class CheckoutForm
                 Section::make('Kod Promosi')
                     ->description('Masukkan kod voucher atau promosi (jika ada)')
                     ->icon('heroicon-o-ticket')
-                    ->components([
+                    ->schema([
                         TextInput::make('voucher_code')
                             ->label('Kod Voucher')
                             ->placeholder('Masukkan kod voucher')

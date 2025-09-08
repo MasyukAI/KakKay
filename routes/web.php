@@ -7,11 +7,11 @@ use App\Livewire\Home;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
-Route::get('/', Home::class)->name('home');
+Route::get('/', Home::class)->name('home')->middleware('auth');
 
 Volt::route('/cart', 'cart')->name('cart');
 
-Volt::route('/checkout', 'checkout')->name('checkout');
+Route::get('/checkout', \App\Livewire\Checkout::class)->name('checkout');
 
 // Checkout success/failure routes
 Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
