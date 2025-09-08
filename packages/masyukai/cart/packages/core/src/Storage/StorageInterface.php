@@ -109,22 +109,14 @@ interface StorageInterface
     public function getMetadata(string $identifier, string $instance, string $key): mixed;
 
     /**
-     * Take over cart ownership by ensuring the new identifier has an active cart.
-     * Priority is preserving the target cart, not the source cart.
-     * 
-     * If target cart exists, it's preserved and source cart is discarded.
-     * If target cart doesn't exist, source cart is transferred to target.
-     * This prevents cart abandonment by ensuring continued cart activity.
+     * Swap cart identifier to transfer cart ownership.
+     * This changes cart ownership from old identifier to new identifier by updating the identifier column.
+     * The objective is to ensure the new identifier has an active cart, preventing cart abandonment.
      *
-     * @param  string  $sourceIdentifier  The source identifier (e.g., guest session)
-     * @param  string  $targetIdentifier  The target identifier (e.g., user ID)
+     * @param  string  $oldIdentifier  The old identifier (e.g., guest session)
+     * @param  string  $newIdentifier  The new identifier (e.g., user ID)
      * @param  string  $instance  Cart instance name
-     * @return bool True if takeover was successful (target now has active cart)
-     */
-    public function takeoverCart(string $sourceIdentifier, string $targetIdentifier, string $instance): bool;
-
-    /**
-     * @deprecated Use takeoverCart() instead. This method will be removed in a future version.
+     * @return bool True if swap was successful (new identifier now has the cart)
      */
     public function swapIdentifier(string $oldIdentifier, string $newIdentifier, string $instance): bool;
 }

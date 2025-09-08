@@ -370,116 +370,80 @@ class CartMigrationService
     }
 
     /**
-     * Take over cart ownership by ensuring the target identifier has an active cart.
+     * Swap cart ownership by transferring cart from old identifier to new identifier.
      * 
-     * This prioritizes preserving the target cart over the source cart.
-     * If target cart exists, it's preserved and source cart is discarded.
-     * If target cart doesn't exist, source cart is transferred to target.
-     * This prevents cart abandonment by ensuring continued cart activity.
+     * This ensures the new identifier has an active cart by transferring
+     * the cart from the old identifier, regardless of whether the new identifier
+     * already has a cart. This prevents cart abandonment by ensuring continued
+     * cart activity under the new identifier.
      *
-     * @param string $sourceIdentifier The source identifier (e.g., guest session)
-     * @param string $targetIdentifier The target identifier (e.g., user ID)
+     * @param string $oldIdentifier The old identifier (e.g., guest session)
+     * @param string $newIdentifier The new identifier (e.g., user ID)
      * @param string $instance The cart instance name (e.g., 'default', 'wishlist')
-     * @return bool True if takeover was successful (target now has active cart)
+     * @return bool True if swap was successful (new identifier now has the cart)
      */
-    public function takeoverCart(string $sourceIdentifier, string $targetIdentifier, string $instance = 'default'): bool
+    public function swap(string $oldIdentifier, string $newIdentifier, string $instance = 'default'): bool
     {
         $storage = Cart::storage();
 
-        // Use the new takeoverCart method which prioritizes target cart preservation
-        return $storage->takeoverCart($sourceIdentifier, $targetIdentifier, $instance);
+        // Use the swapIdentifier method which simply transfers cart ownership
+        return $storage->swapIdentifier($oldIdentifier, $newIdentifier, $instance);
     }
 
     /**
-     * Take over cart ownership for all instances from one identifier to another.
+     * Swap cart ownership for all instances from one identifier to another.
      * 
-     * This takes over all cart instances (default, wishlist, etc.) from the source
-     * identifier to the target identifier, preserving target carts over source carts.
+     * This transfers all cart instances (default, wishlist, etc.) from the old
+     * identifier to the new identifier.
      *
-     * @param string $sourceIdentifier The source identifier (e.g., guest session)
-     * @param string $targetIdentifier The target identifier (e.g., user ID)
-     * @return array Results for each instance takeover
+     * @param string $oldIdentifier The old identifier (e.g., guest session)
+     * @param string $newIdentifier The new identifier (e.g., user ID)
+     * @return array Results for each instance swap
      */
-    public function takeoverAllInstances(string $sourceIdentifier, string $targetIdentifier): array
+    public function swapAllInstances(string $oldIdentifier, string $newIdentifier): array
     {
         $storage = Cart::storage();
-        $instances = $storage->getInstances($sourceIdentifier);
+        $instances = $storage->getInstances($oldIdentifier);
         $results = [];
 
         foreach ($instances as $instance) {
-            $results[$instance] = $storage->takeoverCart($sourceIdentifier, $targetIdentifier, $instance);
+            $results[$instance] = $storage->swapIdentifier($oldIdentifier, $newIdentifier, $instance);
         }
 
         return $results;
     }
 
     /**
-     * Take over guest cart when user logs in (simplified version of migration).
+     * Swap guest cart when user logs in (simplified version of migration).
      * 
-     * Unlike migration which merges carts, this simply ensures the user
-     * gets an active cart, prioritizing existing user cart over guest cart.
+     * Unlike migration which merges carts, this simply transfers the guest
+     * cart to the user identifier, ensuring the user gets an active cart.
      *
      * @param int $userId The user ID that will take over cart ownership
      * @param string $instance The cart instance name (e.g., 'default', 'wishlist')
-     * @param string|null $guestSessionId The guest session ID to take over from
-     * @return bool True if takeover was successful
+     * @param string|null $guestSessionId The guest session ID to swap from
+     * @return bool True if swap was successful
      */
-    public function takeoverGuestCart(int $userId, string $instance = 'default', ?string $guestSessionId = null): bool
+    public function swapGuestCartToUser(int $userId, string $instance = 'default', ?string $guestSessionId = null): bool
     {
         $guestIdentifier = $this->getIdentifier(null, $guestSessionId ?? session()->getId());
         $userIdentifier = $this->getIdentifier($userId);
 
-        return $this->takeoverCart($guestIdentifier, $userIdentifier, $instance);
+        return $this->swap($guestIdentifier, $userIdentifier, $instance);
     }
 
     /**
-     * Take over all guest cart instances when user logs in.
+     * Swap all guest cart instances when user logs in.
      * 
      * @param int $userId The user ID that will take over cart ownership
-     * @param string|null $guestSessionId The guest session ID to take over from
-     * @return array Results for each instance takeover
+     * @param string|null $guestSessionId The guest session ID to swap from
+     * @return array Results for each instance swap
      */
-    public function takeoverAllGuestInstances(int $userId, ?string $guestSessionId = null): array
+    public function swapAllGuestInstancesToUser(int $userId, ?string $guestSessionId = null): array
     {
         $guestIdentifier = $this->getIdentifier(null, $guestSessionId ?? session()->getId());
         $userIdentifier = $this->getIdentifier($userId);
 
-        return $this->takeoverAllInstances($guestIdentifier, $userIdentifier);
-    }
-
-    // ==============================================
-    // BACKWARD COMPATIBILITY METHODS (DEPRECATED)
-    // ==============================================
-
-    /**
-     * @deprecated Use takeoverCart() instead. This method will be removed in a future version.
-     */
-    public function swap(string $oldIdentifier, string $newIdentifier, string $instance = 'default'): bool
-    {
-        return $this->takeoverCart($oldIdentifier, $newIdentifier, $instance);
-    }
-
-    /**
-     * @deprecated Use takeoverAllInstances() instead. This method will be removed in a future version.
-     */
-    public function swapAllInstances(string $oldIdentifier, string $newIdentifier): array
-    {
-        return $this->takeoverAllInstances($oldIdentifier, $newIdentifier);
-    }
-
-    /**
-     * @deprecated Use takeoverGuestCart() instead. This method will be removed in a future version.
-     */
-    public function swapGuestCartToUser(int $userId, string $instance = 'default', ?string $oldSessionId = null): bool
-    {
-        return $this->takeoverGuestCart($userId, $instance, $oldSessionId);
-    }
-
-    /**
-     * @deprecated Use takeoverAllGuestInstances() instead. This method will be removed in a future version.
-     */
-    public function swapAllGuestInstancesToUser(int $userId, ?string $oldSessionId = null): array
-    {
-        return $this->takeoverAllGuestInstances($userId, $oldSessionId);
+        return $this->swapAllInstances($guestIdentifier, $userIdentifier);
     }
 }

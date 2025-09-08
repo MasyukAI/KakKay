@@ -137,28 +137,20 @@ class CartManager
     }
 
     /**
-     * Take over cart ownership by ensuring the target identifier has an active cart.
+     * Swap cart ownership by transferring cart from old identifier to new identifier.
      * 
-     * This prioritizes preserving the target cart over the source cart.
-     * If target cart exists, it's preserved and source cart is discarded.
-     * If target cart doesn't exist, source cart is transferred to target.
+     * This ensures the new identifier has an active cart by transferring
+     * the cart from the old identifier. This prevents cart abandonment by 
+     * ensuring continued cart activity under the new identifier.
      *
-     * @param string $sourceIdentifier The source identifier (e.g., guest session)
-     * @param string $targetIdentifier The target identifier (e.g., user ID)
+     * @param string $oldIdentifier The old identifier (e.g., guest session)
+     * @param string $newIdentifier The new identifier (e.g., user ID)
      * @param string $instance The cart instance name (e.g., 'default', 'wishlist')
-     * @return bool True if takeover was successful (target now has active cart)
-     */
-    public function takeoverCart(string $sourceIdentifier, string $targetIdentifier, string $instance = 'default'): bool
-    {
-        $migrationService = new \MasyukAI\Cart\Services\CartMigrationService();
-        return $migrationService->takeoverCart($sourceIdentifier, $targetIdentifier, $instance);
-    }
-
-    /**
-     * @deprecated Use takeoverCart() instead. This method will be removed in a future version.
+     * @return bool True if swap was successful (new identifier now has the cart)
      */
     public function swap(string $oldIdentifier, string $newIdentifier, string $instance = 'default'): bool
     {
-        return $this->takeoverCart($oldIdentifier, $newIdentifier, $instance);
+        $migrationService = new \MasyukAI\Cart\Services\CartMigrationService();
+        return $migrationService->swap($oldIdentifier, $newIdentifier, $instance);
     }
 }

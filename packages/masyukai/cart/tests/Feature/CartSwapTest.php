@@ -7,10 +7,11 @@ use MasyukAI\Cart\Services\CartMigrationService;
 use MasyukAI\Cart\Facades\Cart;
 
 /**
- * Test cart takeover functionality.
+ * Test cart swap functionality.
  * 
- * This tests the cart takeover feature that prioritizes preserving target carts
- * over source carts when transferring cart ownership.
+ * This tests the cart swap feature that transfers cart ownership from 
+ * old identifier to new identifier, ensuring the new identifier gets 
+ * an active cart to prevent abandonment.
  */
 
 uses(RefreshDatabase::class);
@@ -19,11 +20,11 @@ beforeEach(function () {
     $this->cartMigration = new CartMigrationService;
 });
 
-it('preserves target cart over source cart when target exists', function () {
+it('transfers source cart to target identifier even when target exists', function () {
     // Create database storage for testing
     $connection = app('db')->connection();
-    $connection->getSchemaBuilder()->dropIfExists('cart_storage_takeover_test');
-    $connection->getSchemaBuilder()->create('cart_storage_takeover_test', function ($table) {
+    $connection->getSchemaBuilder()->dropIfExists('cart_storage_swap_test');
+    $connection->getSchemaBuilder()->create('cart_storage_swap_test', function ($table) {
         $table->id();
         $table->string('identifier')->index();
         $table->string('instance')->default('default')->index();
@@ -34,9 +35,9 @@ it('preserves target cart over source cart when target exists', function () {
         $table->unique(['identifier', 'instance']);
     });
 
-    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'cart_storage_takeover_test');
+    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'cart_storage_swap_test');
     
-    // Add items to guest cart
+    // Add items to guest cart (the source cart to transfer)
     $guestItems = [
         'guest-product-1' => [
             'id' => 'guest-product-1',
@@ -48,7 +49,7 @@ it('preserves target cart over source cart when target exists', function () {
         ],
     ];
 
-    // Add different items to user cart (target cart that should be preserved)
+    // Add different items to user cart (this will be overwritten)
     $userItems = [
         'user-product-1' => [
             'id' => 'user-product-1',
@@ -56,14 +57,6 @@ it('preserves target cart over source cart when target exists', function () {
             'price' => 25.00,
             'quantity' => 1,
             'attributes' => ['size' => 'large'],
-            'conditions' => [],
-        ],
-        'user-product-2' => [
-            'id' => 'user-product-2',
-            'name' => 'User Product 2',
-            'price' => 15.00,
-            'quantity' => 3,
-            'attributes' => ['category' => 'electronics'],
             'conditions' => [],
         ],
     ];
@@ -83,38 +76,36 @@ it('preserves target cart over source cart when target exists', function () {
 
     // Verify both carts exist initially
     expect($storage->getItems('guest_session_123', 'default'))->toHaveCount(1);
-    expect($storage->getItems('user_42', 'default'))->toHaveCount(2);
+    expect($storage->getItems('user_42', 'default'))->toHaveCount(1);
 
-    // Perform takeover (guest trying to take over user cart)
-    $result = $this->cartMigration->takeoverCart('guest_session_123', 'user_42', 'default');
+    // Perform swap (transfer guest cart to user identifier)
+    $result = $this->cartMigration->swap('guest_session_123', 'user_42', 'default');
     expect($result)->toBeTrue();
 
-    // Verify results after takeover:
-    // Guest cart should be gone (discarded)
+    // Verify results after swap:
+    // Guest cart should be gone (transferred)
     $guestItemsAfter = $storage->getItems('guest_session_123', 'default');
     expect($guestItemsAfter)->toBeEmpty();
 
-    // User cart should be preserved exactly as it was (target cart priority)
+    // User cart should now have the guest cart content (not the original user content)
     $userItemsAfter = $storage->getItems('user_42', 'default');
     $userConditionsAfter = $storage->getConditions('user_42', 'default');
     
-    expect($userItemsAfter)->toHaveCount(2);
-    expect($userConditionsAfter)->toHaveCount(1);
+    expect($userItemsAfter)->toHaveCount(1);
+    expect($userConditionsAfter)->toBeEmpty(); // Conditions were empty in guest cart
     
-    // Verify the exact content is preserved (not guest content)
-    expect($userItemsAfter['user-product-1'])->toEqual($userItems['user-product-1']);
-    expect($userItemsAfter['user-product-2'])->toEqual($userItems['user-product-2']);
-    expect($userConditionsAfter['user_discount'])->toEqual($userConditions['user_discount']);
+    // Verify the guest content is now under user identifier
+    expect($userItemsAfter['guest-product-1'])->toEqual($guestItems['guest-product-1']);
     
-    // Guest content should NOT be in the user cart
-    expect($userItemsAfter)->not->toHaveKey('guest-product-1');
+    // Original user content should NOT be present (it was overwritten)
+    expect($userItemsAfter)->not->toHaveKey('user-product-1');
 });
 
 it('transfers source cart when target cart does not exist', function () {
     // Create database storage for testing
     $connection = app('db')->connection();
-    $connection->getSchemaBuilder()->dropIfExists('cart_storage_takeover_test_2');
-    $connection->getSchemaBuilder()->create('cart_storage_takeover_test_2', function ($table) {
+    $connection->getSchemaBuilder()->dropIfExists('cart_storage_swap_test_2');
+    $connection->getSchemaBuilder()->create('cart_storage_swap_test_2', function ($table) {
         $table->id();
         $table->string('identifier')->index();
         $table->string('instance')->default('default')->index();
@@ -125,7 +116,7 @@ it('transfers source cart when target cart does not exist', function () {
         $table->unique(['identifier', 'instance']);
     });
 
-    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'cart_storage_takeover_test_2');
+    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'cart_storage_swap_test_2');
     
     // Add items to guest cart only (no user cart exists)
     $guestItems = [
@@ -163,18 +154,18 @@ it('transfers source cart when target cart does not exist', function () {
     expect($storage->getItems('guest_session_123', 'default'))->toHaveCount(2);
     expect($storage->getItems('user_42', 'default'))->toBeEmpty();
 
-    // Perform takeover
-    $result = $this->cartMigration->takeoverCart('guest_session_123', 'user_42', 'default');
+    // Perform swap
+    $result = $this->cartMigration->swap('guest_session_123', 'user_42', 'default');
     expect($result)->toBeTrue();
 
-    // Verify results after takeover:
+    // Verify results after swap:
     // Guest cart should be empty (transferred)
     $guestItemsAfter = $storage->getItems('guest_session_123', 'default');
     $guestConditionsAfter = $storage->getConditions('guest_session_123', 'default');
     expect($guestItemsAfter)->toBeEmpty();
     expect($guestConditionsAfter)->toBeEmpty();
 
-    // User cart should have all the original guest items (since no user cart existed)
+    // User cart should have all the original guest items
     $userItemsAfter = $storage->getItems('user_42', 'default');
     $userConditionsAfter = $storage->getConditions('user_42', 'default');
     expect($userItemsAfter)->toHaveCount(2);
@@ -186,11 +177,11 @@ it('transfers source cart when target cart does not exist', function () {
     expect($userConditionsAfter['discount'])->toEqual($guestConditions['discount']);
 });
 
-it('returns false when taking over non-existent cart', function () {
+it('swaps even when source cart is empty', function () {
     // Create database storage for testing
     $connection = app('db')->connection();
-    $connection->getSchemaBuilder()->dropIfExists('cart_storage_takeover_test_3');
-    $connection->getSchemaBuilder()->create('cart_storage_takeover_test_3', function ($table) {
+    $connection->getSchemaBuilder()->dropIfExists('cart_storage_swap_test_empty');
+    $connection->getSchemaBuilder()->create('cart_storage_swap_test_empty', function ($table) {
         $table->id();
         $table->string('identifier')->index();
         $table->string('instance')->default('default')->index();
@@ -201,19 +192,53 @@ it('returns false when taking over non-existent cart', function () {
         $table->unique(['identifier', 'instance']);
     });
 
-    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'cart_storage_takeover_test_3');
+    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'cart_storage_swap_test_empty');
+    
+    // Create an empty guest cart (cart exists but has no items)
+    $storage->putBoth('guest_session_empty', 'default', [], []);
+
+    // Verify guest cart exists but is empty
+    expect($storage->has('guest_session_empty', 'default'))->toBeTrue();
+    expect($storage->getItems('guest_session_empty', 'default'))->toBeEmpty();
+
+    // Perform swap - should succeed even though cart is empty
+    $result = $this->cartMigration->swap('guest_session_empty', 'user_empty', 'default');
+    expect($result)->toBeTrue();
+
+    // Verify the empty cart was transferred to ensure cart ownership and prevent abandonment
+    expect($storage->has('guest_session_empty', 'default'))->toBeFalse();
+    expect($storage->has('user_empty', 'default'))->toBeTrue();
+    expect($storage->getItems('user_empty', 'default'))->toBeEmpty();
+});
+
+it('returns false when swapping non-existent cart', function () {
+    // Create database storage for testing
+    $connection = app('db')->connection();
+    $connection->getSchemaBuilder()->dropIfExists('cart_storage_swap_test_3');
+    $connection->getSchemaBuilder()->create('cart_storage_swap_test_3', function ($table) {
+        $table->id();
+        $table->string('identifier')->index();
+        $table->string('instance')->default('default')->index();
+        $table->longText('items')->nullable();
+        $table->longText('conditions')->nullable();
+        $table->longText('metadata')->nullable();
+        $table->timestamps();
+        $table->unique(['identifier', 'instance']);
+    });
+
+    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'cart_storage_swap_test_3');
     $migration = new CartMigrationService;
 
-    // Try to take over a non-existent cart
-    $result = $migration->takeoverCart('non_existent_session', 'user_42', 'default');
+    // Try to swap a non-existent cart
+    $result = $migration->swap('non_existent_session', 'user_42', 'default');
     expect($result)->toBeFalse();
 });
 
-it('can take over cart ownership for specific instances', function () {
+it('can swap cart ownership for specific instances', function () {
     // Create database storage for testing
     $connection = app('db')->connection();
-    $connection->getSchemaBuilder()->dropIfExists('cart_storage_takeover_test_4');
-    $connection->getSchemaBuilder()->create('cart_storage_takeover_test_4', function ($table) {
+    $connection->getSchemaBuilder()->dropIfExists('cart_storage_swap_test_4');
+    $connection->getSchemaBuilder()->create('cart_storage_swap_test_4', function ($table) {
         $table->id();
         $table->string('identifier')->index();
         $table->string('instance')->default('default')->index();
@@ -224,7 +249,7 @@ it('can take over cart ownership for specific instances', function () {
         $table->unique(['identifier', 'instance']);
     });
 
-    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'cart_storage_takeover_test_4');
+    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'cart_storage_swap_test_4');
 
     // Add items to guest wishlist cart
     $wishlistItems = [
@@ -245,26 +270,26 @@ it('can take over cart ownership for specific instances', function () {
     $guestWishlistBefore = $storage->getItems('guest_session_456', 'wishlist');
     expect($guestWishlistBefore)->toHaveCount(1);
 
-    // Perform takeover for wishlist instance only
-    $result = $this->cartMigration->takeoverCart('guest_session_456', 'user_99', 'wishlist');
+    // Perform swap for wishlist instance only
+    $result = $this->cartMigration->swap('guest_session_456', 'user_99', 'wishlist');
     expect($result)->toBeTrue();
 
-    // Verify results after takeover
+    // Verify results after swap
     // Guest wishlist should be empty
     $guestWishlistAfter = $storage->getItems('guest_session_456', 'wishlist');
     expect($guestWishlistAfter)->toBeEmpty();
 
-    // User wishlist should have the items (since no user wishlist existed)
+    // User wishlist should have the items
     $userWishlistAfter = $storage->getItems('user_99', 'wishlist');
     expect($userWishlistAfter)->toHaveCount(1);
     expect($userWishlistAfter['product-1'])->toEqual($wishlistItems['product-1']);
 });
 
-it('can take over all instances from one identifier to another', function () {
+it('can swap all instances from one identifier to another', function () {
     // Create database storage for testing
     $connection = app('db')->connection();
-    $connection->getSchemaBuilder()->dropIfExists('cart_storage_takeover_test_5');
-    $connection->getSchemaBuilder()->create('cart_storage_takeover_test_5', function ($table) {
+    $connection->getSchemaBuilder()->dropIfExists('cart_storage_swap_test_5');
+    $connection->getSchemaBuilder()->create('cart_storage_swap_test_5', function ($table) {
         $table->id();
         $table->string('identifier')->index();
         $table->string('instance')->default('default')->index();
@@ -275,7 +300,7 @@ it('can take over all instances from one identifier to another', function () {
         $table->unique(['identifier', 'instance']);
     });
 
-    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'cart_storage_takeover_test_5');
+    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'cart_storage_swap_test_5');
 
     // Add items to multiple cart instances for guest
     $defaultItems = [
@@ -308,10 +333,10 @@ it('can take over all instances from one identifier to another', function () {
     expect($storage->getItems('guest_session_789', 'default'))->toHaveCount(1);
     expect($storage->getItems('guest_session_789', 'wishlist'))->toHaveCount(1);
 
-    // Take over all instances
-    $results = $this->cartMigration->takeoverAllInstances('guest_session_789', 'user_123');
+    // Swap all instances
+    $results = $this->cartMigration->swapAllInstances('guest_session_789', 'user_123');
     
-    // Verify all takeovers were successful
+    // Verify all swaps were successful
     expect($results)->toHaveKey('default');
     expect($results)->toHaveKey('wishlist');
     expect($results['default'])->toBeTrue();
@@ -321,16 +346,16 @@ it('can take over all instances from one identifier to another', function () {
     expect($storage->getItems('guest_session_789', 'default'))->toBeEmpty();
     expect($storage->getItems('guest_session_789', 'wishlist'))->toBeEmpty();
 
-    // Verify user carts have the items (since no user carts existed)
+    // Verify user carts have the items
     expect($storage->getItems('user_123', 'default'))->toHaveCount(1);
     expect($storage->getItems('user_123', 'wishlist'))->toHaveCount(1);
 });
 
-it('can take over through cart facade', function () {
+it('can swap through cart facade', function () {
     // Create database storage for testing
     $connection = app('db')->connection();
-    $connection->getSchemaBuilder()->dropIfExists('cart_storage_takeover_test_6');
-    $connection->getSchemaBuilder()->create('cart_storage_takeover_test_6', function ($table) {
+    $connection->getSchemaBuilder()->dropIfExists('cart_storage_swap_test_6');
+    $connection->getSchemaBuilder()->create('cart_storage_swap_test_6', function ($table) {
         $table->id();
         $table->string('identifier')->index();
         $table->string('instance')->default('default')->index();
@@ -341,7 +366,7 @@ it('can take over through cart facade', function () {
         $table->unique(['identifier', 'instance']);
     });
 
-    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'cart_storage_takeover_test_6');
+    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'cart_storage_swap_test_6');
 
     // Add items to guest cart
     $guestItems = [
@@ -364,8 +389,8 @@ it('can take over through cart facade', function () {
     // Verify guest cart exists
     expect($storage->getItems('guest_session_facade', 'default'))->toHaveCount(1);
 
-    // Take over using the cart manager (simulating Cart facade)
-    $result = $cartManager->takeoverCart('guest_session_facade', 'user_facade', 'default');
+    // Swap using the cart manager (simulating Cart facade)
+    $result = $cartManager->swap('guest_session_facade', 'user_facade', 'default');
     expect($result)->toBeTrue();
 
     // Verify results
@@ -373,11 +398,11 @@ it('can take over through cart facade', function () {
     expect($storage->getItems('user_facade', 'default'))->toHaveCount(1);
 });
 
-it('can take over guest cart using convenience method', function () {
+it('can swap guest cart using convenience method', function () {
     // Create database storage for testing
     $connection = app('db')->connection();
-    $connection->getSchemaBuilder()->dropIfExists('cart_storage_takeover_test_7');
-    $connection->getSchemaBuilder()->create('cart_storage_takeover_test_7', function ($table) {
+    $connection->getSchemaBuilder()->dropIfExists('cart_storage_swap_test_7');
+    $connection->getSchemaBuilder()->create('cart_storage_swap_test_7', function ($table) {
         $table->id();
         $table->string('identifier')->index();
         $table->string('instance')->default('default')->index();
@@ -388,7 +413,7 @@ it('can take over guest cart using convenience method', function () {
         $table->unique(['identifier', 'instance']);
     });
 
-    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'cart_storage_takeover_test_7');
+    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'cart_storage_swap_test_7');
 
     // Set up guest session manually
     session(['id' => 'guest_convenience_test']);
@@ -412,8 +437,8 @@ it('can take over guest cart using convenience method', function () {
     // Verify guest cart exists
     expect($storage->getItems($guestSessionId, 'default'))->toHaveCount(1);
 
-    // Take over using convenience method
-    $result = $this->cartMigration->takeoverGuestCart(42, 'default', $guestSessionId);
+    // Swap using convenience method
+    $result = $this->cartMigration->swapGuestCartToUser(42, 'default', $guestSessionId);
     expect($result)->toBeTrue();
 
     // Verify results
@@ -421,11 +446,11 @@ it('can take over guest cart using convenience method', function () {
     expect($storage->getItems('42', 'default'))->toHaveCount(1);
 });
 
-it('can take over all guest instances using convenience method', function () {
+it('can swap all guest instances using convenience method', function () {
     // Create database storage for testing
     $connection = app('db')->connection();
-    $connection->getSchemaBuilder()->dropIfExists('cart_storage_takeover_test_8');
-    $connection->getSchemaBuilder()->create('cart_storage_takeover_test_8', function ($table) {
+    $connection->getSchemaBuilder()->dropIfExists('cart_storage_swap_test_8');
+    $connection->getSchemaBuilder()->create('cart_storage_swap_test_8', function ($table) {
         $table->id();
         $table->string('identifier')->index();
         $table->string('instance')->default('default')->index();
@@ -436,7 +461,7 @@ it('can take over all guest instances using convenience method', function () {
         $table->unique(['identifier', 'instance']);
     });
 
-    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'cart_storage_takeover_test_8');
+    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'cart_storage_swap_test_8');
 
     // Set up guest session manually
     session(['id' => 'guest_all_instances_test']);
@@ -472,10 +497,10 @@ it('can take over all guest instances using convenience method', function () {
     expect($storage->getItems($guestSessionId, 'default'))->toHaveCount(1);
     expect($storage->getItems($guestSessionId, 'wishlist'))->toHaveCount(1);
 
-    // Take over all instances using convenience method
-    $results = $this->cartMigration->takeoverAllGuestInstances(99, $guestSessionId);
+    // Swap all instances using convenience method
+    $results = $this->cartMigration->swapAllGuestInstancesToUser(99, $guestSessionId);
     
-    // Verify all takeovers were successful
+    // Verify all swaps were successful
     expect($results)->toHaveKey('default');
     expect($results)->toHaveKey('wishlist');
     expect($results['default'])->toBeTrue();

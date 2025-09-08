@@ -199,51 +199,26 @@ readonly class SessionStorage implements StorageInterface
     }
 
     /**
-     * Take over cart ownership by ensuring the target identifier has an active cart.
-     * Priority is preserving the target cart, not the source cart.
-     */
-    public function takeoverCart(string $sourceIdentifier, string $targetIdentifier, string $instance): bool
-    {
-        // Check if target cart already exists and has content
-        $targetExists = $this->has($targetIdentifier, $instance);
-        
-        if ($targetExists) {
-            // Target cart exists - preserve it
-            // Remove source cart since we're keeping the target
-            if ($this->has($sourceIdentifier, $instance)) {
-                $this->forget($sourceIdentifier, $instance);
-            }
-            return true;
-        }
-        
-        // Target cart doesn't exist - check if source cart exists and has content
-        if (!$this->has($sourceIdentifier, $instance)) {
-            return false; // No cart to take over
-        }
-        
-        // Get all data from the source identifier
-        $items = $this->getItems($sourceIdentifier, $instance);
-        $conditions = $this->getConditions($sourceIdentifier, $instance);
-        
-        // If source cart is empty, nothing to transfer
-        if (empty($items) && empty($conditions)) {
-            return false;
-        }
-        
-        // Transfer source cart to target identifier
-        $this->putBoth($targetIdentifier, $instance, $items, $conditions);
-        
-        // Remove data from source identifier
-        $this->forget($sourceIdentifier, $instance);
-        
-        return true;
-    }
-
-    /**
-     * @deprecated Use takeoverCart() instead. This method will be removed in a future version.
+     * Swap cart identifier by transferring cart data from old identifier to new identifier.
+     * This changes cart ownership to ensure the new identifier has an active cart.
      */
     public function swapIdentifier(string $oldIdentifier, string $newIdentifier, string $instance): bool
     {
-        return $this->takeoverCart($oldIdentifier, $newIdentifier, $instance);
+        // Check if source cart exists
+        if (!$this->has($oldIdentifier, $instance)) {
+            return false;
+        }
+
+        // Get all data from the source identifier
+        $items = $this->getItems($oldIdentifier, $instance);
+        $conditions = $this->getConditions($oldIdentifier, $instance);
+        
+        // Transfer source cart to new identifier (swap even if empty to ensure ownership)
+        $this->putBoth($newIdentifier, $instance, $items, $conditions);
+        
+        // Remove data from old identifier
+        $this->forget($oldIdentifier, $instance);
+        
+        return true;
     }
 }
