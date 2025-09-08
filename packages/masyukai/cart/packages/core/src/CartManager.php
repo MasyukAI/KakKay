@@ -137,19 +137,28 @@ class CartManager
     }
 
     /**
-     * Swap cart ownership by changing identifiers without merging.
+     * Take over cart ownership by ensuring the target identifier has an active cart.
      * 
-     * This is a simple, fast operation that transfers cart ownership 
-     * from one identifier to another without any content modification.
+     * This prioritizes preserving the target cart over the source cart.
+     * If target cart exists, it's preserved and source cart is discarded.
+     * If target cart doesn't exist, source cart is transferred to target.
      *
-     * @param string $oldIdentifier The source identifier (e.g., session ID)
-     * @param string $newIdentifier The target identifier (e.g., user ID)
+     * @param string $sourceIdentifier The source identifier (e.g., guest session)
+     * @param string $targetIdentifier The target identifier (e.g., user ID)
      * @param string $instance The cart instance name (e.g., 'default', 'wishlist')
-     * @return bool True if swap was successful, false if source cart doesn't exist
+     * @return bool True if takeover was successful (target now has active cart)
+     */
+    public function takeoverCart(string $sourceIdentifier, string $targetIdentifier, string $instance = 'default'): bool
+    {
+        $migrationService = new \MasyukAI\Cart\Services\CartMigrationService();
+        return $migrationService->takeoverCart($sourceIdentifier, $targetIdentifier, $instance);
+    }
+
+    /**
+     * @deprecated Use takeoverCart() instead. This method will be removed in a future version.
      */
     public function swap(string $oldIdentifier, string $newIdentifier, string $instance = 'default'): bool
     {
-        $migrationService = new \MasyukAI\Cart\Services\CartMigrationService();
-        return $migrationService->swap($oldIdentifier, $newIdentifier, $instance);
+        return $this->takeoverCart($oldIdentifier, $newIdentifier, $instance);
     }
 }

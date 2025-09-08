@@ -190,35 +190,61 @@ readonly class DatabaseStorage implements StorageInterface
     }
 
     /**
-     * Swap cart identifier by directly updating the identifier column.
-     * This is the most efficient way to transfer cart ownership.
+     * Take over cart ownership by ensuring the target identifier has an active cart.
+     * Priority is preserving the target cart, not the source cart.
      */
-    public function swapIdentifier(string $oldIdentifier, string $newIdentifier, string $instance): bool
+    public function takeoverCart(string $sourceIdentifier, string $targetIdentifier, string $instance): bool
     {
-        // Check if source cart exists
-        if (!$this->has($oldIdentifier, $instance)) {
-            return false;
+        // Check if target cart already exists and has content
+        $targetExists = $this->has($targetIdentifier, $instance);
+        
+        if ($targetExists) {
+            // Target cart exists - preserve it and just ensure it's marked as active
+            // Remove source cart since we're keeping the target
+            if ($this->has($sourceIdentifier, $instance)) {
+                $this->forget($sourceIdentifier, $instance);
+            }
+            
+            // Update target cart's timestamp to mark it as active
+            $this->database->table($this->table)
+                ->where('identifier', $targetIdentifier)
+                ->where('instance', $instance)
+                ->update(['updated_at' => now()]);
+                
+            return true;
         }
-
-        // Check if source cart has any data (items or conditions)
-        $record = $this->database->table($this->table)
-            ->where('identifier', $oldIdentifier)
+        
+        // Target cart doesn't exist - check if source cart exists and has content
+        if (!$this->has($sourceIdentifier, $instance)) {
+            return false; // No cart to take over
+        }
+        
+        $sourceRecord = $this->database->table($this->table)
+            ->where('identifier', $sourceIdentifier)
             ->where('instance', $instance)
             ->first();
-
-        if (!$record || (empty($record->items) && empty($record->conditions))) {
-            return false;
+            
+        if (!$sourceRecord || (empty($sourceRecord->items) && empty($sourceRecord->conditions))) {
+            return false; // Source cart exists but is empty
         }
-
-        // Simply update the identifier column - this is the "super stupid and simple" solution
+        
+        // Transfer source cart to target identifier (simple identifier update)
         $updated = $this->database->table($this->table)
-            ->where('identifier', $oldIdentifier)
+            ->where('identifier', $sourceIdentifier)
             ->where('instance', $instance)
             ->update([
-                'identifier' => $newIdentifier,
+                'identifier' => $targetIdentifier,
                 'updated_at' => now(),
             ]);
 
         return $updated > 0;
+    }
+
+    /**
+     * @deprecated Use takeoverCart() instead. This method will be removed in a future version.
+     */
+    public function swapIdentifier(string $oldIdentifier, string $newIdentifier, string $instance): bool
+    {
+        return $this->takeoverCart($oldIdentifier, $newIdentifier, $instance);
     }
 }

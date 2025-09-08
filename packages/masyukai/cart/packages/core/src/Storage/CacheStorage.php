@@ -165,31 +165,51 @@ readonly class CacheStorage implements StorageInterface
     }
 
     /**
-     * Swap cart identifier for cache storage.
-     * Since we can't directly rename cache keys, we fall back to copy/delete approach.
+     * Take over cart ownership by ensuring the target identifier has an active cart.
+     * Priority is preserving the target cart, not the source cart.
      */
-    public function swapIdentifier(string $oldIdentifier, string $newIdentifier, string $instance): bool
+    public function takeoverCart(string $sourceIdentifier, string $targetIdentifier, string $instance): bool
     {
-        // Check if source cart exists
-        if (!$this->has($oldIdentifier, $instance)) {
-            return false;
+        // Check if target cart already exists and has content
+        $targetExists = $this->has($targetIdentifier, $instance);
+        
+        if ($targetExists) {
+            // Target cart exists - preserve it
+            // Remove source cart since we're keeping the target
+            if ($this->has($sourceIdentifier, $instance)) {
+                $this->forget($sourceIdentifier, $instance);
+            }
+            return true;
         }
-
-        // Get all data from the old identifier
-        $items = $this->getItems($oldIdentifier, $instance);
-        $conditions = $this->getConditions($oldIdentifier, $instance);
-
-        // If source cart is empty, nothing to swap
+        
+        // Target cart doesn't exist - check if source cart exists and has content
+        if (!$this->has($sourceIdentifier, $instance)) {
+            return false; // No cart to take over
+        }
+        
+        // Get all data from the source identifier
+        $items = $this->getItems($sourceIdentifier, $instance);
+        $conditions = $this->getConditions($sourceIdentifier, $instance);
+        
+        // If source cart is empty, nothing to transfer
         if (empty($items) && empty($conditions)) {
             return false;
         }
-
-        // Store data under new identifier
-        $this->putBoth($newIdentifier, $instance, $items, $conditions);
-
-        // Remove data from old identifier
-        $this->forget($oldIdentifier, $instance);
-
+        
+        // Transfer source cart to target identifier
+        $this->putBoth($targetIdentifier, $instance, $items, $conditions);
+        
+        // Remove data from source identifier
+        $this->forget($sourceIdentifier, $instance);
+        
         return true;
+    }
+
+    /**
+     * @deprecated Use takeoverCart() instead. This method will be removed in a future version.
+     */
+    public function swapIdentifier(string $oldIdentifier, string $newIdentifier, string $instance): bool
+    {
+        return $this->takeoverCart($oldIdentifier, $newIdentifier, $instance);
     }
 }
