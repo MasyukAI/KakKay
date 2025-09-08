@@ -19,6 +19,8 @@
         "masyukai/cart": "@dev",
         "masyukai/chip": "@dev",
         "masyukai/filament-cart-plugin": "@dev",
+        "masyukai/shipping": "@dev",
+        "masyukai/filament-shipping-plugin": "@dev",
         "propaganistas/laravel-phone": "^6.0"
     },
     "require-dev": {
@@ -45,6 +47,14 @@
         {
             "type": "path",
             "url": "./packages/masyukai/filament-cart-plugin"
+        },
+        {
+            "type": "path",
+            "url": "./packages/masyukai/shipping"
+        },
+        {
+            "type": "path",
+            "url": "./packages/masyukai/filament-shipping-plugin"
         }
     ],
     "autoload": {

@@ -1,13 +1,13 @@
 {
-    "name": "masyukai/cart",
-    "description": "A modern, feature-rich shopping cart package for Laravel 12 with Livewire integration",
+    "name": "masyukai/shipping",
+    "description": "A comprehensive shipping management package for Laravel with multi-carrier support, tracking, and notifications",
     "license": "MIT",
     "keywords": [
         "laravel",
         "laravel12",
-        "shopping-cart",
-        "cart",
-        "livewire",
+        "shipping",
+        "logistics",
+        "tracking",
         "e-commerce",
         "masyukai"
     ],
@@ -18,40 +18,39 @@
         }
     ],
     "require": {
-        "php": "^8.2"
+        "php": "^8.2",
+        "illuminate/support": "^12.0",
+        "illuminate/database": "^12.0",
+        "illuminate/notifications": "^12.0",
+        "illuminate/queue": "^12.0",
+        "guzzlehttp/guzzle": "^7.0"
     },
     "require-dev": {
-        "livewire/livewire": "^3.0",
-        "driftingly/rector-laravel": "^2.0",
-        "larastan/larastan": "^3.0",
-        "laravel/pint": "^1.18",
-        "mockery/mockery": "^1.6",
-        "nunomaduro/collision": "^8.6",
+        "laravel/framework": "^12.0",
         "orchestra/testbench": "^10.0",
         "pestphp/pest": "^4.0",
-        "pestphp/pest-plugin-browser": "^4.0",
         "pestphp/pest-plugin-laravel": "^4.0",
-        "pestphp/pest-plugin-type-coverage": "^4.0",
-        "phpunit/phpunit": "^12.3"
+        "mockery/mockery": "^1.6",
+        "laravel/pint": "^1.18"
     },
     "autoload": {
         "psr-4": {
-            "MasyukAI\\Cart\\": "packages/core/src"
-        }
-    },
-    "extra": {
-        "laravel": {
-            "aliases": {
-                "Cart": "MasyukAI\\Cart\\Facades\\Cart"
-            },
-            "providers": [
-                "MasyukAI\\Cart\\CartServiceProvider"
-            ]
+            "MasyukAI\\Shipping\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "MasyukAI\\Cart\\Tests\\": "tests/"
+            "MasyukAI\\Shipping\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "MasyukAI\\Shipping\\ShippingServiceProvider"
+            ],
+            "aliases": {
+                "Shipping": "MasyukAI\\Shipping\\Facades\\Shipping"
+            }
         }
     },
     "config": {

@@ -20,6 +20,9 @@ Route::get('/checkout/failure', [CheckoutController::class, 'failure'])->name('c
 // CHIP webhook route
 Route::post('/webhooks/chip', [ChipWebhookController::class, 'handle'])->name('webhooks.chip');
 
+// Shipping tracking route
+Volt::route('/shipping/track/{trackingNumber}', 'shipping.track')->name('shipping.track');
+
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
