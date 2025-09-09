@@ -57,13 +57,15 @@
 
 
 /* Ensure full coverage on all screen sizes */
-html {
+
+html, body {
     background: #1a0d1a;
     background-image: var(--grad-hero);
     background-attachment: fixed;
     background-size: 100% 100%;
     background-repeat: no-repeat;
     min-height: 100vh;
+    overflow-x: hidden;
 }
 
 /* Remove height constraints on mobile for continuous background */
