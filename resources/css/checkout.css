@@ -12,18 +12,10 @@
   --checkout-secondary: #6a00f4;
 }
 
-/* Main checkout container */
 .checkout-container {
   min-height: 100vh;
-  background: #1a0d1a;
-  background-image: 
-    radial-gradient(1200px 600px at 10% -10%, rgba(255,95,162,.35) 0%, transparent 45%),
-    radial-gradient(800px 500px at 110% 10%, rgba(209,0,209,.30) 0%, transparent 50%),
-    linear-gradient(135deg, rgba(106,0,244,.18), rgba(224,17,95,.22));
-  padding: 2rem 0;
 }
 
-/* Section containers - target actual Filament classes with higher specificity */
 .checkout-container .fi-section,
 .fi-section.fi-section-has-header {
   background: linear-gradient(135deg, 
@@ -51,7 +43,6 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
 }
 
-/* Section headers with higher specificity */
 .checkout-container .fi-section-header,
 .fi-section.fi-section-has-header .fi-section-header {
   background: linear-gradient(135deg, 
@@ -100,7 +91,6 @@
   left: 100%;
 }
 
-/* Section header icons */
 .fi-section-header .fi-icon {
   color: var(--checkout-accent);
   filter: drop-shadow(0 2px 8px rgba(255, 95, 162, 0.4));
@@ -108,7 +98,6 @@
   flex-shrink: 0;
 }
 
-/* Section header text */
 .fi-section-header-text-ctn {
   flex: 1;
 }
@@ -133,18 +122,15 @@
   margin-bottom: 0;
 }
 
-/* Section content */
 .fi-section-content {
   padding: 2rem;
 }
 
-/* Form field wrappers */
 .fi-fo-field {
   margin-bottom: 1.5rem;
   position: relative;
 }
 
-/* Field labels */
 .fi-fo-field-label {
   color: var(--checkout-text);
   font-family: 'Montserrat', system-ui, sans-serif;
@@ -165,7 +151,6 @@
   margin-left: 0.125rem;
 }
 
-/* Input wrapper styling */
 .fi-input-wrp,
 .checkout-container .fi-input-wrp,
 .fi-section .fi-input-wrp {
@@ -182,7 +167,6 @@
   height: auto !important;
 }
 
-/* Input fields with higher specificity */
 .checkout-container .fi-input,
 .fi-section .fi-input,
 input.fi-input {
@@ -237,7 +221,6 @@ input.fi-input:focus {
   transform: translateY(-2px) !important;
 }
 
-/* Select inputs with higher specificity */
 .checkout-container .fi-select-input,
 .fi-section .fi-select-input,
 select.fi-select-input {
@@ -283,19 +266,16 @@ select.fi-select-input:focus {
   transform: translateY(-2px) !important;
 }
 
-/* Select dropdown options */
 .fi-select-input option {
   background: rgba(26, 13, 26, 0.95) !important;
   color: var(--checkout-text) !important;
   padding: 0.75rem 1rem;
 }
 
-/* Grid layouts */
 .fi-grid {
   gap: 1.5rem;
 }
 
-/* Helper text styling */
 .fi-sc-text {
   color: rgba(247, 233, 244, 0.7);
   font-size: 0.8125rem;
@@ -303,7 +283,6 @@ select.fi-select-input:focus {
   font-style: italic;
 }
 
-/* Enhanced glass effect for form container */
 .checkout-container form {
   position: relative;
   max-width: 1200px;
@@ -329,7 +308,6 @@ select.fi-select-input:focus {
   opacity: 0.7;
 }
 
-/* Responsive design */
 @media (max-width: 768px) {
   .checkout-container {
     padding: 1rem 0;
@@ -351,3 +329,68 @@ select.fi-select-input:focus {
     gap: 1rem;
   }
 }
+/* Main checkout container */
+
+
+/* Section containers - target actual Filament classes with higher specificity */
+
+
+
+
+/* Section headers with higher specificity */
+
+
+
+
+/* Section header icons */
+
+
+/* Section header text */
+
+
+/* Section content */
+
+
+/* Form field wrappers */
+
+
+/* Field labels */
+
+
+
+
+
+
+/* Input wrapper styling */
+
+
+/* Input fields with higher specificity */
+
+
+
+
+
+
+
+
+/* Select inputs with higher specificity */
+
+
+
+
+
+
+/* Select dropdown options */
+
+
+/* Grid layouts */
+
+
+/* Helper text styling */
+
+
+/* Enhanced glass effect for form container */
+
+
+/* Responsive design */
+

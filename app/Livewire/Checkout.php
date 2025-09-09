@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use MasyukAI\Cart\Facades\Cart;
+use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
 class Checkout extends Component implements HasSchemas
 {
@@ -88,13 +89,7 @@ class Checkout extends Component implements HasSchemas
                                         'Kuching' => 'Kuching',
                                     ]),
 
-                                TextInput::make('phone')
-                                    ->label('Nombor Telefon')
-                                    ->required()
-                                    ->placeholder('123456789')
-                                    ->tel()
-                                    ->maxLength(20)
-                                    ->helperText('Kod negara akan ditambah secara automatik'),
+                                PhoneInput::make('phone'),
                             ]),
 
                         TextInput::make('address')

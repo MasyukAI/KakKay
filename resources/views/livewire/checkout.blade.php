@@ -3,21 +3,21 @@
     <div class="cart-container">
         <header class="cart-header">
             <div class="flex items-center justify-between">
-                <div class="brand">
+                <a wire:navigate href="/">
+                    <div class="brand">
                     <div class="logo" aria-hidden="true"></div>
-                    <div>
+                        <div>
                         <h1>Kak Kay</h1>
                         <div class="tagline">Counsellor • Therapist • KKDI Creator</div>
+                        </div>
                     </div>
-                </div>
+                </a>
 
                 <div class="flex items-center gap-6">
-                    <a href="{{ route('cart') }}" class="cart-nav-link">
-                        ← Balik ke Troli
-                    </a>
+
 
                     <div class="relative">
-                        <flux:button variant="primary" href="{{ route('cart') }}" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-lg">
+                        <flux:button variant="primary" wire:navigate href="{{ route('cart') }}" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-lg">
                             <flux:icon.shopping-bag class="h-6 w-6" />
                             <span class="hidden sm:inline font-medium">Troli</span>
                             <div class="absolute top-0 right-0">
@@ -31,30 +31,36 @@
     </div>
 
     <!-- Checkout Content -->
-    <section class="py-8 md:py-16">
+    <section class="py-10">
         <div class="cart-container">
             <form wire:submit="processCheckout" class="max-w-screen-xl mx-auto">
                 
                 <!-- Progress Steps -->
-                <div class="mb-8">
-                    <ol class="flex items-center justify-center w-full max-w-2xl mx-auto text-center text-sm font-medium text-gray-300 sm:text-base">
-                        <li class="flex items-center text-pink-400 after:mx-6 after:hidden after:h-1 after:w-full after:border-b after:border-gray-600 sm:after:inline-block sm:after:content-[''] md:w-full xl:after:mx-10">
-                            <span class="flex items-center after:mx-2 after:text-gray-500 after:content-['/'] sm:after:hidden">
-                                <flux:icon.check-circle class="me-2 h-4 w-4 sm:h-5 sm:w-5" />
-                                Troli
-                            </span>
+                <div class="mb-12">
+                    <ol class="flex items-center justify-center w-full max-w-2xl mx-auto text-center text-xs sm:text-sm font-medium text-gray-300 gap-1 sm:gap-0">
+                        <a href="{{ route('cart') }}" wire:navigate class="flex items-centerfocus:outline-none" style="text-decoration: none;">
+                            <li class="flex items-center text-pink-400">
+                                <span class="flex items-center">
+                                    <flux:icon.check-circle class="me-1 h-3 w-3 sm:h-4 sm:w-4" />
+                                    Troli
+                                </span>
+                            </li>
+                        </a>
+                        <li class="flex items-center mx-1 sm:mx-2">
+                            <svg class="w-4 h-4 sm:w-6 sm:h-6 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
                         </li>
-
-                        <li class="flex items-center text-pink-400 after:mx-6 after:hidden after:h-1 after:w-full after:border-b after:border-gray-600 sm:after:inline-block sm:after:content-[''] md:w-full xl:after:mx-10">
-                            <span class="flex items-center after:mx-2 after:text-gray-500 after:content-['/'] sm:after:hidden">
-                                <flux:icon.check-circle class="me-2 h-4 w-4 sm:h-5 sm:w-5" />
+                        <li class="flex items-center text-pink-400">
+                            <span class="flex items-center">
+                                <flux:icon.check-circle class="me-1 h-3 w-3 sm:h-4 sm:w-4" />
                                 Bayaran
                             </span>
                         </li>
-
+                        <li class="flex items-center mx-1 sm:mx-2">
+                            <svg class="w-4 h-4 sm:w-6 sm:h-6 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+                        </li>
                         <li class="flex shrink-0 items-center text-gray-400">
-                            <flux:icon.clock class="me-2 h-4 w-4 sm:h-5 sm:w-5" />
-                            Ringkasan Pesanan
+                            <flux:icon.clock class="me-1 h-3 w-3 sm:h-4 sm:w-4" />
+                            Pesanan
                         </li>
                     </ol>
                 </div>
@@ -304,8 +310,8 @@
                             </div>
                         </div>
 
-                        <div>
-                            <img src="{{ asset('storage/images/payment-method.jpg') }}" alt="payment-method" class="mx-auto mt-10">
+                        <div class="bg-white">
+                            <img src="{{ asset('storage/images/fpx.png') }}" alt="payment-method" class="mx-auto mt-10">
                         </div>
                     </div>
                 </div>
@@ -313,16 +319,8 @@
         </div>
     </section>
 
-    <!-- Debug Authentication Status -->
-    <div style="background: rgba(0,0,0,0.3); border-top: 1px solid rgba(255,255,255,0.1); padding: 0.5rem 1rem; font-size: 0.8rem; color: rgba(255,255,255,0.7); text-align: center;">
-      <strong style="color: #ff69b4;">DEBUG:</strong>
-      @auth
-        <span style="color: #4ade80;">✓ Authenticated User</span> - 
-        <span>{{ auth()->user()->name ?? 'No Name' }}</span> 
-        (<span>{{ auth()->user()->email ?? 'No Email' }}</span>)
-      @else
-        <span style="color: #f87171;">✗ Guest User</span> - Not logged in
-      @endauth
-      | Role: {{ auth()->user()->role ?? 'guest' }}
+        <div class="container">
+        <x-footer />
     </div>
+
 </div>

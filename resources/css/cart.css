@@ -1,14 +1,16 @@
 @import 'tailwindcss';
 @import '../../vendor/livewire/flux/dist/flux.css';
-/* @import '../../vendor/filament/support/resources/css/index.css';
-@import '../../vendor/filament/actions/resources/css/index.css';
-@import '../../vendor/filament/forms/resources/css/index.css';
-@import '../../vendor/filament/infolists/resources/css/index.css'; 
-@import '../../vendor/filament/notifications/resources/css/index.css';
-@import '../../vendor/filament/schemas/resources/css/index.css'; */
+@import '../../vendor/filament/support/resources/css/index.css';
+/* @import '../../vendor/filament/actions/resources/css/index.css'; */
+/* @import '../../vendor/filament/forms/resources/css/index.css'; */
+/* @import '../../vendor/filament/infolists/resources/css/index.css';  */
+/* @import '../../vendor/filament/notifications/resources/css/index.css'; */
+@import '../../vendor/filament/schemas/resources/css/index.css';
+@import './checkout.css';
 
 @source '../views/livewire/cart.blade.php';
 @source '../views/livewire/checkout.blade.php';
+@source '../views/components/footer.blade.php';
 
 :root {
     /* Theme palette: purple, magenta, ruby, pink, maroon & white */
@@ -32,27 +34,15 @@
     --glass-gradient: linear-gradient(135deg, rgba(255,255,255,.15), rgba(255,95,162,.08));
     --border-gradient: linear-gradient(135deg, var(--purple), var(--pink), var(--ruby));
     
-    /* Gradient tokens */
-    --grad-hero: radial-gradient(ellipse 1600px 800px at 50% -10%, rgba(106,0,244,0.6) 0%, rgba(209,0,209,0.4) 25%, rgba(224,17,95,0.3) 50%, rgba(128,0,42,0.4) 75%, rgba(26,0,51,0.8) 100%),
-                 linear-gradient(135deg, #1a0d2e 0%, #2d1b42 25%, #3d2952 50%, #2d1b42 75%, #1a0d2e 100%);
+    /* Gradient tokens (match home.css) */
+    --grad-hero: radial-gradient(1200px 600px at 10% -10%, rgba(255,95,162,.35) 0%, transparent 45%),
+                 radial-gradient(800px 500px at 110% 10%, rgba(209,0,209,.30) 0%, transparent 50%),
+                 linear-gradient(135deg, rgba(106,0,244,.18), rgba(224,17,95,.22));
     --grad-card: linear-gradient(135deg, rgba(255,95,162,.12), rgba(224,17,95,.20));
     --grad-button: linear-gradient(135deg, var(--purple), var(--ruby));
     --grad-ring: conic-gradient(from 0deg, var(--pink), var(--magenta), var(--ruby), var(--purple), var(--pink));
 }
 
-/* Advanced Animation Keyframes */
-@keyframes float-gentle {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  33% { transform: translateY(-8px) rotate(1deg); }
-  66% { transform: translateY(-4px) rotate(-0.5deg); }
-}
-
-@keyframes bubble-float {
-  0% { transform: translateY(100vh) scale(0); opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { transform: translateY(-100px) scale(1); opacity: 0; }
-}
 
 @keyframes pulse-border {
   0%, 100% { border-color: rgba(255,95,162,0.3); box-shadow: 0 0 20px rgba(255,95,162,0.1); }
@@ -64,84 +54,7 @@
   50% { background-position: 100% 50%; }
 }
 
-@keyframes shimmer-wave {
-  0% { transform: translateX(-100%) skewX(-15deg); opacity: 0; }
-  50% { opacity: 1; }
-  100% { transform: translateX(200%) skewX(-15deg); opacity: 0; }
-}
 
-@keyframes ripple {
-  0% { transform: scale(0); opacity: 1; }
-  100% { transform: scale(4); opacity: 0; }
-}
-
-@keyframes morph-glass {
-  0%, 100% { border-radius: 18px 18px 18px 18px; }
-  25% { border-radius: 25px 15px 20px 18px; }
-  50% { border-radius: 15px 25px 18px 20px; }
-  75% { border-radius: 20px 18px 25px 15px; }
-}
-
-/* Apply the same base styles as home with enhanced animations */
-html, body {
-    margin: 0;
-    height: auto;
-    min-height: 100vh;
-    background: var(--grad-hero);
-    background-attachment: fixed;
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
-    font-family: "Playfair Display", Georgia, serif;
-    color: var(--white);
-    line-height: 1.6;
-    position: relative;
-    overflow-x: hidden;
-}
-
-/* Enhanced floating background effects */
-body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: 
-    radial-gradient(circle at 20% 80%, rgba(255,105,180,0.03) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(138,43,226,0.03) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, rgba(255,20,147,0.02) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: -1;
-  animation: float-gentle 25s ease-in-out infinite;
-}
-
-/* Floating Bubble Elements */
-.floating-bubbles {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: -1;
-}
-
-.bubble {
-  position: absolute;
-  background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,105,180,0.04));
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 50%;
-  backdrop-filter: blur(6px);
-  animation: bubble-float 15s linear infinite;
-}
-
-.bubble:nth-child(1) { width: 60px; height: 60px; left: 15%; animation-delay: 0s; animation-duration: 14s; }
-.bubble:nth-child(2) { width: 45px; height: 45px; left: 30%; animation-delay: 3s; animation-duration: 20s; }
-.bubble:nth-child(3) { width: 75px; height: 75px; left: 45%; animation-delay: 6s; animation-duration: 16s; }
-.bubble:nth-child(4) { width: 35px; height: 35px; left: 60%; animation-delay: 9s; animation-duration: 22s; }
-.bubble:nth-child(5) { width: 55px; height: 55px; left: 75%; animation-delay: 12s; animation-duration: 18s; }
-.bubble:nth-child(6) { width: 65px; height: 65px; left: 85%; animation-delay: 15s; animation-duration: 24s; }
-.bubble:nth-child(7) { width: 40px; height: 40px; left: 95%; animation-delay: 18s; animation-duration: 26s; }
 
 /* Ensure full coverage on all screen sizes */
 html {
@@ -162,6 +75,10 @@ html {
     }
 }
 
+    .tagline{ color:#f7e9f4; opacity:.85; font-size:.92rem; }
+    .container{ width:min(1200px, 92vw); margin-inline:auto; }
+
+
 /* Cart specific styles */
 .cart-container {
     width: min(1200px, 92vw);
@@ -172,8 +89,6 @@ html {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: calc(var(--radius) * 1.5);
-    backdrop-filter: blur(20px);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
 .cart-header {
@@ -198,13 +113,18 @@ html {
     gap: 12px;
 }
 
+.object-cover {
+          border-radius: 10px;
+    border: white 2px solid; /* Add a white border */
+}
+
 .logo {
     width: 42px;
     height: 42px;
     border-radius: 12px;
     flex: none;
     background: linear-gradient(135deg, var(--ruby), var(--purple));
-    box-shadow: 0 6px 16px rgba(224,17,95,.4);
+    /* box-shadow: 0 6px 16px rgba(224,17,95,.4); */
     position: relative;
     isolation: isolate;
 }
@@ -228,7 +148,8 @@ html {
 .tagline {
     color: #f7e9f4;
     opacity: .85;
-    font-size: .92rem;
+    font-size: 1rem;
+    font-family: "Playfair Display", Georgia, serif;
 }
 
 .cart-nav-link {
@@ -245,7 +166,7 @@ html {
 
 .cart-button-primary {
     background: linear-gradient(135deg, var(--purple), var(--pink));
-    box-shadow: 0 8px 25px rgba(106,0,244,.4), 0 4px 15px rgba(255,95,162,.3);
+    /* box-shadow: 0 8px 25px rgba(106,0,244,.4), 0 4px 15px rgba(255,95,162,.3); */
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 14px;
     color: white;
@@ -272,7 +193,7 @@ html {
 
 .cart-button-primary:hover {
     transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 12px 35px rgba(106,0,244,.5), 0 6px 20px rgba(255,95,162,.4);
+    /* box-shadow: 0 12px 35px rgba(106,0,244,.5), 0 6px 20px rgba(255,95,162,.4); */
     filter: brightness(1.1);
 }
 
@@ -297,7 +218,7 @@ html {
 
 .cart-button-primary:hover {
     transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 15px 35px rgba(255,105,180,0.4), 0 5px 15px rgba(0,0,0,0.3);
+    /* box-shadow: 0 15px 35px rgba(255,105,180,0.4), 0 5px 15px rgba(0,0,0,0.3); */
     filter: brightness(1.1);
 }
 
@@ -318,12 +239,11 @@ html {
 }
 
 .cart-item-card {
+    scroll-snap-align:start;
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 95, 162, 0.08));
     border: 1px solid rgba(255, 95, 162, 0.3);
     border-radius: var(--radius);
     padding: 1.5rem;
-    backdrop-filter: blur(20px);
-    box-shadow: 0 8px 32px 0 rgba(255, 95, 162, 0.15), 0 4px 16px 0 rgba(0, 0, 0, 0.3);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
@@ -360,22 +280,17 @@ html {
 .cart-item-card:hover {
     transform: translateY(-4px) scale(1.01);
     border-color: rgba(255, 95, 162, 0.6);
-    box-shadow: 
+    /* box-shadow: 
         0 12px 40px 0 rgba(255, 95, 162, 0.2), 
         0 6px 20px 0 rgba(0, 0, 0, 0.35),
-        0 0 0 1px rgba(255,255,255,0.1);
+        0 0 0 1px rgba(255,255,255,0.1); */
 }
 
 .cart-summary-card {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(106, 0, 244, 0.1));
     border: 1px solid rgba(255, 95, 162, 0.4);
     border-radius: calc(var(--radius) * 1.2);
-    backdrop-filter: blur(25px);
-    box-shadow: 0 8px 32px 0 rgba(106, 0, 244, 0.2), 0 4px 16px 0 rgba(0, 0, 0, 0.3);
-    position: relative;
     overflow: hidden;
-    animation: float-gentle 12s ease-in-out infinite;
-    animation-delay: -3s;
 }
 
 .cart-summary-card::before {
@@ -387,19 +302,10 @@ html {
     height: 3px;
     background: linear-gradient(90deg, var(--purple), var(--pink), var(--magenta), var(--ruby));
     opacity: 0.9;
-    animation: shimmer-wave 4s ease-in-out infinite;
 }
 
 .cart-summary-card::after {
-    content: '';
-    position: absolute;
-    top: -100%;
-    left: -100%;
-    width: 300%;
-    height: 300%;
-    background: radial-gradient(circle, rgba(106,0,244,0.05) 0%, transparent 70%);
-    animation: morph-glass 18s ease-in-out infinite;
-    pointer-events: none;
+    display: none;
 }
 
 .cart-summary-card::before {
@@ -424,8 +330,6 @@ html {
     border-radius: calc(var(--radius) * 1.2);
     padding: 3rem;
     text-align: center;
-    backdrop-filter: blur(8px);
-    box-shadow: var(--shadow-sm);
 }
 
 /* Custom Filament Notification Styles - Complete Override */
@@ -507,10 +411,10 @@ html {
 .fi-no-notification.fi-color.fi-color-success {
     background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(16, 185, 129, 0.20));
     border-color: rgba(34, 197, 94, 0.3);
-    box-shadow: 
+    /* box-shadow: 
         0 20px 60px rgba(34, 197, 94, 0.15), 
         0 8px 24px rgba(16, 185, 129, 0.18),
-        var(--shadow-lg);
+        var(--shadow-lg); */
 }
 
 .fi-no-notification.fi-color.fi-color-success .fi-no-notification-icon {
@@ -522,10 +426,10 @@ html {
 .fi-no-notification.fi-color.fi-color-info {
     background: var(--grad-card);
     border-color: rgba(255, 95, 162, 0.3);
-    box-shadow: 
+    /* box-shadow: 
         0 20px 60px rgba(255, 95, 162, 0.15), 
         0 8px 24px rgba(209, 0, 209, 0.18),
-        var(--shadow-lg);
+        var(--shadow-lg); */
 }
 
 .fi-no-notification.fi-color.fi-color-info .fi-no-notification-icon {
@@ -537,10 +441,10 @@ html {
 .fi-no-notification.fi-color.fi-color-warning {
     background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(251, 191, 36, 0.20));
     border-color: rgba(245, 158, 11, 0.3);
-    box-shadow: 
+    /* box-shadow: 
         0 20px 60px rgba(245, 158, 11, 0.15), 
         0 8px 24px rgba(251, 191, 36, 0.18),
-        var(--shadow-lg);
+        var(--shadow-lg); */
 }
 
 .fi-no-notification.fi-color.fi-color-warning .fi-no-notification-icon {
@@ -552,10 +456,10 @@ html {
 .fi-no-notification.fi-color.fi-color-danger {
     background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(220, 38, 38, 0.20));
     border-color: rgba(239, 68, 68, 0.3);
-    box-shadow: 
+    /* box-shadow: 
         0 20px 60px rgba(239, 68, 68, 0.15), 
         0 8px 24px rgba(220, 38, 38, 0.18),
-        var(--shadow-lg);
+        var(--shadow-lg); */
 }
 
 .fi-no-notification.fi-color.fi-color-danger .fi-no-notification-icon {
@@ -732,3 +636,5 @@ li.text-gray-400 {
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
+
+footer{ padding:28px 0 60px; color:#f7dff0; opacity:.9; font-size:.95rem; }
