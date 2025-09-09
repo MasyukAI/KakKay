@@ -17,8 +17,8 @@
   width: 100%;
   max-width: 1200px;
   margin-inline: auto;
-  padding-left: 4vw;
-  padding-right: 4vw;
+  /* padding-left: 2vw;
+  padding-right: 3.5vw; */
   box-sizing: border-box;
   overflow-x: hidden;
 }
@@ -290,12 +290,12 @@ select.fi-select-input:focus {
   font-style: italic;
 }
 
-.checkout-container form {
+/* .checkout-container form {
   position: relative;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
-}
+} */
 
 .checkout-container form::before {
   content: '';

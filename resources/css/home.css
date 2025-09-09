@@ -72,7 +72,7 @@
       max-width: 1200px;
       margin-inline: auto;
       padding-left: 2vw;
-      padding-right: 3.5vw;
+      padding-right: 2vw;
     }
     @media (max-width: 899px) {
       .container,
