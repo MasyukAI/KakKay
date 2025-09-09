@@ -19,7 +19,9 @@
         "masyukai/cart": "@dev",
         "masyukai/chip": "@dev",
         "masyukai/filament-cart-plugin": "@dev",
-        "propaganistas/laravel-phone": "^6.0"
+        "nnjeim/world": "^1.1",
+        "propaganistas/laravel-phone": "^6.0",
+        "ysfkaya/filament-phone-input": "^4.0"
     },
     "require-dev": {
         "laradumps/laradumps": "^4.0",
