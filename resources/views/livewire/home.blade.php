@@ -1,6 +1,6 @@
 <div class="container">
     <header style="padding: 1.5rem 0;">
-      <a wire:navigate href="/">
+  <a href="/">
         <div class="brand">
           <div class="logo" aria-hidden="true"></div>
             <div>
@@ -11,7 +11,7 @@
       </a>
       <div class="flex items-center gap-4 ml-auto">
         <div class="relative">
-          <flux:button variant="primary" wire:navigate href="{{ route('cart') }}" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-lg">
+          <flux:button variant="primary" href="{{ route('cart') }}" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-lg">
             <flux:icon.shopping-bag class="h-6 w-6" />
             <span class="hidden sm:inline font-medium">Troli</span>
             <div class="absolute top-0 right-0">
@@ -81,7 +81,7 @@ Kau tahu tak, wanita ni bukan sekadar pelengkap je… tapi dia boleh jadi punca 
           </div>
           <div class="cta-row">
         <a class="btn primary" href="/{{ $featuredProduct->slug }}"
-          wire:navigate style="transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);"
+          style="transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);"
           onmouseover="this.style.transform='translateY(-3px) scale(1.05)'; this.style.boxShadow='0 15px 35px rgba(255,105,180,0.4), 0 5px 15px rgba(0,0,0,0.3)'; this.style.filter='brightness(1.1)';"
           onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow=''; this.style.filter='brightness(1)';">Nak tau pasal buku ni? 🤌 ❤️</a>
             {{-- <a class="btn ghost" href="#sample"

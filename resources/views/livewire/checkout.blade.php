@@ -3,7 +3,7 @@
     <div class="cart-container">
         <header class="cart-header">
             <div class="flex items-center justify-between">
-                <a wire:navigate href="/">
+                <a href="/">
                     <div class="brand">
                     <div class="logo" aria-hidden="true"></div>
                         <div>
@@ -17,7 +17,7 @@
 
 
                     <div class="relative">
-                        <flux:button variant="primary" wire:navigate href="{{ route('cart') }}" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-lg">
+                        <flux:button variant="primary" href="{{ route('cart') }}" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-lg">
                             <flux:icon.shopping-bag class="h-6 w-6" />
                             <span class="hidden sm:inline font-medium">Troli</span>
                             <div class="absolute top-0 right-0">
@@ -38,7 +38,7 @@
                 <!-- Progress Steps -->
                 <div class="mb-12">
                     <ol class="flex items-center justify-center w-full max-w-2xl mx-auto text-center text-xs sm:text-sm font-medium text-gray-300 gap-1 sm:gap-0">
-                        <a href="{{ route('cart') }}" wire:navigate class="flex items-centerfocus:outline-none" style="text-decoration: none;">
+                        <a href="{{ route('cart') }}" class="flex items-centerfocus:outline-none" style="text-decoration: none;">
                             <li class="flex items-center text-pink-400">
                                 <span class="flex items-center">
                                     <flux:icon.check-circle class="me-1 h-3 w-3 sm:h-4 sm:w-4" />

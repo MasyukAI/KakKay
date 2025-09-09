@@ -54,14 +54,14 @@
           <h4 style="color: #ffe9f5; font-size: 1.1rem; margin-bottom: 1rem; font-weight: 600;">Dasar & Polisi</h4>
           <div class="flex flex-col sm:flex-row flex-wrap gap-4 justify-center items-center text-sm">
     <div class="flex gap-2 items-center">
-        <a wire:navigate href="/privacy-policy" class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 hover:-translate-y-0.5 no-underline">Dasar Privasi</a>
+  <a href="/privacy-policy" class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 hover:-translate-y-0.5 no-underline">Dasar Privasi</a>
         <span class="text-pink-100/30">•</span>
-        <a wire:navigate href="/refund-policy" class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 hover:-translate-y-0.5 no-underline">Dasar Pemulangan</a>
+  <a href="/refund-policy" class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 hover:-translate-y-0.5 no-underline">Dasar Pemulangan</a>
     </div>
     <div class="flex gap-2 items-center">
-        <a wire:navigate href="/shipping-policy" class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 hover:-translate-y-0.5 no-underline">Dasar Penghantaran</a>
+  <a href="/shipping-policy" class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 hover:-translate-y-0.5 no-underline">Dasar Penghantaran</a>
         <span class="text-pink-100/30">•</span>
-        <a wire:navigate href="/terms-of-service" class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 hover:-translate-y-0.5 no-underline">Terma & Syarat</a>
+  <a href="/terms-of-service" class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 hover:-translate-y-0.5 no-underline">Terma & Syarat</a>
     </div>
 </div>
         </div>

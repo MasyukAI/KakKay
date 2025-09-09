@@ -14,7 +14,7 @@ class extends Component {
   <!-- NAVIGATION HEADER -->
   <div class="container">
     <header style="padding: 1.5rem 0;">
-      <a wire:navigate href="/">
+  <a href="/">
         <div class="brand">
           <div class="logo" aria-hidden="true"></div>
             <div>
@@ -25,7 +25,7 @@ class extends Component {
       </a>
       <div class="flex items-center gap-4 ml-auto">
         <div class="relative">
-          <flux:button variant="primary" wire:navigate href="{{ route('cart') }}" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-lg">
+          <flux:button variant="primary" href="{{ route('cart') }}" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-lg">
             <flux:icon.shopping-bag class="h-6 w-6" />
             <span class="hidden sm:inline font-medium">Troli</span>
             <div class="absolute top-0 right-0">
@@ -301,7 +301,7 @@ class extends Component {
   <!-- BACK TO HOME -->
   <section class="max-w-4xl mx-auto px-4 pb-16">
     <div class="text-center">
-      <a wire:navigate href="{{ route('home') }}" class="btn primary rounded-full px-8 py-3 font-semibold text-white shadow-glow hover:scale-105 transition-all duration-300">
+  <a href="{{ route('home') }}" class="btn primary rounded-full px-8 py-3 font-semibold text-white shadow-glow hover:scale-105 transition-all duration-300">
         Kembali ke Laman Utama
       </a>
     </div>

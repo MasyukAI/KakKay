@@ -224,7 +224,7 @@ new class extends Component {
     <div class="cart-container">
         <header class="cart-header">
             <div class="flex items-center justify-between">
-                <a wire:navigate href="/">
+                <a href="/">
                     <div class="brand">
                     <div class="logo" aria-hidden="true"></div>
                         <div>
@@ -406,7 +406,7 @@ new class extends Component {
                                 </div>
                             </div>
 
-                            <flux:button variant="primary" wire:navigate href="{{ route('checkout') }}"
+                            <flux:button variant="primary" href="{{ route('checkout') }}"
                                        class="w-full cart-button-primary mb-4 px-6 py-4 text-lg">
                                 <flux:icon.credit-card class="h-5 w-5 mr-2" />
                                 Teruskan Pembelian
