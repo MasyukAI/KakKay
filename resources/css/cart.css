@@ -1,14 +1,16 @@
 @import 'tailwindcss';
 @import '../../vendor/livewire/flux/dist/flux.css';
-/* @import '../../vendor/filament/support/resources/css/index.css';
-@import '../../vendor/filament/actions/resources/css/index.css';
-@import '../../vendor/filament/forms/resources/css/index.css';
-@import '../../vendor/filament/infolists/resources/css/index.css'; 
-@import '../../vendor/filament/notifications/resources/css/index.css';
-@import '../../vendor/filament/schemas/resources/css/index.css'; */
+@import '../../vendor/filament/support/resources/css/index.css';
+/* @import '../../vendor/filament/actions/resources/css/index.css'; */
+/* @import '../../vendor/filament/forms/resources/css/index.css'; */
+/* @import '../../vendor/filament/infolists/resources/css/index.css';  */
+/* @import '../../vendor/filament/notifications/resources/css/index.css'; */
+@import '../../vendor/filament/schemas/resources/css/index.css';
+@import './checkout.css';
 
 @source '../views/livewire/cart.blade.php';
 @source '../views/livewire/checkout.blade.php';
+@source '../views/components/footer.blade.php';
 
 :root {
     /* Theme palette: purple, magenta, ruby, pink, maroon & white */
@@ -28,7 +30,11 @@
     --shadow-lg: 0 20px 60px rgba(0,0,0,.25), 0 8px 24px rgba(0,0,0,.18);
     --shadow-sm: 0 6px 20px rgba(0,0,0,.18);
 
-    /* Gradient tokens */
+    /* Enhanced gradients for advanced effects */
+    --glass-gradient: linear-gradient(135deg, rgba(255,255,255,.15), rgba(255,95,162,.08));
+    --border-gradient: linear-gradient(135deg, var(--purple), var(--pink), var(--ruby));
+    
+    /* Gradient tokens (match home.css) */
     --grad-hero: radial-gradient(1200px 600px at 10% -10%, rgba(255,95,162,.35) 0%, transparent 45%),
                  radial-gradient(800px 500px at 110% 10%, rgba(209,0,209,.30) 0%, transparent 50%),
                  linear-gradient(135deg, rgba(106,0,244,.18), rgba(224,17,95,.22));
@@ -37,17 +43,41 @@
     --grad-ring: conic-gradient(from 0deg, var(--pink), var(--magenta), var(--ruby), var(--purple), var(--pink));
 }
 
-/* Apply the same base styles as home */
-body {
+
+@keyframes pulse-border {
+  0%, 100% { border-color: rgba(255,95,162,0.3); box-shadow: 0 0 20px rgba(255,95,162,0.1); }
+  50% { border-color: rgba(255,95,162,0.6); box-shadow: 0 0 30px rgba(255,95,162,0.3); }
+}
+
+@keyframes gradient-dance {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+
+
+/* Ensure full coverage on all screen sizes */
+html {
     background: #1a0d1a;
     background-image: var(--grad-hero);
-    color: var(--white);
-    font-family: "Playfair Display", Georgia, serif;
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
+    background-attachment: fixed;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
     min-height: 100vh;
 }
+
+/* Remove height constraints on mobile for continuous background */
+@media (max-width: 899px) {
+    html, body {
+        height: auto;
+        min-height: 100vh;
+        background-attachment: scroll; /* Fixed backgrounds can cause issues on mobile */
+    }
+}
+
+    .tagline{ color:#f7e9f4; opacity:.85; font-size:.92rem; }
+    .container{ width:min(1200px, 92vw); margin-inline:auto; }
+
 
 /* Cart specific styles */
 .cart-container {
@@ -56,16 +86,14 @@ body {
 }
 
 .cart-card {
-    background: rgba(255,255,255,.06);
-    border: 1px solid rgba(255,255,255,.12);
-    border-radius: calc(var(--radius) * 1.2);
-    backdrop-filter: blur(8px);
-    box-shadow: var(--shadow-sm);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: calc(var(--radius) * 1.5);
 }
 
 .cart-header {
     padding: 1.5rem 0;
-    border-bottom: 1px solid rgba(255,255,255,.1);
+    /* border-bottom: 1px solid rgba(255, 255, 255, 0.15); */
 }
 
 .cart-brand {
@@ -76,6 +104,52 @@ body {
     letter-spacing: .3px;
     color: var(--white);
     text-decoration: none;
+}
+
+/* Brand styling - same as home page */
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.object-cover {
+          border-radius: 10px;
+    border: white 2px solid; /* Add a white border */
+}
+
+.logo {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    flex: none;
+    background: linear-gradient(135deg, var(--ruby), var(--purple));
+    /* box-shadow: 0 6px 16px rgba(224,17,95,.4); */
+    position: relative;
+    isolation: isolate;
+}
+
+.logo::after {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    border-radius: 10px;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.35), transparent 45%);
+    mix-blend-mode: screen;
+}
+
+.brand h1 {
+    font: 800 clamp(1.0rem, 2vw + .4rem, 1.4rem) Montserrat, system-ui, sans-serif;
+    letter-spacing: .3px;
+    margin: 0;
+    color: white;
+}
+
+.tagline {
+    color: #f7e9f4;
+    opacity: .85;
+    font-size: 1rem;
+    font-family: "Playfair Display", Georgia, serif;
 }
 
 .cart-nav-link {
@@ -91,9 +165,9 @@ body {
 }
 
 .cart-button-primary {
-    background: var(--grad-button);
-    box-shadow: 0 10px 30px rgba(106,0,244,.35), 0 6px 18px rgba(224,17,95,.35);
-    border: none;
+    background: linear-gradient(135deg, var(--purple), var(--pink));
+    /* box-shadow: 0 8px 25px rgba(106,0,244,.4), 0 4px 15px rgba(255,95,162,.3); */
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 14px;
     color: white;
     font: 800 .95rem Montserrat, system-ui, sans-serif;
@@ -105,6 +179,26 @@ body {
     justify-content: center !important;
     flex-direction: row !important;
     gap: 0.25rem !important;
+    overflow: hidden;
+}
+
+.cart-button-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.cart-button-primary:hover {
+    transform: translateY(-3px) scale(1.05);
+    /* box-shadow: 0 12px 35px rgba(106,0,244,.5), 0 6px 20px rgba(255,95,162,.4); */
+    filter: brightness(1.1);
+}
+
+.cart-button-primary:hover::before {
+    opacity: 1;
 }
 
 .cart-button-primary > * {
@@ -124,7 +218,7 @@ body {
 
 .cart-button-primary:hover {
     transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 15px 35px rgba(255,105,180,0.4), 0 5px 15px rgba(0,0,0,0.3);
+    /* box-shadow: 0 15px 35px rgba(255,105,180,0.4), 0 5px 15px rgba(0,0,0,0.3); */
     filter: brightness(1.1);
 }
 
@@ -145,20 +239,84 @@ body {
 }
 
 .cart-item-card {
-    background: var(--grad-card);
-    border: 1px solid rgba(255,255,255,.14);
+    scroll-snap-align:start;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 95, 162, 0.08));
+    border: 1px solid rgba(255, 95, 162, 0.3);
     border-radius: var(--radius);
     padding: 1.5rem;
-    backdrop-filter: blur(6px);
-    box-shadow: var(--shadow-sm);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.cart-item-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--pink), var(--magenta), var(--ruby));
+    opacity: 0.8;
+}
+
+.cart-item-card::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.cart-item-card:hover::after {
+    opacity: 1;
+}
+
+.cart-item-card:hover {
+    transform: translateY(-4px) scale(1.01);
+    border-color: rgba(255, 95, 162, 0.6);
+    /* box-shadow: 
+        0 12px 40px 0 rgba(255, 95, 162, 0.2), 
+        0 6px 20px 0 rgba(0, 0, 0, 0.35),
+        0 0 0 1px rgba(255,255,255,0.1); */
 }
 
 .cart-summary-card {
-    background: rgba(255,255,255,.08);
-    border: 1px solid rgba(255,255,255,.16);
-    border-radius: calc(var(--radius) * 1.1);
-    backdrop-filter: blur(10px);
-    box-shadow: var(--shadow-lg);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(106, 0, 244, 0.1));
+    border: 1px solid rgba(255, 95, 162, 0.4);
+    border-radius: calc(var(--radius) * 1.2);
+    overflow: hidden;
+}
+
+.cart-summary-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--purple), var(--pink), var(--magenta), var(--ruby));
+    opacity: 0.9;
+}
+
+.cart-summary-card::after {
+    display: none;
+}
+
+.cart-summary-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--purple), var(--pink), var(--magenta));
+    opacity: 0.9;
 }
 
 .cart-text-muted {
@@ -172,8 +330,6 @@ body {
     border-radius: calc(var(--radius) * 1.2);
     padding: 3rem;
     text-align: center;
-    backdrop-filter: blur(8px);
-    box-shadow: var(--shadow-sm);
 }
 
 /* Custom Filament Notification Styles - Complete Override */
@@ -255,10 +411,10 @@ body {
 .fi-no-notification.fi-color.fi-color-success {
     background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(16, 185, 129, 0.20));
     border-color: rgba(34, 197, 94, 0.3);
-    box-shadow: 
+    /* box-shadow: 
         0 20px 60px rgba(34, 197, 94, 0.15), 
         0 8px 24px rgba(16, 185, 129, 0.18),
-        var(--shadow-lg);
+        var(--shadow-lg); */
 }
 
 .fi-no-notification.fi-color.fi-color-success .fi-no-notification-icon {
@@ -270,10 +426,10 @@ body {
 .fi-no-notification.fi-color.fi-color-info {
     background: var(--grad-card);
     border-color: rgba(255, 95, 162, 0.3);
-    box-shadow: 
+    /* box-shadow: 
         0 20px 60px rgba(255, 95, 162, 0.15), 
         0 8px 24px rgba(209, 0, 209, 0.18),
-        var(--shadow-lg);
+        var(--shadow-lg); */
 }
 
 .fi-no-notification.fi-color.fi-color-info .fi-no-notification-icon {
@@ -285,10 +441,10 @@ body {
 .fi-no-notification.fi-color.fi-color-warning {
     background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(251, 191, 36, 0.20));
     border-color: rgba(245, 158, 11, 0.3);
-    box-shadow: 
+    /* box-shadow: 
         0 20px 60px rgba(245, 158, 11, 0.15), 
         0 8px 24px rgba(251, 191, 36, 0.18),
-        var(--shadow-lg);
+        var(--shadow-lg); */
 }
 
 .fi-no-notification.fi-color.fi-color-warning .fi-no-notification-icon {
@@ -300,10 +456,10 @@ body {
 .fi-no-notification.fi-color.fi-color-danger {
     background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(220, 38, 38, 0.20));
     border-color: rgba(239, 68, 68, 0.3);
-    box-shadow: 
+    /* box-shadow: 
         0 20px 60px rgba(239, 68, 68, 0.15), 
         0 8px 24px rgba(220, 38, 38, 0.18),
-        var(--shadow-lg);
+        var(--shadow-lg); */
 }
 
 .fi-no-notification.fi-color.fi-color-danger .fi-no-notification-icon {
@@ -395,6 +551,75 @@ button svg {
     vertical-align: middle !important;
 }
 
+/* Progress Steps Enhancement - targeting actual classes used */
+li.text-pink-400 {
+    background: linear-gradient(135deg, rgba(255, 95, 162, 0.3), rgba(224, 17, 95, 0.2)) !important;
+    border: 2px solid rgba(255, 95, 162, 0.6) !important;
+    border-radius: 12px !important;
+    padding: 12px 16px !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 15px rgba(255, 95, 162, 0.3) !important;
+    margin: 0 8px !important;
+}
+
+li.text-gray-400 {
+    color: rgba(255, 255, 255, 0.5) !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 12px !important;
+    padding: 12px 16px !important;
+    margin: 0 8px !important;
+}
+
+/* Quantity Button Improvements - make them much clearer */
+.bg-white\/10 {
+    background: linear-gradient(135deg, rgba(255, 95, 162, 0.2), rgba(106, 0, 244, 0.15)) !important;
+    border: 2px solid rgba(255, 95, 162, 0.4) !important;
+    border-radius: 8px !important;
+    transition: all 0.3s ease !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    box-shadow: 0 2px 8px rgba(255, 95, 162, 0.2) !important;
+}
+
+.bg-white\/10:hover,
+.hover\:bg-white\/20:hover {
+    background: linear-gradient(135deg, rgba(255, 95, 162, 0.4), rgba(106, 0, 244, 0.3)) !important;
+    border-color: rgba(255, 95, 162, 0.8) !important;
+    transform: translateY(-2px) scale(1.05) !important;
+    box-shadow: 0 4px 15px rgba(255, 95, 162, 0.4) !important;
+}
+
+/* Delete Button Enhancement - make it much more prominent */
+.hover\:bg-red-500\/30 {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(220, 38, 38, 0.2)) !important;
+    border: 2px solid rgba(239, 68, 68, 0.5) !important;
+    border-radius: 8px !important;
+    color: #fca5a5 !important;
+    font-weight: 600 !important;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3) !important;
+    transition: all 0.3s ease !important;
+}
+
+.hover\:bg-red-500\/30:hover {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.4), rgba(220, 38, 38, 0.35)) !important;
+    border-color: rgba(239, 68, 68, 0.8) !important;
+    color: #ffffff !important;
+    transform: translateY(-2px) scale(1.05) !important;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.5) !important;
+}
+
+/* Quantity display background - make it more vibrant */
+.bg-white\/15 {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 95, 162, 0.1)) !important;
+    border: 2px solid rgba(255, 255, 255, 0.4) !important;
+    border-radius: 8px !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    box-shadow: 0 2px 8px rgba(255, 95, 162, 0.15) !important;
+}
+
 /* Utility classes */
 .cart-text-accent {
     color: var(--pink);
@@ -411,3 +636,5 @@ button svg {
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
+
+footer{ padding:28px 0 60px; color:#f7dff0; opacity:.9; font-size:.95rem; }

@@ -4,29 +4,58 @@ use Livewire\Attributes\{Layout, Title};
 use Livewire\Volt\Component;
 
 new
-#[Layout('components.layouts.pages')]
+#[Layout('components.layouts.policy')]
 #[Title('Dasar Pemulangan - Kak Kay')]
 class extends Component {
     //
 } ?>
 
 <div>
+  <!-- NAVIGATION HEADER -->
+  <div class="container">
+    <header style="padding: 1.5rem 0;">
+      <a wire:navigate href="/">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+            <div>
+              <h1>Kak Kay</h1>
+              <div class="tagline">Counsellor • Therapist • KKDI Creator</div>
+            </div>
+        </div>
+      </a>
+      <div class="flex items-center gap-4 ml-auto">
+        <div class="relative">
+          <flux:button variant="primary" wire:navigate href="{{ route('cart') }}" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-lg">
+            <flux:icon.shopping-bag class="h-6 w-6" />
+            <span class="hidden sm:inline font-medium">Troli</span>
+            <div class="absolute top-0 right-0">
+              @livewire('cart-counter')
+            </div>
+          </flux:button>
+        </div>
+      </div>
+    </header>
+  </div>
+
   <!-- HERO -->
   <header class="hero text-white relative overflow-hidden">
     <div class="max-w-4xl mx-auto px-4 pt-16 pb-20 text-center relative z-10">
       <div class="fade-in-up">
-        <div class="inline-flex items-center gap-2 badge px-4 py-2 rounded-full text-xs text-maroon font-semibold shadow-elegant">
-          <span class="w-2 h-2 rounded-full bg-rose shadow-inner"></span>
-          Kepuasan Pelanggan
+        <div class="policy-badge-glass relative inline-flex items-center gap-2 px-5 py-2 rounded-full font-bold uppercase tracking-wider text-white shadow-xl border-2 border-pink-200/60 backdrop-blur-md animate-badge-shimmer">
+          <span class="w-1.5 h-1.5 rounded-full bg-rose shadow-inner"></span>
+          <span class="z-10 text-sm md:text-base">Kepuasan Pelanggan</span>
+          <span class="policy-badge-shimmer absolute left-0 top-0 h-full w-full rounded-full pointer-events-none"></span>
         </div>
-        <h1 class="mt-6 font-display text-4xl md:text-6xl lg:text-7xl leading-[0.95] tracking-tight">
-          <span class="relative">
-            <span class="underline decoration-blush decoration-4 md:decoration-6 underline-offset-8">Dasar Pemulangan</span>
-            <span class="absolute -inset-2 bg-blush/10 rounded-lg -z-10 blur-sm"></span>
+        <h1 class="mt-8 font-display text-5xl md:text-7xl lg:text-8xl leading-[0.95] tracking-tight relative">
+          <span class="relative inline-block">
+            <span class="relative z-10 underline decoration-blush decoration-4 md:decoration-6 underline-offset-8 bg-gradient-to-r from-white via-pink-100 to-white bg-clip-text text-transparent drop-shadow-2xl text-4xl md:text-6xl lg:text-7xl">Dasar Pemulangan</span>
+            <span class="absolute -inset-4 bg-gradient-to-r from-blush/30 via-white/40 to-rose/30 rounded-2xl -z-10 blur-xl animate-pulse"></span>
+            <span class="absolute -inset-1 bg-gradient-to-r from-transparent via-white/20 to-transparent rounded-lg -z-5"></span>
+            <span class="absolute left-1/2 top-full -translate-x-1/2 mt-2 w-1/2 h-4 bg-pink-400/30 blur-xl rounded-full opacity-60 animate-glow"></span>
           </span>
         </h1>
-        <p class="mt-6 text-white/95 text-lg md:text-xl leading-relaxed max-w-2xl mx-auto">
-          Kepuasan anda adalah keutamaan kami. Ketahui hak dan jaminan anda sebagai pelanggan yang dihargai.
+        <p class="mt-8 text-white/95 text-xl md:text-2xl leading-relaxed max-w-2xl mx-auto font-serif drop-shadow-lg">
+          <span class="text-base md:text-lg">Kepuasan anda adalah keutamaan kami. Ketahui hak dan jaminan anda sebagai pelanggan yang dihargai.</span>
         </p>
       </div>
     </div>
@@ -36,9 +65,12 @@ class extends Component {
   </header>
 
   <!-- CONTENT -->
-  <main class="bg-velvet relative">
-    <div class="absolute top-20 left-4 w-16 h-16 bg-orchid/5 rounded-full blur-xl"></div>
-    <div class="absolute bottom-40 right-8 w-24 h-24 bg-rose/5 rounded-full blur-2xl"></div>
+  <main class="relative">
+    <!-- Enhanced decorative elements -->
+    <div class="decorative-blob absolute top-20 left-4 w-32 h-32 bg-gradient-to-r from-orchid/20 to-blush/20 rounded-full"></div>
+    <div class="decorative-blob absolute top-40 right-8 w-24 h-24 bg-gradient-to-r from-rose/20 to-pink/20 rounded-full" style="animation-delay: -2s;"></div>
+    <div class="decorative-blob absolute bottom-60 left-12 w-20 h-20 bg-gradient-to-r from-purple/15 to-magenta/15 rounded-full" style="animation-delay: -4s;"></div>
+    <div class="decorative-blob absolute bottom-40 right-16 w-28 h-28 bg-gradient-to-r from-blush/15 to-rose/15 rounded-full" style="animation-delay: -1s;"></div>
     
     <section class="max-w-4xl mx-auto px-4 py-16">
       <div class="prose prose-lg max-w-none">
@@ -73,7 +105,7 @@ class extends Component {
               <p><strong>Untuk buku bercetak dan produk fizikal:</strong></p>
               <ul class="list-disc list-inside ml-4 space-y-2">
                 <li>Tempoh pemulangan <strong>14 hari</strong> dari tarikh penerimaan</li>
-                <li>Produk mesti dalam keadaan baik (boleh dibaca tetapi tidak perlu seperti baru)</li>
+                <li>Produk mesti dalam keadaan baik seperti baru</li>
                 <li>Kos pos pemulangan ditanggung oleh pelanggan</li>
                 <li>Pemulangan wang akan diproses selepas produk diterima dan diperiksa</li>
               </ul>
@@ -115,8 +147,8 @@ class extends Component {
               <ul class="list-disc list-inside ml-4 space-y-2">
                 <li>Nombor pesanan atau e-mel yang digunakan semasa pembelian</li>
                 <li>Sebab pemulangan (untuk membantu kami menambah baik)</li>
-                <li>Untuk produk fizikal: gambar produk dan keadaan semasa</li>
-                <li>Maklumat akaun untuk pemulangan wang (jika berbeza dari kaedah pembayaran asal)</li>
+                <li>Untuk produk fizikal: gambar produk dalam keadaan semasa</li>
+                <li>Maklumat akaun untuk pemulangan wang</li>
               </ul>
             </div>
           </div>
@@ -170,19 +202,6 @@ class extends Component {
               </ul>
             </div>
           </div>
-
-          <div class="rad-card rounded-2xl border p-6 bg-gradient-to-r from-champagne/30 to-cream/30">
-            <h2 class="font-display text-2xl text-maroon mb-4">Hubungi Kami</h2>
-            <div class="text-slate-700">
-              <p class="mb-4">Untuk sebarang pertanyaan mengenai pemulangan atau pertukaran:</p>
-              <div class="space-y-2">
-                <p><strong>E-mel:</strong> kakkaylovesme@gmail.com</p>
-                <p><strong>WhatsApp:</strong> +60 12-345 6789</p>
-                <p><strong>Waktu Operasi:</strong> Isnin - Jumaat, 9:00 AM - 6:00 PM (GMT+8)</p>
-                <p><strong>Alamat:</strong> 123, Jalan Kasih Sayang, Taman Bahagia, 50200 Kuala Lumpur, Malaysia</p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </section>
@@ -191,46 +210,13 @@ class extends Component {
   <!-- BACK TO HOME -->
   <section class="max-w-4xl mx-auto px-4 pb-16">
     <div class="text-center">
-      <a href="{{ route('home') }}" class="btn-cta rounded-full px-8 py-3 font-semibold text-white shadow-glow hover:scale-105 transition-all duration-300">
+      <a wire:navigate href="{{ route('home') }}" class="btn primary rounded-full px-8 py-3 font-semibold text-white shadow-glow hover:scale-105 transition-all duration-300">
         Kembali ke Laman Utama
       </a>
     </div>
   </section>
 
-  <!-- STANDARDIZED FOOTER -->
-  <footer class="bg-maroon text-white">
-    <div class="max-w-6xl mx-auto px-4 py-10">
-      <!-- Policy Links Section - Centered -->
-      <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1);">
-        <div style="text-align: center; max-width: 800px; margin: 0 auto;">
-          <h4 style="color: #ffe9f5; font-size: 1.1rem; margin-bottom: 1rem; font-weight: 600;">Dasar & Polisi</h4>
-          <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; align-items: center;">
-            <a href="/privacy-policy" style="color: rgba(255,233,245,0.8); text-decoration: none; font-size: 0.9rem; transition: all 0.3s; padding: 0.3rem 0;" onmouseover="this.style.color='#ff69b4'; this.style.transform='translateY(-2px)'" onmouseout="this.style.color='rgba(255,233,245,0.8)'; this.style.transform='translateY(0)'">Dasar Privasi</a>
-            <span style="color: rgba(255,233,245,0.3); font-size: 0.8rem;">•</span>
-            <a href="/refund-policy" style="color: rgba(255,233,245,0.8); text-decoration: none; font-size: 0.9rem; transition: all 0.3s; padding: 0.3rem 0;" onmouseover="this.style.color='#ff69b4'; this.style.transform='translateY(-2px)'" onmouseout="this.style.color='rgba(255,233,245,0.8)'; this.style.transform='translateY(0)'">Dasar Pemulangan</a>
-            <span style="color: rgba(255,233,245,0.3); font-size: 0.8rem;">•</span>
-            <a href="/shipping-policy" style="color: rgba(255,233,245,0.8); text-decoration: none; font-size: 0.9rem; transition: all 0.3s; padding: 0.3rem 0;" onmouseover="this.style.color='#ff69b4'; this.style.transform='translateY(-2px)'" onmouseout="this.style.color='rgba(255,233,245,0.8)'; this.style.transform='translateY(0)'">Dasar Penghantaran</a>
-            <span style="color: rgba(255,233,245,0.3); font-size: 0.8rem;">•</span>
-            <a href="/terms-of-service" style="color: rgba(255,233,245,0.8); text-decoration: none; font-size: 0.9rem; transition: all 0.3s; padding: 0.3rem 0;" onmouseover="this.style.color='#ff69b4'; this.style.transform='translateY(-2px)'" onmouseout="this.style.color='rgba(255,233,245,0.8)'; this.style.transform='translateY(0)'">Terma & Syarat</a>
-          </div>
-        </div>
-        
-        <!-- Contact Info Footer -->
-        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; color: rgba(255,233,245,0.6); font-size: 0.8rem;">
-          <p style="margin: 0.5rem 0;">&copy; 2025 Kamalia Kamal Research International (Kak Kay)</p>
-          <div style="display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; justify-content: center; align-items: center; margin-top: 0.5rem;">
-            <span style="display: flex; align-items: center; gap: 0.3rem;">
-              <span style="color: #ff69b4;">📍</span>
-              24, Jalan Pakis 1, Taman Fern Grove, 43200 Cheras, Selangor
-            </span>
-            <span style="color: rgba(255,233,245,0.3);">•</span>
-            <span style="display: flex; align-items: center; gap: 0.3rem;">
-              <span style="color: #ff69b4;">📱</span>
-              <a href="https://wa.me/60138846594" style="color: inherit; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#ff69b4'" onmouseout="this.style.color='inherit'">+60 12-345 6789</a>
-            </span>
-          </div>
-        </div>
-      </div>
+  <div class="container">
+        <x-footer />
     </div>
-  </footer>
 </div>

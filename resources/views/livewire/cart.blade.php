@@ -78,12 +78,11 @@ new class extends Component {
             $this->loadCartItems();
 
             Notification::make()
-                ->title('Kuantiti Ditambah')
+                ->title('Buku Ditambah')
                 ->body("Kuantiti '{$item->name}' telah ditambah.")
                 ->info()
                 ->icon('heroicon-o-plus-circle')
                 ->iconColor('info')
-                ->duration(2000)
                 ->send();
         }
     }
@@ -93,18 +92,17 @@ new class extends Component {
         // Middleware handles cart instance switching
         $item = Cart::get($itemId);
         if ($item) {
-            $newQuantity = max(1, $item->quantity - 1);
-            // Use absolute quantity update
+            $newQuantity = $item->quantity - 1;
+            // Let Cart package handle removal if quantity is zero
             Cart::update($itemId, ['quantity' => ['value' => $newQuantity]]);
             $this->loadCartItems();
 
             Notification::make()
-                ->title('Kuantiti Dikurangkan')
+                ->title('Buku Dikurangkan')
                 ->body("Kuantiti '{$item->name}' telah dikurangkan.")
                 ->info()
                 ->icon('heroicon-o-minus-circle')
                 ->iconColor('info')
-                ->duration(2000)
                 ->send();
         }
     }
@@ -121,12 +119,11 @@ new class extends Component {
         // $this->dispatch('product-added-to-cart');
 
         Notification::make()
-            ->title('Item Dibuang!')
-            ->body("'{$itemName}' telah dikeluarkan dari keranjang.")
+            ->title('Buku Dikeluarkan!')
+            ->body("'{$itemName}' telah dikeluarkan.")
             ->success()
             ->icon('heroicon-o-trash')
             ->iconColor('success')
-            ->duration(3000)
             ->send();
     }
 
@@ -176,8 +173,8 @@ new class extends Component {
         $this->dispatch('product-added-to-cart');
 
         Notification::make()
-            ->title('Ditambah ke Keranjang!')
-            ->body("'{$product->name}' telah ditambah ke keranjang!")
+            ->title('Buku dimasukkan!')
+            ->body("'{$product->name}' telah dimasukkan!")
             ->success()
             ->icon('heroicon-o-shopping-cart')
             ->iconColor('success')
@@ -222,58 +219,58 @@ new class extends Component {
 }; ?>
 
 <div class="min-h-screen">
+
     <!-- Header Navigation -->
     <div class="cart-container">
         <header class="cart-header">
             <div class="flex items-center justify-between">
-                <div class="flex items-center">
-                    <a href="{{ route('home') }}" class="cart-brand">
-                        <flux:icon.home class="h-8 w-8" />
-                        <span>Kak Kay</span>
-                    </a>
-                </div>
+                <a wire:navigate href="/">
+                    <div class="brand">
+                    <div class="logo" aria-hidden="true"></div>
+                        <div>
+                        <h1>Kak Kay</h1>
+                        <div class="tagline">Counsellor • Therapist • KKDI Creator</div>
+                        </div>
+                    </div>
+                </a>
 
-                <div class="flex items-center gap-6">
-                    {{-- <a href="{{ route('home') }}" class="cart-nav-link">
+                {{-- <div class="flex items-center gap-6">
+                    <a href="{{ route('home') }}" class="cart-nav-link">
                         ← Kembali Beli-belah
-                    </a> --}}
-
-                    {{-- <div class="relative">
-                        <flux:button variant="primary" href="{{ route('cart') }}" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-lg">
-                            <flux:icon.shopping-bag class="h-6 w-6" />
-                            <span class="hidden sm:inline font-medium mr-5">Troli</span>
-                            @livewire('cart-counter')
-                        </flux:button>
-                    </div> --}}
-                </div>
+                    </a>
+                </div> --}}
             </div>
         </header>
     </div>
 
     <!-- Cart Content -->
-    <section class="py-8 md:py-16">
+    <section class="py-10">
         <div class="cart-container">
 
              <!-- Progress Steps -->
-                <div class="mb-8">
-                    <ol class="flex items-center justify-center w-full max-w-2xl mx-auto text-center text-sm font-medium text-gray-300 sm:text-base">
-                        <li class="flex items-center text-pink-400 after:mx-6 after:hidden after:h-1 after:w-full after:border-b after:border-gray-600 sm:after:inline-block sm:after:content-[''] md:w-full xl:after:mx-10">
-                            <span class="flex items-center after:mx-2 after:text-gray-500 after:content-['/'] sm:after:hidden">
-                                <flux:icon.check-circle class="me-2 h-4 w-4 sm:h-5 sm:w-5" />
+                <div class="mb-12">
+                    <ol class="flex items-center justify-center w-full max-w-2xl mx-auto text-center text-xs sm:text-sm font-medium text-gray-300 sm:text-base gap-1 sm:gap-0">
+                        <li class="flex items-center text-pink-400">
+                            <span class="flex items-center">
+                                <flux:icon.check-circle class="me-1 h-3 w-3 sm:h-4 sm:w-4" />
                                 Troli
                             </span>
                         </li>
-
-                        <li class="flex items-center text-gray-400 after:mx-6 after:hidden after:h-1 after:w-full after:border-b after:border-gray-600 sm:after:inline-block sm:after:content-[''] md:w-full xl:after:mx-10">
-                            <span class="flex items-center after:mx-2 after:text-gray-500 after:content-['/'] sm:after:hidden">
-                                <flux:icon.clock class="me-2 h-4 w-4 sm:h-5 sm:w-5" />
+                        <li class="flex items-center mx-1 sm:mx-2">
+                            <svg class="w-4 h-4 sm:w-6 sm:h-6 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+                        </li>
+                        <li class="flex items-center text-gray-400">
+                            <span class="flex items-center">
+                                <flux:icon.clock class="me-1 h-3 w-3 sm:h-4 sm:w-4" />
                                 Bayaran
                             </span>
                         </li>
-
+                        <li class="flex items-center mx-1 sm:mx-2">
+                            <svg class="w-4 h-4 sm:w-6 sm:h-6 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+                        </li>
                         <li class="flex shrink-0 items-center text-gray-400">
-                            <flux:icon.clock class="me-2 h-4 w-4 sm:h-5 sm:w-5" />
-                            Ringkasan Pesanan
+                            <flux:icon.clock class="me-1 h-3 w-3 sm:h-4 sm:w-4" />
+                            Pesanan
                         </li>
                     </ol>
                 </div>
@@ -297,7 +294,7 @@ new class extends Component {
                         </p>
                         <flux:button variant="primary" href="{{ route('home') }}" class="cart-button-primary px-8 py-4 text-lg">
                             <flux:icon.sparkles class="h-5 w-5 mr-2" />
-                            Mula Beli-belah
+                            Pilih buku jom!
                         </flux:button>
                     </div>
                 </div>
@@ -310,18 +307,22 @@ new class extends Component {
                                 <div class="flex flex-col sm:flex-row gap-6">
                                     <!-- Product Image -->
                                     <div class="flex-shrink-0">
-                                        <div class="w-24 h-32 sm:w-32 sm:h-40 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg overflow-hidden shadow-lg">
-                                            <img src="{{ asset('storage/images/cover/' . $item['slug'] . '.png') }}"
-                                                 alt="{{ $item['slug'] }}"
-                                                 class="w-full h-full object-cover">
-                                        </div>
+                                        <a href="/{{ $item['slug'] }}" style="display:block;" target="_blank" rel="noopener">
+                                            <div class="w-24 h-32 sm:w-32 sm:h-40 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg overflow-hidden shadow-lg">
+                                                <img src="{{ asset('storage/images/cover/' . $item['slug'] . '.png') }}"
+                                                     alt="{{ $item['slug'] }}"
+                                                     class="w-full h-full object-cover">
+                                            </div>
+                                        </a>
                                     </div>
 
                                     <!-- Product Details -->
                                     <div class="flex-1 space-y-4">
                                         <div>
                                             <h3 class="text-xl font-bold mb-2" style="font-family: 'Montserrat', sans-serif;">
-                                                {{ $item['name'] }}
+                                                <a href="/{{ $item['slug'] }}" target="_blank" rel="noopener">
+                                                    {{ $item['name'] }}
+                                                </a>
                                             </h3>
                                             {{-- <div class="flex flex-wrap gap-2 mb-3">
                                                 <flux:badge variant="solid" color="pink" size="sm">
@@ -370,7 +371,7 @@ new class extends Component {
                     </div>
 
                     <!-- Order Summary -->
-                    <div class="w-full lg:w-96 xl:w-[28rem]">
+                    <div class="w-full lg:w-96 xl:w-[28rem] mt-0">
                         <div class="cart-summary-card p-6 sticky top-6">
                             <h3 class="text-2xl font-bold mb-6" style="font-family: 'Caveat Brush', cursive;">
                                 Ringkasan <span class="cart-text-accent">Pesanan</span>
@@ -451,51 +452,57 @@ new class extends Component {
                 </h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     @foreach($suggestedProducts as $product)
-                        <div class="cart-item-card overflow-hidden">
-                            <div class="aspect-[3/4] bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg mb-4 overflow-hidden">
-                                <img src="{{ asset('storage/images/cover/' . $product->slug . '.png') }}"
-                                     alt="{{ $product->name }}"
-                                     class="w-full h-full object-cover">
-                            </div>
-
-                            <div class="space-y-4">
-                                {{-- <h4 class="text-lg font-bold leading-tight" style="font-family: 'Montserrat', sans-serif;">
-                                    {{ $product->name }}
-                                </h4> --}}
-                                <p class="cart-text-muted text-sm line-clamp-2">
-                                    {{ $product->description }}
-                                </p>
-
-                                <div class="flex items-center justify-between">
-                                    <span class="text-xl font-bold cart-text-accent">
-                                        {{ $this->formatPrice($product->price / 100) }}
-                                    </span>
-                                    {{-- <flux:badge variant="solid" color="pink" size="sm">
-                                        <flux:icon.sparkles class="h-3 w-3 mr-1" />
-                                        Hot
-                                    </flux:badge> --}}
+                        <a href="/{{ $product->slug }}" style="text-decoration: none; color: inherit;">
+                            <div class="cart-item-card overflow-hidden">
+                                <div class="aspect-[3/4] bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg mb-4 overflow-hidden">
+                                    <img src="{{ asset('storage/images/cover/' . $product->slug . '.png') }}"
+                                         alt="{{ $product->name }}"
+                                         class="w-full h-full object-cover">
                                 </div>
 
-                                <div class="flex gap-3 pt-2">
-                                    {{-- <flux:button variant="subtle" size="sm"
-                                               class="flex-1 hover:bg-white/10">
-                                        <flux:icon.heart class="h-4 w-4 mr-1" />
-                                        Suka
-                                    </flux:button> --}}
-                                    <flux:button variant="primary" size="sm"
-                                               wire:click="addToCart({{ $product->id }})"
-                                               class="cursor-pointer flex-1 cart-button-primary">
-                                        <flux:icon.shopping-cart class="h-4 w-4 mr-1 block" />
-                                        Tambah
-                                    </flux:button>
+                                <div class="space-y-4">
+                                    {{-- <h4 class="text-lg font-bold leading-tight" style="font-family: 'Montserrat', sans-serif;">
+                                        {{ $product->name }}
+                                    </h4> --}}
+                                    <p class="cart-text-muted text-sm line-clamp-2">
+                                        {{ $product->description }}
+                                    </p>
+
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-xl font-bold cart-text-accent">
+                                            {{ $this->formatPrice($product->price) }}
+                                        </span>
+                                        {{-- <flux:badge variant="solid" color="pink" size="sm">
+                                            <flux:icon.sparkles class="h-3 w-3 mr-1" />
+                                            Hot
+                                        </flux:badge> --}}
+                                    </div>
+
+                                    <div class="flex gap-3 pt-2">
+                                        {{-- <flux:button variant="subtle" size="sm"
+                                                   class="flex-1 hover:bg-white/10">
+                                            <flux:icon.heart class="h-4 w-4 mr-1" />
+                                            Suka
+                                        </flux:button> --}}
+                                        <flux:button variant="primary" size="sm"
+                                                   wire:click.prevent="addToCart({{ $product->id }})"
+                                                   class="cursor-pointer flex-1 cart-button-primary">
+                                            <flux:icon.shopping-cart class="h-4 w-4 mr-1 block" />
+                                            Tambah
+                                        </flux:button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     @endforeach
                 </div>
             </div>
         </section>
     @endif
+
+    <div class="container">
+        <x-footer />
+    </div>
 
     <!-- Debug Authentication Status -->
     <div style="background: rgba(0,0,0,0.3); border-top: 1px solid rgba(255,255,255,0.1); padding: 0.5rem 1rem; font-size: 0.8rem; color: rgba(255,255,255,0.7); text-align: center;">

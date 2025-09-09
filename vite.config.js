@@ -10,6 +10,7 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/css/cart.css',
+                'resources/css/policy.css',
                 'resources/css/home.css',
                 'resources/js/app.js'
             ],
