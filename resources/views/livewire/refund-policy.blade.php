@@ -10,32 +10,31 @@ class extends Component {
     //
 } ?>
 
-<div>
+
+<div class="container">
   <!-- NAVIGATION HEADER -->
-  <div class="container">
-    <header style="padding: 1.5rem 0;">
-  <a href="/">
-        <div class="brand">
-          <div class="logo" aria-hidden="true"></div>
-            <div>
-              <h1>Kak Kay</h1>
-              <div class="tagline text-xs sm:text-base">Counsellor • Therapist • KKDI Creator</div>
-            </div>
-        </div>
-      </a>
-      <div class="flex items-center gap-4 ml-auto">
-        <div class="relative">
-          <flux:button variant="primary" href="{{ route('cart') }}" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-lg">
-            <flux:icon.shopping-bag class="h-6 w-6" />
-            <span class="hidden sm:inline font-medium">Troli</span>
-            <div class="absolute top-0 right-0">
-              @livewire('cart-counter')
-            </div>
-          </flux:button>
+  <header style="padding: 1.5rem 0;">
+    <a href="/">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>Kak Kay</h1>
+          <div class="tagline text-xs sm:text-base">Counsellor • Therapist • KKDI Creator</div>
         </div>
       </div>
-    </header>
-  </div>
+    </a>
+    <div class="flex items-center gap-4 ml-auto">
+      <div class="relative">
+        <flux:button variant="primary" href="{{ route('cart') }}" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-lg">
+          <flux:icon.shopping-bag class="h-6 w-6" />
+          <span class="hidden sm:inline font-medium">Troli</span>
+          <div class="absolute top-0 right-0">
+            @livewire('cart-counter')
+          </div>
+        </flux:button>
+      </div>
+    </div>
+  </header>
 
   <!-- HERO -->
   <header class="hero text-white relative overflow-hidden">

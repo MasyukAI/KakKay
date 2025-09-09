@@ -135,7 +135,7 @@ html, body {
     border-radius: 12px;
     flex: none;
     background: linear-gradient(135deg, var(--ruby), var(--purple));
-    /* box-shadow: 0 6px 16px rgba(224,17,95,.4); */
+    box-shadow: 0 6px 16px rgba(224,17,95,.4);
     position: relative;
     isolation: isolate;
 }

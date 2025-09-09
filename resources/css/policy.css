@@ -31,8 +31,9 @@
       --shadow-glow: 0 15px 35px rgba(255,105,180,0.4), 0 5px 15px rgba(0,0,0,0.3);
 
       /* Gradient tokens */
-      --grad-hero: radial-gradient(1200px 600px at 10% -10%, rgba(255,95,162,.35) 0%, transparent 45%),
-                   linear-gradient(135deg, rgba(106,0,244,.18), rgba(224,17,95,.22));
+  --grad-hero: radial-gradient(1200px 600px at 10% -10%, rgba(255,95,162,.35) 0%, transparent 45%),
+       radial-gradient(800px 500px at 110% 10%, rgba(209,0,209,.30) 0%, transparent 50%),
+       linear-gradient(135deg, rgba(106,0,244,.18), rgba(224,17,95,.22));
       --grad-card: linear-gradient(135deg, rgba(255,95,162,.12), rgba(224,17,95,.20));
       --grad-button: linear-gradient(135deg, var(--purple), var(--ruby));
       --grad-ring: conic-gradient(from 0deg, var(--pink), var(--magenta), var(--ruby), var(--purple), var(--pink));
@@ -40,6 +41,10 @@
 
     *{box-sizing:border-box}
     html,body{height:100%}
+    html, body {
+      height: 100%;
+      overflow-x: hidden;
+    }
     body{
       margin:0;
       color:white;
@@ -47,38 +52,39 @@
       line-height:1.5;
       background: #1a0d1a;
       background-image: var(--grad-hero);
-      background-size: 100% 100%;
+      background-size: cover;
       background-attachment: fixed;
       min-height: 100vh;
-      overflow-x: hidden;
     }
 
     /* Ensure full coverage on all screen sizes */
     html {
       background: #1a0d1a;
       background-image: var(--grad-hero);
-      background-size: 100% 100%;
+      background-size: cover;
       background-attachment: fixed;
     }
 
         .btn{ --padX: 1.1rem; --padY: .8rem; padding: var(--padY) var(--padX); border:none; border-radius: 14px; color:white; font: 800 .95rem Montserrat, system-ui, sans-serif; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:.6rem; position:relative; isolation:isolate; }
     .btn.primary{ background: var(--grad-button); box-shadow: 0 10px 30px rgba(106,0,244,.35), 0 6px 18px rgba(224,17,95,.35); }
-    .btn.primary::after{ content:""; position:absolute; inset:-2px; border-radius:16px; background: radial-gradient(60% 60% at 50% 0%, rgba(255,255,255,.35), transparent); mix-blend:screen; pointer-events:none; }
+  .btn.primary::after{ content:""; position:absolute; inset:-2px; border-radius:16px; background: radial-gradient(60% 60% at 50% 0%, rgba(255,255,255,.35), transparent); mix-blend-mode:screen; pointer-events:none; }
 
     /* Remove height constraints on mobile for continuous background */
     @media (max-width: 899px) {
-      body, html {
+        html, body {
         background-attachment: scroll;
-      }
-    }
+          background-repeat: no-repeat;
+          background-size: cover;
+          min-height: 100vh;
+    }}
 
     /* Layout */
     .container {
-      width: 100vw;
+      width: 100%;
       max-width: 1200px;
       margin-inline: auto;
-      padding-left: 4vw;
-      padding-right: 4vw;
+      padding-left: 2vw;
+      padding-right: 3.5vw;
     }
     
     /* Header & Navigation */
@@ -109,7 +115,7 @@
       box-shadow: 0 6px 16px rgba(224,17,95,.4);
       position:relative; isolation:isolate;
     }
-    .logo::after{ content:""; position:absolute; inset:2px; border-radius:10px; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.35), transparent 45%); mix-blend:screen; }
+    .logo::after{ content:""; position:absolute; inset:2px; border-radius:10px; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.35), transparent 45%); mix-blend-mode:screen; }
     .brand h1{ font: 800 clamp(1.0rem, 2vw + .4rem, 1.4rem) Montserrat, system-ui, sans-serif; letter-spacing:.3px; margin:0; }
     .tagline{ color:#f7e9f4; opacity:.85; font-family:"Playfair Display", Georgia, serif; }
 
