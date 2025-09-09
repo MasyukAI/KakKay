@@ -70,13 +70,13 @@
   .btn.primary::after{ content:""; position:absolute; inset:-2px; border-radius:16px; background: radial-gradient(60% 60% at 50% 0%, rgba(255,255,255,.35), transparent); mix-blend-mode:screen; pointer-events:none; }
 
     /* Remove height constraints on mobile for continuous background */
-    @media (max-width: 899px) {
+    /* @media (max-width: 899px) {
         html, body {
         background-attachment: scroll;
           background-repeat: no-repeat;
           background-size: cover;
           min-height: 100vh;
-    }}
+    }} */
 
     /* Layout */
     .container {

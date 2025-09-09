@@ -69,13 +69,13 @@ html, body {
 }
 
 /* Remove height constraints on mobile for continuous background */
-@media (max-width: 899px) {
+/* @media (max-width: 899px) {
     html, body {
         height: auto;
         min-height: 100vh;
-        background-attachment: scroll; /* Fixed backgrounds can cause issues on mobile */
+        background-attachment: scroll; 
     }
-}
+} */
 
     .tagline{ color:#f7e9f4; opacity:.85; font-family:"Playfair Display", Georgia, serif; }
     .container {
