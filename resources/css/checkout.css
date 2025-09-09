@@ -14,11 +14,13 @@
 
 .checkout-container {
   min-height: 100vh;
-  width: 100vw;
+  width: 100%;
   max-width: 1200px;
   margin-inline: auto;
   padding-left: 4vw;
   padding-right: 4vw;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .checkout-container .fi-section,

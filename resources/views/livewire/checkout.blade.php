@@ -318,9 +318,6 @@
             </form>
         </div>
     </section>
-
-        <div class="container">
         <x-footer />
-    </div>
 
 </div>

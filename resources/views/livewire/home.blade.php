@@ -123,9 +123,7 @@ Kau tahu tak, wanita ni bukan sekadar pelengkap je… tapi dia boleh jadi punca 
           {{-- <a class="pill" href="#books">All Books</a>
           <a class="pill" href="#contact">Contact</a> --}}
         </nav>
-    </div>
+      </div>
 
-      <div class="container">
-        <x-footer />
-    </div>
+  <x-footer />
 </div>
