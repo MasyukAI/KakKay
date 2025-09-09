@@ -246,68 +246,54 @@
                     </div>
 
                     <!-- Order Summary Sidebar -->
-                    <div class="mt-6 w-full space-y-6 sm:mt-8 lg:mt-0 lg:max-w-xs xl:max-w-md">
-                        <div class="cart-card p-6">
-                            <h3 class="text-lg font-semibold text-white mb-4" style="font-family: 'Caveat Brush', cursive;">
+                    <div class="w-full lg:w-96 xl:w-[28rem] mt-0">
+                        <div class="cart-summary-card p-6 sticky top-6">
+                            <h3 class="text-2xl font-bold mb-6" style="font-family: 'Caveat Brush', cursive;">
                                 Ringkasan <span class="cart-text-accent">Pesanan</span>
                             </h3>
 
-                            <div class="space-y-3 divide-y divide-gray-600">
-                                <dl class="flex items-center justify-between gap-4 py-3">
-                                    <dt class="text-base font-normal text-gray-400">Jumlah Kecil</dt>
-                                    <dd class="text-base font-medium text-white">{{ $this->formatPrice($this->getSubtotal()) }}</dd>
-                                </dl>
+                            <div class="space-y-4 mb-6">
+                                <div class="flex justify-between">
+                                    <span class="cart-text-muted">Subtotal</span>
+                                    <span class="font-semibold">{{ $this->formatPrice($this->getSubtotal()) }}</span>
+                                </div>
 
-                                @if($this->getSavings() > 0)
-                                <dl class="flex items-center justify-between gap-4 py-3">
-                                    <dt class="text-base font-normal text-gray-400">Jimat</dt>
-                                    <dd class="text-base font-medium text-green-400">-{{ $this->formatPrice($this->getSavings()) }}</dd>
-                                </dl>
-                                @endif
+                                {{-- <div class="flex justify-between text-green-400">
+                                    <span>Diskaun</span>
+                                    <span class="font-semibold">-{{ $this->formatPrice($this->getSavings()) }}</span>
+                                </div> --}}
 
-                                <dl class="flex items-center justify-between gap-4 py-3">
-                                    <dt class="text-base font-normal text-gray-400">Penghantaran</dt>
-                                    <dd class="text-base font-medium text-white flex items-center gap-2">
-                                        {{ $this->formatPrice($this->getShipping()) }}
-                                        @if(($this->data['delivery_method'] ?? 'standard') !== 'standard')
-                                            <span class="text-xs text-pink-400 bg-pink-400/10 px-2 py-1 rounded-full">
-                                                {{ match($this->data['delivery_method'] ?? 'standard') {
-                                                    'fast' => 'Pantas',
-                                                    'express' => 'Ekspres',
-                                                    default => 'Standard'
-                                                } }}
-                                            </span>
-                                        @endif
-                                    </dd>
-                                </dl>
+                                <div class="flex justify-between">
+                                    <span class="cart-text-muted">Penghantaran</span>
+                                    <span class="font-semibold">{{ $this->formatPrice($this->getShipping()) }}</span>
+                                </div>
 
-                                <!-- Tax removed -->
+                                {{-- <div class="flex justify-between">
+                                    <span class="cart-text-muted">Cukai (10.5%)</span>
+                                    <span class="font-semibold">{{ $this->formatPrice($this->getTax()) }}</span>
+                                </div> --}}
 
-                                <dl class="flex items-center justify-between gap-4 py-3 border-gray-600 pt-3">
-                                    <dt class="text-base font-bold text-white">Jumlah Keseluruhan</dt>
-                                    <dd class="text-base font-bold cart-text-accent">{{ $this->formatPrice($this->getTotal()) }}</dd>
-                                </dl>
+                                <hr class="border-white/20">
+
+                                <div class="flex justify-between text-xl font-bold">
+                                    <span>Jumlah</span>
+                                    <span class="cart-text-accent">{{ $this->formatPrice($this->getTotal()) }}</span>
+                                </div>
                             </div>
 
-                            <div class="space-y-3 mt-6">
-                                <flux:button type="submit" variant="primary" class="cursor-pointer w-full cart-button-primary py-3" wire:loading.attr="disabled">
-                                    <div wire:loading.remove>
-                                        <flux:icon.credit-card class="h-5 w-5 mr-2" />
-                                        Teruskan ke Pembayaran
-                                    </div>
-                                    <div wire:loading class="flex items-center justify-center">
-                                        <svg class="animate-spin h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24">
-                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>
-                                        Memproses...
-                                    </div>
-                                </flux:button>
-
-                                <p class="text-sm text-gray-400 text-center">
-                                    Maklumat peribadi anda selamat dan tidak akan dikongsi dengan pihak ketiga.
-                                </p>
-                            </div>
+                            <flux:button type="submit" variant="primary" class="w-full cart-button-primary mb-4 px-6 py-4 text-lg" wire:loading.attr="disabled">
+                                <div wire:loading.remove class="flex items-center justify-center">
+                                    <flux:icon.credit-card class="h-5 w-5 mr-2" />
+                                    Bayar Sekarang
+                                </div>
+                                <div wire:loading class="flex items-center justify-center">
+                                    <svg class="animate-spin h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    Memproses...
+                                </div>
+                            </flux:button>
                         </div>
 
                         <div class="bg-white">
