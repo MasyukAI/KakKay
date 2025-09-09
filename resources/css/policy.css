@@ -73,7 +73,13 @@
     }
 
     /* Layout */
-    .container{ width:min(1200px, 92vw); margin-inline:auto; }
+    .container {
+      width: 100vw;
+      max-width: 1200px;
+      margin-inline: auto;
+      padding-left: 4vw;
+      padding-right: 4vw;
+    }
     
     /* Header & Navigation */
     header{ 

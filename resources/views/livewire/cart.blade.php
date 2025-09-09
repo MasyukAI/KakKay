@@ -229,7 +229,7 @@ new class extends Component {
                     <div class="logo" aria-hidden="true"></div>
                         <div>
                         <h1>Kak Kay</h1>
-                        <div class="tagline  text-xs sm:text-base">Counsellor • Therapist • KKDI Creator</div>
+                        <div class="tagline text-xs sm:text-base">Counsellor • Therapist • KKDI Creator</div>
                         </div>
                     </div>
                 </a>

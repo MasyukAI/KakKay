@@ -76,13 +76,22 @@ html {
 }
 
     .tagline{ color:#f7e9f4; opacity:.85; font-family:"Playfair Display", Georgia, serif; }
-    .container{ width:min(1200px, 92vw); margin-inline:auto; }
+    .container {
+        width: 100vw;
+        max-width: 1200px;
+        margin-inline: auto;
+        padding-left: 4vw;
+        padding-right: 4vw;
+    }
 
 
 /* Cart specific styles */
 .cart-container {
-    width: min(1200px, 92vw);
+    width: 100vw;
+    max-width: 1200px;
     margin-inline: auto;
+    padding-left: 4vw;
+    padding-right: 4vw;
 }
 
 .cart-card {
@@ -143,13 +152,6 @@ html {
     letter-spacing: .3px;
     margin: 0;
     color: white;
-}
-
-.tagline {
-    color: #f7e9f4;
-    opacity: .85;
-    font-size: 1rem;
-    font-family: "Playfair Display", Georgia, serif;
 }
 
 .cart-nav-link {
