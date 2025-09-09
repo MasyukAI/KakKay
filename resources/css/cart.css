@@ -75,7 +75,7 @@ html {
     }
 }
 
-    .tagline{ color:#f7e9f4; opacity:.85; font-size:.92rem; }
+    .tagline{ color:#f7e9f4; opacity:.85; font-family:"Playfair Display", Georgia, serif; }
     .container{ width:min(1200px, 92vw); margin-inline:auto; }
 
 

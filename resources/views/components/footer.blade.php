@@ -52,33 +52,36 @@
       <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1);">
         <div style="text-align: center; max-width: 800px; margin: 0 auto;">
           <h4 style="color: #ffe9f5; font-size: 1.1rem; margin-bottom: 1rem; font-weight: 600;">Dasar & Polisi</h4>
-          <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; align-items: center;">
-            <a wire:navigate href="/privacy-policy" style="color: rgba(255,233,245,0.8); text-decoration: none; font-size: 0.9rem; transition: all 0.3s; padding: 0.3rem 0;" onmouseover="this.style.color='#ff69b4'; this.style.transform='translateY(-2px)'" onmouseout="this.style.color='rgba(255,233,245,0.8)'; this.style.transform='translateY(0)'">Dasar Privasi</a>
-            <span style="color: rgba(255,233,245,0.3); font-size: 0.8rem;">•</span>
-            <a wire:navigate href="/refund-policy" style="color: rgba(255,233,245,0.8); text-decoration: none; font-size: 0.9rem; transition: all 0.3s; padding: 0.3rem 0;" onmouseover="this.style.color='#ff69b4'; this.style.transform='translateY(-2px)'" onmouseout="this.style.color='rgba(255,233,245,0.8)'; this.style.transform='translateY(0)'">Dasar Pemulangan</a>
-            <span style="color: rgba(255,233,245,0.3); font-size: 0.8rem;">•</span>
-            <a wire:navigate href="/shipping-policy" style="color: rgba(255,233,245,0.8); text-decoration: none; font-size: 0.9rem; transition: all 0.3s; padding: 0.3rem 0;" onmouseover="this.style.color='#ff69b4'; this.style.transform='translateY(-2px)'" onmouseout="this.style.color='rgba(255,233,245,0.8)'; this.style.transform='translateY(0)'">Dasar Penghantaran</a>
-            <span class="hidden sm:inline" style="color: rgba(255,233,245,0.3); font-size: 0.8rem;">•</span>
-            <div class="w-full sm:w-auto">
-                <a wire:navigate href="/terms-of-service" class="text-[rgba(255,233,245,0.8)] no-underline text-sm transition-all duration-300 py-1 hover:text-[#ff69b4] hover:-translate-y-0.5">Terma & Syarat</a>
-            </div>
-          </div>
+          <div class="flex flex-col sm:flex-row flex-wrap gap-4 justify-center items-center text-sm">
+    <div class="flex gap-2 items-center">
+        <a wire:navigate href="/privacy-policy" class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 hover:-translate-y-0.5 no-underline">Dasar Privasi</a>
+        <span class="text-pink-100/30">•</span>
+        <a wire:navigate href="/refund-policy" class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 hover:-translate-y-0.5 no-underline">Dasar Pemulangan</a>
+    </div>
+    <div class="flex gap-2 items-center">
+        <a wire:navigate href="/shipping-policy" class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 hover:-translate-y-0.5 no-underline">Dasar Penghantaran</a>
+        <span class="text-pink-100/30">•</span>
+        <a wire:navigate href="/terms-of-service" class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 hover:-translate-y-0.5 no-underline">Terma & Syarat</a>
+    </div>
+</div>
         </div>
         
         <!-- Contact Info Footer -->
         <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; color: rgba(255,233,245,0.6); font-size: 0.8rem;">
-          <p style="margin: 0.5rem 0;">&copy; 2025 Kamalia Kamal Research International (Kak Kay)</p>
-          <div style="display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; justify-content: center; align-items: center; margin-top: 0.5rem;">
-            <span style="display: flex; align-items: center; gap: 0.3rem;">
-              <span style="color: #ff69b4;">📍</span>
-              24, Jalan Pakis 1, Taman Fern Grove, 43200 Cheras, Selangor
-            </span>
-            <span style="color: rgba(255,233,245,0.3);">•</span>
-            <span style="display: flex; align-items: center; gap: 0.3rem;">
-              <span style="color: #ff69b4;">📱</span>
-              <a href="https://wa.me/60138846594" style="color: inherit; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#ff69b4'" onmouseout="this.style.color='inherit'">+60 12-345 6789</a>
+          <div class="flex flex-col sm:flex-row flex-wrap gap-4 justify-center items-center mt-2 text-sm">
+            <div class="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2">
+                <div class="flex items-center gap-1.5">
+                    <span class="text-pink-400">📍</span>
+                    <span class="text-pink-100/80">24, Jalan Pakis 1, Taman Fern Grove<span class="hidden sm:inline">,</span></span>
+                </div>
+                <span class="text-pink-100/80"> 43200 Cheras, Selangor</span>
+            </div>
+            <span class="flex items-center gap-1.5">
+                <span class="text-pink-400">📱</span>
+                <a href="https://wa.me/60138846594" class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 no-underline">+60 12-345 6789</a>
             </span>
           </div>
+          <p style="margin: 1rem 0;">&copy; 2025 Kamalia Kamal Research International (Kak Kay)</p>
         </div>
       </div>
     </div>
