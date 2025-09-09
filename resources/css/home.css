@@ -71,8 +71,8 @@
       width: 100vw;
       max-width: 1200px;
       margin-inline: auto;
-      padding-left: 4vw;
-      padding-right: 4vw;
+      padding-left: 2vw;
+      padding-right: 3.5vw;
     }
     @media (max-width: 899px) {
       .container,

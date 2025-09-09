@@ -1,4 +1,4 @@
-<footer id="contact" class="container">
+<footer id="contact" class="">
     <div>
       <div style="display:flex; flex-wrap:wrap; gap:24px; align-items:flex-start; justify-content:space-between; padding: 2rem 0;">
         <div class="text-center sm:text-left w-full sm:w-auto">
