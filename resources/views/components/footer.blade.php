@@ -78,7 +78,7 @@
             </div>
             <span class="flex items-center gap-1.5">
                 <span class="text-pink-400">📱</span>
-                <a href="https://wa.me/60138846594" class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 no-underline">+60 12-345 6789</a>
+                <a href="https://wa.me/60138846594" class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 no-underline">+60 13-884 6594</a>
             </span>
           </div>
           <p style="margin: 1rem 0;">&copy; 2025 Kamalia Kamal Research International (Kak Kay)</p>
