@@ -36,32 +36,16 @@ class extends Component {
     </div>
   </header>
 
-  <!-- HERO -->
-  <header class="hero text-white relative overflow-hidden">
-    <div class="max-w-4xl mx-auto px-4 pt-16 pb-20 text-center relative z-10">
-      <div class="fade-in-up">
-        <div class="policy-badge-glass relative inline-flex items-center gap-2 px-5 py-2 rounded-full font-bold uppercase tracking-wider text-white shadow-xl border-2 border-pink-200/60 backdrop-blur-md animate-badge-shimmer">
-          <span class="w-1.5 h-1.5 rounded-full bg-rose shadow-inner"></span>
-          <span class="z-10 text-sm md:text-base">Kepuasan Pelanggan</span>
-          <span class="policy-badge-shimmer absolute left-0 top-0 h-full w-full rounded-full pointer-events-none"></span>
-        </div>
-        <h1 class="mt-8 font-display text-5xl md:text-7xl lg:text-8xl leading-[0.95] tracking-tight relative">
-          <span class="relative inline-block">
-            <span class="relative z-10 underline decoration-blush decoration-4 md:decoration-6 underline-offset-8 bg-gradient-to-r from-white via-pink-100 to-white bg-clip-text text-transparent drop-shadow-2xl text-4xl md:text-6xl lg:text-7xl">Dasar Pemulangan</span>
-            <span class="absolute -inset-4 bg-gradient-to-r from-blush/30 via-white/40 to-rose/30 rounded-2xl -z-10 blur-xl animate-pulse"></span>
-            <span class="absolute -inset-1 bg-gradient-to-r from-transparent via-white/20 to-transparent rounded-lg -z-5"></span>
-            <span class="absolute left-1/2 top-full -translate-x-1/2 mt-2 w-1/2 h-4 bg-pink-400/30 blur-xl rounded-full opacity-60 animate-glow"></span>
-          </span>
-        </h1>
-        <p class="mt-8 text-white/95 text-xl md:text-2xl leading-relaxed max-w-2xl mx-auto font-serif drop-shadow-lg">
-          <span class="text-base md:text-lg">Kepuasan anda adalah keutamaan kami. Ketahui hak dan jaminan anda sebagai pelanggan yang dihargai.</span>
-        </p>
-      </div>
+  <!-- Minimalistic Heading -->
+  <div class="max-w-3xl mx-auto px-4 pt-16 pb-10 text-center">
+    <h1 class="font-display text-4xl md:text-5xl font-semibold text-white mb-2 tracking-tight">Dasar Pemulangan</h1>
+    <div class="flex justify-center mb-4">
+      <span class="block w-16 h-1 rounded bg-gradient-to-r from-pink-400 to-purple-500 opacity-80"></span>
     </div>
-    <!-- Decorative elements -->
-    <div class="absolute top-10 left-10 w-20 h-20 bg-blush/10 rounded-full blur-xl"></div>
-    <div class="absolute bottom-10 right-10 w-32 h-32 bg-orchid/10 rounded-full blur-2xl"></div>
-  </header>
+    <p class="text-base md:text-lg text-white/80 font-normal leading-relaxed">
+      Kepuasan anda adalah keutamaan kami. Ketahui hak dan jaminan anda sebagai pelanggan yang dihargai.
+    </p>
+  </div>
 
   <!-- CONTENT -->
   <main class="relative">
