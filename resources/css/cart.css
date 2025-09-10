@@ -9,6 +9,7 @@
 @import './checkout.css';
 
 @source '../views/livewire/cart.blade.php';
+@source '../..app/Livewire/Checkout.php';
 @source '../views/livewire/checkout.blade.php';
 @source '../views/components/footer.blade.php';
 

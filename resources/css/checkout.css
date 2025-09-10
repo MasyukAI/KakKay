@@ -174,26 +174,58 @@
   height: auto !important;
 }
 
+
+
 .checkout-container .fi-input,
 .fi-section .fi-input,
-input.fi-input {
-  background: var(--checkout-input-bg) !important;
-  border: 1.5px solid var(--checkout-input-border) !important;
-  border-radius: 0.875rem !important;
-  color: var(--checkout-text) !important;
-  font-size: 1rem !important;
-  line-height: 1.2 !important;
-  padding: 0.75rem 1rem !important;
-  height: auto !important;
-  min-height: 2.75rem !important;
-  max-height: 3rem !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  backdrop-filter: blur(8px) !important;
-  width: 100% !important;
-  position: relative !important;
-  box-shadow: 
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+input.fi-input,
+.checkout-container .fi-select-input,
+.fi-section .fi-select-input,
+select.fi-select-input {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  color: #222;
+  font-size: 0.95rem;
+  padding: 0.5rem 0.75rem;
+  width: 100%;
+  box-shadow: none;
+  transition: border-color 0.2s;
+}
+
+.checkout-container .fi-input:focus,
+.fi-section .fi-input:focus,
+input.fi-input:focus,
+.checkout-container .fi-select-input:focus,
+.fi-section .fi-select-input:focus,
+select.fi-select-input:focus {
+  border-color: #a855f7;
+  outline: none;
+}
+
+.checkout-container .checkout-sm.fi-input,
+.checkout-container .checkout-sm.fi-select-input,
+.fi-section .checkout-sm.fi-input,
+.fi-section .checkout-sm.fi-select-input,
+input.checkout-sm.fi-input,
+select.checkout-sm.fi-select-input {
+  font-size: 0.85rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: 0.375rem;
+}
+
+/* Make checkout-sm inputs smaller, override all sizing */
+.checkout-container .checkout-sm.fi-input,
+.checkout-container .checkout-sm.fi-select-input,
+.fi-section .checkout-sm.fi-input,
+.fi-section .checkout-sm.fi-select-input,
+input.checkout-sm.fi-input,
+select.checkout-sm.fi-select-input {
+  font-size: 0.875rem !important;
+  padding: 0.375rem 0.75rem !important;
+  min-height: 2rem !important;
+  max-height: 2.25rem !important;
+  border-radius: 0.75rem !important;
 }
 
 .checkout-container .fi-input::placeholder,

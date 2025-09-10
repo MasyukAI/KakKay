@@ -2,7 +2,7 @@
 
 use App\Models\Product;
 use App\Models\Category;
-use Livewire\Volt\Volt;
+use Livewire\Livewire;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -15,7 +15,7 @@ it('can render', function () {
         'category_id' => $category->id
     ]);
     
-    $component = Volt::test('cart');
+    $component = Livewire::test(\App\Livewire\Cart::class);
 
     $component->assertSee('Troli Masih Kosong'); // Cart should be empty initially
 });

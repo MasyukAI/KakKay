@@ -151,6 +151,98 @@ Run the `CartSeeder` to populate test data:
 php artisan db:seed --class=CartSeeder
 ```
 
+## Cart Condition Filtering
+
+The cart package provides powerful filtering capabilities for both cart-level conditions and item-level conditions.
+
+### Cart-Level Condition Filtering
+
+Filter cart conditions by different criteria using the `CartConditionCollection` methods:
+
+#### Filter by Type
+```php
+// Get all discount conditions
+$discountConditions = $cart->conditions->byType('discount');
+
+// Get all tax conditions  
+$taxConditions = $cart->conditions->byType('tax');
+
+// Get all fee conditions (like shipping)
+$feeConditions = $cart->conditions->byType('fee');
+```
+
+#### Filter by Target
+```php
+// Get conditions that apply to subtotal
+$subtotalConditions = $cart->conditions->byTarget('subtotal');
+
+// Get conditions that apply to total
+$totalConditions = $cart->conditions->byTarget('total');
+```
+
+#### Filter by Value
+```php
+// Get conditions with specific value
+$percentageConditions = $cart->conditions->byValue('15%');
+
+// Get fixed amount conditions
+$fixedConditions = $cart->conditions->byValue('-10');
+```
+
+### Item-Level Condition Filtering
+
+Filter cart items based on their conditions using the `CartCollection` methods:
+
+#### Filter Items by Condition Type
+```php
+// Get all items that have discount conditions
+$discountItems = $cart->items->filterByConditionType('discount');
+
+// Get all items that have tax conditions
+$taxItems = $cart->items->filterByConditionType('tax');
+```
+
+#### Filter Items by Condition Target
+```php
+// Get items with conditions targeting subtotal
+$subtotalItems = $cart->items->filterByConditionTarget('subtotal');
+
+// Get items with conditions targeting total
+$totalItems = $cart->items->filterByConditionTarget('total');
+```
+
+#### Filter Items by Condition Value
+```php
+// Get items with specific condition values
+$tenPercentItems = $cart->items->filterByConditionValue('10%');
+
+// Get items with fixed amount conditions
+$fixedAmountItems = $cart->items->filterByConditionValue('-5');
+```
+
+### Example Usage
+
+```php
+use MasyukAI\Cart\Facades\Cart;
+
+// Get cart instance
+$cart = Cart::instance('default');
+
+// Find all items with discount conditions
+$discountedItems = $cart->items->filterByConditionType('discount');
+
+// Get cart-level tax conditions
+$cartTaxes = $cart->conditions->byType('tax');
+
+// Find items affected by percentage-based conditions
+$percentageItems = $cart->items->filterByConditionValue('%');
+
+// Chain filtering for complex queries
+$expensiveDiscountItems = $cart->items
+    ->filterByConditionType('discount')
+    ->where('price', '>', 100);
+```
+
 ## Integration with MasyukAI Cart Package
 
 This plugin is designed to work seamlessly with the MasyukAI Cart package:
