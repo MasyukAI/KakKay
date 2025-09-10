@@ -55,14 +55,16 @@ class Checkout extends Component implements HasSchemas
                                     ->label('Nama Penuh')
                                     ->required()
                                     ->placeholder('Nama penuh anda')
-                                    ->maxLength(255),
+                                    ->maxLength(255)
+                                    ->extraAttributes(['class' => 'checkout-sm']),
 
                                 TextInput::make('email')
                                     ->label('Alamat Email')
                                     ->email()
                                     ->required()
                                     ->placeholder('nama@email.com')
-                                    ->maxLength(255),
+                                    ->maxLength(255)
+                                    ->extraAttributes(['class' => 'checkout-sm']),
 
                                 Select::make('country')
                                     ->label('Negara')
@@ -89,7 +91,8 @@ class Checkout extends Component implements HasSchemas
                                         'Kuching' => 'Kuching',
                                     ]),
 
-                                PhoneInput::make('phone'),
+                                \Ysfkaya\FilamentPhoneInput\Forms\PhoneInput::make('phone')
+                                    ->extraAttributes(['class' => 'checkout-sm']),
                             ]),
 
                         TextInput::make('address')
@@ -97,35 +100,41 @@ class Checkout extends Component implements HasSchemas
                             ->required()
                             ->placeholder('Nombor rumah, nama jalan')
                             ->maxLength(255)
-                            ->columnSpanFull(),
+                            ->columnSpanFull()
+                            ->extraAttributes(['class' => 'checkout-sm']),
 
                         TextInput::make('address2')
                             ->label('Alamat Baris 2 (Opsional)')
                             ->placeholder('Taman, kawasan, dll')
                             ->maxLength(255)
-                            ->columnSpanFull(),
+                            ->columnSpanFull()
+                            ->extraAttributes(['class' => 'checkout-sm']),
 
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('state')
                                     ->label('Negeri')
                                     ->placeholder('Contoh: Selangor')
-                                    ->maxLength(100),
+                                    ->maxLength(100)
+                                    ->extraAttributes(['class' => 'checkout-sm']),
 
                                 TextInput::make('postal_code')
                                     ->label('Poskod')
                                     ->placeholder('Contoh: 40000')
-                                    ->maxLength(10),
+                                    ->maxLength(10)
+                                    ->extraAttributes(['class' => 'checkout-sm']),
 
                                 TextInput::make('company_name')
                                     ->label('Nama Syarikat (Opsional)')
                                     ->placeholder('Nama syarikat')
-                                    ->maxLength(255),
+                                    ->maxLength(255)
+                                    ->extraAttributes(['class' => 'checkout-sm']),
 
                                 TextInput::make('vat_number')
                                     ->label('VAT/SST Number (Opsional)')
                                     ->placeholder('Nombor VAT/SST')
-                                    ->maxLength(50),
+                                    ->maxLength(50)
+                                    ->extraAttributes(['class' => 'checkout-sm']),
                             ]),
                     ]),
 
@@ -154,7 +163,8 @@ class Checkout extends Component implements HasSchemas
                         TextInput::make('voucher_code')
                             ->label('Kod Voucher')
                             ->placeholder('Masukkan kod voucher')
-                            ->maxLength(50),
+                            ->maxLength(50)
+                            ->extraAttributes(['class' => 'checkout-sm']),
                     ])
                     ->collapsible()
                     ->collapsed(),
