@@ -33,7 +33,7 @@ it('debugs subtotal calculation step by step', function () {
     expect($formatter->format($rawSum))->toBeString();
 
     // Now test the cart subtotal
-    expect($cartManager->subtotal())->toBeFloat();
+    expect($cartManager->subtotal())->toBeString();
 
     // Enable formatting and test again
     $cartManager->formatted();
