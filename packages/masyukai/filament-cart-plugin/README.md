@@ -11,6 +11,16 @@ A comprehensive Filament admin interface for managing shopping carts created by 
 - 📱 **Responsive Design**: Works seamlessly on desktop and mobile devices
 - 🎨 **Rich UI Components**: Professional interface with status indicators, badges, and color coding
 
+### 🚀 New Enhanced Features
+
+- 🔍 **Advanced Search & Filters**: Search carts by products, conditions, computed states
+- ⚙️ **Condition Management**: Full CRUD interface for static and dynamic cart conditions
+- 🌍 **Global Conditions**: Apply conditions automatically across all carts
+- 📝 **Item-Level Conditions**: Apply specific conditions to individual cart items
+- 📊 **Computed State Filtering**: Filter by item count, total value, weight with operators
+- 🏷️ **Condition Searchability**: Search by condition name, type, value, and rules
+- 📈 **Enhanced Analytics**: Total weight calculation, condition tracking, advanced totals
+
 ## Installation
 
 You can install the package via composer:
@@ -58,7 +68,27 @@ This plugin requires:
 
 ### Configuration
 
-The plugin works out of the box with the existing `carts` table from the MasyukAI Cart package. No additional configuration is required.
+The plugin works out of the box with the existing `carts` table from the MasyukAI Cart package. 
+
+#### Database Migration
+
+Run the migration to create the cart conditions table:
+
+```bash
+php artisan migrate
+```
+
+#### Seeding Sample Data
+
+Optionally seed sample conditions and carts for testing:
+
+```bash
+php artisan db:seed --class=MasyukAI\\FilamentCartPlugin\\Database\\Seeders\\CartPluginSeeder
+```
+
+#### Enhanced Features Documentation
+
+For detailed information about the new filtering and condition management features, see [ENHANCEMENTS.md](ENHANCEMENTS.md).
 
 ## Features Overview
 
@@ -68,6 +98,22 @@ The plugin works out of the box with the existing `carts` table from the MasyukA
 - Edit existing carts with full form validation
 - Delete carts with confirmation dialogs
 - Bulk operations for clearing multiple carts
+
+### Enhanced Cart Filtering
+- **Product Search**: Find carts containing specific products
+- **Item Count Filters**: Filter by exact count or using operators (>, <, >=, <=)
+- **Subtotal Range**: Filter carts by monetary value ranges
+- **Condition-Based Filters**: Search by condition names, types, and values
+- **Computed State Filters**: Filter by total weight, final totals, condition presence
+- **Advanced Search**: Multi-criteria filtering with real-time results
+
+### Condition Management System
+- **Complete CRUD Interface**: Create, read, update, delete cart conditions
+- **Static Conditions**: Manually defined discounts, fees, and rules
+- **Dynamic Conditions**: System-generated conditions based on cart state
+- **Global Conditions**: Apply conditions automatically to all qualifying carts
+- **Item-Level Conditions**: Apply specific rules to individual cart items
+- **Condition Templates**: Reusable condition definitions with validation
 
 ### Dashboard Widget
 The plugin includes a dashboard widget showing:
