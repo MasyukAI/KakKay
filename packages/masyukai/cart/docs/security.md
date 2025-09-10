@@ -340,56 +340,6 @@ class CartController extends Controller
 }
 ```
 
-### 3. Livewire Security
-
-**Secure Livewire components:**
-
-```php
-class AddToCart extends Component
-{
-    public string $productId = '';
-    public int $quantity = 1;
-    
-    protected $rules = [
-        'productId' => 'required|string|exists:products,id',
-        'quantity' => 'required|integer|min:1|max:999',
-    ];
-    
-    public function addToCart(): void
-    {
-        $this->validate();
-        
-        // Get product data from database, not component properties
-        $product = Product::findOrFail($this->productId);
-        
-        // Rate limit user actions
-        $this->rateLimit(10, 60); // 10 actions per minute
-        
-        Cart::add(
-            $product->id,
-            $product->name,
-            $product->price, // Always use server-side price
-            $this->quantity
-        );
-        
-        $this->dispatch('cart-updated');
-    }
-    
-    protected function rateLimit(int $attempts, int $decayMinutes): void
-    {
-        $key = 'cart_add:' . (auth()->id() ?? request()->ip());
-        
-        if (RateLimiter::tooManyAttempts($key, $attempts)) {
-            throw ValidationException::withMessages([
-                'quantity' => 'Too many requests. Please try again later.',
-            ]);
-        }
-        
-        RateLimiter::hit($key, $decayMinutes * 60);
-    }
-}
-```
-
 ## CSRF Protection
 
 ### 1. Laravel CSRF
@@ -434,20 +384,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
-```
-
-### 3. Livewire CSRF
-
-**CSRF with Livewire:**
-
-```blade
-{{-- CSRF is automatically handled, but ensure proper form structure --}}
-<form wire:submit.prevent="addToCart">
-    @csrf
-    <input type="hidden" wire:model="productId" value="{{ $product->id }}">
-    <input type="number" wire:model="quantity" min="1" max="999">
-    <button type="submit">Add to Cart</button>
-</form>
 ```
 
 ## Rate Limiting

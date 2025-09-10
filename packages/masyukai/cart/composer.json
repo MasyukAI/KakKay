@@ -1,13 +1,12 @@
 {
     "name": "masyukai/cart",
-    "description": "A modern, feature-rich shopping cart package for Laravel 12 with Livewire integration",
+    "description": "A modern, feature-rich shopping cart package for Laravel 12",
     "license": "MIT",
     "keywords": [
         "laravel",
         "laravel12",
         "shopping-cart",
         "cart",
-        "livewire",
         "e-commerce",
         "masyukai"
     ],
@@ -21,7 +20,6 @@
         "php": "^8.4"
     },
     "require-dev": {
-        "livewire/livewire": "^3.0",
         "driftingly/rector-laravel": "^2.0",
         "larastan/larastan": "^3.0",
         "laravel/pint": "^1.18",

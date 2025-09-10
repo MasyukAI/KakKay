@@ -64,17 +64,6 @@ describe('CartServiceProvider Targeted Coverage', function () {
         expect($services)->toContain('cart');
     });
 
-    it('can test demo configuration', function () {
-        config([
-            'cart.demo.enabled' => true,
-        ]);
-
-        $provider = new CartServiceProvider(app());
-        $services = $provider->provides();
-
-        expect($services)->toBeArray();
-    });
-
     it('can test different price transformer classes', function () {
         // Test Decimal transformer
         config(['cart.price_formatting.transformer' => \MasyukAI\Cart\PriceTransformers\DecimalPriceTransformer::class]);

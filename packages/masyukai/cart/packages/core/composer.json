@@ -1,8 +1,7 @@
 {
-    "name": "masyukai/cart",
+    "name": "masyukai/cart-core",
     "require": {
-        "php": "^8.2",
-        "livewire/livewire": "^3.0"
+        "php": "^8.4"
     },
     "extra": {
         "laravel": {

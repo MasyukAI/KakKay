@@ -32,8 +32,8 @@ it('debugs subtotal calculation step by step', function () {
     // Test the exact formatter flow
     expect($formatter->format($rawSum))->toBeString();
 
-    // Now test the cart subtotal
-    expect($cartManager->subtotal())->toBeString();
+    // Now test the cart subtotal - should be numeric when formatting disabled
+    expect($cartManager->subtotal())->toBeFloat();
 
     // Enable formatting and test again
     $cartManager->formatted();

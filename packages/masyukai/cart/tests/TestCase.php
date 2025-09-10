@@ -29,7 +29,6 @@ abstract class TestCase extends Orchestra
             \Illuminate\Cache\CacheServiceProvider::class,
             \Illuminate\Database\DatabaseServiceProvider::class,
             CartServiceProvider::class,
-            \Livewire\LivewireServiceProvider::class,
         ];
     }
 

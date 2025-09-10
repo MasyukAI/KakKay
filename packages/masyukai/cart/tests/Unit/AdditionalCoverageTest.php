@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 use MasyukAI\Cart\Events\CartCreated;
 use MasyukAI\Cart\Events\CartMerged;
-use MasyukAI\Cart\Http\Controllers\DemoController;
-use MasyukAI\Cart\Http\Livewire\AddToCart;
-use MasyukAI\Cart\Http\Livewire\CartSummary;
-use MasyukAI\Cart\Http\Livewire\CartTable;
 use MasyukAI\Cart\Listeners\HandleUserLogin;
 use MasyukAI\Cart\Listeners\HandleUserLogout;
 
@@ -68,26 +64,6 @@ describe('Additional Coverage Tests', function () {
         // Test storage access
         $storage = $cartManager->storage();
         expect($storage)->toBeInstanceOf(\MasyukAI\Cart\Storage\StorageInterface::class);
-    });
-
-    it('can instantiate demo controller', function () {
-        $controller = new DemoController;
-
-        expect($controller)->toBeInstanceOf(DemoController::class);
-    });
-
-    it('can test demo controller index method', function () {
-        $controller = new DemoController;
-
-        $response = $controller->index();
-
-        expect($response)->toBeInstanceOf(\Illuminate\View\View::class);
-    });
-
-    it('can instantiate Livewire components', function () {
-        expect(class_exists(AddToCart::class))->toBeTrue();
-        expect(class_exists(CartSummary::class))->toBeTrue();
-        expect(class_exists(CartTable::class))->toBeTrue();
     });
 
     it('can instantiate event listeners', function () {

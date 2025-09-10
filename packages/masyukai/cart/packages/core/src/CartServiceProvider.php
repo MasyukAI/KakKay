@@ -11,7 +11,6 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Database\ConnectionInterface as Database;
 use Illuminate\Support\ServiceProvider;
-use Livewire\Livewire;
 use MasyukAI\Cart\Http\Middleware\AutoSwitchCartInstance;
 use MasyukAI\Cart\Listeners\HandleUserLogin;
 use MasyukAI\Cart\Listeners\HandleUserLoginAttempt;
@@ -47,8 +46,6 @@ class CartServiceProvider extends ServiceProvider
         $this->publishViews();
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'cart');
         $this->registerEventListeners();
-        $this->registerLivewireComponents();
-        $this->loadDemoRoutes();
         $this->registerMiddleware();
     }
 
@@ -191,39 +188,6 @@ class CartServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../resources/views' => resource_path('views/vendor/cart'),
         ], 'cart-views');
-    }
-
-    /**
-     * Load demo routes for development and testing
-     */
-    protected function loadDemoRoutes(): void
-    {
-        try {
-            $isLocalOrTesting = app()->environment(['local', 'testing']);
-        } catch (\Exception $e) {
-            // If environment service is not available, assume we're in testing
-            $isLocalOrTesting = true;
-        }
-
-        if (config('cart.demo.enabled', $isLocalOrTesting)) {
-            try {
-                $this->loadRoutesFrom(__DIR__.'/../routes/demo.php');
-            } catch (\Exception $e) {
-                // Skip route loading if files service is not available
-            }
-        }
-    }
-
-    /**
-     * Register Livewire components
-     */
-    protected function registerLivewireComponents(): void
-    {
-        if (class_exists(\Livewire\Livewire::class)) {
-            \Livewire\Livewire::component('add-to-cart', \MasyukAI\Cart\Http\Livewire\AddToCart::class);
-            \Livewire\Livewire::component('cart-summary', \MasyukAI\Cart\Http\Livewire\CartSummary::class);
-            \Livewire\Livewire::component('cart-table', \MasyukAI\Cart\Http\Livewire\CartTable::class);
-        }
     }
 
     /**

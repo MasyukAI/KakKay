@@ -94,19 +94,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Demo Configuration
-    |--------------------------------------------------------------------------
-    |
-    | Configuration for the demo routes and functionality
-    |
-    */
-    'demo' => [
-        // Enable demo routes (automatically enabled in local and testing environments)
-        'enabled' => env('CART_DEMO_ENABLED', true),
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
     | Price Formatting Configuration
     |--------------------------------------------------------------------------
     |

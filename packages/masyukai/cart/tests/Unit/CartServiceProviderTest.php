@@ -109,23 +109,6 @@ describe('CartServiceProvider', function () {
         expect(true)->toBeTrue();
     });
 
-    it('can call demo routes and livewire methods without errors', function () {
-        $app = mock(Application::class);
-        $provider = new CartServiceProvider($app);
-
-        $reflection = new ReflectionClass($provider);
-
-        // Just test that the methods exist and are callable
-        expect($reflection->hasMethod('loadDemoRoutes'))->toBeTrue()
-            ->and($reflection->hasMethod('registerLivewireComponents'))->toBeTrue();
-
-        $loadDemoRoutesMethod = $reflection->getMethod('loadDemoRoutes');
-        expect($loadDemoRoutesMethod->isProtected())->toBeTrue();
-
-        $registerLivewireMethod = $reflection->getMethod('registerLivewireComponents');
-        expect($registerLivewireMethod->isProtected())->toBeTrue();
-    });
-
     it('can call event listeners method without errors', function () {
         $app = mock(Application::class);
         $provider = new CartServiceProvider($app);
@@ -151,8 +134,6 @@ describe('CartServiceProvider', function () {
             'registerMigrationService',
             'registerEventListeners',
             'publishViews',
-            'loadDemoRoutes',
-            'registerLivewireComponents',
             'registerMiddleware',
         ];
 
@@ -177,25 +158,22 @@ describe('CartServiceProvider', function () {
     });
 });
 
-
 // --- Integration-style tests for real container/config/event/Livewire logic ---
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Log;
-use MasyukAI\Cart\Storage\SessionStorage;
-use MasyukAI\Cart\Storage\CacheStorage;
-use MasyukAI\Cart\Storage\DatabaseStorage;
-use MasyukAI\Cart\Services\CartMigrationService;
 use MasyukAI\Cart\Contracts\PriceTransformerInterface;
 use MasyukAI\Cart\PriceTransformers\DecimalPriceTransformer;
 use MasyukAI\Cart\PriceTransformers\IntegerPriceTransformer;
+use MasyukAI\Cart\Services\CartMigrationService;
+use MasyukAI\Cart\Storage\CacheStorage;
+use MasyukAI\Cart\Storage\DatabaseStorage;
+use MasyukAI\Cart\Storage\SessionStorage;
 
 beforeEach(function () {
     Config::set('cart.storage', 'session');
     Config::set('cart.price_formatting.transformer', DecimalPriceTransformer::class);
     Config::set('cart.migration.auto_migrate_on_login', true);
     Config::set('cart.migration.backup_on_logout', true);
-    Config::set('cart.demo.enabled', false);
 });
 
 it('integration: registers all storage drivers', function () {
@@ -255,45 +233,4 @@ it('integration: registers event listeners based on config', function () {
     Event::assertListening(\Illuminate\Auth\Events\Attempting::class, \MasyukAI\Cart\Listeners\HandleUserLoginAttempt::class);
     Event::assertListening(\Illuminate\Auth\Events\Login::class, \MasyukAI\Cart\Listeners\HandleUserLogin::class);
     Event::assertListening(\Illuminate\Auth\Events\Logout::class, \MasyukAI\Cart\Listeners\HandleUserLogout::class);
-});
-
-it('integration: registers Livewire components if Livewire is present', function () {
-    if (!class_exists(\Livewire\Livewire::class)) {
-        expect(true)->toBeTrue();
-        return;
-    }
-    $app = app();
-    $provider = new \MasyukAI\Cart\CartServiceProvider($app);
-    $reflection = new ReflectionClass($provider);
-    $method = $reflection->getMethod('registerLivewireComponents');
-    $method->setAccessible(true);
-    $method->invoke($provider);
-    expect(true)->toBeTrue();
-});
-
-it('integration: loads demo routes if enabled', function () {
-    $app = app();
-    $provider = new \MasyukAI\Cart\CartServiceProvider($app);
-    Config::set('cart.demo.enabled', true);
-    $reflection = new ReflectionClass($provider);
-    $method = $reflection->getMethod('loadDemoRoutes');
-    $method->setAccessible(true);
-    $method->invoke($provider);
-    expect(true)->toBeTrue();
-});
-
-it('integration: handles exception in loadDemoRoutes gracefully', function () {
-    $app = app();
-    Config::set('cart.demo.enabled', true);
-    $provider = new class($app) extends \MasyukAI\Cart\CartServiceProvider {
-        protected function loadRoutesFrom($path)
-        {
-            throw new \Exception('Route loading failed');
-        }
-    };
-    $reflection = new ReflectionClass($provider);
-    $method = $reflection->getMethod('loadDemoRoutes');
-    $method->setAccessible(true);
-    $method->invoke($provider);
-    expect(true)->toBeTrue();
 });

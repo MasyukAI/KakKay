@@ -10,7 +10,6 @@ Complete installation guide for MasyukAI Cart package with all configuration opt
 |---------------|-------------|-----------------|-----------|
 | **PHP** | 8.4.0 | 8.4.10+ | Modern PHP features required |
 | **Laravel** | 12.0 | 12.x.x | Latest stable recommended |
-| **Livewire** | 3.0 | 3.x.x | For UI components |
 | **Memory** | 64MB | 128MB+ | For large cart operations |
 
 ### Required PHP Extensions
@@ -225,64 +224,6 @@ CREATE TABLE `carts` (
 
 ---
 
-## 🎨 Livewire Components Setup
-
-### Publish Views (Optional)
-
-```bash
-php artisan vendor:publish --tag=cart-views
-```
-
-This publishes views to `resources/views/vendor/cart/`:
-
-```
-resources/views/vendor/cart/
-├── livewire/
-│   ├── add-to-cart.blade.php
-│   ├── cart-summary.blade.php
-│   └── cart-table.blade.php
-└── demo/
-    ├── index.blade.php
-    └── cart.blade.php
-```
-
-### Include Livewire Styles/Scripts
-
-In your main layout:
-
-```blade
-<!DOCTYPE html>
-<html>
-<head>
-    @livewireStyles
-</head>
-<body>
-    <!-- Your content -->
-    
-    @livewireScripts
-</body>
-</html>
-```
-
-### Basic Component Usage
-
-```blade
-<!-- Add to cart button -->
-<livewire:add-to-cart 
-    product-id="123" 
-    product-name="iPhone 15" 
-    product-price="999.99" 
-/>
-
-<!-- Cart summary -->
-<livewire:cart-summary />
-
-<!-- Full cart table -->
-<livewire:cart-table />
-```
-
----
-
 ## 🚀 Deployment
 
 ### Production Checklist
@@ -438,9 +379,8 @@ After installation:
 
 1. **[🚀 Quick Start Guide](quick-start.md)** - Get up and running in 5 minutes
 2. **[🏃‍♂️ Basic Usage](basic-usage.md)** - Learn fundamental operations  
-3. **[🎨 Livewire Components](livewire.md)** - Add reactive UI components
-4. **[⚙️ Configuration](configuration.md)** - Customize behavior
-5. **[📖 API Reference](api-reference.md)** - Complete method documentation
+3. **[⚙️ Configuration](configuration.md)** - Customize behavior
+4. **[📖 API Reference](api-reference.md)** - Complete method documentation
 
 ---
 

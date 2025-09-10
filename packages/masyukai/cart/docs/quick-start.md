@@ -129,43 +129,6 @@ echo "Current instance total: $" . Cart::total();           // Wishlist total
 
 ---
 
-## 🎨 Livewire Components (1 minute)
-
-Drop these components into any Blade template for instant cart functionality:
-
-### Add to Cart Component
-
-```blade
-<!-- Basic add to cart -->
-<livewire:add-to-cart 
-    product-id="iphone-15-pro"
-    product-name="iPhone 15 Pro" 
-    product-price="999.99"
-/>
-
-<!-- With product selection options -->
-<livewire:add-to-cart 
-    product-id="macbook-pro"
-    product-name="MacBook Pro 16"
-    product-price="2499.99"
-    :show-form="true"
-    :show-quantity="true"
-    :show-attributes="true"
-/>
-```
-
-### Cart Summary & Table
-
-```blade
-<!-- Real-time cart summary -->
-<livewire:cart-summary :show-details="true" />
-
-<!-- Complete cart management -->
-<livewire:cart-table :editable="true" />
-```
-
----
-
 ## 🔍 Search & Filter Cart Content
 
 ```php

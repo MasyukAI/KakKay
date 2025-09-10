@@ -11,7 +11,7 @@
 [![Coverage](https://img.shields.io/badge/coverage-comprehensive-brightgreen.svg?style=flat-square&logo=codecov)](https://pestphp.com)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
 
-**[📖 Documentation](docs/) • [🚀 Quick Start](docs/quick-start.md) • [🎨 Demo](docs/demo.md) • [💬 Community](../../discussions)**
+**[📖 Documentation](docs/) • [🚀 Quick Start](docs/quick-start.md) • [💬 Community](../../discussions)**
 
 </div>
 
