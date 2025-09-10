@@ -314,11 +314,11 @@ describe('Comprehensive Condition Stacking Coverage', function () {
             expect($conditions->count())->toBe(5);
 
             // Verify each type is present
-            expect($conditions->filter(fn($c) => $c->getType() === 'discount')->count())->toBe(1);
-            expect($conditions->filter(fn($c) => $c->getType() === 'tax')->count())->toBe(1);
-            expect($conditions->filter(fn($c) => $c->getType() === 'shipping')->count())->toBe(1);
-            expect($conditions->filter(fn($c) => $c->getType() === 'fee')->count())->toBe(1);
-            expect($conditions->filter(fn($c) => $c->getType() === 'insurance')->count())->toBe(1);
+            expect($conditions->filter(fn ($c) => $c->getType() === 'discount')->count())->toBe(1);
+            expect($conditions->filter(fn ($c) => $c->getType() === 'tax')->count())->toBe(1);
+            expect($conditions->filter(fn ($c) => $c->getType() === 'shipping')->count())->toBe(1);
+            expect($conditions->filter(fn ($c) => $c->getType() === 'fee')->count())->toBe(1);
+            expect($conditions->filter(fn ($c) => $c->getType() === 'insurance')->count())->toBe(1);
         });
     });
 });

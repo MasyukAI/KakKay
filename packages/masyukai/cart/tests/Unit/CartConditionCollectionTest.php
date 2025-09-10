@@ -6,8 +6,8 @@ use MasyukAI\Cart\Collections\CartConditionCollection;
 use MasyukAI\Cart\Conditions\CartCondition;
 
 it('can add conditions to collection', function () {
-    $collection = new CartConditionCollection();
-    
+    $collection = new CartConditionCollection;
+
     $condition = new CartCondition(
         name: 'Test Condition',
         type: 'discount',
@@ -23,8 +23,8 @@ it('can add conditions to collection', function () {
 });
 
 it('can filter conditions by type', function () {
-    $collection = new CartConditionCollection();
-    
+    $collection = new CartConditionCollection;
+
     $discount = new CartCondition('Discount', 'discount', 'subtotal', '-10%');
     $tax = new CartCondition('Tax', 'tax', 'subtotal', '8%');
     $shipping = new CartCondition('Shipping', 'shipping', 'subtotal', '+15');
@@ -39,8 +39,8 @@ it('can filter conditions by type', function () {
 });
 
 it('can filter conditions by target', function () {
-    $collection = new CartConditionCollection();
-    
+    $collection = new CartConditionCollection;
+
     $subtotalCondition = new CartCondition('Subtotal Tax', 'tax', 'subtotal', '8%');
     $totalCondition = new CartCondition('Total Fee', 'fee', 'total', '+5');
 
@@ -53,8 +53,8 @@ it('can filter conditions by target', function () {
 });
 
 it('can get only discount conditions', function () {
-    $collection = new CartConditionCollection();
-    
+    $collection = new CartConditionCollection;
+
     $discount = new CartCondition('Discount', 'discount', 'subtotal', '-10%');
     $charge = new CartCondition('Charge', 'fee', 'subtotal', '+5');
 
@@ -67,8 +67,8 @@ it('can get only discount conditions', function () {
 });
 
 it('can get only charge conditions', function () {
-    $collection = new CartConditionCollection();
-    
+    $collection = new CartConditionCollection;
+
     $discount = new CartCondition('Discount', 'discount', 'subtotal', '-10%');
     $charge = new CartCondition('Charge', 'fee', 'subtotal', '+5');
 
@@ -81,8 +81,8 @@ it('can get only charge conditions', function () {
 });
 
 it('can apply all conditions to a value', function () {
-    $collection = new CartConditionCollection();
-    
+    $collection = new CartConditionCollection;
+
     // Create conditions with specific order
     $discount = new CartCondition('Discount', 'discount', 'subtotal', '-10%', [], 1);
     $tax = new CartCondition('Tax', 'tax', 'subtotal', '8%', [], 2);
@@ -121,8 +121,8 @@ it('can create collection from array', function () {
 });
 
 it('can get collection summary', function () {
-    $collection = new CartConditionCollection();
-    
+    $collection = new CartConditionCollection;
+
     $discount = new CartCondition('Discount', 'discount', 'subtotal', '-10%');
     $tax = new CartCondition('Tax', 'tax', 'subtotal', '8%');
 
@@ -133,7 +133,7 @@ it('can get collection summary', function () {
 
     expect($summary)->toHaveKeys([
         'total_conditions', 'discounts', 'charges', 'percentages',
-        'total_discount_amount', 'total_charges_amount', 'net_adjustment'
+        'total_discount_amount', 'total_charges_amount', 'net_adjustment',
     ]);
 
     expect($summary['total_conditions'])->toBe(2);
@@ -143,8 +143,8 @@ it('can get collection summary', function () {
 });
 
 it('can group conditions by type', function () {
-    $collection = new CartConditionCollection();
-    
+    $collection = new CartConditionCollection;
+
     $discount1 = new CartCondition('Discount 1', 'discount', 'subtotal', '-10%');
     $discount2 = new CartCondition('Discount 2', 'discount', 'subtotal', '-5%');
     $tax = new CartCondition('Tax', 'tax', 'subtotal', '8%');

@@ -1,12 +1,11 @@
 # 🛒 MasyukAI Cart Package
 
-**The Ultimate Laravel Shopping Cart Package** - Production-ready, feature-rich cart solution with comprehensive test coverage, modern architecture, and comprehensive Livewire integration for Laravel 12+.
+**The Ultimate Laravel Shopping Cart Package** - Production-ready, feature-rich cart solution with comprehensive test coverage, modern architecture, and flexible storage options for Laravel 12+.
 
 <div align="center">
 
-[![PHP Version](https://img.shields.io/badge/php-%5E8.4-blue.svg?style=flat-square&logo=php)](https://php.net)
+[![PHP Version](https://img.shields.io/badge/php-%5E8.2-blue.svg?style=flat-square&logo=php)](https://php.net)
 [![Laravel Version](https://img.shields.io/badge/laravel-%5E12.0-red.svg?style=flat-square&logo=laravel)](https://laravel.com)
-[![Livewire Version](https://img.shields.io/badge/livewire-%5E3.0-purple.svg?style=flat-square)](https://livewire.laravel.com)
 [![Tests](https://img.shields.io/badge/tests-875%20passing-green.svg?style=flat-square&logo=checkmarx)](https://pestphp.com)
 [![Coverage](https://img.shields.io/badge/coverage-comprehensive-brightgreen.svg?style=flat-square&logo=codecov)](https://pestphp.com)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
@@ -51,7 +50,7 @@ Clean, modern API with extensive guides and real-world examples
 - 🏷️ **Powerful Conditions System** - Apply discounts, taxes, fees with complex business rules & dynamic auto-conditions
 - 📦 **Flexible Storage** - Session, database, cache with automatic fallbacks
 - 🔄 **Multi-Instance Support** - Separate carts for main, wishlist, comparison, B2B scenarios
-- 🎨 **Ready-to-Use UI** - Drop-in Livewire components with reactive updates
+- 🎨 **Framework Agnostic** - Works with any frontend (Blade, Vue, React, Alpine.js, etc.)
 - 🔧 **Migration Tools** - Seamless migration from other cart packages with compatibility layer
 - 📊 **Analytics Ready** - Built-in events and hooks for tracking and analytics
 - 🛡️ **Security First** - Input validation, type safety, and sanitization throughout
@@ -126,18 +125,23 @@ Updates your config automatically:
 </details>
 
 <details>
-<summary><strong>🎨 Livewire Components (Optional)</strong></summary>
+<summary><strong>🎨 Frontend Integration (Your Choice)</strong></summary>
 
-Publish views for customization:
+Use with any frontend framework:
 
-```bash
-php artisan vendor:publish --tag=cart-views
+```php
+// API endpoints for AJAX/fetch
+Route::post('/cart/add', [CartController::class, 'add']);
+Route::get('/cart/items', [CartController::class, 'items']);
+Route::patch('/cart/{id}', [CartController::class, 'update']);
 ```
 
-Ready-to-use components:
-- `<livewire:add-to-cart />`
-- `<livewire:cart-summary />`  
-- `<livewire:cart-table />`
+Works perfectly with:
+- **Blade Templates** - Traditional server-side rendering
+- **Alpine.js** - Reactive components without build step
+- **Vue.js/React** - Modern SPA frontends
+- **Any Framework** - Backend-agnostic design
+- **Inertia.js** - Modern monolith approach
 
 </details>
 
@@ -367,36 +371,41 @@ Cart::registerDynamicCondition(
 
 ---
 
-## 🎨 UI Components & Frontend Integration
+## 🎨 Frontend Integration Examples
 
-### **Ready-to-Use Livewire Components**
+### **Framework Agnostic Design**
 
-Drop these components into any Blade template for instant cart functionality:
+The cart package provides a clean API that works with any frontend approach:
 
 ```php
-<!-- Add to Cart Button with Product Selection -->
-<livewire:add-to-cart 
-    product-id="iphone-15-pro"
-    product-name="iPhone 15 Pro" 
-    product-price="999.99"
-    :show-form="true"
-    :show-quantity="true" 
-/>
-
-<!-- Real-time Cart Summary -->
-<livewire:cart-summary 
-    :show-details="true"
-    :show-items="true"
-/>
-
-<!-- Complete Cart Management Table -->
-<livewire:cart-table 
-    :show-conditions="true"
-    :editable="true"
-/>
-```
-
-### **Frontend Integration Examples**
+// Controller methods for frontend integration
+class CartController extends Controller
+{
+    public function add(Request $request)
+    {
+        Cart::add(
+            $request->input('id'),
+            $request->input('name'),
+            $request->input('price'),
+            $request->input('quantity', 1)
+        );
+        
+        return response()->json([
+            'success' => true,
+            'count' => Cart::count(),
+            'subtotal' => Cart::subtotal()
+        ]);
+    }
+    
+    public function items()
+    {
+        return response()->json([
+            'items' => Cart::getContent(),
+            'total' => Cart::total(),
+            'count' => Cart::count()
+        ]);
+    }
+}
 
 <details>
 <summary><strong>🎨 Alpine.js Integration</strong></summary>
@@ -1247,13 +1256,13 @@ class CartIntegrationTest extends TestCase
 - **[🛒 Cart Operations](docs/cart-operations.md)** - Add, update, remove, search items
 - **[🏷️ Conditions System](docs/conditions.md)** - Discounts, taxes, fees, complex rules
 - **[🗄️ Storage Drivers](docs/storage.md)** - Session, database, cache configuration
-- **[� Multiple Instances](docs/instances.md)** - Manage different cart types
+- **[🔄 Multiple Instances](docs/instances.md)** - Manage different cart types
 
 ### **🎨 Frontend Integration**  
-- **[💫 Livewire Components](docs/livewire.md)** - Ready-to-use reactive components
 - **[🌐 API Endpoints](docs/api-endpoints.md)** - REST API for JavaScript frontends
 - **[⚛️ SPA Integration](docs/spa-integration.md)** - Vue, React, Alpine.js examples
 - **[📱 Mobile Apps](docs/mobile-integration.md)** - React Native, Flutter APIs
+- **[🎭 Framework Examples](docs/frontend-examples.md)** - Vue, React, Alpine.js, and more
 
 ### **⚙️ Advanced Topics**
 - **[⚡ Events & Hooks](docs/events.md)** - Cart lifecycle and custom listeners
@@ -1262,7 +1271,7 @@ class CartIntegrationTest extends TestCase
 - **[🔄 Cart Migration](docs/migration.md)** - User login cart merging
 
 ### **📋 Reference**
-- **[� Complete API Reference](docs/api-reference.md)** - Every method documented with examples
+- **[📚 Complete API Reference](docs/api-reference.md)** - Every method documented with examples
 - **[🔧 Configuration Options](docs/configuration.md)** - All config parameters explained
 - **[🧪 Testing Guide](docs/testing.md)** - Testing your cart implementations  
 - **[❓ Troubleshooting](docs/troubleshooting.md)** - Common issues and solutions
@@ -1474,7 +1483,6 @@ We welcome contributions! See our [Contributing Guide](CONTRIBUTING.md) for:
 |-----------------|-------------|-----------------|-----------|
 | **PHP** | 8.4.0 | 8.4.10+ | Latest features and performance |
 | **Laravel** | 12.0 | 12.x | Modern framework capabilities |
-| **Livewire** | 3.0 | 3.x | For reactive components |
 | **Memory** | 64MB | 128MB+ | For large cart operations |
 | **Storage** | Any | Redis/Database | For production persistence |
 
@@ -1501,7 +1509,6 @@ This package is open-sourced software licensed under the [MIT License](LICENSE).
 
 - **[MasyukAI Team](https://github.com/masyukai)** - Package development and maintenance
 - **[Laravel Community](https://laravel.com)** - Framework and ecosystem inspiration  
-- **[Livewire Team](https://livewire.laravel.com)** - Reactive component architecture
 - **[PestPHP](https://pestphp.com)** - Modern testing framework
 - **[All Contributors](../../contributors)** - Community improvements and feedback
 

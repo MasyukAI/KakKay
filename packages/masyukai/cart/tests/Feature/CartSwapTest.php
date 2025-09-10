@@ -3,17 +3,16 @@
 declare(strict_types=1);
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use MasyukAI\Cart\Services\CartMigrationService;
 use MasyukAI\Cart\Facades\Cart;
+use MasyukAI\Cart\Services\CartMigrationService;
 
 /**
  * Test cart swap functionality.
- * 
- * This tests the cart swap feature that transfers cart ownership from 
- * old identifier to new identifier, ensuring the new identifier gets 
+ *
+ * This tests the cart swap feature that transfers cart ownership from
+ * old identifier to new identifier, ensuring the new identifier gets
  * an active cart to prevent abandonment.
  */
-
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
@@ -27,6 +26,7 @@ beforeEach(function () {
         $table->longText('items')->nullable();
         $table->longText('conditions')->nullable();
         $table->longText('metadata')->nullable();
+        $table->bigInteger('version')->default(1)->index()->comment('Version number for optimistic locking');
         $table->timestamps();
         $table->unique(['identifier', 'instance']);
     });
@@ -43,7 +43,7 @@ afterEach(function () {
 
 it('transfers source cart to target identifier even when target exists', function () {
     $storage = $this->storage;
-    
+
     // Add items to guest cart (the source cart to transfer)
     $guestItems = [
         'guest-product-1' => [
@@ -74,7 +74,7 @@ it('transfers source cart to target identifier even when target exists', functio
             'type' => 'discount',
             'target' => 'subtotal',
             'value' => '15%',
-        ]
+        ],
     ];
 
     // Store data with both identifiers
@@ -97,20 +97,20 @@ it('transfers source cart to target identifier even when target exists', functio
     // User cart should now have the guest cart content (not the original user content)
     $userItemsAfter = $storage->getItems('user_42', 'default');
     $userConditionsAfter = $storage->getConditions('user_42', 'default');
-    
+
     expect($userItemsAfter)->toHaveCount(1);
     expect($userConditionsAfter)->toBeEmpty(); // Conditions were empty in guest cart
-    
+
     // Verify the guest content is now under user identifier
     expect($userItemsAfter['guest-product-1'])->toEqual($guestItems['guest-product-1']);
-    
+
     // Original user content should NOT be present (it was overwritten)
     expect($userItemsAfter)->not->toHaveKey('user-product-1');
 });
 
 it('transfers source cart when target cart does not exist', function () {
     $storage = $this->storage;
-    
+
     // Add items to guest cart only (no user cart exists)
     $guestItems = [
         'product-1' => [
@@ -137,7 +137,7 @@ it('transfers source cart when target cart does not exist', function () {
             'type' => 'discount',
             'target' => 'subtotal',
             'value' => '10%',
-        ]
+        ],
     ];
 
     // Store data with guest identifier only
@@ -172,7 +172,7 @@ it('transfers source cart when target cart does not exist', function () {
 
 it('swaps even when source cart is empty', function () {
     $storage = $this->storage;
-    
+
     // Create an empty guest cart (cart exists but has no items)
     $storage->putBoth('guest_session_empty', 'default', [], []);
 
@@ -286,7 +286,7 @@ it('can swap all instances from one identifier to another', function () {
 
     // Swap all instances
     $results = $this->cartMigration->swapAllInstances('guest_session_789', 'user_123');
-    
+
     // Verify all swaps were successful
     expect($results)->toHaveKey('default');
     expect($results)->toHaveKey('wishlist');
@@ -356,14 +356,14 @@ it('can swap guest cart using convenience method', function () {
     // Verify guest cart exists
     expect($storage->getItems('guest_session_conv', 'default'))->toHaveCount(1);
 
-    // Swap using convenience method  
+    // Swap using convenience method
     $result = $this->cartMigration->swapGuestCartToUser(999, 'default', 'guest_session_conv');
     expect($result)->toBeTrue();
 
     // Verify results
     expect($storage->getItems('guest_session_conv', 'default'))->toBeEmpty();
     expect($storage->getItems('999', 'default'))->toHaveCount(1);
-    
+
     $userItems = $storage->getItems('999', 'default');
     expect($userItems['product-1']['name'])->toBe('Convenience Test Product');
 });
@@ -373,7 +373,7 @@ it('can swap all guest instances using convenience method', function () {
 
     // Set up guest session manually
     session(['id' => 'guest_all_instances_test']);
-    
+
     // Add items to multiple guest cart instances
     $defaultItems = [
         'product-1' => [
@@ -407,7 +407,7 @@ it('can swap all guest instances using convenience method', function () {
 
     // Swap all instances using convenience method
     $results = $this->cartMigration->swapAllGuestInstancesToUser(99, $guestSessionId);
-    
+
     // Verify all swaps were successful
     expect($results)->toHaveKey('default');
     expect($results)->toHaveKey('wishlist');

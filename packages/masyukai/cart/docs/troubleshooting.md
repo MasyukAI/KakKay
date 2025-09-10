@@ -331,44 +331,58 @@ try {
 
 ### Integration Issues
 
-#### Livewire Component Not Updating
+#### Frontend State Not Updating
 
-**Problem:** Cart changes not reflected in Livewire components
+**Problem:** Cart changes not reflected in frontend components
 ```
 Added item but cart count doesn't update
 ```
 
 **Solutions:**
-1. Emit events after cart operations:
-```php
-// In your Livewire component
-public function addToCart($productId)
-{
-    Cart::add($productId, 'Product', 10.00);
+1. Use event-driven updates:
+```javascript
+// JavaScript/Vue/React approach
+document.addEventListener('cartUpdated', function() {
+    // Refresh cart display
+    loadCartData();
+});
+
+// Emit event after cart operations
+function addToCart(product) {
+    fetch('/cart/add', { /* ... */ })
+        .then(() => {
+            // Dispatch custom event
+            document.dispatchEvent(new CustomEvent('cartUpdated'));
+        });
+}
+```
+
+2. Use polling for automatic updates:
+```javascript
+// Check cart every 5 seconds
+setInterval(async () => {
+    const response = await fetch('/cart/summary');
+    const cart = await response.json();
+    updateCartDisplay(cart);
+}, 5000);
+```
+
+3. Create reactive state management:
+```javascript
+// Vue Pinia or React Context example
+const cartStore = {
+    items: [],
+    total: 0,
+    count: 0,
     
-    // Emit event to update other components
-    $this->emit('cartUpdated');
-    $this->emit('refreshCartCount');
-}
-
-// Listen for events
-protected $listeners = ['cartUpdated' => '$refresh'];
-```
-
-2. Use `wire:poll` for automatic updates:
-```blade
-<div wire:poll.5s>
-    Cart Items: {{ Cart::count() }}
-</div>
-```
-
-3. Refresh component manually:
-```php
-public function refreshCart()
-{
-    // Force refresh of cart data
-    $this->emit('$refresh');
-}
+    async refresh() {
+        const response = await fetch('/cart');
+        const data = await response.json();
+        this.items = data.items;
+        this.total = data.total;
+        this.count = data.count;
+    }
+};
 ```
 
 #### API Responses Not Formatted

@@ -336,7 +336,7 @@ describe('Comprehensive Serialization and Persistence Coverage', function () {
         it('respects formatting settings in serialized output', function () {
             // Add an item first
             $this->cart->add('format-item', 'Format Test Item', 19.99, 1);
-            
+
             // Test without formatting
             PriceFormatManager::disableFormatting();
             $contentUnformatted = $this->cart->content();
@@ -353,7 +353,7 @@ describe('Comprehensive Serialization and Persistence Coverage', function () {
             // Ensure we have items in both arrays before comparing
             expect($contentUnformatted['items'])->not->toBeEmpty();
             expect($contentFormatted['items'])->not->toBeEmpty();
-            
+
             // Check that we have items in both cases (2 from setup + 1 from this test = 3 total)
             expect($contentUnformatted['items'])->toHaveCount(3);
             expect($contentFormatted['items'])->toHaveCount(3);

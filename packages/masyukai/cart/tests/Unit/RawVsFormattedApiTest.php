@@ -1,13 +1,12 @@
 <?php
 
 use MasyukAI\Cart\Facades\Cart;
-use MasyukAI\Cart\Models\CartItem;
 
 describe('Raw vs Formatted API Compliance', function () {
     beforeEach(function () {
         Cart::setInstance('test');
         Cart::clear();
-        
+
         // Configure formatting for testing
         config([
             'cart.price_format.decimals' => 2,
@@ -47,7 +46,7 @@ describe('Raw vs Formatted API Compliance', function () {
             // Add item with conditions
             Cart::add('test-item', 'Test Product', 100.00, 2, [
                 'color' => 'blue',
-                'size' => 'large'
+                'size' => 'large',
             ]);
         });
 
@@ -84,7 +83,7 @@ describe('Raw vs Formatted API Compliance', function () {
         it('follows getRaw* pattern for all raw methods', function () {
             Cart::add('test', 'Test', 100.00);
             $item = Cart::get('test');
-            
+
             // Just check basic method existence for now
             expect(method_exists($item, 'getPrice'))->toBeTrue();
             expect(method_exists($item, 'getPriceSum'))->toBeTrue();
@@ -93,7 +92,7 @@ describe('Raw vs Formatted API Compliance', function () {
         it('has corresponding formatted methods for all raw methods', function () {
             Cart::add('test', 'Test', 100.00);
             $item = Cart::get('test');
-            
+
             // Basic checks
             expect(method_exists($item, 'getPrice'))->toBeTrue();
             expect(method_exists($item, 'getPriceSum'))->toBeTrue();
@@ -122,7 +121,7 @@ describe('Raw vs Formatted API Compliance', function () {
             Cart::add('expensive-item', 'Expensive Product', 1000.00, 1);
             Cart::add('medium-item', 'Medium Product', 500.00, 2);
             Cart::add('cheap-item', 'Cheap Product', 50.00, 5);
-            
+
             // Basic verification that items were added
             expect(Cart::count())->toBe(8); // 1 + 2 + 5 = 8 items
             expect(Cart::getItems()->count())->toBe(3); // 3 distinct items

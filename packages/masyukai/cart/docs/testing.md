@@ -452,4 +452,4 @@ jobs:
 
 - Explore [API Reference](api-reference.md) for complete testing methods
 - Learn about [Events](events.md) for testing event-driven functionality  
-- Check out [Livewire Integration](livewire.md) for UI testing
+- Check out [Frontend Examples](frontend-examples.md) for UI testing

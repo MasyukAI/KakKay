@@ -29,7 +29,18 @@ readonly class DatabaseStorage implements StorageInterface
             return [];
         }
 
-        return json_decode($record->items, true) ?: [];
+        try {
+            return json_decode($record->items, true, 512, JSON_THROW_ON_ERROR) ?: [];
+        } catch (\JsonException $e) {
+            // Log the error and return empty array for corrupted data
+            logger()->error('Failed to decode cart items JSON', [
+                'identifier' => $identifier,
+                'instance' => $instance,
+                'error' => $e->getMessage(),
+            ]);
+
+            return [];
+        }
     }
 
     /**
@@ -46,7 +57,18 @@ readonly class DatabaseStorage implements StorageInterface
             return [];
         }
 
-        return json_decode($record->conditions, true) ?: [];
+        try {
+            return json_decode($record->conditions, true, 512, JSON_THROW_ON_ERROR) ?: [];
+        } catch (\JsonException $e) {
+            // Log the error and return empty array for corrupted data
+            logger()->error('Failed to decode cart conditions JSON', [
+                'identifier' => $identifier,
+                'instance' => $instance,
+                'error' => $e->getMessage(),
+            ]);
+
+            return [];
+        }
     }
 
     /**
@@ -54,14 +76,45 @@ readonly class DatabaseStorage implements StorageInterface
      */
     public function putItems(string $identifier, string $instance, array $items): void
     {
-        $this->database->table($this->table)->updateOrInsert(
-            ['identifier' => $identifier, 'instance' => $instance],
-            [
-                'items' => json_encode($items),
-                'updated_at' => now(),
-                'created_at' => now(),
-            ]
-        );
+        $this->validateDataSize($items, 'items');
+
+        try {
+            $itemsJson = json_encode($items, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            throw new \InvalidArgumentException('Cannot encode items to JSON: '.$e->getMessage());
+        }
+
+        $this->database->transaction(function () use ($identifier, $instance, $itemsJson) {
+            $current = $this->database->table($this->table)
+                ->where('identifier', $identifier)
+                ->where('instance', $instance)
+                ->first(['id', 'version']);
+
+            if ($current) {
+                $updated = $this->database->table($this->table)
+                    ->where('identifier', $identifier)
+                    ->where('instance', $instance)
+                    ->where('version', $current->version)
+                    ->update([
+                        'items' => $itemsJson,
+                        'version' => $current->version + 1,
+                        'updated_at' => now(),
+                    ]);
+
+                if ($updated === 0) {
+                    throw new \RuntimeException('Cart was modified by another request. Please retry.');
+                }
+            } else {
+                $this->database->table($this->table)->insert([
+                    'identifier' => $identifier,
+                    'instance' => $instance,
+                    'items' => $itemsJson,
+                    'version' => 1,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+        });
     }
 
     /**
@@ -69,14 +122,45 @@ readonly class DatabaseStorage implements StorageInterface
      */
     public function putConditions(string $identifier, string $instance, array $conditions): void
     {
-        $this->database->table($this->table)->updateOrInsert(
-            ['identifier' => $identifier, 'instance' => $instance],
-            [
-                'conditions' => json_encode($conditions),
-                'updated_at' => now(),
-                'created_at' => now(),
-            ]
-        );
+        $this->validateDataSize($conditions, 'conditions');
+
+        try {
+            $conditionsJson = json_encode($conditions, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            throw new \InvalidArgumentException('Cannot encode conditions to JSON: '.$e->getMessage());
+        }
+
+        $this->database->transaction(function () use ($identifier, $instance, $conditionsJson) {
+            $current = $this->database->table($this->table)
+                ->where('identifier', $identifier)
+                ->where('instance', $instance)
+                ->first(['id', 'version']);
+
+            if ($current) {
+                $updated = $this->database->table($this->table)
+                    ->where('identifier', $identifier)
+                    ->where('instance', $instance)
+                    ->where('version', $current->version)
+                    ->update([
+                        'conditions' => $conditionsJson,
+                        'version' => $current->version + 1,
+                        'updated_at' => now(),
+                    ]);
+
+                if ($updated === 0) {
+                    throw new \RuntimeException('Cart was modified by another request. Please retry.');
+                }
+            } else {
+                $this->database->table($this->table)->insert([
+                    'identifier' => $identifier,
+                    'instance' => $instance,
+                    'conditions' => $conditionsJson,
+                    'version' => 1,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+        });
     }
 
     /**
@@ -84,15 +168,49 @@ readonly class DatabaseStorage implements StorageInterface
      */
     public function putBoth(string $identifier, string $instance, array $items, array $conditions): void
     {
-        $this->database->table($this->table)->updateOrInsert(
-            ['identifier' => $identifier, 'instance' => $instance],
-            [
-                'items' => json_encode($items),
-                'conditions' => json_encode($conditions),
-                'updated_at' => now(),
-                'created_at' => now(),
-            ]
-        );
+        $this->validateDataSize($items, 'items');
+        $this->validateDataSize($conditions, 'conditions');
+
+        try {
+            $itemsJson = json_encode($items, JSON_THROW_ON_ERROR);
+            $conditionsJson = json_encode($conditions, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            throw new \InvalidArgumentException('Cannot encode data to JSON: '.$e->getMessage());
+        }
+
+        $this->database->transaction(function () use ($identifier, $instance, $itemsJson, $conditionsJson) {
+            $current = $this->database->table($this->table)
+                ->where('identifier', $identifier)
+                ->where('instance', $instance)
+                ->first(['id', 'version']);
+
+            if ($current) {
+                $updated = $this->database->table($this->table)
+                    ->where('identifier', $identifier)
+                    ->where('instance', $instance)
+                    ->where('version', $current->version)
+                    ->update([
+                        'items' => $itemsJson,
+                        'conditions' => $conditionsJson,
+                        'version' => $current->version + 1,
+                        'updated_at' => now(),
+                    ]);
+
+                if ($updated === 0) {
+                    throw new \RuntimeException('Cart was modified by another request. Please retry.');
+                }
+            } else {
+                $this->database->table($this->table)->insert([
+                    'identifier' => $identifier,
+                    'instance' => $instance,
+                    'items' => $itemsJson,
+                    'conditions' => $conditionsJson,
+                    'version' => 1,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+        });
     }
 
     /**
@@ -119,10 +237,16 @@ readonly class DatabaseStorage implements StorageInterface
 
     /**
      * Clear all carts from storage
+     * WARNING: This is a dangerous operation that should be used with extreme caution
      */
     public function flush(): void
     {
-        $this->database->table($this->table)->truncate();
+        // Only allow flush in testing environments to prevent accidental data loss
+        if (app()->environment(['testing', 'local'])) {
+            $this->database->table($this->table)->truncate();
+        } else {
+            throw new \RuntimeException('Flush operation is only allowed in testing and local environments');
+        }
     }
 
     /**
@@ -151,23 +275,63 @@ readonly class DatabaseStorage implements StorageInterface
      */
     public function putMetadata(string $identifier, string $instance, string $key, mixed $value): void
     {
-        // Get existing metadata
-        $existing = $this->database->table($this->table)
-            ->where('identifier', $identifier)
-            ->where('instance', $instance)
-            ->value('metadata');
+        $this->database->transaction(function () use ($identifier, $instance, $key, $value) {
+            // Get existing metadata
+            $existing = $this->database->table($this->table)
+                ->where('identifier', $identifier)
+                ->where('instance', $instance)
+                ->value('metadata');
 
-        $metadata = $existing ? json_decode($existing, true) : [];
-        $metadata[$key] = $value;
+            try {
+                $metadata = $existing ? json_decode($existing, true, 512, JSON_THROW_ON_ERROR) : [];
+            } catch (\JsonException $e) {
+                logger()->error('Failed to decode metadata JSON, starting fresh', [
+                    'identifier' => $identifier,
+                    'instance' => $instance,
+                    'error' => $e->getMessage(),
+                ]);
+                $metadata = [];
+            }
 
-        $this->database->table($this->table)->updateOrInsert(
-            ['identifier' => $identifier, 'instance' => $instance],
-            [
-                'metadata' => json_encode($metadata),
-                'updated_at' => now(),
-                'created_at' => now(),
-            ]
-        );
+            $metadata[$key] = $value;
+            $this->validateDataSize($metadata, 'metadata');
+
+            try {
+                $metadataJson = json_encode($metadata, JSON_THROW_ON_ERROR);
+            } catch (\JsonException $e) {
+                throw new \InvalidArgumentException('Cannot encode metadata to JSON: '.$e->getMessage());
+            }
+
+            $current = $this->database->table($this->table)
+                ->where('identifier', $identifier)
+                ->where('instance', $instance)
+                ->first(['id', 'version']);
+
+            if ($current) {
+                $updated = $this->database->table($this->table)
+                    ->where('identifier', $identifier)
+                    ->where('instance', $instance)
+                    ->where('version', $current->version)
+                    ->update([
+                        'metadata' => $metadataJson,
+                        'version' => $current->version + 1,
+                        'updated_at' => now(),
+                    ]);
+
+                if ($updated === 0) {
+                    throw new \RuntimeException('Cart was modified by another request. Please retry.');
+                }
+            } else {
+                $this->database->table($this->table)->insert([
+                    'identifier' => $identifier,
+                    'instance' => $instance,
+                    'metadata' => $metadataJson,
+                    'version' => 1,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+        });
     }
 
     /**
@@ -184,7 +348,18 @@ readonly class DatabaseStorage implements StorageInterface
             return null;
         }
 
-        $metadata = json_decode($result, true);
+        try {
+            $metadata = json_decode($result, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            logger()->error('Failed to decode metadata JSON', [
+                'identifier' => $identifier,
+                'instance' => $instance,
+                'key' => $key,
+                'error' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
 
         return $metadata[$key] ?? null;
     }
@@ -197,7 +372,7 @@ readonly class DatabaseStorage implements StorageInterface
     public function swapIdentifier(string $oldIdentifier, string $newIdentifier, string $instance): bool
     {
         // Check if source cart exists
-        if (!$this->has($oldIdentifier, $instance)) {
+        if (! $this->has($oldIdentifier, $instance)) {
             return false;
         }
 
@@ -221,5 +396,31 @@ readonly class DatabaseStorage implements StorageInterface
 
             return $updated > 0;
         });
+    }
+
+    /**
+     * Validate data size to prevent memory issues and DoS attacks
+     */
+    private function validateDataSize(array $data, string $type): void
+    {
+        // Get size limits from config or use defaults
+        $maxItems = config('cart.limits.max_items', 1000);
+        $maxDataSize = config('cart.limits.max_data_size_bytes', 1024 * 1024); // 1MB default
+
+        // Check item count limit
+        if ($type === 'items' && count($data) > $maxItems) {
+            throw new \InvalidArgumentException("Cart cannot contain more than {$maxItems} items");
+        }
+
+        // Check data size limit
+        try {
+            $jsonSize = strlen(json_encode($data, JSON_THROW_ON_ERROR));
+            if ($jsonSize > $maxDataSize) {
+                $maxSizeMB = round($maxDataSize / (1024 * 1024), 2);
+                throw new \InvalidArgumentException("Cart {$type} data size ({$jsonSize} bytes) exceeds maximum allowed size of {$maxSizeMB}MB");
+            }
+        } catch (\JsonException $e) {
+            throw new \InvalidArgumentException("Cannot validate {$type} data size: ".$e->getMessage());
+        }
     }
 }

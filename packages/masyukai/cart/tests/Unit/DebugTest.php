@@ -10,7 +10,7 @@ use MasyukAI\Cart\Support\PriceFormatManager;
 it('debug cart total calculation', function () {
     // Enable formatting for this test
     PriceFormatManager::enableFormatting();
-    
+
     // Set up session storage for testing
     $sessionStore = new \Illuminate\Session\Store('testing', new \Illuminate\Session\ArraySessionHandler(120));
     $storage = new SessionStorage($sessionStore);
@@ -76,14 +76,14 @@ it('verifies cart method return types with and without formatting', function () 
     // Add items
     $cart->add('product-1', 'Product 1', 99.99, 1);
     $cart->add('product-2', 'Product 2', 49.50, 2);
-    
+
     // Add condition
     $condition = new CartCondition('tax', 'tax', 'subtotal', '+10%');
     $cart->addCondition($condition);
 
     // Test with formatting DISABLED (default)
     PriceFormatManager::disableFormatting();
-    
+
     expect($cart->total())->toBeFloat()
         ->and($cart->subtotal())->toBeFloat()
         ->and($cart->total())->toBe(218.89) // (99.99 + 49.50 * 2) * 1.10 = 198.99 * 1.10
@@ -91,12 +91,12 @@ it('verifies cart method return types with and without formatting', function () 
 
     // Test with formatting ENABLED
     PriceFormatManager::enableFormatting();
-    
+
     expect($cart->total())->toBeString()
         ->and($cart->subtotal())->toBeString()
         ->and($cart->total())->toBe('218.89')
         ->and($cart->subtotal())->toBe('198.99');
-        
+
     // Reset formatting state
     PriceFormatManager::disableFormatting();
 });

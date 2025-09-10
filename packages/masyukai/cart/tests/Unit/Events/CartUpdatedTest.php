@@ -109,15 +109,15 @@ beforeEach(function (): void {
         {
             $oldKey = "{$oldIdentifier}.{$instance}";
             $newKey = "{$newIdentifier}.{$instance}";
-            
-            if (!isset($this->data[$oldKey])) {
+
+            if (! isset($this->data[$oldKey])) {
                 return false;
             }
-            
+
             // Move data from old to new identifier
             $this->data[$newKey] = $this->data[$oldKey];
             unset($this->data[$oldKey]);
-            
+
             // Also move conditions and metadata if they exist
             $oldConditionsKey = "{$oldIdentifier}.{$instance}.conditions";
             $newConditionsKey = "{$newIdentifier}.{$instance}.conditions";
@@ -125,7 +125,7 @@ beforeEach(function (): void {
                 $this->data[$newConditionsKey] = $this->data[$oldConditionsKey];
                 unset($this->data[$oldConditionsKey]);
             }
-            
+
             // Move metadata
             foreach ($this->data as $key => $value) {
                 if (str_starts_with($key, "{$oldIdentifier}.{$instance}.metadata.")) {
@@ -135,7 +135,7 @@ beforeEach(function (): void {
                     unset($this->data[$key]);
                 }
             }
-            
+
             return true;
         }
     };

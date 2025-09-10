@@ -17,7 +17,7 @@ it('diagnoses cart behavior', function () {
 
     // Step 2: Update product-2 quantity to 5
     $updateResult = Cart::update('product-2', ['quantity' => 5]);
-    
+
     // It seems the update method adds to quantity rather than replacing it
     // So 2 + 5 = 7, and total is 1 + 7 + 3 = 11
     expect(Cart::getTotalQuantity())->toBe(11); // 1 + 7 + 3
@@ -36,7 +36,7 @@ it('checks cart toArray structure', function () {
     Cart::add('test-item', 'Test Item', 50.00, 2);
 
     $cartArray = Cart::toArray();
-    
+
     // Check what keys are actually available
     expect($cartArray)->toBeArray();
     expect($cartArray)->toHaveKey('items');

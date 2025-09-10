@@ -64,6 +64,7 @@ it('can migrate guest cart to user cart', function () {
         $table->longText('items')->nullable();
         $table->longText('conditions')->nullable();
         $table->longText('metadata')->nullable();
+        $table->bigInteger('version')->default(1)->index()->comment('Version number for optimistic locking');
         $table->timestamps();
         $table->unique(['identifier', 'instance']);
     });

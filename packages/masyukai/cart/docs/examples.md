@@ -339,137 +339,114 @@ class CartController extends Controller
 }
 ```
 
-### Frontend Cart Component (Livewire)
+### Frontend Cart Component (Vue.js)
 
-```php
-<?php
-
-namespace App\Livewire;
-
-use App\Models\Product;
-use Livewire\Component;
-use MasyukAI\Cart\Facades\Cart;
-
-class ShoppingCart extends Component
-{
-    public $showCartDetails = false;
-    public $couponCode = '';
-    public $shippingOption = 'standard';
-    public $loading = false;
-    
-    protected $listeners = [
-        'cart-updated' => 'refreshCart',
-        'product-added' => 'refreshCart'
-    ];
-    
-    public function mount()
-    {
-        $this->refreshCart();
-    }
-    
-    public function addToCart($productId, $quantity = 1, $variants = [])
-    {
-        $this->loading = true;
+```vue
+<template>
+    <div class="shopping-cart">
+        <div class="cart-summary">
+            <h2>Shopping Cart ({{ cart.count }} items)</h2>
+            <div class="cart-total">${{ cart.total }}</div>
+        </div>
         
-        try {
-            $product = Product::findOrFail($productId);
-            
-            Cart::add(
-                id: $productId . '_' . md5(serialize($variants)),
-                name: $product->name,
-                price: $product->price,
-                quantity: $quantity,
-                attributes: array_merge($variants, [
-                    'image' => $product->image_url,
-                    'category' => $product->category->name,
-                ])
-            );
-            
-            $this->dispatch('cart-updated');
-            $this->dispatch('show-notification', 'Product added to cart!', 'success');
-            
-        } catch (\Exception $e) {
-            $this->dispatch('show-notification', 'Failed to add product to cart', 'error');
-        } finally {
-            $this->loading = false;
-        }
-    }
-    
-    public function updateQuantity($itemId, $quantity)
-    {
-        if ($quantity <= 0) {
-            Cart::remove($itemId);
-        } else {
-            Cart::update($itemId, ['quantity' => $quantity]);
-        }
+        <div v-if="cart.items.length" class="cart-items">
+            <div v-for="item in cart.items" :key="item.id" class="cart-item">
+                <h3>{{ item.name }}</h3>
+                <div class="quantity-controls">
+                    <button @click="updateQuantity(item.id, item.quantity - 1)">-</button>
+                    <span>{{ item.quantity }}</span>
+                    <button @click="updateQuantity(item.id, item.quantity + 1)">+</button>
+                </div>
+                <div class="item-total">${{ item.total }}</div>
+                <button @click="removeItem(item.id)" class="remove-btn">Remove</button>
+            </div>
+        </div>
         
-        $this->refreshCart();
-        $this->dispatch('cart-updated');
-    }
-    
-    public function removeItem($itemId)
-    {
-        Cart::remove($itemId);
-        $this->refreshCart();
-        $this->dispatch('cart-updated');
-        $this->dispatch('show-notification', 'Item removed from cart', 'info');
-    }
-    
-    public function applyCoupon()
-    {
-        if (empty($this->couponCode)) {
-            return;
-        }
-        
-        // This would typically make an API call
-        $this->dispatch('apply-coupon', $this->couponCode);
-        $this->couponCode = '';
-    }
-    
-    public function updateShipping()
-    {
-        $this->dispatch('update-shipping', $this->shippingOption);
-    }
-    
-    public function clearCart()
-    {
-        Cart::clear();
-        $this->refreshCart();
-        $this->dispatch('cart-updated');
-        $this->dispatch('show-notification', 'Cart cleared', 'info');
-    }
-    
-    public function toggleCartDetails()
-    {
-        $this->showCartDetails = !$this->showCartDetails;
-    }
-    
-    public function refreshCart()
-    {
-        // Force refresh of cart data
-        $this->dispatch('$refresh');
-    }
-    
-    public function getCartProperty()
-    {
-        return Cart::content();
-    }
-    
-    public function render()
-    {
-        return view('livewire.shopping-cart', [
-            'cart' => $this->cart,
-            'isEmpty' => Cart::isEmpty(),
-            'itemCount' => Cart::count(),
-            'subtotal' => Cart::subtotal(),
-            'total' => Cart::total(),
-        ]);
+        <div class="cart-actions">
+            <input v-model="couponCode" placeholder="Coupon Code" />
+            <button @click="applyCoupon">Apply Coupon</button>
+            <button @click="proceedToCheckout" :disabled="loading">
+                {{ loading ? 'Processing...' : 'Checkout' }}
+            </button>
+        </div>
+    </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+
+const cart = ref({
+    items: [],
+    count: 0,
+    total: 0,
+    subtotal: 0
+})
+
+const couponCode = ref('')
+const loading = ref(false)
+
+const fetchCart = async () => {
+    try {
+        const response = await fetch('/api/cart')
+        cart.value = await response.json()
+    } catch (error) {
+        console.error('Error fetching cart:', error)
     }
 }
-```
+
+const updateQuantity = async (itemId, quantity) => {
+    if (quantity <= 0) {
+        await removeItem(itemId)
+        return
+    }
+    
+    try {
+        await fetch(`/api/cart/update/${itemId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ quantity })
+        })
+        await fetchCart()
+    } catch (error) {
+        console.error('Error updating quantity:', error)
+    }
+}
+
+const removeItem = async (itemId) => {
+    try {
+        await fetch(`/api/cart/remove/${itemId}`, { method: 'DELETE' })
+        await fetchCart()
+    } catch (error) {
+        console.error('Error removing item:', error)
+    }
+}
+
+const applyCoupon = async () => {
+    if (!couponCode.value) return
+    
+    try {
+        await fetch('/api/cart/coupon', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code: couponCode.value })
+        })
+        await fetchCart()
+        couponCode.value = ''
+    } catch (error) {
+        console.error('Error applying coupon:', error)
+    }
+}
+
+const proceedToCheckout = () => {
+    loading.value = true
+    window.location.href = '/checkout'
+}
+
+onMounted(fetchCart)
+</script>
+</template>
 
 ---
-
 ## 🏢 Multi-Vendor Marketplace
 
 ### Vendor-Specific Cart Management

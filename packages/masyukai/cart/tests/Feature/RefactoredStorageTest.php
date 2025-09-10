@@ -19,6 +19,7 @@ beforeEach(function () {
             $table->longText('items')->nullable()->comment('Serialized cart items');
             $table->longText('conditions')->nullable()->comment('Serialized cart conditions');
             $table->longText('metadata')->nullable()->comment('Serialized cart metadata');
+            $table->bigInteger('version')->default(1)->index()->comment('Version number for optimistic locking');
             $table->timestamps();
 
             $table->unique(['identifier', 'instance']);

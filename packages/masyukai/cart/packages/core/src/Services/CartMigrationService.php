@@ -30,6 +30,7 @@ class CartMigrationService
         $this->config = $config;
         $this->storage = $storage;
     }
+
     /**
      * Get the appropriate cart identifier for a user or guest session.
      *
@@ -377,15 +378,15 @@ class CartMigrationService
 
     /**
      * Swap cart ownership by transferring cart from old identifier to new identifier.
-     * 
+     *
      * This ensures the new identifier has an active cart by transferring
      * the cart from the old identifier, regardless of whether the new identifier
      * already has a cart. This prevents cart abandonment by ensuring continued
      * cart activity under the new identifier.
      *
-     * @param string $oldIdentifier The old identifier (e.g., guest session)
-     * @param string $newIdentifier The new identifier (e.g., user ID)
-     * @param string $instance The cart instance name (e.g., 'default', 'wishlist')
+     * @param  string  $oldIdentifier  The old identifier (e.g., guest session)
+     * @param  string  $newIdentifier  The new identifier (e.g., user ID)
+     * @param  string  $instance  The cart instance name (e.g., 'default', 'wishlist')
      * @return bool True if swap was successful (new identifier now has the cart)
      */
     public function swap(string $oldIdentifier, string $newIdentifier, string $instance = 'default'): bool
@@ -398,12 +399,12 @@ class CartMigrationService
 
     /**
      * Swap cart ownership for all instances from one identifier to another.
-     * 
+     *
      * This transfers all cart instances (default, wishlist, etc.) from the old
      * identifier to the new identifier.
      *
-     * @param string $oldIdentifier The old identifier (e.g., guest session)
-     * @param string $newIdentifier The new identifier (e.g., user ID)
+     * @param  string  $oldIdentifier  The old identifier (e.g., guest session)
+     * @param  string  $newIdentifier  The new identifier (e.g., user ID)
      * @return array Results for each instance swap
      */
     public function swapAllInstances(string $oldIdentifier, string $newIdentifier): array
@@ -421,13 +422,13 @@ class CartMigrationService
 
     /**
      * Swap guest cart when user logs in (simplified version of migration).
-     * 
+     *
      * Unlike migration which merges carts, this simply transfers the guest
      * cart to the user identifier, ensuring the user gets an active cart.
      *
-     * @param int $userId The user ID that will take over cart ownership
-     * @param string $instance The cart instance name (e.g., 'default', 'wishlist')
-     * @param string|null $guestSessionId The guest session ID to swap from
+     * @param  int  $userId  The user ID that will take over cart ownership
+     * @param  string  $instance  The cart instance name (e.g., 'default', 'wishlist')
+     * @param  string|null  $guestSessionId  The guest session ID to swap from
      * @return bool True if swap was successful
      */
     public function swapGuestCartToUser(int $userId, string $instance = 'default', ?string $guestSessionId = null): bool
@@ -440,9 +441,9 @@ class CartMigrationService
 
     /**
      * Swap all guest cart instances when user logs in.
-     * 
-     * @param int $userId The user ID that will take over cart ownership
-     * @param string|null $guestSessionId The guest session ID to swap from
+     *
+     * @param  int  $userId  The user ID that will take over cart ownership
+     * @param  string|null  $guestSessionId  The guest session ID to swap from
      * @return array Results for each instance swap
      */
     public function swapAllGuestInstancesToUser(int $userId, ?string $guestSessionId = null): array

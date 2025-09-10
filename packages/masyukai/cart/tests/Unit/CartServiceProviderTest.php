@@ -158,7 +158,7 @@ describe('CartServiceProvider', function () {
     });
 });
 
-// --- Integration-style tests for real container/config/event/Livewire logic ---
+// --- Integration-style tests for real container/config/event logic ---
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
 use MasyukAI\Cart\Contracts\PriceTransformerInterface;

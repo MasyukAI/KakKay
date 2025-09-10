@@ -466,9 +466,9 @@ Now that you have the basics down, explore these advanced features:
 - **[🔄 Multiple Instances](instances.md)** - Wishlist, comparison carts
 
 ### **🎨 Frontend Integration**
-- **[💫 Livewire Components](livewire.md)** - Reactive cart UI
 - **[🌐 API Endpoints](api-endpoints.md)** - REST API for SPAs
 - **[📱 Mobile Integration](mobile-integration.md)** - React Native, Flutter
+- **[🎭 Framework Examples](frontend-examples.md)** - Vue, React, Alpine.js
 
 ### **⚙️ Advanced Topics**
 - **[⚡ Events & Hooks](events.md)** - Cart lifecycle events
@@ -533,24 +533,33 @@ $comparison = Cart::instance('comparison');
 $comparison->add('product-3', 'Alternative', 89.99);
 ```
 
-## 5. Using Livewire Components
+## 5. Frontend Integration
 
-Add reactive cart components to your Blade templates:
+Create API endpoints for your frontend:
 
-```blade
-<!-- Add to cart button -->
-<livewire:add-to-cart 
-    product-id="123" 
-    product-name="iPhone 15" 
-    product-price="999.99"
-    :product-attributes="['color' => 'blue']"
-/>
-
-<!-- Cart summary in header -->
-<livewire:cart-summary />
-
-<!-- Full cart page -->
-<livewire:cart-table />
+```php
+// routes/api.php
+Route::middleware('api')->group(function () {
+    Route::get('/cart', function () {
+        return response()->json([
+            'items' => Cart::content(),
+            'total' => Cart::total(),
+            'count' => Cart::count()
+        ]);
+    });
+    
+    Route::post('/cart/add', function (Request $request) {
+        Cart::add(
+            $request->input('id'),
+            $request->input('name'), 
+            $request->input('price'),
+            $request->input('quantity', 1),
+            $request->input('attributes', [])
+        );
+        
+        return response()->json(['success' => true]);
+    });
+});
 ```
 
 ## 6. Advanced Usage
@@ -622,7 +631,7 @@ Now that you have the basics working:
 2. **[Explore the Conditions System](conditions.md)** - Master discounts and taxes  
 3. **[Configure Storage](storage.md)** - Choose the right storage driver
 4. **[Set Up Events](events.md)** - Hook into cart lifecycle
-5. **[Customize Livewire Components](livewire.md)** - Build your perfect UI
+5. **[Explore Frontend Examples](frontend-examples.md)** - Build your perfect UI
 
 ## Need Help?
 

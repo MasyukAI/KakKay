@@ -87,7 +87,7 @@ describe('Comprehensive Price Formatting Configuration', function () {
 
             $withoutCurrency = PriceFormatManager::formatPrice($price, false);
             // Skip withCurrency = true to avoid config dependency for now
-            
+
             // Both should be strings when formatting is enabled
             expect($withoutCurrency)->toBeString();
         });
@@ -98,7 +98,7 @@ describe('Comprehensive Price Formatting Configuration', function () {
             // Test that the formatter can handle configuration
             // Since config service may not be available in tests, just test basic functionality
             $formatter = PriceFormatManager::getFormatter();
-            
+
             expect($formatter)->toBeInstanceOf(\MasyukAI\Cart\Services\PriceFormatterService::class);
 
             // Test basic formatting works

@@ -5,8 +5,8 @@ declare(strict_types=1);
 use MasyukAI\Cart\CartManager;
 
 it('debugs subtotal calculation step by step', function () {
-    // Setup integer transformer
-    config(['cart.price_formatting.enabled' => true]);
+    // Setup integer transformer but disable formatting initially
+    config(['cart.price_formatting.enabled' => false]);
     config(['cart.price_formatting.default_transformer' => 'integer']);
 
     $cartManager = app(CartManager::class);
@@ -36,6 +36,7 @@ it('debugs subtotal calculation step by step', function () {
     expect($cartManager->subtotal())->toBeFloat();
 
     // Enable formatting and test again
+    config(['cart.price_formatting.enabled' => true]);
     $cartManager->formatted();
     expect($cartManager->subtotal())->toBeString();
 

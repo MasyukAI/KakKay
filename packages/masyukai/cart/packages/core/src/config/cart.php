@@ -117,4 +117,26 @@ return [
         'decimal_separator' => env('CART_DECIMAL_SEPARATOR', '.'),
         'thousands_separator' => env('CART_THOUSANDS_SEPARATOR', ','),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Data Limits & Security
+    |--------------------------------------------------------------------------
+    |
+    | Limits to prevent DoS attacks and ensure reasonable data sizes
+    |
+    */
+    'limits' => [
+        // Maximum number of items in a cart
+        'max_items' => env('CART_MAX_ITEMS', 1000),
+
+        // Maximum size of cart data in bytes (items, conditions, metadata)
+        'max_data_size_bytes' => env('CART_MAX_DATA_SIZE_BYTES', 1024 * 1024), // 1MB
+
+        // Maximum quantity per item
+        'max_item_quantity' => env('CART_MAX_ITEM_QUANTITY', 10000),
+
+        // Maximum string length for item names/attributes
+        'max_string_length' => env('CART_MAX_STRING_LENGTH', 255),
+    ],
 ];

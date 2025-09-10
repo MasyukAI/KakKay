@@ -94,7 +94,7 @@ abstract class TestCase extends Orchestra
             '--path' => __DIR__.'/../database/migrations',
         ]);
 
-        // Create test-specific table with new structure
+        // Create test-specific table with new structure including version column
         $this->app['db']->connection('testing')->getSchemaBuilder()->create('carts_test', function ($table) {
             $table->id();
             $table->string('identifier')->index()->comment('auth()->id() for authenticated users, session()->id() for guests');
@@ -102,6 +102,7 @@ abstract class TestCase extends Orchestra
             $table->longText('items')->nullable()->comment('Serialized cart items');
             $table->longText('conditions')->nullable()->comment('Serialized cart conditions');
             $table->longText('metadata')->nullable()->comment('Serialized cart metadata');
+            $table->bigInteger('version')->default(1)->index()->comment('Version number for optimistic locking');
             $table->timestamps();
 
             $table->unique(['identifier', 'instance']);

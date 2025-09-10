@@ -35,7 +35,7 @@ class CustomConditionFactory
         $attributes['type'] = 'tiered_discount';
         $attributes['calculator'] = function (float $value, CartCondition $condition): float {
             $tiers = $condition->getAttributes()['tiers'] ?? [];
-            
+
             // Sort tiers by min_amount in descending order to get highest applicable tier
             usort($tiers, function ($a, $b) {
                 return $b['min_amount'] <=> $a['min_amount'];
@@ -336,7 +336,7 @@ describe('Custom Condition Extensibility and Examples', function () {
         it('demonstrates conditional logic using factory pattern', function () {
             // Use factory pattern for complex custom conditions
             $categoryDiscount = CustomConditionFactory::createTieredDiscount('category_discount', [
-                ['min_amount' => 0, 'discount_percent' => 20]
+                ['min_amount' => 0, 'discount_percent' => 20],
             ], [
                 'target_category' => 'electronics',
                 'item_category' => 'electronics',

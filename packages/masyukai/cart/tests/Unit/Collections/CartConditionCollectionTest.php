@@ -113,7 +113,7 @@ it('can filter conditions by value', function (): void {
         target: 'subtotal',
         value: '-10%' // Same value as condition1
     );
-    
+
     $this->collection->put('discount-10', $this->condition1);     // -10%
     $this->collection->put('shipping', $this->condition2);        // +15
     $this->collection->put('tax', $this->condition3);             // +8%

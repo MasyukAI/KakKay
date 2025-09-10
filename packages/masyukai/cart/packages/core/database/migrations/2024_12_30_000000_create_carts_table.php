@@ -18,6 +18,7 @@ return new class extends Migration
             $table->longText('items')->nullable();
             $table->longText('conditions')->nullable();
             $table->longText('metadata')->nullable();
+            $table->bigInteger('version')->default(1)->index();
             $table->timestamps();
 
             $table->unique(['identifier', 'instance']);
