@@ -56,8 +56,8 @@ it('can migrate guest cart to user cart', function () {
     // Initialize cart with database storage using test database
     // Since we're running from main Laravel app, create the test table first
     $connection = app('db')->connection();
-    $connection->getSchemaBuilder()->dropIfExists('cart_storage_test');
-    $connection->getSchemaBuilder()->create('cart_storage_test', function ($table) {
+    $connection->getSchemaBuilder()->dropIfExists('carts_test');
+    $connection->getSchemaBuilder()->create('carts_test', function ($table) {
         $table->id();
         $table->string('identifier')->index();
         $table->string('instance')->default('default')->index();
@@ -68,7 +68,7 @@ it('can migrate guest cart to user cart', function () {
         $table->unique(['identifier', 'instance']);
     });
 
-    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'cart_storage_test');
+    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'carts_test');
     $cart = new \MasyukAI\Cart\Cart($storage);
 
     // Add items to guest cart using the cart instance (not facade)
@@ -251,7 +251,7 @@ it('dispatches cart merged event on successful migration', function () {
 it('handles user login event automatically when configured', function () {
     // Initialize cart with database storage
     $connection = app('db')->connection();
-    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'cart_storage_test');
+    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'carts_test');
     $cart = new \MasyukAI\Cart\Cart($storage);
 
     // Configure auto migration
@@ -302,7 +302,7 @@ it('handles user login event automatically when configured', function () {
 it('handles user logout event when configured', function () {
     // Initialize cart with database storage
     $connection = app('db')->connection();
-    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'cart_storage_test');
+    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'carts_test');
 
     config(['cart.migration.backup_on_logout' => true]);
 

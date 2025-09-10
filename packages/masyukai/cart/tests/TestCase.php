@@ -83,7 +83,7 @@ abstract class TestCase extends Orchestra
         // Configure cart settings for testing
         $app['config']->set('cart.storage', 'database');
         $app['config']->set('cart.database.connection', 'testing');
-        $app['config']->set('cart.database.table', 'cart_storage_test');
+        $app['config']->set('cart.database.table', 'carts_test');
         $app['config']->set('cart.events', true);
         $app['config']->set('cart.strict_validation', true);
     }
@@ -96,7 +96,7 @@ abstract class TestCase extends Orchestra
         ]);
 
         // Create test-specific table with new structure
-        $this->app['db']->connection('testing')->getSchemaBuilder()->create('cart_storage_test', function ($table) {
+        $this->app['db']->connection('testing')->getSchemaBuilder()->create('carts_test', function ($table) {
             $table->id();
             $table->string('identifier')->index()->comment('auth()->id() for authenticated users, session()->id() for guests');
             $table->string('instance')->default('default')->index()->comment('Cart instance name for multiple carts per identifier');

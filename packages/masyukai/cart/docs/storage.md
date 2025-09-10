@@ -72,7 +72,7 @@ Stores cart data in database tables. Best for persistent carts and user accounts
 'storage' => 'database',
 'database' => [
     'connection' => 'mysql',     // Database connection
-    'table' => 'cart_storage',   // Table name
+    'table' => 'carts',   // Table name
 ],
 ```
 
@@ -126,7 +126,7 @@ php artisan migrate
 'storage' => 'database',
 'database' => [
     'connection' => null, // Use default connection
-    'table' => 'cart_storage',
+    'table' => 'carts',
 ],
 ```
 
@@ -135,7 +135,7 @@ php artisan migrate
 ```env
 CART_STORAGE_DRIVER=database
 CART_DB_CONNECTION=mysql
-CART_DB_TABLE=cart_storage
+CART_DB_TABLE=carts
 ```
 
 ## Database Schema
@@ -143,7 +143,7 @@ CART_DB_TABLE=cart_storage
 The database storage uses the following schema:
 
 ```php
-Schema::create('cart_storage', function (Blueprint $table) {
+Schema::create('carts', function (Blueprint $table) {
     $table->id();
     $table->string('key')->unique();
     $table->longText('value');
@@ -339,7 +339,7 @@ cart_conditions.default
 php artisan schedule:run
 
 // In your scheduled job
-DB::table('cart_storage')
+DB::table('carts')
   ->where('expires_at', '<', now())
   ->delete();
 ```

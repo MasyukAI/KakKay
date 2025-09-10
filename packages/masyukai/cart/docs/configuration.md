@@ -41,7 +41,7 @@ Choose your preferred storage method:
 ```php
 'database' => [
     'connection' => env('CART_DB_CONNECTION', null),
-    'table' => env('CART_DB_TABLE', 'cart_storage'),
+    'table' => env('CART_DB_TABLE', 'carts'),
 ],
 ```
 
@@ -146,7 +146,7 @@ CART_SESSION_KEY=masyukai_cart
 
 # Database storage
 CART_DB_CONNECTION=mysql
-CART_DB_TABLE=cart_storage
+CART_DB_TABLE=carts
 
 # Cache storage  
 CART_CACHE_STORE=redis

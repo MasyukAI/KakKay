@@ -412,7 +412,7 @@ class DatabaseCartStorage implements CartStorageInterface
 {
     // Configuration
     public function __construct(
-        string $table = 'cart_storage',
+        string $table = 'carts',
         string $connection = null
     )
     
@@ -898,7 +898,7 @@ return [
         'database' => [
             'driver' => 'database',
             'connection' => env('CART_DB_CONNECTION', 'default'),
-            'table' => 'cart_storage',
+            'table' => 'carts',
         ],
         'file' => [
             'driver' => 'file',
@@ -1694,7 +1694,7 @@ public function __construct(
 ```php
 public function __construct(
     private ConnectionInterface $database,
-    private string $table = 'cart_storage'
+    private string $table = 'carts'
 )
 ```
 

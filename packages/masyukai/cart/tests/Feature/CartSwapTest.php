@@ -19,8 +19,8 @@ uses(RefreshDatabase::class);
 beforeEach(function () {
     // Create database storage for testing
     $connection = app('db')->connection();
-    $connection->getSchemaBuilder()->dropIfExists('cart_storage_swap_test');
-    $connection->getSchemaBuilder()->create('cart_storage_swap_test', function ($table) {
+    $connection->getSchemaBuilder()->dropIfExists('carts_swap_test');
+    $connection->getSchemaBuilder()->create('carts_swap_test', function ($table) {
         $table->id();
         $table->string('identifier')->index();
         $table->string('instance')->default('default')->index();
@@ -31,14 +31,14 @@ beforeEach(function () {
         $table->unique(['identifier', 'instance']);
     });
 
-    $this->storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'cart_storage_swap_test');
+    $this->storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'carts_swap_test');
     $this->cartMigration = new CartMigrationService([], $this->storage);
 });
 
 afterEach(function () {
     // Clean up the test table
     $connection = app('db')->connection();
-    $connection->getSchemaBuilder()->dropIfExists('cart_storage_swap_test');
+    $connection->getSchemaBuilder()->dropIfExists('carts_swap_test');
 });
 
 it('transfers source cart to target identifier even when target exists', function () {
@@ -193,8 +193,8 @@ it('swaps even when source cart is empty', function () {
 it('returns false when swapping non-existent cart', function () {
     // Create database storage for testing
     $connection = app('db')->connection();
-    $connection->getSchemaBuilder()->dropIfExists('cart_storage_swap_test_3');
-    $connection->getSchemaBuilder()->create('cart_storage_swap_test_3', function ($table) {
+    $connection->getSchemaBuilder()->dropIfExists('carts_swap_test_3');
+    $connection->getSchemaBuilder()->create('carts_swap_test_3', function ($table) {
         $table->id();
         $table->string('identifier')->index();
         $table->string('instance')->default('default')->index();
@@ -205,7 +205,7 @@ it('returns false when swapping non-existent cart', function () {
         $table->unique(['identifier', 'instance']);
     });
 
-    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'cart_storage_swap_test_3');
+    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'carts_swap_test_3');
     $migration = new CartMigrationService;
 
     // Try to swap a non-existent cart

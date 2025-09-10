@@ -34,7 +34,7 @@ describe('DatabaseStorage Coverage Tests', function () {
 
         // Mock for putItems
         $this->mockDatabase->shouldReceive('table')
-            ->with('cart_storage')
+            ->with('carts')
             ->once()
             ->andReturn($this->mockBuilder);
 
@@ -59,7 +59,7 @@ describe('DatabaseStorage Coverage Tests', function () {
         ];
 
         $this->mockDatabase->shouldReceive('table')
-            ->with('cart_storage')
+            ->with('carts')
             ->once()
             ->andReturn($this->mockBuilder);
 
@@ -89,7 +89,7 @@ describe('DatabaseStorage Coverage Tests', function () {
 
         // Mock for putConditions
         $this->mockDatabase->shouldReceive('table')
-            ->with('cart_storage')
+            ->with('carts')
             ->once()
             ->andReturn($this->mockBuilder);
 
@@ -114,7 +114,7 @@ describe('DatabaseStorage Coverage Tests', function () {
         ];
 
         $this->mockDatabase->shouldReceive('table')
-            ->with('cart_storage')
+            ->with('carts')
             ->once()
             ->andReturn($this->mockBuilder);
 
@@ -144,7 +144,7 @@ describe('DatabaseStorage Coverage Tests', function () {
         $conditions = ['shipping' => ['value' => 5]];
 
         $this->mockDatabase->shouldReceive('table')
-            ->with('cart_storage')
+            ->with('carts')
             ->once()
             ->andReturn($this->mockBuilder);
 
@@ -171,7 +171,7 @@ describe('DatabaseStorage Coverage Tests', function () {
         $storage = new DatabaseStorage($this->mockDatabase);
 
         $this->mockDatabase->shouldReceive('table')
-            ->with('cart_storage')
+            ->with('carts')
             ->once()
             ->andReturn($this->mockBuilder);
 
@@ -198,7 +198,7 @@ describe('DatabaseStorage Coverage Tests', function () {
         $storage = new DatabaseStorage($this->mockDatabase);
 
         $this->mockDatabase->shouldReceive('table')
-            ->with('cart_storage')
+            ->with('carts')
             ->once()
             ->andReturn($this->mockBuilder);
 
@@ -231,7 +231,7 @@ describe('DatabaseStorage Coverage Tests', function () {
         ];
 
         $this->mockDatabase->shouldReceive('table')
-            ->with('cart_storage')
+            ->with('carts')
             ->once()
             ->andReturn($this->mockBuilder);
 
@@ -264,7 +264,7 @@ describe('DatabaseStorage Coverage Tests', function () {
         ];
 
         $this->mockDatabase->shouldReceive('table')
-            ->with('cart_storage')
+            ->with('carts')
             ->once()
             ->andReturn($this->mockBuilder);
 
@@ -297,7 +297,7 @@ describe('DatabaseStorage Coverage Tests', function () {
         ];
 
         $this->mockDatabase->shouldReceive('table')
-            ->with('cart_storage')
+            ->with('carts')
             ->once()
             ->andReturn($this->mockBuilder);
 
@@ -330,7 +330,7 @@ describe('DatabaseStorage Coverage Tests', function () {
         ];
 
         $this->mockDatabase->shouldReceive('table')
-            ->with('cart_storage')
+            ->with('carts')
             ->once()
             ->andReturn($this->mockBuilder);
 
@@ -357,7 +357,7 @@ describe('DatabaseStorage Coverage Tests', function () {
         $storage = new DatabaseStorage($this->mockDatabase);
 
         $this->mockDatabase->shouldReceive('table')
-            ->with('cart_storage')
+            ->with('carts')
             ->once()
             ->andReturn($this->mockBuilder);
 
@@ -384,7 +384,7 @@ describe('DatabaseStorage Coverage Tests', function () {
         $storage = new DatabaseStorage($this->mockDatabase);
 
         $this->mockDatabase->shouldReceive('table')
-            ->with('cart_storage')
+            ->with('carts')
             ->once()
             ->andReturn($this->mockBuilder);
 
@@ -412,7 +412,7 @@ describe('DatabaseStorage Coverage Tests', function () {
         $storage = new DatabaseStorage($this->mockDatabase);
 
         $this->mockDatabase->shouldReceive('table')
-            ->with('cart_storage')
+            ->with('carts')
             ->once()
             ->andReturn($this->mockBuilder);
 
@@ -435,7 +435,7 @@ describe('DatabaseStorage Coverage Tests', function () {
             ->andReturn(['default', 'wishlist']);
 
         $this->mockDatabase->shouldReceive('table')
-            ->with('cart_storage')
+            ->with('carts')
             ->once()
             ->andReturn($this->mockBuilder);
 
@@ -458,7 +458,7 @@ describe('DatabaseStorage Coverage Tests', function () {
         $storage = new DatabaseStorage($this->mockDatabase);
 
         $this->mockDatabase->shouldReceive('table')
-            ->with('cart_storage')
+            ->with('carts')
             ->once()
             ->andReturn($this->mockBuilder);
 
@@ -483,7 +483,7 @@ describe('DatabaseStorage Coverage Tests', function () {
 
         // Mock for putMetadata - getting existing metadata
         $this->mockDatabase->shouldReceive('table')
-            ->with('cart_storage')
+            ->with('carts')
             ->once()
             ->andReturn($this->mockBuilder);
 
@@ -504,7 +504,7 @@ describe('DatabaseStorage Coverage Tests', function () {
 
         // Mock for putMetadata - updateOrInsert
         $this->mockDatabase->shouldReceive('table')
-            ->with('cart_storage')
+            ->with('carts')
             ->once()
             ->andReturn($this->mockBuilder);
 
@@ -522,7 +522,7 @@ describe('DatabaseStorage Coverage Tests', function () {
 
         // Mock for getMetadata
         $this->mockDatabase->shouldReceive('table')
-            ->with('cart_storage')
+            ->with('carts')
             ->once()
             ->andReturn($this->mockBuilder);
 
@@ -552,7 +552,7 @@ describe('DatabaseStorage Coverage Tests', function () {
 
         // Mock for putMetadata - getting existing metadata
         $this->mockDatabase->shouldReceive('table')
-            ->with('cart_storage')
+            ->with('carts')
             ->once()
             ->andReturn($this->mockBuilder);
 
@@ -573,7 +573,7 @@ describe('DatabaseStorage Coverage Tests', function () {
 
         // Mock for putMetadata - updateOrInsert
         $this->mockDatabase->shouldReceive('table')
-            ->with('cart_storage')
+            ->with('carts')
             ->once()
             ->andReturn($this->mockBuilder);
 
@@ -600,7 +600,7 @@ describe('DatabaseStorage Coverage Tests', function () {
         $storage = new DatabaseStorage($this->mockDatabase);
 
         $this->mockDatabase->shouldReceive('table')
-            ->with('cart_storage')
+            ->with('carts')
             ->once()
             ->andReturn($this->mockBuilder);
 
@@ -628,7 +628,7 @@ describe('DatabaseStorage Coverage Tests', function () {
         $storage = new DatabaseStorage($this->mockDatabase);
 
         $this->mockDatabase->shouldReceive('table')
-            ->with('cart_storage')
+            ->with('carts')
             ->once()
             ->andReturn($this->mockBuilder);
 

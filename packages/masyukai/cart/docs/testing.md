@@ -175,13 +175,13 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 uses(RefreshDatabase::class);
 
 it('persists cart data in database', function () {
-    $storage = new DatabaseStorage(DB::connection(), 'cart_storage');
+    $storage = new DatabaseStorage(DB::connection(), 'carts');
     $cart = new Cart($storage, instanceName: 'test');
     
     $cart->add('product-1', 'Test Product', 99.99);
     
     // Verify database storage
-    expect(DB::table('cart_storage')->where('key', 'cart.test')->exists())
+    expect(DB::table('carts')->where('key', 'cart.test')->exists())
         ->toBeTrue();
     
     // Create new cart instance

@@ -10,7 +10,7 @@ readonly class DatabaseStorage implements StorageInterface
 {
     public function __construct(
         private Database $database,
-        private string $table = 'cart_storage'
+        private string $table = 'carts'
     ) {
         //
     }

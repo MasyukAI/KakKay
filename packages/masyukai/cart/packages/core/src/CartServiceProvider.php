@@ -109,7 +109,7 @@ class CartServiceProvider extends ServiceProvider
 
             return new DatabaseStorage(
                 $connection,
-                config('cart.database.table', 'cart_storage')
+                config('cart.database.table', 'carts')
             );
         });
     }

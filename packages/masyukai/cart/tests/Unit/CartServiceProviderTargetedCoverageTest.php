@@ -41,7 +41,7 @@ describe('CartServiceProvider Targeted Coverage', function () {
             'cart.cache.prefix' => 'test_cart',
             'cart.cache.ttl' => 7200,
             'cart.session.key' => 'test_session_cart',
-            'cart.database.table' => 'test_cart_storage',
+            'cart.database.table' => 'test_carts',
         ]);
 
         $provider = new CartServiceProvider(app());

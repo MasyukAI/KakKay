@@ -124,7 +124,7 @@ dd(session('test')); // Should output 'value'
 
 **Problem:** Database cart storage not working
 ```
-SQLSTATE[42S02]: Base table or view not found: 'cart_storage'
+SQLSTATE[42S02]: Base table or view not found: 'carts'
 ```
 
 **Solutions:**
@@ -147,7 +147,7 @@ DB::connection()->getPdo();
 
 4. Manually create table if needed:
 ```sql
-CREATE TABLE cart_storage (
+CREATE TABLE carts (
     id VARCHAR(255) PRIMARY KEY,
     data TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -178,9 +178,9 @@ echo "Cart add took: " . $time . " seconds";
 
 2. Optimize database storage:
 ```sql
--- Add indexes to cart_storage table
-ALTER TABLE cart_storage ADD INDEX idx_created_at (created_at);
-ALTER TABLE cart_storage ADD INDEX idx_updated_at (updated_at);
+-- Add indexes to carts table
+ALTER TABLE carts ADD INDEX idx_created_at (created_at);
+ALTER TABLE carts ADD INDEX idx_updated_at (updated_at);
 ```
 
 3. Use Redis for better performance:

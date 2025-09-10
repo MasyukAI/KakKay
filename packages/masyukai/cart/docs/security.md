@@ -524,7 +524,7 @@ class EncryptedCartStorage implements CartStorageInterface
     {
         $encryptedData = encrypt(json_encode($data));
         
-        DB::table('cart_storage')->updateOrInsert(
+        DB::table('carts')->updateOrInsert(
             ['id' => $identifier],
             [
                 'cart_data' => $encryptedData,
@@ -535,7 +535,7 @@ class EncryptedCartStorage implements CartStorageInterface
     
     public function retrieve(string $identifier): array
     {
-        $record = DB::table('cart_storage')
+        $record = DB::table('carts')
             ->where('id', $identifier)
             ->first();
             

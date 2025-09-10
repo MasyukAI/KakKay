@@ -733,7 +733,7 @@ Cart::setMetadata('temp_billing_data', request()->only([
     'driver' => 'database',
     'database' => [
         'connection' => 'mysql',
-        'table' => 'cart_storage'
+        'table' => 'carts'
     ]
 ]
 ```
@@ -778,7 +778,7 @@ return [
         
         'database' => [
             'connection' => env('CART_DB_CONNECTION'),
-            'table' => 'cart_storage',
+            'table' => 'carts',
         ],
         
         'cache' => [

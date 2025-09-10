@@ -29,7 +29,7 @@ beforeEach(function () {
         try {
             $this->databaseStorage = new DatabaseStorage(
                 database: app('db')->connection(),
-                table: 'cart_storage_test'
+                table: 'carts_test'
             );
         } catch (\Exception $e) {
             $this->databaseStorage = null; // Skip database tests if connection fails

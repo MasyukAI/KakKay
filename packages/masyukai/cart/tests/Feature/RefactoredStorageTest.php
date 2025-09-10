@@ -11,8 +11,8 @@ use MasyukAI\Cart\Storage\SessionStorage;
 
 beforeEach(function () {
     // Create test table with new structure (separate from the main migration)
-    if (! Schema::hasTable('cart_storage_refactor_test')) {
-        Schema::create('cart_storage_refactor_test', function ($table) {
+    if (! Schema::hasTable('carts_refactor_test')) {
+        Schema::create('carts_refactor_test', function ($table) {
             $table->id();
             $table->string('identifier')->index()->comment('auth()->id() for authenticated users, session()->id() for guests');
             $table->string('instance')->default('default')->index()->comment('Cart instance name for multiple carts per identifier');
@@ -27,19 +27,19 @@ beforeEach(function () {
 
     $this->databaseStorage = new DatabaseStorage(
         database: app('db')->connection(),
-        table: 'cart_storage_refactor_test'
+        table: 'carts_refactor_test'
     );
 
     $this->sessionStorage = new SessionStorage(session()->driver());
 
     // Clean up any existing data
-    DB::table('cart_storage_refactor_test')->truncate();
+    DB::table('carts_refactor_test')->truncate();
     session()->flush();
 });
 
 afterEach(function () {
     // Clean up test table
-    Schema::dropIfExists('cart_storage_refactor_test');
+    Schema::dropIfExists('carts_refactor_test');
 });
 
 describe('Refactored Cart Storage Structure', function () {
@@ -76,7 +76,7 @@ describe('Refactored Cart Storage Structure', function () {
         $identifier = $getIdentifierMethod->invoke($cart);
 
         // Verify database record structure
-        $record = DB::table('cart_storage_refactor_test')
+        $record = DB::table('carts_refactor_test')
             ->where('identifier', $identifier)
             ->where('instance', 'test_instance')
             ->first();
@@ -157,12 +157,12 @@ describe('Refactored Cart Storage Structure', function () {
         $identifier = $getIdentifierMethod->invoke($cart1);
 
         // Verify they are stored separately
-        $cartRecord = DB::table('cart_storage_refactor_test')
+        $cartRecord = DB::table('carts_refactor_test')
             ->where('identifier', $identifier)
             ->where('instance', 'cart')
             ->first();
 
-        $wishlistRecord = DB::table('cart_storage_refactor_test')
+        $wishlistRecord = DB::table('carts_refactor_test')
             ->where('identifier', $identifier)
             ->where('instance', 'wishlist')
             ->first();

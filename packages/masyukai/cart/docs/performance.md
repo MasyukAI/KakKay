@@ -53,7 +53,7 @@ Memory Usage:
     'driver' => 'database',
     'database' => [
         'connection' => 'mysql',
-        'table' => 'cart_storage',
+        'table' => 'carts',
     ],
 ],
 ```
@@ -63,7 +63,7 @@ Memory Usage:
 **Optimized Table Structure:**
 
 ```sql
-CREATE TABLE cart_storage (
+CREATE TABLE carts (
     id VARCHAR(255) NOT NULL,
     cart_data LONGTEXT NOT NULL,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -80,7 +80,7 @@ class CleanupOldCarts extends Command
 {
     public function handle()
     {
-        DB::table('cart_storage')
+        DB::table('carts')
             ->where('updated_at', '<', now()->subDays(30))
             ->delete();
             
@@ -440,7 +440,7 @@ public function boot()
 {
     if (config('app.debug')) {
         DB::listen(function ($query) {
-            if (str_contains($query->sql, 'cart_storage')) {
+            if (str_contains($query->sql, 'carts')) {
                 Log::info('Cart Query', [
                     'sql' => $query->sql,
                     'bindings' => $query->bindings,

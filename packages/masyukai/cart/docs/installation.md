@@ -162,7 +162,7 @@ php artisan migrate
     'driver' => 'database',
     'database' => [
         'connection' => 'mysql', // or your preferred connection
-        'table' => 'cart_storage',
+        'table' => 'carts',
     ],
 ],
 ```
@@ -172,7 +172,7 @@ php artisan migrate
 The migration creates this table:
 
 ```sql
-CREATE TABLE `cart_storage` (
+CREATE TABLE `carts` (
     `identifier` varchar(255) NOT NULL,
     `instance` varchar(255) NOT NULL,
     `items` longtext,
@@ -181,8 +181,8 @@ CREATE TABLE `cart_storage` (
     `created_at` timestamp NULL DEFAULT NULL,
     `updated_at` timestamp NULL DEFAULT NULL,
     PRIMARY KEY (`identifier`, `instance`),
-    KEY `cart_storage_identifier_index` (`identifier`),
-    KEY `cart_storage_instance_index` (`instance`)
+    KEY `carts_identifier_index` (`identifier`),
+    KEY `carts_instance_index` (`instance`)
 );
 ```
 
@@ -319,11 +319,11 @@ php artisan config:clear
 
 ```sql
 -- Add indexes for better performance
-CREATE INDEX idx_cart_identifier_updated ON cart_storage(identifier, updated_at);
-CREATE INDEX idx_cart_created_at ON cart_storage(created_at);
+CREATE INDEX idx_cart_identifier_updated ON carts(identifier, updated_at);
+CREATE INDEX idx_cart_created_at ON carts(created_at);
 
 -- For cleanup queries
-CREATE INDEX idx_cart_storage_updated_at ON cart_storage(updated_at);
+CREATE INDEX idx_carts_updated_at ON carts(updated_at);
 ```
 
 ---

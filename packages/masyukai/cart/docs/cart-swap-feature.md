@@ -10,7 +10,7 @@ The cart swap feature provides exactly what was requested: a "super stupid and s
 
 For **database storage**, this translates to a simple SQL UPDATE:
 ```sql
-UPDATE cart_storage 
+UPDATE carts 
 SET identifier = 'new_identifier' 
 WHERE identifier = 'old_identifier' AND instance = 'instance_name'
 ```
