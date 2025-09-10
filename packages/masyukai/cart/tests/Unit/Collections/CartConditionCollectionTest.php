@@ -98,16 +98,36 @@ it('can filter conditions by target', function (): void {
     $this->collection->put('shipping', $this->condition2);     // subtotal
     $this->collection->put('item-discount', $itemCondition);   // item
 
-    $subtotalConditions = $this->collection->filter(function ($condition) {
-        return $condition->getTarget() === 'subtotal';
-    });
-
-    $itemConditions = $this->collection->filter(function ($condition) {
-        return $condition->getTarget() === 'item';
-    });
+    $subtotalConditions = $this->collection->byTarget('subtotal');
+    $itemConditions = $this->collection->byTarget('item');
 
     expect($subtotalConditions->count())->toBe(2)
-        ->and($itemConditions->count())->toBe(1);
+        ->and($itemConditions->count())->toBe(1)
+        ->and($itemConditions->first())->toBe($itemCondition);
+});
+
+it('can filter conditions by value', function (): void {
+    $condition4 = new CartCondition(
+        name: 'special-discount',
+        type: 'discount',
+        target: 'subtotal',
+        value: '-10%' // Same value as condition1
+    );
+    
+    $this->collection->put('discount-10', $this->condition1);     // -10%
+    $this->collection->put('shipping', $this->condition2);        // +15
+    $this->collection->put('tax', $this->condition3);             // +8%
+    $this->collection->put('special-discount', $condition4);      // -10%
+
+    $tenPercentConditions = $this->collection->byValue('-10%');
+    $fifteenFlatConditions = $this->collection->byValue('+15');
+    $eightPercentConditions = $this->collection->byValue('+8%');
+
+    expect($tenPercentConditions->count())->toBe(2)
+        ->and($fifteenFlatConditions->count())->toBe(1)
+        ->and($eightPercentConditions->count())->toBe(1)
+        ->and($tenPercentConditions->keys()->toArray())->toContain('discount-10', 'special-discount')
+        ->and($fifteenFlatConditions->first())->toBe($this->condition2);
 });
 
 it('can sort conditions by order', function (): void {

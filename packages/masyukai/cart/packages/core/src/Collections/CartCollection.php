@@ -128,6 +128,36 @@ class CartCollection extends Collection
     }
 
     /**
+     * Filter items by condition type
+     */
+    public function filterByConditionType(string $type): static
+    {
+        return $this->filter(function (CartItem $item) use ($type) {
+            return $item->getConditions()->contains(fn ($condition) => $condition->getType() === $type);
+        });
+    }
+
+    /**
+     * Filter items by condition target
+     */
+    public function filterByConditionTarget(string $target): static
+    {
+        return $this->filter(function (CartItem $item) use ($target) {
+            return $item->getConditions()->contains(fn ($condition) => $condition->getTarget() === $target);
+        });
+    }
+
+    /**
+     * Filter items by condition value
+     */
+    public function filterByConditionValue(string|float $value): static
+    {
+        return $this->filter(function (CartItem $item) use ($value) {
+            return $item->getConditions()->contains(fn ($condition) => $condition->getValue() === $value);
+        });
+    }
+
+    /**
      * Get items with specific attribute
      */
     public function filterByAttribute(string $attribute, mixed $value = null): static

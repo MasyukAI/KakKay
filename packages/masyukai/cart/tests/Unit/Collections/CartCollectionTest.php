@@ -653,3 +653,153 @@ it('can find items by model type', function (): void {
     expect($modelItems->count())->toBe(1)
         ->and($modelItems->hasItem('item-model'))->toBeTrue();
 });
+
+it('can filter items by condition type', function (): void {
+    $itemWithDiscount = new CartItem(
+        id: 'item-discount',
+        name: 'Discount Item',
+        price: 100.0,
+        quantity: 1,
+        attributes: [],
+        conditions: [
+            'special-discount' => [
+                'name' => 'special-discount',
+                'type' => 'discount',
+                'target' => 'subtotal',
+                'value' => '-10',
+                'attributes' => [],
+                'order' => 0,
+            ],
+        ]
+    );
+
+    $itemWithTax = new CartItem(
+        id: 'item-tax',
+        name: 'Tax Item',
+        price: 50.0,
+        quantity: 1,
+        attributes: [],
+        conditions: [
+            'vat' => [
+                'name' => 'vat',
+                'type' => 'tax',
+                'target' => 'subtotal',
+                'value' => '15%',
+                'attributes' => [],
+                'order' => 1,
+            ],
+        ]
+    );
+
+    $this->collection->addItem($this->item1); // no conditions
+    $this->collection->addItem($itemWithDiscount); // discount type
+    $this->collection->addItem($itemWithTax); // tax type
+
+    $discountItems = $this->collection->filterByConditionType('discount');
+    $taxItems = $this->collection->filterByConditionType('tax');
+
+    expect($discountItems->count())->toBe(1)
+        ->and($discountItems->hasItem('item-discount'))->toBeTrue()
+        ->and($taxItems->count())->toBe(1)
+        ->and($taxItems->hasItem('item-tax'))->toBeTrue();
+});
+
+it('can filter items by condition target', function (): void {
+    $itemWithSubtotalCondition = new CartItem(
+        id: 'item-subtotal',
+        name: 'Subtotal Item',
+        price: 100.0,
+        quantity: 1,
+        attributes: [],
+        conditions: [
+            'discount' => [
+                'name' => 'discount',
+                'type' => 'discount',
+                'target' => 'subtotal',
+                'value' => '-10',
+                'attributes' => [],
+                'order' => 0,
+            ],
+        ]
+    );
+
+    $itemWithTotalCondition = new CartItem(
+        id: 'item-total',
+        name: 'Total Item',
+        price: 50.0,
+        quantity: 1,
+        attributes: [],
+        conditions: [
+            'shipping' => [
+                'name' => 'shipping',
+                'type' => 'fee',
+                'target' => 'total',
+                'value' => '5',
+                'attributes' => [],
+                'order' => 1,
+            ],
+        ]
+    );
+
+    $this->collection->addItem($this->item1); // no conditions
+    $this->collection->addItem($itemWithSubtotalCondition); // subtotal target
+    $this->collection->addItem($itemWithTotalCondition); // total target
+
+    $subtotalItems = $this->collection->filterByConditionTarget('subtotal');
+    $totalItems = $this->collection->filterByConditionTarget('total');
+
+    expect($subtotalItems->count())->toBe(1)
+        ->and($subtotalItems->hasItem('item-subtotal'))->toBeTrue()
+        ->and($totalItems->count())->toBe(1)
+        ->and($totalItems->hasItem('item-total'))->toBeTrue();
+});
+
+it('can filter items by condition value', function (): void {
+    $itemWithNegativeValue = new CartItem(
+        id: 'item-negative',
+        name: 'Negative Value Item',
+        price: 100.0,
+        quantity: 1,
+        attributes: [],
+        conditions: [
+            'discount' => [
+                'name' => 'discount',
+                'type' => 'discount',
+                'target' => 'subtotal',
+                'value' => '-10',
+                'attributes' => [],
+                'order' => 0,
+            ],
+        ]
+    );
+
+    $itemWithPercentageValue = new CartItem(
+        id: 'item-percentage',
+        name: 'Percentage Value Item',
+        price: 50.0,
+        quantity: 1,
+        attributes: [],
+        conditions: [
+            'tax' => [
+                'name' => 'tax',
+                'type' => 'tax',
+                'target' => 'subtotal',
+                'value' => '15%',
+                'attributes' => [],
+                'order' => 1,
+            ],
+        ]
+    );
+
+    $this->collection->addItem($this->item1); // no conditions
+    $this->collection->addItem($itemWithNegativeValue); // value: -10
+    $this->collection->addItem($itemWithPercentageValue); // value: 15%
+
+    $negativeItems = $this->collection->filterByConditionValue('-10');
+    $percentageItems = $this->collection->filterByConditionValue('15%');
+
+    expect($negativeItems->count())->toBe(1)
+        ->and($negativeItems->hasItem('item-negative'))->toBeTrue()
+        ->and($percentageItems->count())->toBe(1)
+        ->and($percentageItems->hasItem('item-percentage'))->toBeTrue();
+});

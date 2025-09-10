@@ -58,6 +58,14 @@ class CartConditionCollection extends Collection
     }
 
     /**
+     * Filter conditions by value
+     */
+    public function byValue(string|float $value): static
+    {
+        return $this->filter(fn (CartCondition $condition) => $condition->getValue() === $value);
+    }
+
+    /**
      * Get only discount conditions
      */
     public function discounts(): static
