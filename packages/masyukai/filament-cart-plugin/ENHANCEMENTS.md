@@ -10,12 +10,23 @@ The enhanced cart plugin now supports:
 2. **Condition Management** - Create and manage static/dynamic conditions  
 3. **Global Conditions** - Apply conditions across all carts automatically
 4. **Item-Level Conditions** - Apply conditions to specific cart items
+5. **Built-in Collection Filtering** - Leverage core cart package filtering methods
 
 ## New Features
 
 ### 1. Advanced Cart Filtering
 
-The cart list now includes powerful filtering options:
+The cart list now includes powerful filtering options with **two approaches**:
+
+#### Database-Level Filtering (for Filament tables and large datasets)
+- **Performance Optimized**: Uses MySQL JSON functions for efficient querying
+- **Scalable**: Works with large cart datasets without loading all data into memory
+- **Filament Integration**: Powers the table filters in the admin interface
+
+#### Collection-Level Filtering (for runtime manipulation)
+- **Feature Rich**: Leverages built-in collection methods from the core cart package
+- **In-Memory**: Works with loaded cart data for immediate manipulation
+- **Type Safe**: Uses strongly typed CartItem and CartCollection objects
 
 #### Cart Item Filters
 - **Product Search**: Find carts containing specific product IDs
@@ -71,6 +82,64 @@ New actions available on cart records:
 
 ## Usage Examples
 
+### Database-Level Filtering (for large datasets and Filament)
+
+```php
+use MasyukAI\FilamentCartPlugin\Models\Cart;
+
+// Find carts with specific products (database query)
+$carts = Cart::withProduct('product-123')->get();
+
+// Find carts with more than 3 items (database query)
+$carts = Cart::withItemCount(3, '>')->get();
+
+// Find carts in price range (database query)
+$carts = Cart::withSubtotalBetween(100, 500)->get();
+
+// Find carts with specific conditions (database query)
+$carts = Cart::withCondition('holiday-discount')->get();
+
+// Find carts with dynamic conditions (database query)
+$carts = Cart::withDynamicConditions()->get();
+```
+
+### Collection-Level Filtering (for runtime manipulation)
+
+```php
+use MasyukAI\FilamentCartPlugin\Models\Cart;
+
+$cart = Cart::find(1);
+
+// Get cart items as a strongly-typed collection
+$itemsCollection = $cart->getItemsCollection();
+
+// Filter items using built-in collection methods
+$discountItems = $cart->getItemsByConditionType('discount');
+$subtotalItems = $cart->getItemsByConditionTarget('subtotal');
+$specialItems = $cart->getItemsByCondition('holiday-special');
+$percentageItems = $cart->getItemsByConditionValue('10%');
+
+// Chain collection methods for complex filtering
+$complexFiltered = $cart->getItemsCollection()
+    ->filterByConditionType('discount')
+    ->filterByConditionTarget('subtotal')
+    ->filter(fn($item) => $item->getPrice() > 50);
+```
+
+### When to Use Each Approach
+
+**Use Database-Level Filtering when:**
+- Working with large datasets (1000+ carts)
+- Building Filament table filters
+- Need to paginate results
+- Want to minimize memory usage
+
+**Use Collection-Level Filtering when:**
+- Working with individual loaded carts
+- Need complex, multi-step filtering logic
+- Want to leverage built-in cart package features
+- Need type safety and IDE support
+
 ### Creating Conditions
 
 ```php
@@ -96,27 +165,6 @@ CartCondition::create([
     'is_global' => false,
     'description' => 'Express shipping upgrade fee'
 ]);
-```
-
-### Filtering Carts
-
-```php
-use MasyukAI\FilamentCartPlugin\Models\Cart;
-
-// Find carts with specific products
-$carts = Cart::withProduct('product-123')->get();
-
-// Find carts with more than 3 items
-$carts = Cart::withItemCount(3, '>')->get();
-
-// Find carts in price range
-$carts = Cart::withSubtotalBetween(100, 500)->get();
-
-// Find carts with specific conditions
-$carts = Cart::withCondition('holiday-discount')->get();
-
-// Find carts with dynamic conditions
-$carts = Cart::withDynamicConditions()->get();
 ```
 
 ### Cart Computed Properties
@@ -213,10 +261,22 @@ The test suite covers:
 
 ## Performance Considerations
 
+### Database-Level Filtering
 - JSON column queries use MySQL JSON functions for optimal performance
 - Indexes are added on frequently filtered condition columns
-- Computed properties are cached as attributes to avoid recalculation
-- Large cart datasets should consider database-level optimizations
+- Suitable for large datasets without memory overhead
+- Integrates seamlessly with Laravel's query builder and pagination
+
+### Collection-Level Filtering  
+- Uses built-in cart package collection methods for type safety
+- Requires loading cart data into memory first
+- Optimal for runtime manipulation of individual carts
+- Leverages cached computed properties to avoid recalculation
+
+### Recommendations
+- Use database-level filtering for Filament admin interfaces and reports
+- Use collection-level filtering for application logic and cart manipulation
+- Consider hybrid approaches: database filtering for initial queries, collection filtering for detailed processing
 
 ## Security Notes
 
