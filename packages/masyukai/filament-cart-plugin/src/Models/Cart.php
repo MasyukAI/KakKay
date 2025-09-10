@@ -70,6 +70,66 @@ class Cart extends Model
     }
 
     /**
+     * Get the total weight of items in the cart.
+     */
+    protected function totalWeight(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                if (!is_array($this->items)) {
+                    return 0;
+                }
+                
+                return array_sum(array_map(function ($item) {
+                    $weight = $item['attributes']['weight'] ?? 0;
+                    return (float) $weight * ($item['quantity'] ?? 0);
+                }, $this->items));
+            },
+        );
+    }
+
+    /**
+     * Get the total calculated with conditions applied.
+     */
+    protected function total(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $subtotal = $this->subtotal;
+                
+                if (!is_array($this->conditions)) {
+                    return $subtotal;
+                }
+                
+                foreach ($this->conditions as $condition) {
+                    if (isset($condition['type']) && $condition['type'] === 'cart') {
+                        $value = $condition['value'] ?? 0;
+                        $operator = substr($value, 0, 1);
+                        $amount = (float) substr($value, 1);
+                        
+                        switch ($operator) {
+                            case '+':
+                                $subtotal += $amount;
+                                break;
+                            case '-':
+                                $subtotal -= $amount;
+                                break;
+                            case '*':
+                                $subtotal *= $amount;
+                                break;
+                            case '/':
+                                if ($amount > 0) $subtotal /= $amount;
+                                break;
+                        }
+                    }
+                }
+                
+                return max(0, $subtotal);
+            },
+        );
+    }
+
+    /**
      * Get the subtotal of the cart.
      */
     protected function subtotal(): Attribute
@@ -104,6 +164,62 @@ class Cart extends Model
     }
 
     /**
+     * Get formatted total.
+     */
+    public function getFormattedTotalAttribute(): string
+    {
+        return '$' . number_format($this->total, 2);
+    }
+
+    /**
+     * Get unique product IDs in the cart.
+     */
+    public function getProductIdsAttribute(): array
+    {
+        if (!is_array($this->items)) {
+            return [];
+        }
+        
+        return array_unique(array_column($this->items, 'id'));
+    }
+
+    /**
+     * Get condition names applied to the cart.
+     */
+    public function getConditionNamesAttribute(): array
+    {
+        if (!is_array($this->conditions)) {
+            return [];
+        }
+        
+        return array_column($this->conditions, 'name');
+    }
+
+    /**
+     * Check if cart has specific product.
+     */
+    public function hasProduct(string $productId): bool
+    {
+        return in_array($productId, $this->product_ids);
+    }
+
+    /**
+     * Check if cart has any of the specified products.
+     */
+    public function hasAnyProduct(array $productIds): bool
+    {
+        return !empty(array_intersect($this->product_ids, $productIds));
+    }
+
+    /**
+     * Check if cart has specific condition.
+     */
+    public function hasCondition(string $conditionName): bool
+    {
+        return in_array($conditionName, $this->condition_names);
+    }
+
+    /**
      * Scope to filter by instance.
      */
     public function scopeInstance($query, string $instance): void
@@ -135,5 +251,105 @@ class Cart extends Model
     public function scopeRecent($query, int $days = 7): void
     {
         $query->where('updated_at', '>=', now()->subDays($days));
+    }
+
+    /**
+     * Scope to filter by item count.
+     */
+    public function scopeWithItemCount($query, int $count, string $operator = '='): void
+    {
+        $query->whereRaw("JSON_LENGTH(items) {$operator} ?", [$count]);
+    }
+
+    /**
+     * Scope to filter by total quantity.
+     */
+    public function scopeWithTotalQuantity($query, int $quantity, string $operator = '='): void
+    {
+        $query->whereRaw("
+            JSON_EXTRACT(items, '$[*].quantity') REGEXP CONCAT('^\\\\[.*', ?, '.*\\\\]$')
+        ", [$quantity]);
+    }
+
+    /**
+     * Scope to filter by subtotal range.
+     */
+    public function scopeWithSubtotalBetween($query, float $min, float $max): void
+    {
+        $query->whereRaw("
+            (
+                SELECT SUM(
+                    CAST(JSON_EXTRACT(item.value, '$.price') AS DECIMAL(10,2)) * 
+                    CAST(JSON_EXTRACT(item.value, '$.quantity') AS UNSIGNED)
+                )
+                FROM JSON_TABLE(items, '$[*]' COLUMNS (value JSON PATH '$')) AS item
+            ) BETWEEN ? AND ?
+        ", [$min, $max]);
+    }
+
+    /**
+     * Scope to filter by product ID.
+     */
+    public function scopeWithProduct($query, string $productId): void
+    {
+        $query->whereRaw("JSON_SEARCH(items, 'one', ?) IS NOT NULL", [$productId]);
+    }
+
+    /**
+     * Scope to filter by any of the provided product IDs.
+     */
+    public function scopeWithAnyProduct($query, array $productIds): void
+    {
+        $conditions = [];
+        $bindings = [];
+        
+        foreach ($productIds as $productId) {
+            $conditions[] = "JSON_SEARCH(items, 'one', ?) IS NOT NULL";
+            $bindings[] = $productId;
+        }
+        
+        if (!empty($conditions)) {
+            $query->whereRaw('(' . implode(' OR ', $conditions) . ')', $bindings);
+        }
+    }
+
+    /**
+     * Scope to filter by condition name.
+     */
+    public function scopeWithCondition($query, string $conditionName): void
+    {
+        $query->whereRaw("JSON_SEARCH(conditions, 'one', ?, NULL, '$[*].name') IS NOT NULL", [$conditionName]);
+    }
+
+    /**
+     * Scope to filter by condition type.
+     */
+    public function scopeWithConditionType($query, string $conditionType): void
+    {
+        $query->whereRaw("JSON_SEARCH(conditions, 'one', ?, NULL, '$[*].type') IS NOT NULL", [$conditionType]);
+    }
+
+    /**
+     * Scope to filter by condition value.
+     */
+    public function scopeWithConditionValue($query, string $conditionValue): void
+    {
+        $query->whereRaw("JSON_SEARCH(conditions, 'one', ?, NULL, '$[*].value') IS NOT NULL", [$conditionValue]);
+    }
+
+    /**
+     * Scope to get carts with dynamic conditions.
+     */
+    public function scopeWithDynamicConditions($query): void
+    {
+        $query->whereRaw("JSON_SEARCH(conditions, 'one', 'dynamic', NULL, '$[*].type') IS NOT NULL");
+    }
+
+    /**
+     * Scope to get carts with static conditions.
+     */
+    public function scopeWithStaticConditions($query): void
+    {
+        $query->whereRaw("JSON_SEARCH(conditions, 'one', 'static', NULL, '$[*].type') IS NOT NULL");
     }
 }

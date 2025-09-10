@@ -13,7 +13,11 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TextFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Filament\Schemas\Components\TextInput;
+use Filament\Schemas\Components\Select;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -60,6 +64,19 @@ class CartsTable
                         $query->orderByRaw('JSON_EXTRACT(items, "$[*].price") ' . $direction)
                     ),
 
+                TextColumn::make('formatted_total')
+                    ->label('Total')
+                    ->alignEnd()
+                    ->sortable()
+                    ->toggleable(),
+
+                TextColumn::make('total_weight')
+                    ->label('Weight')
+                    ->alignEnd()
+                    ->formatStateUsing(fn ($state): string => number_format($state, 2) . ' kg')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 // IconColumn::make('isEmpty')
                 //     ->label('Status')
                 //     ->boolean()
@@ -105,6 +122,96 @@ class CartsTable
                     ->query(fn (Builder $query): Builder => 
                         $query->whereDate('created_at', today())
                     ),
+
+                // Cart Item Filters
+                TextFilter::make('product_search')
+                    ->label('Search by Product ID')
+                    ->query(fn (Builder $query, array $data): Builder => 
+                        $data['value'] ? $query->withProduct($data['value']) : $query
+                    ),
+
+                Filter::make('item_count')
+                    ->label('Items Count')
+                    ->form([
+                        Select::make('operator')
+                            ->options([
+                                '=' => 'Equals',
+                                '>' => 'Greater than',
+                                '<' => 'Less than',
+                                '>=' => 'Greater than or equal',
+                                '<=' => 'Less than or equal',
+                            ])
+                            ->default('='),
+                        TextInput::make('count')
+                            ->numeric()
+                            ->placeholder('Enter item count'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        if (!empty($data['count']) && !empty($data['operator'])) {
+                            return $query->withItemCount((int) $data['count'], $data['operator']);
+                        }
+                        return $query;
+                    }),
+
+                Filter::make('subtotal_range')
+                    ->label('Subtotal Range')
+                    ->form([
+                        TextInput::make('min')
+                            ->numeric()
+                            ->placeholder('Min amount'),
+                        TextInput::make('max')
+                            ->numeric()
+                            ->placeholder('Max amount'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        if (!empty($data['min']) && !empty($data['max'])) {
+                            return $query->withSubtotalBetween((float) $data['min'], (float) $data['max']);
+                        }
+                        return $query;
+                    }),
+
+                // Condition-Based Filters
+                TextFilter::make('condition_name')
+                    ->label('Search by Condition Name')
+                    ->query(fn (Builder $query, array $data): Builder => 
+                        $data['value'] ? $query->withCondition($data['value']) : $query
+                    ),
+
+                SelectFilter::make('condition_type')
+                    ->label('Condition Type')
+                    ->options([
+                        'static' => 'Static',
+                        'dynamic' => 'Dynamic',
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return match ($data['value']) {
+                            'static' => $query->withStaticConditions(),
+                            'dynamic' => $query->withDynamicConditions(),
+                            default => $query,
+                        };
+                    }),
+
+                TextFilter::make('condition_value')
+                    ->label('Search by Condition Value')
+                    ->query(fn (Builder $query, array $data): Builder => 
+                        $data['value'] ? $query->withConditionValue($data['value']) : $query
+                    ),
+
+                TernaryFilter::make('has_conditions')
+                    ->label('Has Conditions')
+                    ->placeholder('All carts')
+                    ->trueLabel('With conditions')
+                    ->falseLabel('Without conditions')
+                    ->queries(
+                        true: fn (Builder $query) => $query->whereNotNull('conditions')
+                            ->where('conditions', '!=', '[]')
+                            ->where('conditions', '!=', '{}'),
+                        false: fn (Builder $query) => $query->where(function ($q) {
+                            $q->whereNull('conditions')
+                              ->orWhere('conditions', '[]')
+                              ->orWhere('conditions', '{}');
+                        })
+                    ),
             ])
             ->recordActions([
                 ViewAction::make()
@@ -126,6 +233,67 @@ class CartsTable
                             ]);
                         }),
                         // ->visible(fn ($record) => !$record->isEmpty()),
+
+                    Action::make('add_condition')
+                        ->label('Add Condition')
+                        ->icon(Heroicon::OutlinedPlus)
+                        ->color('success')
+                        ->form([
+                            Select::make('condition_id')
+                                ->label('Condition')
+                                ->options(
+                                    \MasyukAI\FilamentCartPlugin\Models\CartCondition::active()
+                                        ->pluck('name', 'id')
+                                        ->toArray()
+                                )
+                                ->required()
+                                ->searchable()
+                                ->preload(),
+                            
+                            Select::make('target')
+                                ->label('Apply to')
+                                ->options([
+                                    'cart' => 'Entire Cart',
+                                    'item' => 'Specific Item',
+                                ])
+                                ->default('cart')
+                                ->reactive(),
+                                
+                            Select::make('item_id')
+                                ->label('Item')
+                                ->options(function ($get, $record) {
+                                    if (!is_array($record->items)) {
+                                        return [];
+                                    }
+                                    
+                                    $options = [];
+                                    foreach ($record->items as $item) {
+                                        $options[$item['id']] = $item['name'] ?? $item['id'];
+                                    }
+                                    return $options;
+                                })
+                                ->visible(fn ($get) => $get('target') === 'item')
+                                ->required(fn ($get) => $get('target') === 'item'),
+                        ])
+                        ->action(function ($record, array $data) {
+                            $condition = \MasyukAI\FilamentCartPlugin\Models\CartCondition::find($data['condition_id']);
+                            if (!$condition) return;
+                            
+                            $conditions = $record->conditions ?? [];
+                            
+                            $newCondition = [
+                                'name' => $condition->name,
+                                'type' => $condition->type,
+                                'target' => $data['target'],
+                                'value' => $condition->value,
+                                'item_id' => $data['item_id'] ?? null,
+                                'applied_at' => now()->toISOString(),
+                            ];
+                            
+                            $conditions[] = $newCondition;
+                            
+                            $record->update(['conditions' => $conditions]);
+                        }),
 
                     Action::make('view_items')
                         ->label('View Items')
