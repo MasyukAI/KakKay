@@ -2,6 +2,8 @@
 
 namespace MasyukAI\FilamentCartPlugin\Resources\CartResource\Tables;
 
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Support\Icons\Heroicon;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
@@ -13,13 +15,14 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Filters\TextFilter;
+
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
-use Filament\Schemas\Components\TextInput;
-use Filament\Schemas\Components\Select;
+
+
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+
 
 class CartsTable
 {
@@ -60,7 +63,7 @@ class CartsTable
                 TextColumn::make('formatted_subtotal')
                     ->label('Subtotal')
                     ->alignEnd()
-                    ->sortable(query: fn (Builder $query, string $direction): Builder => 
+                    ->sortable(query: fn (Builder $query, string $direction): Builder =>
                         $query->orderByRaw('JSON_EXTRACT(items, "$[*].price") ' . $direction)
                     ),
 
@@ -119,14 +122,14 @@ class CartsTable
 
                 Filter::make('created_today')
                     ->label('Created Today')
-                    ->query(fn (Builder $query): Builder => 
+                    ->query(fn (Builder $query): Builder =>
                         $query->whereDate('created_at', today())
                     ),
 
                 // Cart Item Filters
-                TextFilter::make('product_search')
+                Filter::make('product_search')
                     ->label('Search by Product ID')
-                    ->query(fn (Builder $query, array $data): Builder => 
+                    ->query(fn (Builder $query, array $data): Builder =>
                         $data['value'] ? $query->withProduct($data['value']) : $query
                     ),
 
@@ -171,9 +174,9 @@ class CartsTable
                     }),
 
                 // Condition-Based Filters
-                TextFilter::make('condition_name')
+                Filter::make('condition_name')
                     ->label('Search by Condition Name')
-                    ->query(fn (Builder $query, array $data): Builder => 
+                    ->query(fn (Builder $query, array $data): Builder =>
                         $data['value'] ? $query->withCondition($data['value']) : $query
                     ),
 
@@ -191,9 +194,9 @@ class CartsTable
                         };
                     }),
 
-                TextFilter::make('condition_value')
+                Filter::make('condition_value')
                     ->label('Search by Condition Value')
-                    ->query(fn (Builder $query, array $data): Builder => 
+                    ->query(fn (Builder $query, array $data): Builder =>
                         $data['value'] ? $query->withConditionValue($data['value']) : $query
                     ),
 
@@ -216,7 +219,7 @@ class CartsTable
             ->recordActions([
                 ViewAction::make()
                     ->icon(Heroicon::OutlinedEye),
-                
+
                 EditAction::make()
                     ->icon(Heroicon::OutlinedPencil),
 
@@ -249,7 +252,7 @@ class CartsTable
                                 ->required()
                                 ->searchable()
                                 ->preload(),
-                            
+
                             Select::make('target')
                                 ->label('Apply to')
                                 ->options([
@@ -258,14 +261,14 @@ class CartsTable
                                 ])
                                 ->default('cart')
                                 ->reactive(),
-                                
+
                             Select::make('item_id')
                                 ->label('Item')
                                 ->options(function ($get, $record) {
                                     if (!is_array($record->items)) {
                                         return [];
                                     }
-                                    
+
                                     $options = [];
                                     foreach ($record->items as $item) {
                                         $options[$item['id']] = $item['name'] ?? $item['id'];
@@ -278,9 +281,9 @@ class CartsTable
                         ->action(function ($record, array $data) {
                             $condition = \MasyukAI\FilamentCartPlugin\Models\CartCondition::find($data['condition_id']);
                             if (!$condition) return;
-                            
+
                             $conditions = $record->conditions ?? [];
-                            
+
                             $newCondition = [
                                 'name' => $condition->name,
                                 'type' => $condition->type,
@@ -289,9 +292,9 @@ class CartsTable
                                 'item_id' => $data['item_id'] ?? null,
                                 'applied_at' => now()->toISOString(),
                             ];
-                            
+
                             $conditions[] = $newCondition;
-                            
+
                             $record->update(['conditions' => $conditions]);
                         }),
 
