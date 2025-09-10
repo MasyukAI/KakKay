@@ -7,6 +7,8 @@ namespace MasyukAI\FilamentCartPlugin\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use MasyukAI\Cart\Collections\CartCollection;
+use MasyukAI\Cart\Models\CartItem;
 
 class Cart extends Model
 {
@@ -351,5 +353,69 @@ class Cart extends Model
     public function scopeWithStaticConditions($query): void
     {
         $query->whereRaw("JSON_SEARCH(conditions, 'one', 'static', NULL, '$[*].type') IS NOT NULL");
+    }
+
+    /**
+     * Get cart items as a CartCollection for advanced filtering.
+     * Leverages built-in collection filtering methods from the core cart package.
+     */
+    public function getItemsCollection(): CartCollection
+    {
+        $collection = new CartCollection();
+        
+        if (!is_array($this->items)) {
+            return $collection;
+        }
+        
+        foreach ($this->items as $itemData) {
+            $item = new CartItem(
+                id: $itemData['id'] ?? '',
+                name: $itemData['name'] ?? '',
+                price: (float) ($itemData['price'] ?? 0),
+                quantity: (int) ($itemData['quantity'] ?? 0),
+                attributes: $itemData['attributes'] ?? [],
+                conditions: $itemData['conditions'] ?? []
+            );
+            
+            $collection->addItem($item);
+        }
+        
+        return $collection;
+    }
+
+    /**
+     * Filter cart items by condition type using built-in collection methods.
+     * Alternative to database-level filtering for loaded cart data.
+     */
+    public function getItemsByConditionType(string $type): CartCollection
+    {
+        return $this->getItemsCollection()->filterByConditionType($type);
+    }
+
+    /**
+     * Filter cart items by condition target using built-in collection methods.
+     * Alternative to database-level filtering for loaded cart data.
+     */
+    public function getItemsByConditionTarget(string $target): CartCollection
+    {
+        return $this->getItemsCollection()->filterByConditionTarget($target);
+    }
+
+    /**
+     * Filter cart items by condition value using built-in collection methods.
+     * Alternative to database-level filtering for loaded cart data.
+     */
+    public function getItemsByConditionValue(string|float $value): CartCollection
+    {
+        return $this->getItemsCollection()->filterByConditionValue($value);
+    }
+
+    /**
+     * Filter cart items by condition name using built-in collection methods.
+     * Alternative to database-level filtering for loaded cart data.
+     */
+    public function getItemsByCondition(string $conditionName): CartCollection
+    {
+        return $this->getItemsCollection()->filterByCondition($conditionName);
     }
 }
