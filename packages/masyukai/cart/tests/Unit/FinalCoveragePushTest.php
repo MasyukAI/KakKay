@@ -8,7 +8,7 @@ use MasyukAI\Cart\Conditions\CartCondition;
 use MasyukAI\Cart\Listeners\HandleUserLogin;
 use MasyukAI\Cart\Services\CartMigrationService;
 use MasyukAI\Cart\Storage\SessionStorage;
-use MasyukAI\Cart\Support\PriceFormatManager;
+use MasyukAI\Cart\Support\CartMoney;
 
 describe('Final Coverage Push Tests', function () {
     beforeEach(function () {
@@ -155,25 +155,22 @@ describe('Final Coverage Push Tests', function () {
         });
     });
 
-    describe('PriceFormatManager Lines 127-128', function () {
-        it('can test getConfig exception handling path', function () {
+    describe('CartMoney Modern API Coverage', function () {
+        it('can test modern CartMoney functionality', function () {
             // Reset formatting to ensure clean state
-            PriceFormatManager::resetFormatting();
+            CartMoney::resetFormatting();
 
-            // Try to trigger potential exception in getConfig by calling methods that use it
-            try {
-                $formatter = PriceFormatManager::getFormatter();
-                expect($formatter)->toBeInstanceOf(\MasyukAI\Cart\Services\PriceFormatterService::class);
-
-                // Try to call methods that use getConfig
-                PriceFormatManager::formatPrice(10.50);
-                PriceFormatManager::formatInputPrice(15.75);
-
-                expect(true)->toBeTrue();
-            } catch (Exception $e) {
-                // If exception occurs, test that we handle it gracefully
-                expect($e)->toBeInstanceOf(Exception::class);
-            }
+            // Test modern CartMoney API instead of removed methods
+            $money = CartMoney::fromAmount(10.50);
+            expect($money->getAmount())->toBe(10.5);
+            expect($money->getCents())->toBe(1050);
+            
+            $money2 = CartMoney::fromCents(1575); // $15.75
+            expect($money2->getAmount())->toBe(15.75);
+            
+            // Test formatting
+            expect($money->format())->toBeString();
+            expect($money2->formatSimple())->toBe('15.75');
         });
     });
 });

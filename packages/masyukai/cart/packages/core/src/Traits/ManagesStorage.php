@@ -63,8 +63,8 @@ trait ManagesStorage
             'instance' => $this->instanceName,
             'items' => $this->getItems()->toArray(),
             'conditions' => $this->getConditions()->toArray(),
-            'subtotal' => $this->getSubTotal(),
-            'total' => $this->getTotal(),
+            'subtotal' => $this->getRawSubtotal(),
+            'total' => $this->getRawTotal(),
             'quantity' => $this->getTotalQuantity(),
             'count' => $this->countItems(), // Number of unique items, not total quantity
             'is_empty' => $this->isEmpty(),

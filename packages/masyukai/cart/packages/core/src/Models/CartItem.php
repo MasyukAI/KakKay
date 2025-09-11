@@ -7,33 +7,76 @@ namespace MasyukAI\Cart\Models;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Support\Collection;
+use InvalidArgumentException;
 use JsonSerializable;
 use MasyukAI\Cart\Collections\CartConditionCollection;
 use MasyukAI\Cart\Conditions\CartCondition;
 use MasyukAI\Cart\Exceptions\InvalidCartItemException;
 use MasyukAI\Cart\Exceptions\UnknownModelException;
+use MasyukAI\Cart\Support\CartMoney;
 use MasyukAI\Cart\Traits\ManagesPricing;
+use MasyukAI\Cart\Traits\ManagesPriceTransformation;
 
 readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
 {
     use ManagesPricing;
+    use ManagesPriceTransformation;
 
     public CartConditionCollection $conditions;
 
     public Collection $attributes;
 
+    public CartMoney $cartMoney;
+
+    /**
+     * Computed price property for collection compatibility
+     */
+    public readonly float $price;
+
+    /**
+     * Store precision for the price property
+     */
+    private ?int $precision;
+
     public function __construct(
         public string $id,
         public string $name,
-        public float $price,
+        float|int|string|CartMoney $price,
         public int $quantity,
         array $attributes = [],
         array|Collection $conditions = [],
-        public string|object|null $associatedModel = null
+        public string|object|null $associatedModel = null,
+        ?string $currency = null,
+        ?int $precision = null
     ) {
-        $this->validateCartItem();
         $this->attributes = new Collection($attributes);
         $this->conditions = $this->normalizeConditions($conditions);
+        $this->precision = $precision;
+
+        if ($price instanceof CartMoney) {
+            $this->cartMoney = $price;
+        } else {
+            $this->cartMoney = $this->createMoney($price, $currency, $precision);
+        }
+
+        $this->price = $this->precision !== null
+            ? round($this->cartMoney->getAmount(), $this->precision)
+            : $this->cartMoney->getAmount(); // Set readonly property for collection compatibility
+        $this->validateCartItem();
+    }
+
+    /**
+     * Magic getter for price property
+     */
+    public function __get(string $name): mixed
+    {
+        if ($name === 'price') {
+            return $this->precision !== null
+                ? round($this->cartMoney->getAmount(), $this->precision)
+                : $this->cartMoney->getAmount();
+        }
+
+        throw new InvalidArgumentException("Property '{$name}' does not exist on CartItem");
     }
 
     /**
@@ -48,7 +91,7 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
         return new static(
             $this->id,
             $this->name,
-            $this->price,
+            $this->cartMoney,
             $quantity,
             $this->attributes->toArray(),
             $this->conditions->toArray(),
@@ -68,7 +111,7 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
         return new static(
             $this->id,
             trim($name),
-            $this->price,
+            $this->cartMoney,
             $this->quantity,
             $this->attributes->toArray(),
             $this->conditions->toArray(),
@@ -79,16 +122,18 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
     /**
      * Set item price
      */
-    public function setPrice(float $price): static
+    public function setPrice(float|int|string|CartMoney $price): static
     {
-        if ($price < 0) {
+        $money = $price instanceof CartMoney ? $price : $this->createMoney($price, null, $this->precision);
+
+        if ($money->getCents() < 0) {
             throw new InvalidCartItemException('Price cannot be negative');
         }
 
         return new static(
             $this->id,
             $this->name,
-            $price,
+            $money,
             $this->quantity,
             $this->attributes->toArray(),
             $this->conditions->toArray(),
@@ -237,19 +282,35 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
     }
 
     /**
-     * Get price sum (price × quantity) with item-level conditions applied (formatted)
+     * Get price sum (price × quantity) with item-level conditions applied (as CartMoney object)
      */
-    public function getPriceSum(): string|int|float
+    public function getPriceSum(): CartMoney
     {
-        return $this->formatPriceValue($this->getRawPriceSum());
+        return $this->getSumMoney();
     }
 
     /**
-     * Get price sum (price × quantity) without conditions (formatted)
+     * Get price sum (price × quantity) without conditions (as CartMoney object)
      */
-    public function getPriceSumWithoutConditions(): string|int|float
+    public function getPriceSumWithoutConditions(): CartMoney
     {
-        return $this->formatPriceValue($this->getRawPriceSumWithoutConditions());
+        return $this->getSumMoneyWithoutConditions();
+    }
+
+    /**
+     * Get formatted price sum (price × quantity) with item-level conditions applied
+     */
+    public function getPriceSumFormatted(): string
+    {
+        return $this->formatMoney($this->getSumMoney());
+    }
+
+    /**
+     * Get formatted price sum (price × quantity) without conditions
+     */
+    public function getPriceSumWithoutConditionsFormatted(): string
+    {
+        return $this->formatMoney($this->getSumMoneyWithoutConditions());
     }
 
     /**
@@ -257,7 +318,7 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
      */
     public function getRawPriceSum(): float
     {
-        return $this->getRawPrice() * $this->quantity;
+        return $this->getSumMoney()->getAmount();
     }
 
     /**
@@ -265,7 +326,7 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
      */
     public function getRawPriceSumWithoutConditions(): float
     {
-        return $this->price * $this->quantity;
+        return $this->getSumMoneyWithoutConditions()->getAmount();
     }
 
     /**
@@ -273,7 +334,7 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
      */
     public function getRawPriceWithoutConditions(): float
     {
-        return $this->price;
+        return $this->cartMoney->getAmount();
     }
 
     /**
@@ -281,69 +342,242 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
      */
     public function getRawPrice(): float
     {
-        $price = $this->price;
+        return $this->getMoney()->getAmount();
+    }
+
+    /**
+     * Get sum as Money object (price × quantity) with conditions applied (internal calculations)
+     */
+    public function getSumMoney(): CartMoney
+    {
+        $price = $this->getMoney();
+
+        return $price->multiply($this->quantity);
+    }
+
+    /**
+     * Get sum as Money object (price × quantity) without conditions (internal calculations)
+     */
+    public function getSumMoneyWithoutConditions(): CartMoney
+    {
+        return $this->cartMoney->multiply($this->quantity);
+    }
+
+    /**
+     * Get base price as Money object with conditions applied (internal calculations)
+     */
+    public function getMoney(): CartMoney
+    {
+        $price = $this->cartMoney;
 
         foreach ($this->conditions as $condition) {
-            $price = $condition->apply($price);
+            $priceFloat = $condition->apply($price->getAmount());
+            // Use the higher precision from the condition calculation
+            // The condition apply method now returns results with appropriate precision
+            $price = $this->createMoney(max(0, $priceFloat), $price->getCurrency(), 3);
         }
 
-        return max(0, $price); // Ensure price doesn't go negative
+        return $price;
     }
 
     /**
-     * Get discount amount
+     * Get base price as Money object without conditions (internal calculations)
      */
-    public function getDiscountAmount(): float
+    public function getMoneyWithoutConditions(): CartMoney
     {
-        return $this->getRawPriceSumWithoutConditions() - $this->getRawPriceSum();
+        return $this->cartMoney;
     }
 
     /**
-     * Get discount amount (alias for more intuitive API)
+     * Get discount amount as CartMoney object
      */
-    public function discountAmount(): float
+    public function getDiscountAmount(): CartMoney
+    {
+        return $this->getDiscountMoney();
+    }
+
+    /**
+     * Get discount amount as float (backward compatibility)
+     */
+    public function getRawDiscountAmount(): float
+    {
+        return $this->getDiscountMoney()->getAmount();
+    }
+
+    /**
+     * Get discount as Money object (internal calculations)
+     */
+    public function getDiscountMoney(): CartMoney
+    {
+        $withoutConditions = $this->getSumMoneyWithoutConditions();
+        $withConditions = $this->getSumMoney();
+
+        // If precisions differ, convert to the higher precision for accurate calculation
+        $maxPrecision = max($withoutConditions->getPrecision(), $withConditions->getPrecision());
+
+        if ($withoutConditions->getPrecision() !== $maxPrecision) {
+            $withoutConditions = CartMoney::fromAmount(
+                $withoutConditions->getAmount(),
+                $withoutConditions->getCurrency(),
+                $maxPrecision
+            );
+        }
+
+        if ($withConditions->getPrecision() !== $maxPrecision) {
+            $withConditions = CartMoney::fromAmount(
+                $withConditions->getAmount(),
+                $withConditions->getCurrency(),
+                $maxPrecision
+            );
+        }
+
+        return $withoutConditions->subtract($withConditions);
+    }
+
+    /**
+     * Get discount amount (alias for more intuitive API, as CartMoney object)
+     */
+    public function discountAmount(): CartMoney
     {
         return $this->getDiscountAmount();
     }
 
     /**
-     * Get item price with item-level conditions applied (formatted if enabled)
+     * Get discount amount as float (alias for backward compatibility)
      */
-    public function getPrice(): string|int|float
+    public function discountAmountRaw(): float
     {
-        return $this->formatPriceValue($this->getRawPrice());
+        return $this->getRawDiscountAmount();
     }
 
     /**
-     * Get item price without conditions (formatted if enabled)
+     * Get item price with item-level conditions applied (as CartMoney object)
      */
-    public function getPriceWithoutConditions(): string|int|float
+    public function getPrice(): CartMoney
     {
-        return $this->formatPriceValue($this->getRawPriceWithoutConditions());
+        return $this->getMoney();
     }
 
     /**
-     * Get item subtotal (price * quantity, with item-level conditions applied, formatted if enabled)
+     * Get item price without conditions (as CartMoney object)
      */
-    public function subtotal(): string|int|float
+    public function getPriceWithoutConditions(): CartMoney
     {
-        return $this->formatPriceValue($this->getRawPriceSum());
+        return $this->getMoneyWithoutConditions();
     }
 
     /**
-     * Get item subtotal without conditions (price * quantity, formatted if enabled)
+     * Get formatted item price with item-level conditions applied
      */
-    public function subtotalWithoutConditions(): string|int|float
+    public function getPriceFormatted(): string
     {
-        return $this->formatPriceValue($this->getRawPriceSumWithoutConditions());
+        return $this->formatMoney($this->getMoney());
     }
 
     /**
-     * Get total for this item (alias for subtotal)
+     * Get formatted item price without conditions
      */
-    public function total(): string|int|float
+    public function getPriceWithoutConditionsFormatted(): string
+    {
+        return $this->formatMoney($this->getMoneyWithoutConditions());
+    }
+
+    /**
+     * Get item subtotal (price * quantity, with item-level conditions applied, as CartMoney object)
+     */
+    public function subtotal(): CartMoney
+    {
+        return $this->getSumMoney();
+    }
+
+    /**
+     * Get item subtotal without conditions (price * quantity, as CartMoney object)
+     */
+    public function subtotalWithoutConditions(): CartMoney
+    {
+        return $this->getSumMoneyWithoutConditions();
+    }
+
+    /**
+     * Get formatted item subtotal (price * quantity, with item-level conditions applied)
+     */
+    public function subtotalFormatted(): string
+    {
+        return $this->formatMoney($this->getSumMoney());
+    }
+
+    /**
+     * Get formatted item subtotal without conditions (price * quantity)
+     */
+    public function subtotalWithoutConditionsFormatted(): string
+    {
+        return $this->formatMoney($this->getSumMoneyWithoutConditions());
+    }
+
+    /**
+     * Get total for this item (alias for subtotal, as CartMoney object)
+     */
+    public function total(): CartMoney
     {
         return $this->subtotal();
+    }
+
+    /**
+     * Get formatted total for this item (alias for subtotal)
+     */
+    public function totalFormatted(): string
+    {
+        return $this->subtotalFormatted();
+    }
+
+    // ===== DISPLAY METHODS (Using Price Transformer) =====
+
+    /**
+     * Get display price (transformed from storage for UI)
+     */
+    public function getDisplayPrice(): float
+    {
+        return $this->transformFromStorage($this->getRawPrice());
+    }
+
+    /**
+     * Get display price without conditions (transformed from storage for UI)
+     */
+    public function getDisplayPriceWithoutConditions(): float
+    {
+        return $this->transformFromStorage($this->getRawPriceWithoutConditions());
+    }
+
+    /**
+     * Get display subtotal (transformed from storage for UI)
+     */
+    public function getDisplaySubtotal(): float
+    {
+        return $this->transformFromStorage($this->getRawPriceSum());
+    }
+
+    /**
+     * Get display subtotal without conditions (transformed from storage for UI)
+     */
+    public function getDisplaySubtotalWithoutConditions(): float
+    {
+        return $this->transformFromStorage($this->getRawPriceSumWithoutConditions());
+    }
+
+    /**
+     * Get formatted display price (for UI display)
+     */
+    public function getDisplayPriceFormatted(): string
+    {
+        return number_format($this->getDisplayPrice(), $this->getPricePrecision());
+    }
+
+    /**
+     * Get formatted display subtotal (for UI display)
+     */
+    public function getDisplaySubtotalFormatted(): string
+    {
+        return number_format($this->getDisplaySubtotal(), $this->getPricePrecision());
     }
 
     /**
@@ -394,7 +628,7 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
         return new static(
             $attributes['id'] ?? $this->id,
             $attributes['name'] ?? $this->name,
-            $attributes['price'] ?? $this->price,
+            $attributes['price'] ?? $this->cartMoney,
             $attributes['quantity'] ?? $this->quantity,
             $attributes['attributes'] ?? $this->attributes->toArray(),
             $attributes['conditions'] ?? $this->conditions->toArray(),
@@ -410,7 +644,7 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'price' => $this->price, // Store raw price, not calculated price
+            'price' => $this->cartMoney->getAmount(), // Store raw price (without conditions), not calculated price
             'quantity' => $this->quantity,
             'subtotal' => $this->subtotal(),
             'attributes' => $this->attributes->toArray(),
@@ -446,7 +680,7 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
             '%s (ID: %s, Price: %.2f, Quantity: %d)',
             $this->name,
             $this->id,
-            $this->price,
+            $this->cartMoney->getAmount(),
             $this->quantity
         );
     }
@@ -474,7 +708,7 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
             throw new InvalidCartItemException("Cart item name cannot exceed {$maxStringLength} characters");
         }
 
-        if ($this->price < 0) {
+        if ($this->cartMoney->getAmount() < 0) {
             throw new InvalidCartItemException('Cart item price cannot be negative');
         }
 
@@ -567,5 +801,50 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
         }
 
         return null;
+    }
+
+    // ============================================================================
+    // CLEAN ALIASES FOR INTUITIVE API
+    // ============================================================================
+    // These provide intuitive method names for common operations
+
+    /**
+     * Get base price as Money object (clean alias for getMoney)
+     */
+    public function money(): CartMoney
+    {
+        return $this->getMoney();
+    }
+
+    /**
+     * Get base price as Money object without conditions (clean alias)
+     */
+    public function moneyWithoutConditions(): CartMoney
+    {
+        return $this->getMoneyWithoutConditions();
+    }
+
+    /**
+     * Get sum as Money object (clean alias for getSumMoney)
+     */
+    public function sumMoney(): CartMoney
+    {
+        return $this->getSumMoney();
+    }
+
+    /**
+     * Get sum as Money object without conditions (clean alias)
+     */
+    public function sumMoneyWithoutConditions(): CartMoney
+    {
+        return $this->getSumMoneyWithoutConditions();
+    }
+
+    /**
+     * Get discount as Money object (clean alias for getDiscountMoney)
+     */
+    public function discountMoney(): CartMoney
+    {
+        return $this->getDiscountMoney();
     }
 }

@@ -119,7 +119,7 @@ describe('100% Coverage Tests', function () {
             $total = $item->total();
             $subtotal = $item->subtotal();
 
-            expect($total)->toBe($subtotal);
+            expect($total->getAmount())->toBe($subtotal->getAmount());
         });
     });
 
@@ -166,7 +166,7 @@ describe('100% Coverage Tests', function () {
         });
     });
 
-    describe('PriceFormatManager Coverage', function () {
+    describe('CartMoney Coverage', function () {
         it('can handle config retrieval scenarios', function () {
             // Since getConfig method was removed, we test that config values are properly accessed
             // This ensures the configuration system is working as expected

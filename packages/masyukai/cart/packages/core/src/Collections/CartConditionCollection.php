@@ -107,7 +107,9 @@ class CartConditionCollection extends Collection
             $value
         );
 
-        return (float) $result;
+        // Round to 2 decimal places to ensure precision consistency
+        // This prevents high-precision Money calculations from producing results like 218.889
+        return round((float) $result, 2);
     }
 
     /**

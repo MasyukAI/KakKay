@@ -8,7 +8,7 @@ use MasyukAI\Cart\Conditions\CartCondition;
 use MasyukAI\Cart\Listeners\HandleUserLogin;
 use MasyukAI\Cart\Services\CartMigrationService;
 use MasyukAI\Cart\Storage\SessionStorage;
-use MasyukAI\Cart\Support\PriceFormatManager;
+use MasyukAI\Cart\Support\CartMoney;
 
 describe('Additional Coverage Tests', function () {
     beforeEach(function () {
@@ -159,15 +159,16 @@ describe('Additional Coverage Tests', function () {
         });
     });
 
-    describe('PriceFormatManager Missing Lines', function () {
-        it('can test getConfig exception handling', function () {
+    describe('CartMoney Missing Lines', function () {
+        it('can test modern CartMoney functionality', function () {
             // Reset any global state
-            PriceFormatManager::resetFormatting();
+            CartMoney::resetFormatting();
 
-            // Try to trigger the exception handling in getConfig
-            // We can test this by calling a method that would use getConfig
-            $formatter = PriceFormatManager::getFormatter();
-            expect($formatter)->toBeInstanceOf(\MasyukAI\Cart\Services\PriceFormatterService::class);
+            // Test modern CartMoney API
+            $money = CartMoney::fromCents(1050); // $10.50
+            expect($money->getAmount())->toBe(10.5);
+            expect($money->getCents())->toBe(1050);
+            expect($money->formatSimple())->toBe('10.50');
         });
     });
 });

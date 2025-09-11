@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use MasyukAI\Cart\Conditions\CartCondition;
 use MasyukAI\Cart\Models\CartItem;
+use MasyukAI\Cart\Support\CartMoney;
 
 beforeEach(function (): void {
     $this->condition1 = new CartCondition(
@@ -70,7 +71,9 @@ it('can calculate price sum', function (): void {
         quantity: 3
     );
 
-    expect($item->getPriceSum())->toBe(150.0);
+    expect($item->getPriceSum())
+        ->toBeInstanceOf(CartMoney::class)
+        ->and($item->getRawPriceSum())->toBe(150.0);
 });
 
 it('can get single attribute', function (): void {
@@ -145,7 +148,7 @@ it('can calculate discount amount', function (): void {
         conditions: [$this->condition1] // -10%
     );
 
-    expect($item->getDiscountAmount())->toBe(20.0); // 200 - 180 = 20
+    expect($item->getDiscountAmount()->getAmount())->toBe(20.0); // 200 - 180 = 20
 });
 
 it('can convert to array', function (): void {
@@ -183,10 +186,10 @@ it('can convert to array', function (): void {
     ]);
 
     // But calculated values are still accessible via methods
-    expect($item->getPriceSum())->toBe(180.0); // (100 - 10%) * 2 = 180
-    expect($item->getPriceWithoutConditions())->toBe(100.0); // Original price
-    expect($item->getPriceSumWithoutConditions())->toBe(200.0); // Original total
-    expect($item->getDiscountAmount())->toBe(20.0);
+    expect($item->getPriceSum()->getAmount())->toBe(180.0); // (100 - 10%) * 2 = 180
+    expect($item->getPriceWithoutConditions()->getAmount())->toBe(100.0); // Original price
+    expect($item->getPriceSumWithoutConditions()->getAmount())->toBe(200.0); // Original total
+    expect($item->getDiscountAmount()->getAmount())->toBe(20.0);
 });
 
 it('can set new quantity', function (): void {
@@ -326,7 +329,7 @@ it('handles complex conditions correctly', function (): void {
     // Price after $5 charge: 85.0
     // Sum with conditions: 85.0 * 2 = 170.0
     expect($item->getRawPriceSum())->toBe(170.0)
-        ->and($item->getDiscountAmount())->toBe(30.0); // 200 - 170
+        ->and($item->getDiscountAmount()->getAmount())->toBe(30.0); // 200 - 170
 });
 
 it('can set item name', function (): void {

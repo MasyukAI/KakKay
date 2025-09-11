@@ -5,19 +5,20 @@ declare(strict_types=1);
 use MasyukAI\Cart\Events\CartCreated;
 use MasyukAI\Cart\Events\CartMerged;
 use MasyukAI\Cart\Listeners\HandleUserLogin;
-use MasyukAI\Cart\Listeners\HandleUserLogout;
 
 describe('Additional Coverage Tests', function () {
 
     it('can test IntegerPriceTransformer', function () {
         $transformer = new \MasyukAI\Cart\PriceTransformers\IntegerPriceTransformer;
 
-        $displayPrice = $transformer->toDisplay(1999);
-        expect($displayPrice)->toBe('19.99');
+        // Test storage conversion (the only thing transformers do now)
+        $storagePrice = $transformer->toStorage(19.99);
+        expect($storagePrice)->toBe(1999);
 
-        // For formatCurrency, we need to pass the storage format (cents)
-        $currencyFormatted = $transformer->formatCurrency(1999);
-        expect($currencyFormatted)->toBe('$19.99');
+        // Test that CartMoney handles formatting correctly
+        $cartMoney = \MasyukAI\Cart\Support\CartMoney::fromCents(1999);
+        $formatted = $cartMoney->format();
+        expect($formatted)->toBeString();
     });
 
     it('can instantiate CartMerged event', function () {
@@ -68,7 +69,6 @@ describe('Additional Coverage Tests', function () {
 
     it('can instantiate event listeners', function () {
         expect(class_exists(HandleUserLogin::class))->toBeTrue();
-        expect(class_exists(HandleUserLogout::class))->toBeTrue();
     });
 
     it('can test Collections namespace coverage', function () {

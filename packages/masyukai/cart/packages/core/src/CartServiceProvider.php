@@ -6,63 +6,49 @@ namespace MasyukAI\Cart;
 
 use Illuminate\Auth\Events\Attempting;
 use Illuminate\Auth\Events\Login;
-use Illuminate\Auth\Events\Logout;
 use Illuminate\Contracts\Events\Dispatcher;
-use Illuminate\Contracts\Session\Session;
-use Illuminate\Database\ConnectionInterface as Database;
-use Illuminate\Support\ServiceProvider;
-use MasyukAI\Cart\Http\Middleware\AutoSwitchCartInstance;
+use MasyukAI\Cart\Cart;
 use MasyukAI\Cart\Listeners\HandleUserLogin;
 use MasyukAI\Cart\Listeners\HandleUserLoginAttempt;
-use MasyukAI\Cart\Listeners\HandleUserLogout;
 use MasyukAI\Cart\Services\CartMigrationService;
 use MasyukAI\Cart\Storage\CacheStorage;
 use MasyukAI\Cart\Storage\DatabaseStorage;
 use MasyukAI\Cart\Storage\SessionStorage;
 use MasyukAI\Cart\Storage\StorageInterface;
+use Spatie\LaravelPackageTools\Package;
+use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class CartServiceProvider extends ServiceProvider
+class CartServiceProvider extends PackageServiceProvider
 {
-    /**
-     * Register any package services.
-     */
-    public function register(): void
+    public function configurePackage(Package $package): void
     {
-        $this->mergeConfigFrom(__DIR__.'/config/cart.php', 'cart');
+        $package
+            ->name('cart')
+            ->hasConfigFile()
+            ->hasMigrations(['create_carts_table'])
+            ->hasViews()
+            ->hasCommands([
+                \MasyukAI\Cart\Console\Commands\ClearAbandonedCartsCommand::class,
+                \MasyukAI\Cart\Console\Commands\MigrateGuestCartCommand::class,
+                \MasyukAI\Cart\Console\Commands\CartMetricsCommand::class,
+            ]);
+    }
 
+    public function registeringPackage(): void
+    {
         $this->registerStorageDrivers();
         $this->registerCartManager();
         $this->registerMigrationService();
         $this->registerPriceTransformers();
+        $this->registerEnhancedServices();
     }
 
-    /**
-     * Bootstrap any package services.
-     */
-    public function boot(): void
+    public function bootingPackage(): void
     {
-        $this->publishConfig();
-        $this->publishMigrations();
-        $this->publishViews();
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'cart');
         $this->registerEventListeners();
-        $this->registerMiddleware();
+        $this->registerOctaneCompatibility();
     }
 
-    protected function registerMiddleware(): void
-    {
-        $this->app->booted(function () {
-            $middleware = $this->app->make('Illuminate\Foundation\Configuration\Middleware');
-
-            // Always alias for manual use
-            $middleware->alias(['cart.middleware' => AutoSwitchCartInstance::class]);
-
-            // Auto-apply to web routes if config enabled
-            if (config('cart.migration.auto_switch_instances', true)) {
-                $middleware->web(append: [AutoSwitchCartInstance::class]);
-            }
-        });
-    }
 
     /**
      * Register storage drivers
@@ -85,25 +71,7 @@ class CartServiceProvider extends ServiceProvider
         });
 
         $this->app->bind('cart.storage.database', function (\Illuminate\Contracts\Foundation\Application $app) {
-            // Check environment safely
-            try {
-                $isTesting = $app->environment('testing');
-            } catch (\Exception $e) {
-                $isTesting = true;
-            }
-
-            // Skip database storage in test environment if db is not properly bound
-            if ($isTesting && ! $app->bound('db')) {
-                throw new \Exception('Database storage not available in test environment. Use session or cache storage instead.');
-            }
-
-            // Handle test environment properly
-            if ($isTesting && $app->bound('db.connection')) {
-                $connection = $app->make(\Illuminate\Database\ConnectionInterface::class);
-            } else {
-                $connection = $app->make(\Illuminate\Database\ConnectionResolverInterface::class)->connection();
-            }
-
+            $connection = $app->make(\Illuminate\Database\ConnectionResolverInterface::class)->connection();
             return new DatabaseStorage(
                 $connection,
                 config('cart.database.table', 'carts')
@@ -119,7 +87,6 @@ class CartServiceProvider extends ServiceProvider
         $this->app->singleton('cart', function (\Illuminate\Contracts\Foundation\Application $app) {
             $driver = config('cart.storage', 'session');
             $storage = $app->make("cart.storage.{$driver}");
-
             return new CartManager(
                 storage: $storage,
                 events: $app->make(Dispatcher::class),
@@ -129,28 +96,6 @@ class CartServiceProvider extends ServiceProvider
         });
 
         $this->app->alias('cart', CartManager::class);
-    }
-
-    /**
-     * Publish configuration file
-     */
-    protected function publishConfig(): void
-    {
-        $this->publishes([
-            __DIR__.'/config/cart.php' => config_path('cart.php'),
-        ], 'cart-config');
-    }
-
-    /**
-     * Publish migration files
-     */
-    protected function publishMigrations(): void
-    {
-        $this->publishes([
-            __DIR__.'/../database/migrations' => database_path('migrations'),
-        ], 'cart-migrations');
-
-        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
     }
 
     /**
@@ -174,20 +119,6 @@ class CartServiceProvider extends ServiceProvider
             // Register login listener to handle cart migration
             $this->app->make(\Illuminate\Contracts\Events\Dispatcher::class)->listen(Login::class, HandleUserLogin::class);
         }
-
-        if (config('cart.migration.backup_on_logout', false)) {
-            $this->app->make(\Illuminate\Contracts\Events\Dispatcher::class)->listen(Logout::class, HandleUserLogout::class);
-        }
-    }
-
-    /**
-     * Publish view files
-     */
-    protected function publishViews(): void
-    {
-        $this->publishes([
-            __DIR__.'/../resources/views' => resource_path('views/vendor/cart'),
-        ], 'cart-views');
     }
 
     /**
@@ -195,28 +126,59 @@ class CartServiceProvider extends ServiceProvider
      */
     protected function registerPriceTransformers(): void
     {
-        $this->app->bind('cart.price.transformer.decimal', function (\Illuminate\Contracts\Foundation\Application $app) {
+        $this->app->bind('cart.display.transformer.decimal', function (\Illuminate\Contracts\Foundation\Application $app) {
             return new \MasyukAI\Cart\PriceTransformers\DecimalPriceTransformer(
-                config('cart.price_formatting.currency', 'USD'),
-                config('cart.price_formatting.locale', 'en_US'),
-                config('cart.price_formatting.precision', 2)
+                precision: config('cart.money.default_precision', 2)
             );
         });
 
-        $this->app->bind('cart.price.transformer.integer', function (\Illuminate\Contracts\Foundation\Application $app) {
+        $this->app->bind('cart.display.transformer.integer', function (\Illuminate\Contracts\Foundation\Application $app) {
             return new \MasyukAI\Cart\PriceTransformers\IntegerPriceTransformer(
-                config('cart.price_formatting.currency', 'USD'),
-                config('cart.price_formatting.locale', 'en_US'),
-                config('cart.price_formatting.precision', 2)
+                precision: config('cart.money.default_precision', 2)
             );
         });
 
         // Register the configured transformer
         $this->app->bind(\MasyukAI\Cart\Contracts\PriceTransformerInterface::class, function (\Illuminate\Contracts\Foundation\Application $app): \MasyukAI\Cart\Contracts\PriceTransformerInterface {
-            $transformerClass = config('cart.price_formatting.transformer');
+            $transformerClass = config('cart.display.transformer');
 
             return $app->make($transformerClass);
         });
+    }
+
+    /**
+     * Register enhanced cart services
+     */
+    protected function registerEnhancedServices(): void
+    {
+        $this->app->singleton(\MasyukAI\Cart\Services\CartMetricsService::class, function ($app) {
+            return new \MasyukAI\Cart\Services\CartMetricsService;
+        });
+
+        $this->app->singleton(\MasyukAI\Cart\Services\CartRetryService::class, function ($app) {
+            return new \MasyukAI\Cart\Services\CartRetryService;
+        });
+    }
+
+    /**
+     * Register Octane compatibility listeners
+     */
+    protected function registerOctaneCompatibility(): void
+    {
+        // Auto-detect Octane and register necessary listeners
+        if (class_exists('\Laravel\Octane\Contracts\OperationTerminated')) {
+            $this->app->booted(function () {
+                if ($this->app->bound('events')) {
+                    $events = $this->app->make('events');
+
+                    // Register state reset listener for Octane
+                    $events->listen(
+                        '\Laravel\Octane\Contracts\OperationTerminated',
+                        \MasyukAI\Cart\Listeners\ResetCartState::class
+                    );
+                }
+            });
+        }
     }
 
     /**
@@ -229,6 +191,8 @@ class CartServiceProvider extends ServiceProvider
             Cart::class,
             StorageInterface::class,
             CartMigrationService::class,
+            \MasyukAI\Cart\Services\CartMetricsService::class,
+            \MasyukAI\Cart\Services\CartRetryService::class,
             'cart.storage.session',
             'cart.storage.cache',
             'cart.storage.database',

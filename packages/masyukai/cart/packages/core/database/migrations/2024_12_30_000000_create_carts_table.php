@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('carts', function (Blueprint $table) {
+        Schema::create(config('cart.database.table', 'carts'), function (Blueprint $table) {
             $table->id();
             $table->string('identifier')->index();
             $table->string('instance')->default('default')->index();
-            $table->longText('items')->nullable();
-            $table->longText('conditions')->nullable();
-            $table->longText('metadata')->nullable();
+            $table->json('items')->nullable();
+            $table->json('conditions')->nullable();
+            $table->json('metadata')->nullable();
             $table->bigInteger('version')->default(1)->index();
             $table->timestamps();
 
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('carts');
+        Schema::dropIfExists(config('cart.database.table', 'carts'));
     }
 };

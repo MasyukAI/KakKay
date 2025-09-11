@@ -75,12 +75,12 @@ describe('Cart Internal Calculations', function () {
         expect($this->cart->getRawTotal())->toBeFloat();
 
         // Verify they're not the same as formatted methods when formatting is enabled
-        \MasyukAI\Cart\Cart::enableFormatting();
+        \MasyukAI\Cart\Support\CartMoney::enableFormatting();
 
         expect($this->cart->getRawSubtotal())->toBeFloat();
-        expect($this->cart->subtotal())->toBeString(); // Should be formatted
+        expect((string) $this->cart->subtotal())->toBeString(); // Should be formatted
 
-        \MasyukAI\Cart\Cart::disableFormatting();
+        \MasyukAI\Cart\Support\CartMoney::disableFormatting();
     });
 
     it('savings calculation uses correct raw methods', function () {
@@ -96,7 +96,7 @@ describe('Cart Internal Calculations', function () {
         // Savings: 250 - 189 = 61
 
         $expectedSavings = 250.00 - 189.00;
-        expect($this->cart->savings())->toBe($expectedSavings);
+        expect($this->cart->savings()->getAmount())->toBe($expectedSavings);
     });
 
     it('handles empty cart internal calculations', function () {

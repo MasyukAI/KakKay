@@ -7,32 +7,17 @@ namespace MasyukAI\Cart\Contracts;
 interface PriceTransformerInterface
 {
     /**
-     * Transform price from storage format to display format
-     */
-    public function toDisplay(int|float|string $price): string;
-
-    /**
      * Transform price from input format to storage format
      */
     public function toStorage(int|float|string $price): int|float;
 
     /**
-     * Get the raw numeric value for calculations
+     * Transform from storage format to a numeric amount for calculations
      */
-    public function toNumeric(int|float|string $price): float;
+    public function fromStorage(int|float $storageValue): float;
 
     /**
-     * Format price with currency symbol and locale
+     * Get the precision used by this transformer
      */
-    public function formatCurrency(int|float|string $price, ?string $currency = null): string;
-
-    /**
-     * Set the currency for formatting
-     */
-    public function setCurrency(string $currency): self;
-
-    /**
-     * Get the current currency
-     */
-    public function getCurrency(): string;
+    public function getPrecision(): int;
 }

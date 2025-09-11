@@ -47,7 +47,11 @@ abstract class TestCase extends Orchestra
         $app['config']->set('database.default', 'testing');
 
         // Force DecimalPriceTransformer for consistent tests
-        $app['config']->set('cart.price_formatting.transformer', \MasyukAI\Cart\PriceTransformers\DecimalPriceTransformer::class);
+        $app['config']->set('cart.display.transformer', \MasyukAI\Cart\PriceTransformers\DecimalPriceTransformer::class);
+
+        // Set USD currency for consistent test formatting
+        $app['config']->set('cart.money.default_currency', 'USD');
+        $app['config']->set('cart.money.default_locale', 'en_US');
 
         $app['config']->set('database.connections.testing', [
             'driver' => 'sqlite',
@@ -82,7 +86,7 @@ abstract class TestCase extends Orchestra
         // Configure cart settings for testing
         $app['config']->set('cart.storage', 'database');
         $app['config']->set('cart.database.connection', 'testing');
-        $app['config']->set('cart.database.table', 'carts_test');
+        $app['config']->set('cart.database.table', 'carts');
         $app['config']->set('cart.events', true);
         $app['config']->set('cart.strict_validation', true);
     }
@@ -91,21 +95,7 @@ abstract class TestCase extends Orchestra
     {
         $this->artisan('migrate', [
             '--database' => 'testing',
-            '--path' => __DIR__.'/../database/migrations',
+            '--path' => 'packages/core/database/migrations',
         ]);
-
-        // Create test-specific table with new structure including version column
-        $this->app['db']->connection('testing')->getSchemaBuilder()->create('carts_test', function ($table) {
-            $table->id();
-            $table->string('identifier')->index()->comment('auth()->id() for authenticated users, session()->id() for guests');
-            $table->string('instance')->default('default')->index()->comment('Cart instance name for multiple carts per identifier');
-            $table->longText('items')->nullable()->comment('Serialized cart items');
-            $table->longText('conditions')->nullable()->comment('Serialized cart conditions');
-            $table->longText('metadata')->nullable()->comment('Serialized cart metadata');
-            $table->bigInteger('version')->default(1)->index()->comment('Version number for optimistic locking');
-            $table->timestamps();
-
-            $table->unique(['identifier', 'instance']);
-        });
     }
 }

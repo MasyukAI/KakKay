@@ -4,29 +4,36 @@ declare(strict_types=1);
 
 namespace MasyukAI\Cart\PriceTransformers;
 
+use MasyukAI\Cart\Contracts\PriceTransformerInterface;
+
 /**
- * Standard decimal price transformer (stores as float, displays as formatted string)
- * Example: 19.99 -> "19.99" -> 19.99
+ * Standard decimal price transformer (stores as float)
+ * Example: 19.99 -> 19.99 (storage) -> 19.99 (retrieval)
  */
-class DecimalPriceTransformer extends BasePriceTransformer
+class DecimalPriceTransformer implements \MasyukAI\Cart\Contracts\PriceTransformerInterface
 {
-    public function toDisplay(int|float|string $price): string
-    {
-        return number_format($this->toNumeric($price), $this->precision, '.', '');
-    }
+    public function __construct(
+        protected int $precision = 2
+    ) {}
 
     public function toStorage(int|float|string $price): float
-    {
-        return $this->roundToPrecision($this->toNumeric($price));
-    }
-
-    public function toNumeric(int|float|string $price): float
     {
         if (is_string($price)) {
             // Remove thousands separators (commas) but preserve decimal points
             $price = str_replace(',', '', $price);
         }
 
-        return (float) $price;
+        return round((float) $price, $this->precision);
     }
+
+    public function fromStorage(int|float $storageValue): float
+    {
+        return (float) $storageValue;
+    }
+
+    public function getPrecision(): int
+    {
+        return $this->precision;
+    }
+
 }

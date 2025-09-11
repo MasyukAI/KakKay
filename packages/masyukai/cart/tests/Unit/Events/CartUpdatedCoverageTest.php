@@ -87,7 +87,7 @@ it('captures cart totals at event time', function () {
 
     $event = new CartUpdated($this->cart, 'totals_calculated');
 
-    expect($event->cart->subtotal())->toBeGreaterThan(0);
+    expect($event->cart->subtotal()->getAmount())->toBeGreaterThan(0);
     expect($event->cart->getTotalQuantity())->toBe(3);
     expect($event->reason)->toBe('totals_calculated');
 });

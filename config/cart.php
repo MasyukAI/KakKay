@@ -34,6 +34,7 @@ return [
     */
     'database' => [
         'table' => env('CART_DB_TABLE', 'carts'),
+        'lock_for_update' => env('CART_DB_LOCK_FOR_UPDATE', false),
     ],
 
     /*
@@ -94,27 +95,37 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Price Formatting Configuration
+    | Money Configuration (Internal Precision)
     |--------------------------------------------------------------------------
     |
-    | Configure how prices are stored, displayed, and formatted in the cart
+    | Configuration for Money objects used internally for precise calculations
     |
     */
-    'price_formatting' => [
-        // Enable automatic formatting for all price outputs
-        'auto_format' => env('CART_AUTO_FORMAT', true),
+    'money' => [
+        'default_currency' => env('CART_CURRENCY', 'USD'),
+        'default_precision' => env('CART_MONEY_PRECISION', 2),
+        'rounding_mode' => env('CART_ROUNDING_MODE', 'ROUND_HALF_UP'),
+    ],
 
-        // Price transformer class
+    /*
+    |--------------------------------------------------------------------------
+    | Display Configuration (Public Formatting)
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for how prices are displayed to users
+    |
+    */
+    'display' => [
+        // Enable automatic formatting for all price outputs
+        'formatting_enabled' => env('CART_AUTO_FORMAT', false),
+
+        // Price transformer class - IntegerPriceTransformer stores prices as cents (integer)
         'transformer' => env('CART_PRICE_TRANSFORMER', \MasyukAI\Cart\PriceTransformers\IntegerPriceTransformer::class),
 
-        // Currency and locale
-        'currency' => env('CART_CURRENCY', 'USD'),
+        // Display locale
         'locale' => env('CART_LOCALE', 'en_US'),
-        'precision' => env('CART_PRICE_PRECISION', 2),
 
         // Display options
         'show_currency_symbol' => env('CART_SHOW_CURRENCY_SYMBOL', false),
-        'decimal_separator' => env('CART_DECIMAL_SEPARATOR', '.'),
-        'thousands_separator' => env('CART_THOUSANDS_SEPARATOR', ','),
     ],
 ];

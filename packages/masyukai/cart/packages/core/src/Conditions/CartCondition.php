@@ -8,6 +8,7 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 use JsonSerializable;
 use MasyukAI\Cart\Exceptions\InvalidCartConditionException;
+use MasyukAI\Cart\Support\CartMoney;
 
 class CartCondition implements Arrayable, Jsonable, JsonSerializable
 {
@@ -104,20 +105,27 @@ class CartCondition implements Arrayable, Jsonable, JsonSerializable
     }
 
     /**
-     * Apply condition to a value
+     * Apply condition to a value using Money arithmetic for precision
      */
     public function apply(float $value): float
     {
         $conditionValue = $this->parseValue();
 
-        return match ($this->getOperator()) {
-            '+' => $value + abs($conditionValue),
-            '-' => $value - abs($conditionValue),
-            '*' => $value * abs($conditionValue),
-            '/' => abs($conditionValue) > 0 ? $value / abs($conditionValue) : $value,
-            '%' => $this->applyPercentage($value, $conditionValue),
-            default => $value,
+        // Use higher precision (3) for calculations to preserve fractional cents
+        $precision = 3;
+    $valueMoney = CartMoney::fromMajorUnits($value, 'USD', $precision);
+    $conditionMoney = CartMoney::fromMajorUnits(abs($conditionValue), 'USD', $precision);
+
+        $result = match ($this->getOperator()) {
+            '+' => $valueMoney->add($conditionMoney),
+            '-' => $valueMoney->subtract($conditionMoney),
+            '*' => $valueMoney->multiply(abs($conditionValue)),
+            '/' => abs($conditionValue) > 0 ? $valueMoney->divide(abs($conditionValue)) : $valueMoney,
+            '%' => $this->applyPercentageWithMoney($valueMoney, $conditionValue),
+            default => $valueMoney,
         };
+
+        return $result->getMajorUnits();
     }
 
     /**
@@ -368,6 +376,31 @@ class CartCondition implements Arrayable, Jsonable, JsonSerializable
         }
 
         return $numericValue / 100;
+    }
+
+    /**
+     * Apply percentage using Money arithmetic for precision
+     */
+    private function applyPercentageWithMoney(CartMoney $valueMoney, float $percentage): CartMoney
+    {
+        // For small amounts, we need to preserve fractional precision
+        // Use higher internal precision for the calculation
+        $originalPrecision = $valueMoney->getPrecision();
+        $calculationPrecision = max(3, $originalPrecision + 1);
+
+        // Convert to higher precision for calculation
+        $highPrecisionValue = CartMoney::fromMajorUnits(
+            $valueMoney->getMajorUnits(),
+            $valueMoney->getCurrency(),
+            $calculationPrecision
+        );
+
+        // Calculate percentage with higher precision
+        $majorUnits = $highPrecisionValue->getMajorUnits();
+        $result = $majorUnits * (1 + $percentage);
+
+        // Return result with higher precision to preserve accuracy
+    return CartMoney::fromMajorUnits($result, $valueMoney->getCurrency(), $calculationPrecision);
     }
 
     /**

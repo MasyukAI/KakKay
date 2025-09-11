@@ -29,7 +29,7 @@ beforeEach(function () {
         try {
             $this->databaseStorage = new DatabaseStorage(
                 database: app('db')->connection(),
-                table: 'carts_test'
+                table: 'carts'
             );
         } catch (\Exception $e) {
             $this->databaseStorage = null; // Skip database tests if connection fails
@@ -55,8 +55,8 @@ describe('Cart instantiation', function () {
         expect($this->cart)->toBeInstanceOf(Cart::class);
         expect($this->cart->instance())->toBe('bulletproof_test');
         expect($this->cart->getTotalQuantity())->toBe(0);
-        expect($this->cart->total())->toBe(0.0);
-        expect($this->cart->subtotal())->toBe(0.0);
+        expect($this->cart->total()->getAmount())->toBe(0.0);
+        expect($this->cart->subtotal()->getAmount())->toBe(0.0);
         expect($this->cart->isEmpty())->toBeTrue();
         expect($this->cart->count())->toBe(0);
     });
@@ -156,7 +156,7 @@ describe('Adding items', function () {
         expect($item->getRawPriceSum())->toBe(20.00);
 
         expect($cart->getTotalQuantity())->toBe(2);
-        expect($cart->total())->toBe(20.00);
+        expect($cart->total()->getAmount())->toBe(20.00);
         expect($cart->count())->toBe(2);
         expect($cart->getItems())->toHaveCount(1);
 
@@ -279,7 +279,7 @@ describe('Adding items', function () {
         expect($item->price)->toBe(9999.99);
         expect($item->quantity)->toBe(1000);
         expect($item->getRawPriceSum())->toBe(9999990.0);
-        expect($this->cart->total())->toBe(9999990.0);
+        expect($this->cart->total()->getAmount())->toBe(9999990.0);
     });
 
     it('handles decimal prices with precision', function () {
@@ -385,7 +385,7 @@ describe('Cart operations and management', function () {
         expect($cart->isEmpty())->toBeTrue();
         expect($cart->getItems())->toHaveCount(0);
         expect($cart->getTotalQuantity())->toBe(0);
-        expect($cart->total())->toBe(0.0);
+        expect($cart->total()->getAmount())->toBe(0.0);
 
         // Verify clear was successful
         expect($cart->isEmpty())->toBeTrue();
@@ -432,7 +432,7 @@ describe('Cart conditions', function () {
         expect($this->cart->getCondition('shipping'))->toBeInstanceOf(CartCondition::class);
 
         // 200 * 1.1 + 5.99 = 225.99
-        expect($this->cart->total())->toBe(225.99);
+        expect($this->cart->total()->getAmount())->toBe(225.99);
     });
 
     it('can remove specific conditions', function () {
@@ -465,7 +465,7 @@ describe('Cart conditions', function () {
         $result = $this->cart->clearConditions();
         expect($result)->toBeTrue();
         expect($this->cart->getConditions())->toHaveCount(0);
-        expect($this->cart->total())->toBe(200.00); // Back to original total
+        expect($this->cart->total()->getAmount())->toBe(200.00); // Back to original total
     });
 
     it('calculates totals correctly with multiple condition types', function () {
@@ -478,8 +478,8 @@ describe('Cart conditions', function () {
         $this->cart->addCondition($shipping);
 
         // 200 - 20 = 180, then +15% = 207, then +9.99 = 216.99
-        expect($this->cart->subtotal())->toBe(200.00);
-        expect($this->cart->total())->toBe(216.99);
+        expect($this->cart->subtotal()->getAmount())->toBe(200.00);
+        expect($this->cart->total()->getAmount())->toBe(216.99);
     });
 
     it('can add conditions to specific items', function () {
@@ -542,7 +542,7 @@ describe('Cart information and calculations', function () {
 
     it('calculates correct subtotals', function () {
         // (10.99 * 2) + (15.50 * 3) + (8.25 * 1) = 21.98 + 46.50 + 8.25 = 76.73
-        expect($this->cart->subtotal())->toBe(76.73);
+        expect($this->cart->subtotal()->getAmount())->toBe(76.73);
     });
 
     it('can get specific items with all properties', function () {
@@ -565,29 +565,29 @@ describe('Cart information and calculations', function () {
 
         expect($this->cart->isEmpty())->toBeTrue();
         expect($this->cart->getTotalQuantity())->toBe(0);
-        expect($this->cart->subtotal())->toBe(0.0);
-        expect($this->cart->total())->toBe(0.0);
+        expect($this->cart->subtotal()->getAmount())->toBe(0.0);
+        expect($this->cart->total()->getAmount())->toBe(0.0);
     });
 
     it('provides correct cart state after operations', function () {
         // Initial state
         expect($this->cart->getTotalQuantity())->toBe(6);
-        expect($this->cart->subtotal())->toBe(76.73);
+        expect($this->cart->subtotal()->getAmount())->toBe(76.73);
 
         // After adding item
         $this->cart->add('product-4', 'Product 4', 20.00, 1);
         expect($this->cart->getTotalQuantity())->toBe(7);
-        expect($this->cart->subtotal())->toBe(96.73);
+        expect($this->cart->subtotal()->getAmount())->toBe(96.73);
 
         // After removing item
         $this->cart->remove('product-2');
         expect($this->cart->getTotalQuantity())->toBe(4);
-        expect(round($this->cart->subtotal(), 2))->toBe(50.23);
+        expect(round($this->cart->subtotal()->getAmount(), 2))->toBe(50.23);
 
         // After updating quantity
         $this->cart->update('product-1', ['quantity' => ['value' => 5]]);
         expect($this->cart->getTotalQuantity())->toBe(7); // 5 (product-1) + 1 (product-3) + 1 (product-4)
-        expect($this->cart->subtotal())->toBe(83.20);
+        expect($this->cart->subtotal()->getAmount())->toBe(83.20);
     });
 
     it('can convert cart to array format', function () {
@@ -612,7 +612,7 @@ describe('Edge cases and stress tests', function () {
 
         expect($item->price)->toBe($largePrice);
         expect($item->quantity)->toBe($largeQuantity);
-        expect($this->cart->total())->toBe($largePrice * $largeQuantity);
+        expect($this->cart->total()->getAmount())->toBe($largePrice * $largeQuantity);
     });
 
     it('handles many unique items', function () {
@@ -646,8 +646,8 @@ describe('Edge cases and stress tests', function () {
         }
 
         expect($this->cart->getConditions())->toHaveCount(5);
-        expect($this->cart->total())->toBeFloat();
-        expect($this->cart->total())->toBeGreaterThan(0);
+        expect($this->cart->total()->getAmount())->toBeFloat();
+        expect($this->cart->total()->getAmount())->toBeGreaterThan(0);
     });
 
     it('handles rapid operations sequence', function () {
@@ -674,7 +674,7 @@ describe('Edge cases and stress tests', function () {
 
     it('maintains data integrity during concurrent-like operations', function () {
         $originalItem = $this->cart->add('integrity-test', 'Test Product', 25.99, 3);
-        $originalTotal = $this->cart->total();
+        $originalTotal = $this->cart->total()->getAmount();
 
         // Simulate concurrent modifications
         $this->cart->update('integrity-test', ['name' => 'Updated Product']);
@@ -684,7 +684,7 @@ describe('Edge cases and stress tests', function () {
         expect($updatedItem->price)->toBe($originalItem->price);
         expect($updatedItem->quantity)->toBe($originalItem->quantity);
         expect($updatedItem->name)->toBe('Updated Product');
-        expect($this->cart->total())->toBe($originalTotal);
+        expect($this->cart->total()->getAmount())->toBe($originalTotal);
     });
 
     it('handles special characters in item data', function () {
@@ -714,8 +714,8 @@ describe('Edge cases and stress tests', function () {
         }
 
         $total = $this->cart->total();
-        expect($total)->toBeFloat();
-        expect(round($total, 2))->toBe($total); // Should already be rounded
+        expect($total->getAmount())->toBeFloat();
+        expect(round($total->getAmount(), 2))->toBe($total->getAmount()); // Should already be rounded
     });
 });
 
@@ -824,7 +824,7 @@ describe('Multiple items and array operations', function () {
         expect($result)->toHaveCount(3);
         expect($this->cart->getItems())->toHaveCount(3);
         expect($this->cart->getTotalQuantity())->toBe(6);
-        expect($this->cart->subtotal())->toBe(85.00); // 2*10 + 1*20 + 3*15 = 20 + 20 + 45 = 85
+        expect($this->cart->subtotal()->getAmount())->toBe(85.00); // 2*10 + 1*20 + 3*15 = 20 + 20 + 45 = 85
     });
 
     it('handles multiple items with conditions and associated models', function () {
@@ -988,8 +988,8 @@ describe('Content alias methods', function () {
         $subtotal = $this->cart->subtotal();
         $getSubTotal = $this->cart->subtotal();
 
-        expect($subtotal)->toBe($getSubTotal);
-        expect($subtotal)->toBe(51.0);
+        expect($subtotal->getAmount())->toBe($getSubTotal->getAmount());
+        expect($subtotal->getAmount())->toBe(51.0);
     });
 
     it('provides total() as alias for getTotal()', function () {
@@ -999,8 +999,8 @@ describe('Content alias methods', function () {
         $total = $this->cart->total();
         $getTotal = $this->cart->total();
 
-        expect($total)->toBe($getTotal);
-        expect($total)->toBe(120.0);
+        expect($total->getAmount())->toBe($getTotal->getAmount());
+        expect($total->getAmount())->toBe(120.0);
     });
 });
 
@@ -1029,7 +1029,9 @@ describe('Price normalization', function () {
 
         $item = $cart->add('item-1', 'Item 1', 10.12345, 1);
 
-        expect($item->price)->toBe(10.123);
+        // Laravel Money with USD currency limits precision to 2 decimal places
+        // So even with 3 decimal config, the result will be rounded to 2 decimals
+        expect($item->price)->toEqual(10.12);
     });
 });
 

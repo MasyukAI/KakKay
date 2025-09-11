@@ -73,12 +73,6 @@ describe('DatabaseStorage Coverage Tests', function () {
             ->andReturn(true);
 
         // Mock for getItems
-        $record = (object) [
-            'items' => json_encode($items),
-            'conditions' => null,
-            'metadata' => null,
-        ];
-
         $this->mockDatabase->shouldReceive('table')
             ->with('carts')
             ->once()
@@ -94,9 +88,10 @@ describe('DatabaseStorage Coverage Tests', function () {
             ->once()
             ->andReturnSelf();
 
-        $this->mockBuilder->shouldReceive('first')
+        $this->mockBuilder->shouldReceive('value')
+            ->with('items')
             ->once()
-            ->andReturn($record);
+            ->andReturn(json_encode($items));
 
         $storage->putItems('user123', 'default', $items);
         $result = $storage->getItems('user123', 'default');
@@ -149,12 +144,6 @@ describe('DatabaseStorage Coverage Tests', function () {
             ->andReturn(true);
 
         // Mock for getConditions
-        $record = (object) [
-            'items' => null,
-            'conditions' => json_encode($conditions),
-            'metadata' => null,
-        ];
-
         $this->mockDatabase->shouldReceive('table')
             ->with('carts')
             ->once()
@@ -170,9 +159,10 @@ describe('DatabaseStorage Coverage Tests', function () {
             ->once()
             ->andReturnSelf();
 
-        $this->mockBuilder->shouldReceive('first')
+        $this->mockBuilder->shouldReceive('value')
+            ->with('conditions')
             ->once()
-            ->andReturn($record);
+            ->andReturn(json_encode($conditions));
 
         $storage->putConditions('user123', 'default', $conditions);
         $result = $storage->getConditions('user123', 'default');
@@ -248,7 +238,8 @@ describe('DatabaseStorage Coverage Tests', function () {
             ->once()
             ->andReturnSelf();
 
-        $this->mockBuilder->shouldReceive('first')
+        $this->mockBuilder->shouldReceive('value')
+            ->with('items')
             ->once()
             ->andReturn(null);
 
@@ -275,7 +266,8 @@ describe('DatabaseStorage Coverage Tests', function () {
             ->once()
             ->andReturnSelf();
 
-        $this->mockBuilder->shouldReceive('first')
+        $this->mockBuilder->shouldReceive('value')
+            ->with('conditions')
             ->once()
             ->andReturn(null);
 
@@ -287,12 +279,6 @@ describe('DatabaseStorage Coverage Tests', function () {
     it('returns empty array when record exists but items is null', function () {
         $storage = new DatabaseStorage($this->mockDatabase);
 
-        $record = (object) [
-            'items' => null,
-            'conditions' => null,
-            'metadata' => null,
-        ];
-
         $this->mockDatabase->shouldReceive('table')
             ->with('carts')
             ->once()
@@ -308,9 +294,10 @@ describe('DatabaseStorage Coverage Tests', function () {
             ->once()
             ->andReturnSelf();
 
-        $this->mockBuilder->shouldReceive('first')
+        $this->mockBuilder->shouldReceive('value')
+            ->with('items')
             ->once()
-            ->andReturn($record);
+            ->andReturn(null);
 
         $result = $storage->getItems('user123', 'default');
 
@@ -320,12 +307,6 @@ describe('DatabaseStorage Coverage Tests', function () {
     it('returns empty array when record exists but conditions is null', function () {
         $storage = new DatabaseStorage($this->mockDatabase);
 
-        $record = (object) [
-            'items' => null,
-            'conditions' => null,
-            'metadata' => null,
-        ];
-
         $this->mockDatabase->shouldReceive('table')
             ->with('carts')
             ->once()
@@ -341,9 +322,10 @@ describe('DatabaseStorage Coverage Tests', function () {
             ->once()
             ->andReturnSelf();
 
-        $this->mockBuilder->shouldReceive('first')
+        $this->mockBuilder->shouldReceive('value')
+            ->with('conditions')
             ->once()
-            ->andReturn($record);
+            ->andReturn(null);
 
         $result = $storage->getConditions('user123', 'default');
 
@@ -353,12 +335,6 @@ describe('DatabaseStorage Coverage Tests', function () {
     it('handles invalid JSON gracefully for items', function () {
         $storage = new DatabaseStorage($this->mockDatabase);
 
-        $record = (object) [
-            'items' => '{"invalid":json}',
-            'conditions' => null,
-            'metadata' => null,
-        ];
-
         $this->mockDatabase->shouldReceive('table')
             ->with('carts')
             ->once()
@@ -374,9 +350,10 @@ describe('DatabaseStorage Coverage Tests', function () {
             ->once()
             ->andReturnSelf();
 
-        $this->mockBuilder->shouldReceive('first')
+        $this->mockBuilder->shouldReceive('value')
+            ->with('items')
             ->once()
-            ->andReturn($record);
+            ->andReturn('{"invalid":json}');
 
         $result = $storage->getItems('user123', 'default');
 
@@ -386,12 +363,6 @@ describe('DatabaseStorage Coverage Tests', function () {
     it('handles invalid JSON gracefully for conditions', function () {
         $storage = new DatabaseStorage($this->mockDatabase);
 
-        $record = (object) [
-            'items' => null,
-            'conditions' => '{"invalid":json}',
-            'metadata' => null,
-        ];
-
         $this->mockDatabase->shouldReceive('table')
             ->with('carts')
             ->once()
@@ -407,9 +378,10 @@ describe('DatabaseStorage Coverage Tests', function () {
             ->once()
             ->andReturnSelf();
 
-        $this->mockBuilder->shouldReceive('first')
+        $this->mockBuilder->shouldReceive('value')
+            ->with('conditions')
             ->once()
-            ->andReturn($record);
+            ->andReturn('{"invalid":json}');
 
         $result = $storage->getConditions('user123', 'default');
 
@@ -546,7 +518,7 @@ describe('DatabaseStorage Coverage Tests', function () {
 
         // Mock transaction for putMetadata
         $this->mockDatabase->shouldReceive('transaction')
-            ->once()
+            ->twice()
             ->andReturnUsing(function ($callback) {
                 return $callback();
             });
@@ -599,7 +571,7 @@ describe('DatabaseStorage Coverage Tests', function () {
 
         // Mock transaction for putMetadata
         $this->mockDatabase->shouldReceive('transaction')
-            ->once()
+            ->twice()
             ->andReturnUsing(function ($callback) {
                 return $callback();
             });

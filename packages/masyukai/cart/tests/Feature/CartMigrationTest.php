@@ -22,7 +22,6 @@ declare(strict_types=1);
  */
 
 use Illuminate\Auth\Events\Login;
-use Illuminate\Auth\Events\Logout;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
@@ -30,7 +29,6 @@ use Illuminate\Support\Facades\Session;
 use MasyukAI\Cart\Events\CartMerged;
 use MasyukAI\Cart\Facades\Cart;
 use MasyukAI\Cart\Listeners\HandleUserLogin;
-use MasyukAI\Cart\Listeners\HandleUserLogout;
 use MasyukAI\Cart\Services\CartMigrationService;
 
 uses(RefreshDatabase::class);
@@ -56,8 +54,8 @@ it('can migrate guest cart to user cart', function () {
     // Initialize cart with database storage using test database
     // Since we're running from main Laravel app, create the test table first
     $connection = app('db')->connection();
-    $connection->getSchemaBuilder()->dropIfExists('carts_test');
-    $connection->getSchemaBuilder()->create('carts_test', function ($table) {
+    $connection->getSchemaBuilder()->dropIfExists('carts');
+    $connection->getSchemaBuilder()->create('carts', function ($table) {
         $table->id();
         $table->string('identifier')->index();
         $table->string('instance')->default('default')->index();
@@ -69,7 +67,7 @@ it('can migrate guest cart to user cart', function () {
         $table->unique(['identifier', 'instance']);
     });
 
-    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'carts_test');
+    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'carts');
     $cart = new \MasyukAI\Cart\Cart($storage);
 
     // Add items to guest cart using the cart instance (not facade)
@@ -252,7 +250,7 @@ it('dispatches cart merged event on successful migration', function () {
 it('handles user login event automatically when configured', function () {
     // Initialize cart with database storage
     $connection = app('db')->connection();
-    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'carts_test');
+    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'carts');
     $cart = new \MasyukAI\Cart\Cart($storage);
 
     // Configure auto migration
@@ -298,55 +296,6 @@ it('handles user login event automatically when configured', function () {
     // Guest cart should be cleared
     $guestItemsAfter = $storage->getItems('guest_session_login_123', 'default');
     expect(array_sum(array_column($guestItemsAfter, 'quantity')))->toBe(0);
-});
-
-it('handles user logout event when configured', function () {
-    // Initialize cart with database storage
-    $connection = app('db')->connection();
-    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'carts_test');
-
-    config(['cart.migration.backup_on_logout' => true]);
-
-    // Mock Auth facade
-    Auth::shouldReceive('id')->andReturn(1);
-    Auth::shouldReceive('user')->andReturn($this->user);
-    Auth::shouldReceive('check')->andReturn(false); // After logout
-
-    // Mock session to return guest cart ID
-    Session::shouldReceive('getId')->andReturn('guest_session_logout_123');
-
-    // Setup user cart with items (via storage since only default instance matters)
-    $userItems = [
-        'product-1' => [
-            'id' => 'product-1',
-            'name' => 'Test Product',
-            'price' => 10.00,
-            'quantity' => 2,
-            'attributes' => [],
-            'conditions' => [],
-        ],
-    ];
-    $storage->putItems('1', 'default', $userItems);
-
-    $listener = new HandleUserLogout($this->cartMigration);
-    $event = new Logout('web', $this->user);
-
-    // Check initial state
-    $userItemsInitial = $storage->getItems('1', 'default');
-    expect(array_sum(array_column($userItemsInitial, 'quantity')))->toBe(2);
-
-    $guestItemsInitial = $storage->getItems('guest_session_logout_123', 'default');
-    expect(array_sum(array_column($guestItemsInitial, 'quantity')))->toBe(0);
-
-    $listener->handle($event);
-
-    // User cart should be copied to guest session for backup
-    $guestItemsAfter = $storage->getItems('guest_session_logout_123', 'default');
-    expect(array_sum(array_column($guestItemsAfter, 'quantity')))->toBe(2);
-
-    // Original user cart should remain
-    $userItemsAfter = $storage->getItems('1', 'default');
-    expect(array_sum(array_column($userItemsAfter, 'quantity')))->toBe(2);
 });
 
 it('returns false when guest cart is empty', function () {

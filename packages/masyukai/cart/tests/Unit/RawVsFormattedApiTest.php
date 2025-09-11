@@ -111,7 +111,7 @@ describe('Raw vs Formatted API Compliance', function () {
 
         it('ensures all formatted methods return appropriate types when formatting is enabled', function () {
             $item = Cart::get('test-item');
-            expect($item->getPrice())->toBeNumeric();
+            expect($item->getPrice()->getAmount())->toBeNumeric();
         });
     });
 

@@ -17,7 +17,9 @@
         }
     ],
     "require": {
-        "php": "^8.2"
+        "php": "^8.2",
+        "akaunting/laravel-money": "^6.0",
+        "spatie/laravel-package-tools": "^1.92"
     },
     "require-dev": {
         "driftingly/rector-laravel": "^2.0",

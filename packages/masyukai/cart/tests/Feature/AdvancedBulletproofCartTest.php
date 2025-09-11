@@ -57,21 +57,25 @@ it('handles complex condition chains bulletproof', function () {
     expect(Cart::getConditions())->toHaveCount(5);
 
     $total = Cart::total();
-    expect($total)->toBeFloat();
-    expect($total)->toBeGreaterThan(0);
+    expect($total)->toBeInstanceOf(\MasyukAI\Cart\Support\CartMoney::class);
+    expect($total->getAmount())->toBeFloat();
+    expect($total->getAmount())->toBeGreaterThan(0);
 
     // Test removing specific conditions
     Cart::removeCondition('bulk-discount');
     expect(Cart::getConditions())->toHaveCount(4);
 
     $newTotal = Cart::total();
-    expect($newTotal)->toBeFloat();
-    expect($newTotal)->toBeGreaterThan(0);
+    expect($newTotal)->toBeInstanceOf(\MasyukAI\Cart\Support\CartMoney::class);
+    expect($newTotal->getAmount())->toBeFloat();
+    expect($newTotal->getAmount())->toBeGreaterThan(0);
 
     // Clear all conditions
     Cart::clearConditions();
     expect(Cart::getConditions())->toHaveCount(0);
-    expect(Cart::total())->toBe(Cart::subtotal());
+
+    // Both should return CartMoney objects that are equal
+    expect(Cart::total()->equals(Cart::subtotal()))->toBeTrue();
 });
 
 it('handles edge cases and invalid operations gracefully', function () {
@@ -146,7 +150,7 @@ it('maintains data integrity under concurrent-like operations', function () {
 
     // Verify cart totals are consistent
     $calculatedTotal = $finalItem->price * $finalItem->quantity;
-    expect(Cart::subtotal())->toBe($calculatedTotal);
+    expect(Cart::subtotal()->getAmount())->toBe($calculatedTotal);
 
     // Test with attributes during rapid updates
     for ($i = 1; $i <= 25; $i++) {
@@ -186,9 +190,9 @@ it('handles precision and floating point calculations bulletproof', function () 
 
     // Ensure all calculations are stable
     $total = Cart::subtotal();
-    expect($total)->toBeFloat();
-    expect(is_finite($total))->toBeTrue(); // Check if number is finite
-    expect($total)->toBeGreaterThan(0);
+    expect($total)->toBeInstanceOf(\MasyukAI\Cart\Support\CartMoney::class);
+    expect(is_finite($total->getAmount()))->toBeTrue(); // Check if number is finite
+    expect($total->getAmount())->toBeGreaterThan(0);
 
     // Test with percentage-based conditions on problematic prices
     $taxCondition = new \MasyukAI\Cart\Conditions\CartCondition(
@@ -201,9 +205,9 @@ it('handles precision and floating point calculations bulletproof', function () 
     Cart::addCondition($taxCondition);
 
     $totalWithTax = Cart::total();
-    expect($totalWithTax)->toBeFloat();
-    expect(is_finite($totalWithTax))->toBeTrue(); // Check if number is finite
-    expect($totalWithTax)->toBeGreaterThan($total);
+    expect($totalWithTax)->toBeInstanceOf(\MasyukAI\Cart\Support\CartMoney::class);
+    expect(is_finite($totalWithTax->getAmount()))->toBeTrue(); // Check if number is finite
+    expect($totalWithTax->greaterThan($total))->toBeTrue();
 
     // Test quantity updates with integer quantities only (CartItem requires int)
     Cart::update('precision-0', ['quantity' => 3]); // Use integer instead of float

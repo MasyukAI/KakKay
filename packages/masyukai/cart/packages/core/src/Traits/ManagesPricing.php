@@ -4,47 +4,79 @@ declare(strict_types=1);
 
 namespace MasyukAI\Cart\Traits;
 
-use MasyukAI\Cart\Support\PriceFormatManager;
+use MasyukAI\Cart\Support\CartMoney;
 
 trait ManagesPricing
 {
     /**
-     * Format price value based on current settings
+     * Create CartMoney from amount (dollars/major units)
      */
-    protected function formatPriceValue(int|float|string $value, bool $withCurrency = false): string|int|float
+    protected function createMoney(int|float|string $amount, ?string $currency = null): CartMoney
     {
-        return PriceFormatManager::formatPrice($value, $withCurrency);
+        return CartMoney::fromAmount($amount, $currency);
     }
 
     /**
-     * Enable formatting globally
+     * Create CartMoney from cents (minor units)
      */
-    public static function enableFormatting(): void
+    protected function createMoneyFromCents(int $cents, ?string $currency = null): CartMoney
     {
-        PriceFormatManager::enableFormatting();
+        return CartMoney::fromCents($cents, $currency);
     }
 
     /**
-     * Disable formatting globally
+     * Create CartMoney from storage value (auto-detects format)
      */
-    public static function disableFormatting(): void
+    protected function createMoneyFromStorage(int|float $value): CartMoney
     {
-        PriceFormatManager::disableFormatting();
+        return CartMoney::fromStorage($value);
     }
 
     /**
-     * Set global currency override
+     * Convert amount to storage format
      */
-    public static function setCurrency(?string $currency = null): void
+    protected function toStorage(int|float|string $amount): int|float
     {
-        PriceFormatManager::setCurrency($currency);
+        return CartMoney::toStorage($amount);
     }
 
     /**
-     * Reset formatting settings
+     * Format money for display
      */
-    public static function resetFormatting(): void
+    protected function formatMoney(CartMoney $money): string
     {
-        PriceFormatManager::resetFormatting();
+        return $money->format();
+    }
+
+    /**
+     * Format money without currency symbol
+     */
+    protected function formatMoneySimple(CartMoney $money): string
+    {
+        return $money->formatSimple();
+    }
+
+    /**
+     * Get default currency
+     */
+    protected function getDefaultCurrency(): string
+    {
+        return config('cart.money.default_currency', 'USD');
+    }
+
+    /**
+     * Get default precision
+     */
+    protected function getDefaultPrecision(): int
+    {
+        return config('cart.money.default_precision', 2);
+    }
+
+    /**
+     * Get display locale
+     */
+    protected function getDisplayLocale(): string
+    {
+        return config('cart.display.locale', 'en_US');
     }
 }

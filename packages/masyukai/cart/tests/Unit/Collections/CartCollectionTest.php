@@ -86,7 +86,11 @@ it('can get subtotal with getSubTotal method', function (): void {
     $this->collection->addItem($this->item1); // 100 * 2 = 200
     $this->collection->addItem($this->item2); // 50 * 3 = 150
 
-    expect($this->collection->subtotal())->toBe(350.0);
+    $subtotal = $this->collection->subtotal();
+    if ($subtotal instanceof \MasyukAI\Cart\Support\CartMoney) {
+        $subtotal = $subtotal->getAmount();
+    }
+    expect($subtotal)->toBe(350.0);
 });
 
 it('can get subtotal which includes item-level conditions by default', function (): void {
@@ -94,7 +98,11 @@ it('can get subtotal which includes item-level conditions by default', function 
     $this->collection->addItem($this->item2);
 
     // Since items don't have conditions yet, should be same as raw subtotal
-    expect($this->collection->subtotal())->toBe(350.0);
+    $subtotal = $this->collection->subtotal();
+    if ($subtotal instanceof \MasyukAI\Cart\Support\CartMoney) {
+        $subtotal = $subtotal->getAmount();
+    }
+    expect($subtotal)->toBe(350.0);
 });
 
 it('can convert to formatted array with toFormattedArray method', function (): void {
@@ -205,8 +213,7 @@ it('can calculate total price sum', function (): void {
     $this->collection->put('item-1', $this->item1); // 100 * 2 = 200
     $this->collection->put('item-2', $this->item2); // 50 * 3 = 150
 
-    $total = $this->collection->sum(fn ($item) => $item->getPriceSum());
-
+    $total = $this->collection->sum(fn ($item) => $item->getPriceSum() instanceof \MasyukAI\Cart\Support\CartMoney ? $item->getPriceSum()->getAmount() : (float) $item->getPriceSum());
     expect($total)->toBe(350.0);
 });
 
@@ -267,8 +274,8 @@ it('can map items to different structure', function (): void {
     });
 
     expect($mapped->count())->toBe(2)
-        ->and($mapped->get('item-1')['total'])->toBe(200.0)
-        ->and($mapped->get('item-2')['total'])->toBe(150.0);
+        ->and(($mapped->get('item-1')['total'] instanceof \MasyukAI\Cart\Support\CartMoney ? $mapped->get('item-1')['total']->getAmount() : $mapped->get('item-1')['total']))->toBe(200.0)
+        ->and(($mapped->get('item-2')['total'] instanceof \MasyukAI\Cart\Support\CartMoney ? $mapped->get('item-2')['total']->getAmount() : $mapped->get('item-2')['total']))->toBe(150.0);
 });
 
 it('can group items by attribute', function (): void {
@@ -584,6 +591,9 @@ it('can get total discount amount', function (): void {
     $totalDiscount = $this->collection->getTotalDiscount();
 
     // Since items don't have conditions yet, discount should be 0
+    if ($totalDiscount instanceof \MasyukAI\Cart\Support\CartMoney) {
+        $totalDiscount = $totalDiscount->getAmount();
+    }
     expect($totalDiscount)->toBe(0.0);
 });
 

@@ -273,7 +273,11 @@ class CartCollection extends Collection
      */
     public function getTotalDiscount(): float
     {
-        return $this->sum(fn (CartItem $item) => $item->getDiscountAmount());
+        return $this->sum(function (CartItem $item) {
+            $discount = $item->getDiscountAmount();
+
+            return $discount instanceof \MasyukAI\Cart\Support\CartMoney ? $discount->getAmount() : (float) $discount;
+        });
     }
 
     /**

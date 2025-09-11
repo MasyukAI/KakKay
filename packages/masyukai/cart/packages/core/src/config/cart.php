@@ -9,6 +9,9 @@ return [
     | This option controls the default storage driver that will be used
     | for storing cart data. Supported drivers: "session", "database", "cache"
     |
+    | Note: For Laravel Octane environments, consider using "cache" for fastest
+    | performance or "database" for persistence across cache clears.
+    |
     */
     'storage' => env('CART_STORAGE_DRIVER', 'session'),
 
@@ -34,6 +37,7 @@ return [
     */
     'database' => [
         'table' => env('CART_DB_TABLE', 'carts'),
+        'lock_for_update' => env('CART_DB_LOCK_FOR_UPDATE', false),
     ],
 
     /*
@@ -47,6 +51,23 @@ return [
     'cache' => [
         'prefix' => env('CART_CACHE_PREFIX', 'cart'),
         'ttl' => env('CART_CACHE_TTL', 86400),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Money & Currency Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Laravel Money is used internally for all calculations to ensure precision.
+    | These settings control currency and precision behavior.
+    |
+    */
+    'money' => [
+        // Default currency for all Money objects
+        'default_currency' => env('CART_DEFAULT_CURRENCY', 'MYR'),
+
+        // Currency precision (decimal places)
+        'default_precision' => env('CART_DEFAULT_PRECISION', 2),
     ],
 
     /*
@@ -81,41 +102,34 @@ return [
         // Automatically migrate guest cart to user cart on login
         'auto_migrate_on_login' => env('CART_AUTO_MIGRATE_ON_LOGIN', true),
 
-        // Backup user cart to guest session on logout
-        'backup_on_logout' => env('CART_BACKUP_ON_LOGOUT', false),
-
         // Strategy for handling conflicts when merging carts
         // Options: 'add_quantities', 'keep_highest_quantity', 'keep_user_cart', 'replace_with_guest'
         'merge_strategy' => env('CART_MERGE_STRATEGY', 'add_quantities'),
-
-        // Automatically switch cart instances based on auth status
-        'auto_switch_instances' => env('CART_AUTO_SWITCH_INSTANCES', true),
     ],
 
     /*
     |--------------------------------------------------------------------------
-    | Price Formatting Configuration
+    | Display & Formatting Configuration
     |--------------------------------------------------------------------------
     |
-    | Configure how prices are stored, displayed, and formatted in the cart
+    | Configure how money amounts are displayed to users.
     |
     */
-    'price_formatting' => [
-        // Enable automatic formatting for all price outputs
-        'auto_format' => env('CART_AUTO_FORMAT', false),
+    'display' => [
+        // Enable automatic formatting by default (can be overridden globally)
+        'formatting_enabled' => env('CART_FORMATTING_ENABLED', true),
 
-        // Price transformer class
+        // Price transformer class - determines storage format
         'transformer' => env('CART_PRICE_TRANSFORMER', \MasyukAI\Cart\PriceTransformers\IntegerPriceTransformer::class),
 
-        // Currency and locale
-        'currency' => env('CART_CURRENCY', 'USD'),
-        'locale' => env('CART_LOCALE', 'en_US'),
-        'precision' => env('CART_PRICE_PRECISION', 2),
+        // Locale for number formatting
+        'locale' => env('CART_LOCALE', 'en_MY'),
 
-        // Display options
-        'show_currency_symbol' => env('CART_SHOW_CURRENCY_SYMBOL', false),
-        'decimal_separator' => env('CART_DECIMAL_SEPARATOR', '.'),
-        'thousands_separator' => env('CART_THOUSANDS_SEPARATOR', ','),
+        // Display currency symbols
+        'show_currency_symbol' => env('CART_SHOW_CURRENCY_SYMBOL', true),
+
+        // Formatting style: 'currency', 'decimal', 'accounting'
+        'format_style' => env('CART_FORMAT_STYLE', 'currency'),
     ],
 
     /*
@@ -138,5 +152,71 @@ return [
 
         // Maximum string length for item names/attributes
         'max_string_length' => env('CART_MAX_STRING_LENGTH', 255),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Metrics & Observability
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for cart metrics collection and monitoring
+    |
+    */
+    'metrics' => [
+        // Enable metrics collection
+        'enabled' => env('CART_METRICS_ENABLED', true),
+
+        // Record performance metrics for operations slower than this threshold (seconds)
+        'slow_operation_threshold' => env('CART_SLOW_OPERATION_THRESHOLD', 1.0),
+
+        // Enable conflict tracking
+        'track_conflicts' => env('CART_TRACK_CONFLICTS', true),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Retry Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for automatic retry on cart conflicts
+    |
+    */
+    'retry' => [
+        // Enable automatic retries
+        'enabled' => env('CART_RETRY_ENABLED', true),
+
+        // Maximum number of retry attempts
+        'max_attempts' => env('CART_RETRY_MAX_ATTEMPTS', 3),
+
+        // Base delay between retries (milliseconds)
+        'base_delay' => env('CART_RETRY_BASE_DELAY', 100),
+
+        // Maximum delay between retries (milliseconds)
+        'max_delay' => env('CART_RETRY_MAX_DELAY', 1000),
+
+        // Use exponential backoff
+        'exponential_backoff' => env('CART_RETRY_EXPONENTIAL_BACKOFF', true),
+
+        // Add jitter to prevent thundering herd
+        'jitter' => env('CART_RETRY_JITTER', true),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cart Cleanup
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for automatic cart cleanup
+    |
+    */
+    'cleanup' => [
+        // Days after which carts are considered abandoned
+        'abandoned_after_days' => env('CART_ABANDONED_AFTER_DAYS', 7),
+
+        // Enable automatic cleanup of abandoned carts
+        'auto_cleanup' => env('CART_AUTO_CLEANUP', false),
+
+        // Batch size for cleanup operations
+        'cleanup_batch_size' => env('CART_CLEANUP_BATCH_SIZE', 1000),
     ],
 ];

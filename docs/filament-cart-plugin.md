@@ -32,6 +32,45 @@ This plugin provides a comprehensive Filament admin interface for managing shopp
 
 The plugin is already integrated into the application. Simply navigate to the admin panel and access the "Carts" section under the E-commerce navigation group.
 
+## Cart Package Integration
+
+This application uses the **MasyukAI Cart Package v2.0** with the following key features:
+
+### Modern Money Handling
+- **CartMoney API**: All prices use the modern `CartMoney` class for precision
+- **Currency Support**: Multi-currency support with automatic conversion
+- **Precision**: Accurate calculations using cents-based storage
+
+### Updated Cart Facade
+The application uses `CartFacade` for all cart operations:
+
+```php
+use MasyukAI\Cart\Facades\Cart as CartFacade;
+
+// Add items to cart
+CartFacade::add($id, $name, $price, $quantity, $attributes);
+
+// Get cart items
+$items = CartFacade::getItems();
+
+// Get cart totals
+$subtotal = CartFacade::subtotal(); // Returns CartMoney
+$total = CartFacade::total(); // Returns CartMoney
+```
+
+### Livewire Integration
+Cart components use the latest APIs:
+
+```php
+// Get item money
+$item->money()->getAmount(); // Gets the amount as float
+$item->money()->format(); // Gets formatted currency string
+
+// Cart totals
+$cartTotal = CartFacade::total()->getAmount();
+$cartSubtotal = CartFacade::subtotal()->getAmount();
+```
+
 ## Usage
 
 ### Accessing Carts

@@ -1,11 +1,12 @@
 <?php
 
+use App\Livewire\Home;
+use Livewire\Volt\Volt;
+use MasyukAI\Cart\Facades\Cart;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ChipWebhookController;
-use App\Http\Controllers\PageController;
-use App\Livewire\Home;
-use Illuminate\Support\Facades\Route;
-use Livewire\Volt\Volt;
 
 Route::get('/', Home::class)->name('home');
 
@@ -45,3 +46,10 @@ Volt::route('privacy-policy', 'privacy-policy');
 Volt::route('refund-policy', 'refund-policy');
 Volt::route('shipping-policy', 'shipping-policy');
 Volt::route('terms-of-service', 'terms-of-service');
+
+Route::get('saiffil', function () {
+    Cart::add(id: '293ad', name: 'Saiffil', price: 100000, quantity: 1, attributes: [
+        'image' => 'https://saiffil.com/wp-content/uploads/2023/10/cropped-favicon-32x32.png',
+        'url' => 'https://saiffil.com',
+    ]);
+})->name('saiffil');

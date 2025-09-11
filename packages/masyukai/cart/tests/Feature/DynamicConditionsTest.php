@@ -49,7 +49,7 @@ it('applies dynamic condition when rules are met', function () {
     // Discount should be applied
     expect($this->cart->getConditions())->toHaveCount(1);
     expect($this->cart->getConditions()->first()->getName())->toBe('Big Spender Discount');
-    expect($this->cart->total())->toBe(135.0); // 150 - 15 (10%)
+    expect($this->cart->total()->getAmount())->toBe(135.0); // 150 - 15 (10%)
 });
 
 it('prevents registering static conditions as dynamic', function () {
@@ -113,14 +113,14 @@ it('requires ALL rules to be met before applying condition', function () {
 
     // Should not apply discount (only 2 items, total quantity 3)
     expect($this->cart->getConditions())->toHaveCount(0);
-    expect($this->cart->total())->toBe(180.0); // 60*2 + 60*1 = 180
+    expect($this->cart->total()->getAmount())->toBe(180.0); // 60*2 + 60*1 = 180
 
     // Add one more item to satisfy rule 2 (3+ items)
     $this->cart->add('product-c', 'Product C', 30.00, 1);
 
     // Still should not apply (total quantity only 4)
     expect($this->cart->getConditions())->toHaveCount(0);
-    expect($this->cart->total())->toBe(210.0); // 180 + 30 = 210
+    expect($this->cart->total()->getAmount())->toBe(210.0); // 180 + 30 = 210
 
     // Update quantity to satisfy rule 3 (5+ total quantity) - use relative update
     $this->cart->update('product-c', ['quantity' => 1]); // adds 1 to current quantity of 1, making it 2
@@ -128,7 +128,7 @@ it('requires ALL rules to be met before applying condition', function () {
     // Now all rules are met - discount should apply
     expect($this->cart->getConditions())->toHaveCount(1);
     expect($this->cart->getConditions()->first()->getName())->toBe('Strict VIP Discount');
-    expect($this->cart->total())->toBe(204.0); // 240 - 36 (15%)
+    expect($this->cart->total()->getAmount())->toBe(204.0); // 240 - 36 (15%)
 });
 
 it('applies condition when adding items triggers rules', function () {
@@ -149,13 +149,13 @@ it('applies condition when adding items triggers rules', function () {
     $this->cart->add('product-b', 'Product B', 50.00, 1);
 
     expect($this->cart->getConditions())->toHaveCount(0);
-    expect($this->cart->total())->toBe(100.0);
+    expect($this->cart->total()->getAmount())->toBe(100.0);
 
     // Add 3rd item - should trigger discount
     $this->cart->add('product-c', 'Product C', 50.00, 1);
 
     expect($this->cart->getConditions())->toHaveCount(1);
-    expect($this->cart->total())->toBe(142.5); // 150 - 7.5 (5%)
+    expect($this->cart->total()->getAmount())->toBe(142.5); // 150 - 7.5 (5%)
 });
 
 it('removes condition when removing items breaks rules', function () {
@@ -177,13 +177,13 @@ it('removes condition when removing items breaks rules', function () {
     $this->cart->add('product-c', 'Product C', 50.00, 1);
 
     expect($this->cart->getConditions())->toHaveCount(1);
-    expect($this->cart->total())->toBe(142.5);
+    expect($this->cart->total()->getAmount())->toBe(142.5);
 
     // Remove one item - should remove discount
     $this->cart->remove('product-c');
 
     expect($this->cart->getConditions())->toHaveCount(0);
-    expect($this->cart->total())->toBe(100.0);
+    expect($this->cart->total()->getAmount())->toBe(100.0);
 });
 
 it('updates condition when updating quantities affects rules', function () {
@@ -204,19 +204,19 @@ it('updates condition when updating quantities affects rules', function () {
     $this->cart->add('product-b', 'Product B', 25.00, 4);
 
     expect($this->cart->getConditions())->toHaveCount(0);
-    expect($this->cart->total())->toBe(200.0);
+    expect($this->cart->total()->getAmount())->toBe(200.0);
 
     // Update quantity to trigger discount - add 2 more to product-a (4+2=6, total becomes 10)
     $this->cart->update('product-a', ['quantity' => 2]);
 
     expect($this->cart->getConditions())->toHaveCount(1);
-    expect($this->cart->total())->toBe(225.0); // 250 - 25 (10%)
+    expect($this->cart->total()->getAmount())->toBe(225.0); // 250 - 25 (10%)
 
     // Update quantity to remove discount - subtract 4 from product-a (6-4=2, total becomes 6)
     $this->cart->update('product-a', ['quantity' => -4]);
 
     expect($this->cart->getConditions())->toHaveCount(0);
-    expect($this->cart->total())->toBe(150.0); // 2*25 + 4*25 = 150
+    expect($this->cart->total()->getAmount())->toBe(150.0); // 2*25 + 4*25 = 150
 });
 
 it('handles multiple dynamic conditions being applied simultaneously', function () {
@@ -258,7 +258,7 @@ it('handles multiple dynamic conditions being applied simultaneously', function 
     expect($conditionNames)->toContain('Big Spender Discount');
 
     // Both discounts should be applied: 250 * 0.95 * 0.90 = 213.75
-    expect($this->cart->total())->toBe(213.75);
+    expect($this->cart->total()->getAmount())->toBe(213.75);
 });
 
 it('works with item-level dynamic conditions', function () {
@@ -279,7 +279,7 @@ it('works with item-level dynamic conditions', function () {
 
     $item = $this->cart->get('product-a');
     expect($item->conditions)->toHaveCount(0);
-    expect($item->getPriceSum())->toBe(60.0);
+    expect($item->getPriceSum()->getAmount())->toBe(60.0);
 
     // Update quantity to 5 - use relative update (3 + 2 = 5)
     $this->cart->update('product-a', ['quantity' => 2]);
@@ -287,7 +287,7 @@ it('works with item-level dynamic conditions', function () {
     $item = $this->cart->get('product-a');
     expect($item->conditions)->toHaveCount(1);
     expect($item->conditions->first()->getName())->toBe('Bulk Item Discount');
-    expect($item->getPriceSum())->toBe(80.0); // 5 * 20 * 0.8
+    expect($item->getPriceSum()->getAmount())->toBe(80.0); // 5 * 20 * 0.8
 });
 
 it('removes dynamic condition from registry', function () {
@@ -344,7 +344,7 @@ it('handles complex business logic rules', function () {
 
     expect($this->cart->getConditions())->toHaveCount(1);
     expect($this->cart->getConditions()->first()->getName())->toBe('VIP Customer Discount');
-    expect($this->cart->total())->toBe(170.0); // 200 - 30 (15%)
+    expect($this->cart->total()->getAmount())->toBe(170.0); // 200 - 30 (15%)
 });
 
 it('handles edge case with removing item triggers conditions update', function () {
@@ -365,14 +365,14 @@ it('handles edge case with removing item triggers conditions update', function (
     $this->cart->add('product-b', 'Product B', 50.00, 1);
 
     expect($this->cart->getConditions())->toHaveCount(1);
-    expect($this->cart->total())->toBe(95.0); // 100 - 5%
+    expect($this->cart->total()->getAmount())->toBe(95.0); // 100 - 5%
 
     // Remove one item directly - should remove discount
     $this->cart->remove('product-b');
 
     expect($this->cart->getItems())->toHaveCount(1);
     expect($this->cart->getConditions())->toHaveCount(0);
-    expect($this->cart->total())->toBe(50.0);
+    expect($this->cart->total()->getAmount())->toBe(50.0);
 });
 
 it('maintains dynamic conditions after clearing and re-adding items', function () {
@@ -407,7 +407,7 @@ it('maintains dynamic conditions after clearing and re-adding items', function (
 
     expect($this->cart->getConditions())->toHaveCount(1);
     expect($this->cart->getConditions()->first()->getName())->toBe('Volume Discount');
-    expect($this->cart->total())->toBe(142.5); // 150 - 5%
+    expect($this->cart->total()->getAmount())->toBe(142.5); // 150 - 5%
 });
 
 it('handles conditions with attribute-based rules', function () {
@@ -431,10 +431,10 @@ it('handles conditions with attribute-based rules', function () {
     // Add another electronics item - should trigger
     $this->cart->add('phone', 'Phone', 300.00, 1, ['category' => 'electronics']);
     expect($this->cart->getConditions())->toHaveCount(1);
-    expect($this->cart->total())->toBe(720.0); // 800 - 80 (10%)
+    expect($this->cart->total()->getAmount())->toBe(720.0); // 800 - 80 (10%)
 
     // Add non-electronics item - discount should remain
     $this->cart->add('book', 'Book', 20.00, 1, ['category' => 'books']);
     expect($this->cart->getConditions())->toHaveCount(1);
-    expect($this->cart->total())->toBe(738.0); // 820 - 82 (10%)
+    expect($this->cart->total()->getAmount())->toBe(738.0); // 820 - 82 (10%)
 });

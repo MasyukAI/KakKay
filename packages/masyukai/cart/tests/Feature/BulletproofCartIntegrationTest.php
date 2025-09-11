@@ -11,7 +11,7 @@ it('can access cart facade properly', function () {
     // Test basic cart operations
     expect(Cart::isEmpty())->toBeTrue();
     expect(Cart::count())->toBe(0);
-    expect(Cart::total())->toBe(0.0);
+    expect(Cart::total()->getAmount())->toBe(0.0);
 
     // Add an item to the cart
     $item = Cart::add('test-product', 'Test Product', 10.99, 2);
@@ -19,7 +19,7 @@ it('can access cart facade properly', function () {
     expect(Cart::isEmpty())->toBeFalse();
     expect(Cart::getItems())->toHaveCount(1); // Number of unique items
     expect(Cart::getTotalQuantity())->toBe(2); // Total quantity across all items
-    expect(Cart::subtotal())->toBe(21.98);
+    expect(Cart::subtotal()->getAmount())->toBe(21.98);
 
     // Test item properties
     expect($item->id)->toBe('test-product');
@@ -38,20 +38,20 @@ it('can perform comprehensive cart operations', function () {
 
     expect(Cart::getItems())->toHaveCount(3); // Number of unique items
     expect(Cart::getTotalQuantity())->toBe(6);
-    expect(Cart::subtotal())->toBe(170.00); // 15 + 50 + 105
+    expect(Cart::subtotal()->getAmount())->toBe(170.00); // 15 + 50 + 105
 
     // Test updating quantities (this adds to existing quantity)
     Cart::update('product-2', ['quantity' => 5]);
 
     // After update: product-1 (1) + product-2 (2+5=7) + product-3 (3) = 11
     expect(Cart::getTotalQuantity())->toBe(11); // 1 + 7 + 3
-    expect(Cart::subtotal())->toBe(295.00); // 15 + 175 + 105
+    expect(Cart::subtotal()->getAmount())->toBe(295.00); // 15 + 175 + 105
 
     // Test removing items
     Cart::remove('product-1');
     expect(Cart::getItems())->toHaveCount(2); // Number of unique items
     expect(Cart::getTotalQuantity())->toBe(10); // 7 + 3 (after removing product-1)
-    expect(Cart::subtotal())->toBe(280.00); // 175 + 105
+    expect(Cart::subtotal()->getAmount())->toBe(280.00); // 175 + 105
 
     // Test searching
     $expensiveItems = Cart::search(function ($item) {
@@ -103,12 +103,12 @@ it('works with cart conditions', function () {
     Cart::addCondition($taxCondition);
 
     expect(Cart::getConditions())->toHaveCount(1);
-    expect(Cart::total())->toBe(110.00); // 100 + 10% tax
+    expect(Cart::total()->getAmount())->toBe(110.00); // 100 + 10% tax
 
     // Remove condition
     Cart::removeCondition('VAT');
     expect(Cart::getConditions())->toHaveCount(0);
-    expect(Cart::total())->toBe(100.00);
+    expect(Cart::total()->getAmount())->toBe(100.00);
 });
 
 it('persists data correctly', function () {

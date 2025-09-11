@@ -1,19 +1,18 @@
 # MasyukAI Cart Package Guidelines
 
 ## Overview
-This application uses the custom `masyukai/cart` package for shopping cart functionality. This is a modern, production-ready cart implementation built specifically for Laravel 12+ with comprehensive Livewire integration, advanced condition system, and 96.2% test coverage.
+This application uses the custom `masyukai/cart` package for shopping cart functionality. This is a modern, production-ready cart implementation built specifically for Laravel 12+ with comprehensive Livewire integration, advanced condition system, and excellent test coverage.
 
 **Package Location**: `packages/masyukai/cart/`  
 **Namespace**: `MasyukAI\Cart`  
-**Facade**: `MasyukAI\Cart\Facades\Cart`
+**Facade**: `MasyukAI\Cart\Facades\Cart` (imported as `CartFacade` in app)
 
 ## Key Features
-- ✅ **Modern API**: Clean, intuitive methods with consistent naming
+- ✅ **Modern Money API**: Precision money handling with `CartMoney` class
 - ✅ **Advanced Conditions**: Flexible discount, tax, and fee system
 - ✅ **Multiple Storage**: Session, database, and cache storage options
 - ✅ **Livewire Integration**: Ready-to-use reactive components
 - ✅ **Event System**: Comprehensive cart and item events
-- ✅ **Price Formatting**: Automatic price formatting with multiple transformers
 - ✅ **Instance Management**: Multi-cart support for complex scenarios
 - ✅ **Migration Tools**: Guest-to-user cart migration utilities
 
@@ -29,11 +28,9 @@ return [
         'driver' => 'session', // session, database, cache
         'key' => 'cart',
     ],
-    'formatting' => [
-        'enabled' => true,
-        'transformer' => 'integer', // integer, localized
-        'currency' => 'MYR',
-        'decimals' => 2,
+    'money' => [
+        'default_currency' => 'USD',
+        'default_precision' => 2,
     ],
     'events' => ['enabled' => true],
 ];
@@ -46,15 +43,25 @@ php artisan vendor:publish --tag=cart-migrations
 php artisan migrate
 ```
 
-## Basic Usage
+## Application Usage
+
+### Import Pattern
+In application code, use the facade with alias:
+
+```php
+use MasyukAI\Cart\Facades\Cart as CartFacade;
+
+// All operations use CartFacade::
+CartFacade::add(...);
+CartFacade::getItems();
+CartFacade::total();
+```
 
 ### Adding Items to Cart
 
 #### Simple Product
 ```php
-use MasyukAI\Cart\Facades\Cart;
-
-Cart::add(
+CartFacade::add(
     'iphone-15-pro',    // product id  
     'iPhone 15 Pro',    // product name
     999.99,             // product price
@@ -68,7 +75,7 @@ Cart::add(
 
 #### Multiple Items
 ```php
-Cart::add([
+CartFacade::add([
     'id' => 'laptop-pro',
     'name' => 'MacBook Pro',
     'price' => 2499.99,
@@ -87,36 +94,40 @@ Cart::add([
 
 #### Get Cart Contents
 ```php
-$cartItems = Cart::content();           // CartCollection
-$cartArray = Cart::content()->toArray(); 
-$itemCount = Cart::countItems();        // Number of unique items
-$totalQuantity = Cart::count();         // Total quantity of all items
+$cartItems = CartFacade::getItems();           // Collection of CartItem objects
+$cartArray = CartFacade::getItems()->toArray(); 
+$itemCount = CartFacade::countItems();        // Number of unique items
+$totalQuantity = CartFacade::getTotalQuantity(); // Total quantity of all items
 ```
 
 #### Get Specific Item
 ```php
-$item = Cart::get('iphone-15-pro');
-$itemPrice = $item->getPriceSum();      // Item total (price × quantity)
-$itemWithConditions = $item->getPriceSumWithConditions();
+$item = CartFacade::get('iphone-15-pro');
+$itemPrice = $item->money();                 // CartMoney object
+$itemTotal = $item->sumMoney();             // CartMoney object (price × quantity)
+$itemAmount = $item->money()->getAmount();  // Float value
 ```
 
 #### Get Cart Totals
 ```php
-// ⚠️ IMPORTANT: New API uses formatted methods for user-facing values
-$subtotal = Cart::subtotal();                    // Formatted subtotal (no conditions)
-$subtotalWithConditions = Cart::subtotalWithConditions(); // With item-level conditions
-$total = Cart::total();                          // Final total (all conditions applied)
+// Modern API: Returns CartMoney objects
+$subtotal = CartFacade::subtotal();                    // CartMoney object (no conditions)
+$total = CartFacade::total();                          // CartMoney object (final total)
 
-// Raw values for internal calculations (events, etc.)
-$rawSubtotal = Cart::getRawSubtotal();           // Float value
-$rawTotal = Cart::getRawTotal();                 // Float value
+// Get numeric values
+$subtotalAmount = CartFacade::subtotal()->getAmount(); // Float value
+$totalAmount = CartFacade::total()->getAmount();       // Float value
+
+// Formatted display values
+$formattedSubtotal = CartFacade::subtotal()->format(); // "$99.99"
+$formattedTotal = CartFacade::total()->format();       // "$109.99"
 ```
 
 ### Updating Cart Items
 
 #### Update Item Details
 ```php
-Cart::update('iphone-15-pro', [
+CartFacade::update('iphone-15-pro', [
     'name' => 'iPhone 15 Pro Max',
     'price' => 1199.99,
     'quantity' => 2,
@@ -126,19 +137,22 @@ Cart::update('iphone-15-pro', [
 
 #### Update Quantity Only
 ```php
-// Relative quantity change
-Cart::updateQuantity('iphone-15-pro', 2);       // Add 2 more
-Cart::updateQuantity('iphone-15-pro', -1);      // Remove 1
+// Set absolute quantity
+CartFacade::update('iphone-15-pro', ['quantity' => 5]); // Set to exactly 5
 
-// Absolute quantity
-Cart::setQuantity('iphone-15-pro', 5);          // Set to exactly 5
+// In Livewire components, use this pattern:
+$item = CartFacade::get($itemId);
+if ($item) {
+    CartFacade::update($itemId, ['quantity' => $item->quantity + 1]); // Increment
+    CartFacade::update($itemId, ['quantity' => $item->quantity - 1]); // Decrement
+}
 ```
 
 ### Removing Items
 ```php
-Cart::remove('iphone-15-pro');                  // Remove specific item
-Cart::clear();                                  // Clear entire cart
-Cart::isEmpty();                                // Check if cart is empty
+CartFacade::remove('iphone-15-pro');                  // Remove specific item
+CartFacade::clear();                                  // Clear entire cart
+CartFacade::isEmpty();                                // Check if cart is empty
 ```
 
 ## Advanced Conditions System
@@ -159,19 +173,19 @@ $taxCondition = new CartCondition(
     ['description' => 'GST 6%'] // attributes (optional)
 );
 
-Cart::addCondition($taxCondition);
+CartFacade::addCondition($taxCondition);
 ```
 
 #### Convenience Methods
 ```php
 // Quick discount
-Cart::addDiscount('welcome-10', '10%');
+CartFacade::addDiscount('welcome-10', '10%');
 
 // Quick tax
-Cart::addTax('gst', '6%');
+CartFacade::addTax('gst', '6%');
 
 // Quick fee
-Cart::addFee('shipping', '15.00');
+CartFacade::addFee('shipping', '15.00');
 ```
 
 #### Multiple Conditions with Order
@@ -180,7 +194,7 @@ $shipping = new CartCondition('shipping', 'fee', 'subtotal', '+12.00', [], 1);
 $discount = new CartCondition('save10', 'discount', 'subtotal', '-10%', [], 2);
 $tax = new CartCondition('gst', 'tax', 'subtotal', '6%', [], 3);
 
-Cart::addCondition([$shipping, $discount, $tax]);
+CartFacade::addCondition([$shipping, $discount, $tax]);
 ```
 
 ### Item-Level Conditions
@@ -188,7 +202,7 @@ Cart::addCondition([$shipping, $discount, $tax]);
 #### Add Condition to Specific Item
 ```php
 $saleCondition = new CartCondition('flash-sale', 'discount', 'item', '-25%');
-Cart::addItemCondition('iphone-15-pro', $saleCondition);
+CartFacade::addItemCondition('iphone-15-pro', $saleCondition);
 ```
 
 #### Add Conditions During Item Creation
@@ -277,35 +291,93 @@ Event::listen(ItemAdded::class, function ($event) {
 });
 
 Event::listen(CartUpdated::class, function ($event) {
-    // $event->items (CartCollection)
-    // $event->conditions (CartConditionCollection) 
+    // $event->items (Collection)
+    // $event->conditions (Collection) 
     // $event->instance (string)
-    // $event->total (float)
+    // $event->total (CartMoney)
 });
 ```
 
 ## Livewire Integration
 
-Ready-to-use Livewire components:
+### Application Components
+The application includes these Livewire components:
 
-### Add to Cart Component
+#### Cart Component (`App\Livewire\Cart`)
 ```php
-<livewire:add-to-cart 
-    :product-id="$product->id"
-    :product-name="$product->name"
-    :product-price="$product->price"
-    :max-quantity="$product->stock"
-    :show-form="true" />
+use MasyukAI\Cart\Facades\Cart as CartFacade;
+
+class Cart extends Component
+{
+    public array $cartItems = [];
+
+    public function mount(): void
+    {
+        $this->loadCartItems();
+    }
+
+    public function loadCartItems(): void
+    {
+        $cartContents = CartFacade::getItems();
+        $this->cartItems = $cartContents->map(function ($item) {
+            return [
+                'id' => (string) $item->id,
+                'name' => (string) $item->name,
+                'price' => (int) $item->getPrice(),
+                'quantity' => (int) $item->quantity,
+                'slug' => $item->attributes->get('slug'),
+            ];
+        })->values()->toArray();
+    }
+
+    public function updateQuantity(string $itemId, int $quantity): void
+    {
+        if ($quantity <= 0) {
+            $this->removeItem($itemId);
+            return;
+        }
+        CartFacade::update($itemId, ['quantity' => $quantity]);
+        $this->loadCartItems();
+        $this->dispatch('product-added-to-cart');
+    }
+
+    public function removeItem(string $itemId): void
+    {
+        CartFacade::remove($itemId);
+        $this->loadCartItems();
+    }
+
+    public function getSubtotal(): int
+    {
+        return (int) CartFacade::subtotal();
+    }
+
+    public function getTotal(): int
+    {
+        return $this->getSubtotal() + $this->getShipping();
+    }
+}
 ```
 
-### Cart Summary Component
+#### Cart Counter Component (`App\Livewire\CartCounter`)
 ```php
-<livewire:cart-summary :show-details="true" />
-```
+use MasyukAI\Cart\Facades\Cart as CartFacade;
 
-### Cart Table Component
-```php
-<livewire:cart-table :show-conditions="true" />
+class CartCounter extends Component
+{
+    public int $count = 0;
+
+    public function mount(): void
+    {
+        $this->updateCartCount();
+    }
+
+    #[On('product-added-to-cart')]
+    public function updateCartCount(): void
+    {
+        $this->count = CartFacade::getTotalQuantity();
+    }
+}
 ```
 
 ## Storage Options
@@ -328,54 +400,132 @@ Ready-to-use Livewire components:
 'storage' => ['driver' => 'cache', 'ttl' => 3600]
 ```
 
-## Price Formatting
+## Money Handling
 
-The package supports automatic price formatting:
+The package uses the modern `CartMoney` class for all money operations:
 
-### Configuration
+### Working with CartMoney
 ```php
-// config/cart.php
-'formatting' => [
-    'enabled' => true,
-    'transformer' => 'integer',     // or 'localized'
-    'currency' => 'MYR',
-    'decimals' => 2,
-],
+// Get money objects
+$item = CartFacade::get('product-1');
+$price = $item->money();                 // CartMoney object
+$total = $item->sumMoney();             // CartMoney object
+
+// Get values
+$amount = $price->getAmount();          // Float: 19.99
+$cents = $price->getCents();            // Int: 1999
+$currency = $price->getCurrency();      // String: "USD"
+
+// Format for display
+$formatted = $price->format();          // String: "$19.99"
+$simple = $price->formatSimple();       // String: "19.99"
 ```
 
-### Integer Transformer (Default)
-Converts prices to integers for storage (cents) and formats for display:
+### CartMoney Operations
 ```php
-Cart::add('item', 'Item', 29.99, 1);   // Stored as 2999 cents
-echo Cart::subtotal();                  // Displays "29.99"
-```
+use MasyukAI\Cart\Support\CartMoney;
 
-### Localized Transformer
-Respects locale formatting:
-```php
-// For Malaysian locale
-echo Cart::total();                     // "RM 1,234.56"
+// Create money objects
+$money1 = CartMoney::fromAmount(19.99);
+$money2 = CartMoney::fromCents(1999); // Same as above
+
+// Arithmetic
+$sum = $money1->add($money2);           // $39.98
+$difference = $money1->subtract($money2); // $0.00
+$doubled = $money1->multiply(2);        // $39.98
+$half = $money1->divide(2);             // $9.995 (exact)
+
+// Comparisons
+$money1->equals($money2);               // true
+$money1->greaterThan($money2);          // false
+$money1->isPositive();                  // true
 ```
 
 ## Testing
 
 ### Basic Test Setup
 ```php
-use MasyukAI\Cart\Facades\Cart;
+use MasyukAI\Cart\Facades\Cart as CartFacade;
 
 class CartTest extends TestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
-        Cart::clear(); // Clear cart before each test
+        CartFacade::clear(); // Clear cart before each test
     }
 
     public function test_can_add_item_to_cart()
     {
-        Cart::add('test-item', 'Test Item', 99.99, 1);
+        CartFacade::add('test-item', 'Test Item', 99.99, 1);
         
-        $this->assertEquals(1, Cart::countItems());
+                $this->assertEquals(1, CartFacade::countItems());
+        $this->assertEquals(99.99, CartFacade::subtotal()->getAmount());
+    }
+
+    public function test_can_update_item_quantity()
+    {
+        CartFacade::add('test-item', 'Test Item', 50.00, 1);
+        CartFacade::update('test-item', ['quantity' => 3]);
+        
+        $item = CartFacade::get('test-item');
+        $this->assertEquals(3, $item->quantity);
+        $this->assertEquals(150.00, $item->sumMoney()->getAmount());
+    }
+}
+```
+
+## Best Practices
+
+### 1. Always Use Facade Alias
+```php
+// In components, import with alias
+use MasyukAI\Cart\Facades\Cart as CartFacade;
+
+// Use CartFacade:: everywhere in application code
+CartFacade::add(...);
+CartFacade::getItems();
+```
+
+### 2. Handle Cart Migration on Login
+```php
+// In your authentication logic
+public function handleUserLogin(User $user)
+{
+    $guestInstance = 'guest_' . session()->getId();
+    $userInstance = 'user_' . $user->id;
+    
+    if (!CartFacade::instance($guestInstance)->isEmpty()) {
+        app(CartMigrationService::class)->migrateCart(
+            $guestInstance, 
+            $userInstance, 
+            'add_quantities'
+        );
+    }
+    
+    CartFacade::instance($userInstance);
+}
+```
+
+### 3. Use Events for Analytics
+```php
+Event::listen(ItemAdded::class, function ($event) {
+    Analytics::track('cart_item_added', [
+        'item_id' => $event->item->id,
+        'item_name' => $event->item->name,
+        'price' => $event->item->money()->getAmount(),
+        'quantity' => $event->item->quantity,
+    ]);
+});
+```
+
+### 4. Validate Items Before Adding
+```php
+public function addToCart(Request $request)
+{
+    $request->validate([
+        'product_id' => 'required|exists:products,id',
+        'quantity' => 'required|integer|min:1|max:10',
         $this->assertEquals('99.99', Cart::subtotal());
     }
 }
@@ -455,7 +605,7 @@ public function addToCart(Request $request)
         ]);
     }
 
-    Cart::add(
+    CartFacade::add(
         $product->id,
         $product->name,
         $product->price,
@@ -465,9 +615,62 @@ public function addToCart(Request $request)
 }
 ```
 
-### 5. Use Raw Methods for Internal Calculations
+### 5. Use Money Methods for Calculations
 ```php
-// ❌ Don't use formatted methods for calculations
+// ✅ Use CartMoney methods for accurate calculations
+$total = CartFacade::total();
+$shipping = CartMoney::fromAmount(5.99);
+$grandTotal = $total->add($shipping);
+
+// ✅ For display, use format methods
+echo $grandTotal->format(); // "$105.99"
+
+// ✅ For storage/API, use getAmount()
+$orderData = [
+    'total' => $grandTotal->getAmount(), // 105.99
+    'currency' => $grandTotal->getCurrency(), // "USD"
+];
+```
+
+## Migration Guide
+
+If you're updating from older cart implementations:
+
+### From Laravel Cart v2.x
+```php
+// Old API                          // New API
+Cart::content()                  -> CartFacade::getItems()
+Cart::count()                    -> CartFacade::getTotalQuantity()
+Cart::subtotal()                 -> CartFacade::subtotal()->getAmount()
+Cart::total()                    -> CartFacade::total()->getAmount()
+$item->price                     -> $item->money()->getAmount()
+$item->total                     -> $item->sumMoney()->getAmount()
+```
+
+### Price Handling Changes
+```php
+// Old: Mixed return types
+$total = Cart::total(); // Could be string or float
+
+// New: Consistent CartMoney objects
+$total = CartFacade::total(); // Always CartMoney
+$amount = $total->getAmount(); // Float for calculations
+$display = $total->format(); // String for display
+```
+
+## Summary
+
+The MasyukAI Cart package provides:
+
+- **Modern API**: Consistent method naming and return types
+- **Money Precision**: Accurate money handling with CartMoney
+- **Livewire Ready**: Built for modern Laravel applications
+- **Flexible Storage**: Session, database, or cache options
+- **Rich Conditions**: Complex pricing rules and discounts
+- **Event System**: Comprehensive tracking and analytics hooks
+- **Testing Ready**: Clean API for unit and feature testing
+
+Use `CartFacade::` throughout your application for cart operations, leverage the `CartMoney` class for precision, and take advantage of the event system for analytics and user experience improvements.
 $tax = Cart::total() * 0.06;  // Will fail if total() returns "1,234.56"
 
 // ✅ Use raw methods for calculations

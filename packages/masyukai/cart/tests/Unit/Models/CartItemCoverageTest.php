@@ -115,8 +115,8 @@ it('can use discount amount alias method', function (): void {
         conditions: [$this->condition1] // -10%
     );
 
-    expect($item->discountAmount())->toBe(20.0) // Same as getDiscountAmount()
-        ->and($item->discountAmount())->toBe($item->getDiscountAmount());
+    expect($item->discountAmount()->getAmount())->toBe(20.0) // Same as getDiscountAmount()
+        ->and($item->discountAmount()->getAmount())->toBe($item->getDiscountAmount()->getAmount());
 });
 
 it('can use final total alias method', function (): void {

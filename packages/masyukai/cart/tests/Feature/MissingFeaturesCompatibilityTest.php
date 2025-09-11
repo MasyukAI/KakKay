@@ -22,7 +22,7 @@ describe('Missing Features Compatibility Tests', function () {
 
         $subtotal = $this->cart->subtotalWithoutConditions();
 
-        expect($subtotal)->toBe(35.0); // (10 * 2) + (15 * 1)
+        expect($subtotal->getAmount())->toBe(35.0); // (10 * 2) + (15 * 1)
     });
 
     it('can count items using count() method', function () {
@@ -146,8 +146,8 @@ describe('Missing Features Compatibility Tests', function () {
             $subtotal = $this->cart->subtotal();
             $subtotalWithoutConditions = $this->cart->subtotalWithoutConditions();
 
-            expect($subtotal)->toBe($subtotalWithoutConditions);
-            expect($subtotal)->toBe(35.0);
+            expect($subtotal->getAmount())->toBe($subtotalWithoutConditions->getAmount());
+            expect($subtotal->getAmount())->toBe(35.0);
         });
 
         it('correctly calculates subtotal with item conditions vs without conditions', function () {
@@ -160,8 +160,8 @@ describe('Missing Features Compatibility Tests', function () {
             $subtotalWithoutConditions = $this->cart->subtotalWithoutConditions();
             $subtotal = $this->cart->subtotal(); // Now includes item conditions by default
 
-            expect($subtotalWithoutConditions)->toBe(20.0); // 10 * 2
-            expect($subtotal)->toBe(16.0); // 20 - 20% = 16
+            expect($subtotalWithoutConditions->getAmount())->toBe(20.0); // 10 * 2
+            expect($subtotal->getAmount())->toBe(16.0); // 20 - 20% = 16
         });
     });
 
@@ -187,8 +187,8 @@ describe('Missing Features Compatibility Tests', function () {
 
             expect($defaultCart->getItems())->toHaveCount(1);
             expect($wishlistCart->getItems())->toHaveCount(1);
-            expect($defaultCart->total())->toBe(10.0);
-            expect($wishlistCart->total())->toBe(15.0);
+            expect($defaultCart->total()->getAmount())->toBe(10.0);
+            expect($wishlistCart->total()->getAmount())->toBe(15.0);
         });
     });
 });

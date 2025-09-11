@@ -35,10 +35,10 @@ describe('Enhanced Cart API', function () {
         expect($this->cart->countItems())->toBe(2);
 
         // Test subtotal() alias
-        expect($this->cart->subtotal())->toBe(35.00);
+        expect($this->cart->subtotal()->getAmount())->toBe(35.00);
 
         // Test total() alias
-        expect($this->cart->total())->toBe(35.00);
+        expect($this->cart->total()->getAmount())->toBe(35.00);
     });
 
     test('can search cart content with callback', function () {
@@ -67,15 +67,15 @@ describe('Enhanced Cart API', function () {
 
         // Add discount using helper
         $this->cart->addDiscount('summer-sale', '10%');
-        expect($this->cart->total())->toBe(90.00);
+        expect($this->cart->total()->getAmount())->toBe(90.00);
 
         // Add tax using helper
         $this->cart->addTax('sales-tax', '8%');
-        expect($this->cart->total())->toBe(97.20);
+        expect($this->cart->total()->getAmount())->toBe(97.20);
 
         // Add fee using helper
         $this->cart->addFee('shipping', '5.00');
-        expect($this->cart->total())->toBe(102.20);
+        expect($this->cart->total()->getAmount())->toBe(102.20);
     });
 
     test('can use shopping-cart style item methods', function () {
@@ -90,7 +90,7 @@ describe('Enhanced Cart API', function () {
         expect($item->getRawPriceSum())->toBe(20.00);
 
         // Test discountAmount alias
-        expect($item->discountAmount())->toBe(0.00);
+        expect($item->discountAmount()->getAmount())->toBe(0.00);
     });
 
     test('enhanced collection methods work', function () {

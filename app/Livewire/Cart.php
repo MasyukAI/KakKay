@@ -62,9 +62,9 @@ class Cart extends Component
 
     public function incrementQuantity($itemId)
     {
-        $item = Cart::get($itemId);
+        $item = CartFacade::get($itemId);
         if ($item) {
-            CartFacade::update($itemId, ['quantity' => ['value' => $item->quantity + 1]]);
+            CartFacade::update($itemId, ['quantity' => $item->quantity + 1]);
             $this->loadCartItems();
             Notification::make()
                 ->title('Buku Ditambah')
@@ -78,10 +78,10 @@ class Cart extends Component
 
     public function decrementQuantity($itemId)
     {
-        $item = Cart::get($itemId);
+        $item = CartFacade::get($itemId);
         if ($item) {
             $newQuantity = $item->quantity - 1;
-            CartFacade::update($itemId, ['quantity' => ['value' => $newQuantity]]);
+            CartFacade::update($itemId, ['quantity' => $newQuantity]);
             $this->loadCartItems();
             Notification::make()
                 ->title('Buku Dikurangkan')
@@ -95,9 +95,9 @@ class Cart extends Component
 
     public function removeItem(string $itemId): void
     {
-        $item = Cart::get($itemId);
+        $item = CartFacade::get($itemId);
         $itemName = $item ? $item->name : 'Item';
-    CartFacade::remove($itemId);
+        CartFacade::remove($itemId);
         $this->loadCartItems();
         $this->loadSuggestedProducts();
         Notification::make()
@@ -138,7 +138,7 @@ class Cart extends Component
                 ->send();
             return;
         }
-    CartFacade::add(
+        CartFacade::add(
             (string) $product->id,
             $product->name,
             $product->price,
@@ -160,7 +160,7 @@ class Cart extends Component
 
     public function getSubtotal(): int
     {
-    return (int) CartFacade::subtotal();
+        return (int) CartFacade::subtotal();
     }
 
     public function getShipping(): int

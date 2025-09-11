@@ -13,7 +13,7 @@ use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
-use MasyukAI\Cart\Facades\Cart;
+use MasyukAI\Cart\Facades\Cart as CartFacade;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
 class Checkout extends Component implements HasSchemas
@@ -191,7 +191,7 @@ class Checkout extends Component implements HasSchemas
     {
         try {
             // Middleware handles cart instance switching
-            $cartContents = Cart::getItems();
+            $cartContents = CartFacade::getItems();
 
             if ($cartContents->isEmpty()) {
                 return $this->redirect(route('cart'));
@@ -261,7 +261,7 @@ class Checkout extends Component implements HasSchemas
     #[Computed]
     public function getSubtotal(): int
     {
-        return (int) Cart::subtotal(); // Use Cart facade for consistency
+        return (int) CartFacade::subtotal(); // Use Cart facade for consistency
     }
 
     #[Computed]
@@ -292,7 +292,7 @@ class Checkout extends Component implements HasSchemas
     public function getTotal(): int
     {
         // is there a native function from Cart package
-        $cartTotal = Cart::total();
+        $cartTotal = CartFacade::total();
 
         return $cartTotal - $this->getSavings() + $this->getShipping() + $this->getTax();
     }

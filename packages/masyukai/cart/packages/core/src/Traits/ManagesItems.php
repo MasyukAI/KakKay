@@ -11,7 +11,7 @@ use MasyukAI\Cart\Events\ItemUpdated;
 use MasyukAI\Cart\Exceptions\InvalidCartItemException;
 use MasyukAI\Cart\Exceptions\UnknownModelException;
 use MasyukAI\Cart\Models\CartItem;
-use MasyukAI\Cart\Support\PriceFormatManager;
+use MasyukAI\Cart\Support\CartMoney;
 
 trait ManagesItems
 {
@@ -210,6 +210,9 @@ trait ManagesItems
     {
         $this->validateCartItem($data);
 
+        // Pass cart's decimals config as precision if available
+        $precision = $this->config['decimals'] ?? null;
+
         return new CartItem(
             id: $data['id'],
             name: $data['name'],
@@ -217,7 +220,8 @@ trait ManagesItems
             quantity: $data['quantity'],
             attributes: $data['attributes'] ?? [],
             conditions: $data['conditions'] ?? [],
-            associatedModel: $data['associated_model'] ?? null
+            associatedModel: $data['associated_model'] ?? null,
+            precision: $precision
         );
     }
 
@@ -251,7 +255,7 @@ trait ManagesItems
     }
 
     /**
-     * Normalize price to float using price transformer
+     * Normalize price using PriceTransformer for consistent storage
      */
     private function normalizePrice(float|string|null $price): float
     {
@@ -259,20 +263,31 @@ trait ManagesItems
             return 0.0;
         }
 
-        // If cart has local decimals config, use simple rounding instead of transformer
+        // Use PriceTransformer for consistent price handling
+        if (app()->bound(\MasyukAI\Cart\Contracts\PriceTransformerInterface::class)) {
+            $transformer = app(\MasyukAI\Cart\Contracts\PriceTransformerInterface::class);
+            
+            // Clean string input first
+            if (is_string($price)) {
+                $price = str_replace([',', '$', '€', '£', ' '], '', $price);
+                $price = (float) $price;
+            }
+            
+            return $transformer->toStorage($price);
+        }
+
+        // Fallback: If cart has local decimals config, use simple rounding
         if (isset($this->config['decimals'])) {
             // Handle string normalization locally
             if (is_string($price)) {
-                $price = str_replace(',', '', $price);
+                $price = str_replace([',', '$', '€', '£', ' '], '', $price);
             }
 
             return round((float) $price, $this->config['decimals']);
         }
 
-        // Use the price transformer for proper normalization
-        $normalized = PriceFormatManager::getFormatter()->normalize($price);
-
-        // Ensure we return a float
-        return (float) $normalized;
+        // Final fallback: Use CartMoney for proper parsing and normalization
+        $money = CartMoney::fromAmount($price);
+        return $money->getAmount();
     }
 }

@@ -7,6 +7,7 @@ namespace MasyukAI\Cart;
 use Illuminate\Contracts\Events\Dispatcher;
 use MasyukAI\Cart\Events\CartCreated;
 use MasyukAI\Cart\Storage\StorageInterface;
+use MasyukAI\Cart\Support\CartMoney;
 use MasyukAI\Cart\Traits\CalculatesTotals;
 use MasyukAI\Cart\Traits\ManagesConditions;
 use MasyukAI\Cart\Traits\ManagesDynamicConditions;
@@ -39,6 +40,14 @@ class Cart
         if ($this->eventsEnabled && $this->events) {
             $this->events->dispatch(new CartCreated($this));
         }
+    }
+
+    /**
+     * Get cart configuration
+     */
+    public function getConfig(): array
+    {
+        return $this->config;
     }
 
     /**

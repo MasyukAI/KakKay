@@ -5,11 +5,11 @@ declare(strict_types=1);
 use MasyukAI\Cart\Cart;
 use MasyukAI\Cart\Conditions\CartCondition;
 use MasyukAI\Cart\Storage\SessionStorage;
-use MasyukAI\Cart\Support\PriceFormatManager;
+use MasyukAI\Cart\Support\CartMoney;
 
 it('debug cart total calculation', function () {
     // Enable formatting for this test
-    PriceFormatManager::enableFormatting();
+    CartMoney::enableFormatting();
 
     // Set up session storage for testing
     $sessionStore = new \Illuminate\Session\Store('testing', new \Illuminate\Session\ArraySessionHandler(120));
@@ -33,8 +33,8 @@ it('debug cart total calculation', function () {
 
     // Verify immutability - state should be unchanged after dump operations
     expect($cart->getItems()->count())->toBe($initialItemsCount);
-    expect($cart->subtotal())->toBe($initialSubtotal);
-    expect($cart->total())->toBe($initialTotal);
+    expect($cart->subtotal()->getAmount())->toBe($initialSubtotal->getAmount());
+    expect($cart->total()->getAmount())->toBe($initialTotal->getAmount());
 
     // Add condition
     $condition = new CartCondition('tax', 'tax', 'subtotal', '+10%');
@@ -47,13 +47,13 @@ it('debug cart total calculation', function () {
 
     // Verify immutability - state should be unchanged after dump operations
     expect($cart->getItems()->count())->toBe($afterConditionItemsCount);
-    expect($cart->subtotal())->toBe($afterConditionSubtotal);
-    expect($cart->total())->toBe($afterConditionTotal);
+    expect($cart->subtotal()->getAmount())->toBe($afterConditionSubtotal->getAmount());
+    expect($cart->total()->getAmount())->toBe($afterConditionTotal->getAmount());
 
     // Test exact types and values - the cart returns formatted strings by default
-    expect($cart->total())->toBe('220.00') // Should be 200 + 10% = 220
-        ->and($cart->subtotal())->toBe('200.00') // Subtotal stays 200
-        ->and($cart->subtotalWithoutConditions())->toBe('200.00'); // Same as subtotal
+    expect((string) $cart->total())->toBe('$220.00') // Should be 200 + 10% = 220, formatted as $220.00
+        ->and((string) $cart->subtotal())->toBe('$200.00') // Subtotal stays 200, formatted as $200.00
+        ->and((string) $cart->subtotalWithoutConditions())->toBe('$200.00'); // Same as subtotal
 
     // Verify exact return types - should be formatted strings by default when auto_format is enabled
     expect($cart->getRawTotal())->toBeFloat()
@@ -82,21 +82,21 @@ it('verifies cart method return types with and without formatting', function () 
     $cart->addCondition($condition);
 
     // Test with formatting DISABLED (default)
-    PriceFormatManager::disableFormatting();
+    CartMoney::disableFormatting();
 
-    expect($cart->total())->toBeFloat()
-        ->and($cart->subtotal())->toBeFloat()
-        ->and($cart->total())->toBe(218.89) // (99.99 + 49.50 * 2) * 1.10 = 198.99 * 1.10
-        ->and($cart->subtotal())->toBe(198.99); // 99.99 + 49.50 * 2
+    expect($cart->total()->getAmount())->toBeFloat()
+        ->and($cart->subtotal()->getAmount())->toBeFloat()
+        ->and($cart->total()->getAmount())->toBe(218.89) // (99.99 + 49.50 * 2) * 1.10 = 198.99 * 1.10
+        ->and($cart->subtotal()->getAmount())->toBe(198.99); // 99.99 + 49.50 * 2
 
     // Test with formatting ENABLED
-    PriceFormatManager::enableFormatting();
+    CartMoney::enableFormatting();
 
-    expect($cart->total())->toBeString()
-        ->and($cart->subtotal())->toBeString()
-        ->and($cart->total())->toBe('218.89')
-        ->and($cart->subtotal())->toBe('198.99');
+    expect((string) $cart->total())->toBeString()
+        ->and((string) $cart->subtotal())->toBeString()
+        ->and((string) $cart->total())->toBe('$218.89')
+        ->and((string) $cart->subtotal())->toBe('$198.99');
 
     // Reset formatting state
-    PriceFormatManager::disableFormatting();
+    CartMoney::disableFormatting();
 });

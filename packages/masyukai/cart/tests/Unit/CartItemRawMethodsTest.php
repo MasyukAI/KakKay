@@ -90,6 +90,6 @@ describe('CartItem Raw Methods', function () {
 
         // Original: 200, With conditions: 160, Discount: 40
         $expectedDiscount = 200.00 - 160.00;
-        expect($itemWithDiscount->getDiscountAmount())->toBe($expectedDiscount);
+        expect($itemWithDiscount->getDiscountAmount()->getAmount())->toBe($expectedDiscount);
     });
 });

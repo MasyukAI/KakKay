@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MasyukAI\Cart\Storage;
 
 use Illuminate\Database\ConnectionInterface as Database;
+use MasyukAI\Cart\Exceptions\CartConflictException;
 
 readonly class DatabaseStorage implements StorageInterface
 {
@@ -16,31 +17,23 @@ readonly class DatabaseStorage implements StorageInterface
     }
 
     /**
+     * Apply lockForUpdate to a query if configured
+     */
+    private function applyLockForUpdate(\Illuminate\Database\Query\Builder $query): \Illuminate\Database\Query\Builder
+    {
+        if (config('cart.database.lock_for_update', false)) {
+            return $query->lockForUpdate();
+        }
+
+        return $query;
+    }
+
+    /**
      * Retrieve cart items from storage
      */
     public function getItems(string $identifier, string $instance): array
     {
-        $record = $this->database->table($this->table)
-            ->where('identifier', $identifier)
-            ->where('instance', $instance)
-            ->first();
-
-        if (! $record || ! $record->items) {
-            return [];
-        }
-
-        try {
-            return json_decode($record->items, true, 512, JSON_THROW_ON_ERROR) ?: [];
-        } catch (\JsonException $e) {
-            // Log the error and return empty array for corrupted data
-            logger()->error('Failed to decode cart items JSON', [
-                'identifier' => $identifier,
-                'instance' => $instance,
-                'error' => $e->getMessage(),
-            ]);
-
-            return [];
-        }
+        return $this->getJsonColumn($identifier, $instance, 'items');
     }
 
     /**
@@ -48,27 +41,7 @@ readonly class DatabaseStorage implements StorageInterface
      */
     public function getConditions(string $identifier, string $instance): array
     {
-        $record = $this->database->table($this->table)
-            ->where('identifier', $identifier)
-            ->where('instance', $instance)
-            ->first();
-
-        if (! $record || ! $record->conditions) {
-            return [];
-        }
-
-        try {
-            return json_decode($record->conditions, true, 512, JSON_THROW_ON_ERROR) ?: [];
-        } catch (\JsonException $e) {
-            // Log the error and return empty array for corrupted data
-            logger()->error('Failed to decode cart conditions JSON', [
-                'identifier' => $identifier,
-                'instance' => $instance,
-                'error' => $e->getMessage(),
-            ]);
-
-            return [];
-        }
+        return $this->getJsonColumn($identifier, $instance, 'conditions');
     }
 
     /**
@@ -76,45 +49,7 @@ readonly class DatabaseStorage implements StorageInterface
      */
     public function putItems(string $identifier, string $instance, array $items): void
     {
-        $this->validateDataSize($items, 'items');
-
-        try {
-            $itemsJson = json_encode($items, JSON_THROW_ON_ERROR);
-        } catch (\JsonException $e) {
-            throw new \InvalidArgumentException('Cannot encode items to JSON: '.$e->getMessage());
-        }
-
-        $this->database->transaction(function () use ($identifier, $instance, $itemsJson) {
-            $current = $this->database->table($this->table)
-                ->where('identifier', $identifier)
-                ->where('instance', $instance)
-                ->first(['id', 'version']);
-
-            if ($current) {
-                $updated = $this->database->table($this->table)
-                    ->where('identifier', $identifier)
-                    ->where('instance', $instance)
-                    ->where('version', $current->version)
-                    ->update([
-                        'items' => $itemsJson,
-                        'version' => $current->version + 1,
-                        'updated_at' => now(),
-                    ]);
-
-                if ($updated === 0) {
-                    throw new \RuntimeException('Cart was modified by another request. Please retry.');
-                }
-            } else {
-                $this->database->table($this->table)->insert([
-                    'identifier' => $identifier,
-                    'instance' => $instance,
-                    'items' => $itemsJson,
-                    'version' => 1,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            }
-        });
+        $this->updateJsonColumn($identifier, $instance, 'items', $items, 'items update');
     }
 
     /**
@@ -122,45 +57,7 @@ readonly class DatabaseStorage implements StorageInterface
      */
     public function putConditions(string $identifier, string $instance, array $conditions): void
     {
-        $this->validateDataSize($conditions, 'conditions');
-
-        try {
-            $conditionsJson = json_encode($conditions, JSON_THROW_ON_ERROR);
-        } catch (\JsonException $e) {
-            throw new \InvalidArgumentException('Cannot encode conditions to JSON: '.$e->getMessage());
-        }
-
-        $this->database->transaction(function () use ($identifier, $instance, $conditionsJson) {
-            $current = $this->database->table($this->table)
-                ->where('identifier', $identifier)
-                ->where('instance', $instance)
-                ->first(['id', 'version']);
-
-            if ($current) {
-                $updated = $this->database->table($this->table)
-                    ->where('identifier', $identifier)
-                    ->where('instance', $instance)
-                    ->where('version', $current->version)
-                    ->update([
-                        'conditions' => $conditionsJson,
-                        'version' => $current->version + 1,
-                        'updated_at' => now(),
-                    ]);
-
-                if ($updated === 0) {
-                    throw new \RuntimeException('Cart was modified by another request. Please retry.');
-                }
-            } else {
-                $this->database->table($this->table)->insert([
-                    'identifier' => $identifier,
-                    'instance' => $instance,
-                    'conditions' => $conditionsJson,
-                    'version' => 1,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            }
-        });
+        $this->updateJsonColumn($identifier, $instance, 'conditions', $conditions, 'conditions update');
     }
 
     /**
@@ -171,46 +68,13 @@ readonly class DatabaseStorage implements StorageInterface
         $this->validateDataSize($items, 'items');
         $this->validateDataSize($conditions, 'conditions');
 
-        try {
-            $itemsJson = json_encode($items, JSON_THROW_ON_ERROR);
-            $conditionsJson = json_encode($conditions, JSON_THROW_ON_ERROR);
-        } catch (\JsonException $e) {
-            throw new \InvalidArgumentException('Cannot encode data to JSON: '.$e->getMessage());
-        }
+        $itemsJson = $this->encodeData($items, 'items');
+        $conditionsJson = $this->encodeData($conditions, 'conditions');
 
-        $this->database->transaction(function () use ($identifier, $instance, $itemsJson, $conditionsJson) {
-            $current = $this->database->table($this->table)
-                ->where('identifier', $identifier)
-                ->where('instance', $instance)
-                ->first(['id', 'version']);
-
-            if ($current) {
-                $updated = $this->database->table($this->table)
-                    ->where('identifier', $identifier)
-                    ->where('instance', $instance)
-                    ->where('version', $current->version)
-                    ->update([
-                        'items' => $itemsJson,
-                        'conditions' => $conditionsJson,
-                        'version' => $current->version + 1,
-                        'updated_at' => now(),
-                    ]);
-
-                if ($updated === 0) {
-                    throw new \RuntimeException('Cart was modified by another request. Please retry.');
-                }
-            } else {
-                $this->database->table($this->table)->insert([
-                    'identifier' => $identifier,
-                    'instance' => $instance,
-                    'items' => $itemsJson,
-                    'conditions' => $conditionsJson,
-                    'version' => 1,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            }
-        });
+        $this->performCasUpdate($identifier, $instance, [
+            'items' => $itemsJson,
+            'conditions' => $conditionsJson,
+        ], 'both items and conditions update');
     }
 
     /**
@@ -282,55 +146,15 @@ readonly class DatabaseStorage implements StorageInterface
                 ->where('instance', $instance)
                 ->value('metadata');
 
-            try {
-                $metadata = $existing ? json_decode($existing, true, 512, JSON_THROW_ON_ERROR) : [];
-            } catch (\JsonException $e) {
-                logger()->error('Failed to decode metadata JSON, starting fresh', [
-                    'identifier' => $identifier,
-                    'instance' => $instance,
-                    'error' => $e->getMessage(),
-                ]);
-                $metadata = [];
-            }
-
+            $metadata = $this->decodeData($existing, 'metadata', []);
             $metadata[$key] = $value;
             $this->validateDataSize($metadata, 'metadata');
 
-            try {
-                $metadataJson = json_encode($metadata, JSON_THROW_ON_ERROR);
-            } catch (\JsonException $e) {
-                throw new \InvalidArgumentException('Cannot encode metadata to JSON: '.$e->getMessage());
-            }
+            $metadataJson = $this->encodeData($metadata, 'metadata');
 
-            $current = $this->database->table($this->table)
-                ->where('identifier', $identifier)
-                ->where('instance', $instance)
-                ->first(['id', 'version']);
-
-            if ($current) {
-                $updated = $this->database->table($this->table)
-                    ->where('identifier', $identifier)
-                    ->where('instance', $instance)
-                    ->where('version', $current->version)
-                    ->update([
-                        'metadata' => $metadataJson,
-                        'version' => $current->version + 1,
-                        'updated_at' => now(),
-                    ]);
-
-                if ($updated === 0) {
-                    throw new \RuntimeException('Cart was modified by another request. Please retry.');
-                }
-            } else {
-                $this->database->table($this->table)->insert([
-                    'identifier' => $identifier,
-                    'instance' => $instance,
-                    'metadata' => $metadataJson,
-                    'version' => 1,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            }
+            $this->performCasUpdate($identifier, $instance, [
+                'metadata' => $metadataJson,
+            ], 'metadata update');
         });
     }
 
@@ -348,18 +172,7 @@ readonly class DatabaseStorage implements StorageInterface
             return null;
         }
 
-        try {
-            $metadata = json_decode($result, true, 512, JSON_THROW_ON_ERROR);
-        } catch (\JsonException $e) {
-            logger()->error('Failed to decode metadata JSON', [
-                'identifier' => $identifier,
-                'instance' => $instance,
-                'key' => $key,
-                'error' => $e->getMessage(),
-            ]);
-
-            return null;
-        }
+        $metadata = $this->decodeData($result, 'metadata', []);
 
         return $metadata[$key] ?? null;
     }
@@ -422,5 +235,125 @@ readonly class DatabaseStorage implements StorageInterface
         } catch (\JsonException $e) {
             throw new \InvalidArgumentException("Cannot validate {$type} data size: ".$e->getMessage());
         }
+    }
+
+    /**
+     * Retrieve and decode JSON column data
+     */
+    private function getJsonColumn(string $identifier, string $instance, string $column): array
+    {
+        $result = $this->database->table($this->table)
+            ->where('identifier', $identifier)
+            ->where('instance', $instance)
+            ->value($column);
+
+        return $this->decodeData($result, $column, []);
+    }
+
+    /**
+     * Update a single JSON column with CAS
+     */
+    private function updateJsonColumn(string $identifier, string $instance, string $column, array $data, string $operationName): void
+    {
+        $this->validateDataSize($data, $column);
+        $jsonData = $this->encodeData($data, $column);
+
+        $this->performCasUpdate($identifier, $instance, [
+            $column => $jsonData,
+        ], $operationName);
+    }
+
+    /**
+     * Encode data to JSON with error handling
+     */
+    private function encodeData(array $data, string $type): string
+    {
+        try {
+            return json_encode($data, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            throw new \InvalidArgumentException("Cannot encode {$type} to JSON: ".$e->getMessage());
+        }
+    }
+
+    /**
+     * Decode JSON data with error handling and fallback
+     */
+    private function decodeData(?string $jsonData, string $type, array $fallback = []): array
+    {
+        if (! $jsonData) {
+            return $fallback;
+        }
+
+        try {
+            return json_decode($jsonData, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            logger()->error("Failed to decode {$type} JSON", [
+                'type' => $type,
+                'error' => $e->getMessage(),
+            ]);
+
+            return $fallback;
+        }
+    }
+
+    /**
+     * Perform Compare-And-Swap update with optimistic locking
+     */
+    private function performCasUpdate(string $identifier, string $instance, array $data, string $operationName): void
+    {
+        $this->database->transaction(function () use ($identifier, $instance, $data, $operationName) {
+            $current = $this->applyLockForUpdate(
+                $this->database->table($this->table)
+                    ->where('identifier', $identifier)
+                    ->where('instance', $instance)
+            )->first(['id', 'version']);
+
+            if ($current) {
+                $updateData = array_merge($data, [
+                    'version' => $current->version + 1,
+                    'updated_at' => now(),
+                ]);
+
+                $updated = $this->database->table($this->table)
+                    ->where('identifier', $identifier)
+                    ->where('instance', $instance)
+                    ->where('version', $current->version)
+                    ->update($updateData);
+
+                if ($updated === 0) {
+                    $this->handleCasConflict($identifier, $instance, $current->version, $operationName);
+                }
+            } else {
+                $insertData = array_merge($data, [
+                    'identifier' => $identifier,
+                    'instance' => $instance,
+                    'version' => 1,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                $this->database->table($this->table)->insert($insertData);
+            }
+        });
+    }
+
+    /**
+     * Handle CAS conflict by determining current version and throwing appropriate exception
+     */
+    private function handleCasConflict(string $identifier, string $instance, int $expectedVersion, string $operationName): void
+    {
+        // Get current version for better error details
+        $currentRecord = $this->database->table($this->table)
+            ->where('identifier', $identifier)
+            ->where('instance', $instance)
+            ->first(['version']);
+
+        $currentVersion = $currentRecord ? $currentRecord->version : $expectedVersion + 1;
+
+        throw new CartConflictException(
+            "Cart was modified by another request during {$operationName}",
+            $expectedVersion,
+            $currentVersion
+        );
     }
 }

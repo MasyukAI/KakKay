@@ -54,7 +54,6 @@ describe('CartServiceProvider Targeted Coverage', function () {
     it('can test event configuration settings', function () {
         config([
             'cart.migration.auto_migrate_on_login' => false,
-            'cart.migration.backup_on_logout' => true,
             'cart.events' => false,
         ]);
 

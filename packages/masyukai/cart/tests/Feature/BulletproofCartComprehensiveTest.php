@@ -13,8 +13,8 @@ it('provides comprehensive bulletproof cart package summary', function () {
     expect(Cart::isEmpty())->toBeTrue();
     expect(Cart::getItems())->toHaveCount(0);
     expect(Cart::getTotalQuantity())->toBe(0);
-    expect(Cart::subtotal())->toBe(0.0);
-    expect(Cart::total())->toBe(0.0);
+    expect(Cart::subtotal()->getAmount())->toBe(0.0);
+    expect(Cart::total()->getAmount())->toBe(0.0);
 
     // 2. ITEM MANAGEMENT - Bulletproof ✅
     $item1 = Cart::add('bulletproof-1', 'Bulletproof Item 1', 25.99, 2);
@@ -23,8 +23,8 @@ it('provides comprehensive bulletproof cart package summary', function () {
     expect(Cart::getItems())->toHaveCount(2);
     expect(Cart::getTotalQuantity())->toBe(5);
     // Use approximate comparison for floating point
-    expect(Cart::subtotal())->toBeGreaterThan(98.40);
-    expect(Cart::subtotal())->toBeLessThan(98.50);
+    expect(Cart::subtotal()->getAmount())->toBeGreaterThan(98.40);
+    expect(Cart::subtotal()->getAmount())->toBeLessThan(98.50);
 
     // 3. ITEM UPDATES - Bulletproof ✅
     Cart::update('bulletproof-1', ['quantity' => 3]); // Adds 3 to existing 2 = 5
@@ -75,8 +75,8 @@ it('provides comprehensive bulletproof cart package summary', function () {
     expect(Cart::getConditions())->toHaveCount(2);
 
     $total = Cart::total();
-    expect($total)->toBeFloat();
-    expect($total)->toBeGreaterThan(0);
+    expect($total)->toBeInstanceOf(\MasyukAI\Cart\Support\CartMoney::class);
+    expect($total->getAmount())->toBeGreaterThan(0);
 
     // 6. SEARCH AND FILTERING - Bulletproof ✅
     $expensiveItems = Cart::search(function ($item) {
@@ -125,9 +125,9 @@ it('provides comprehensive bulletproof cart package summary', function () {
 
     expect($itemCount)->toBeGreaterThan(100);
     expect($totalQuantity)->toBeGreaterThan(100);
-    expect($subtotal)->toBeFloat();
-    expect($total)->toBeFloat();
-    expect($total)->not->toBe($subtotal); // Because we have conditions
+    expect($subtotal)->toBeInstanceOf(\MasyukAI\Cart\Support\CartMoney::class);
+    expect($total)->toBeInstanceOf(\MasyukAI\Cart\Support\CartMoney::class);
+    expect($total->equals($subtotal))->toBeFalse(); // Because we have conditions
 
     // 11. Complete cart clearing and validation (handle all conditions)
     Cart::clear();
@@ -138,8 +138,8 @@ it('provides comprehensive bulletproof cart package summary', function () {
     expect(Cart::isEmpty())->toBeTrue();
     expect(Cart::getItems())->toHaveCount(0);
     expect(Cart::getTotalQuantity())->toBe(0);
-    expect(Cart::subtotal())->toBe(0.0);
-    expect(Cart::total())->toBe(0.0);
+    expect(Cart::subtotal()->getAmount())->toBe(0.0);
+    expect(Cart::total()->getAmount())->toBe(0.0);
     expect(Cart::getConditions())->toHaveCount(0);
 });
 
