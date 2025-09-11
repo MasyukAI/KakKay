@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 use MasyukAI\Cart\Cart;
 use MasyukAI\Cart\Conditions\CartCondition;
-use MasyukAI\Cart\Contracts\PriceTransformerInterface;
 use MasyukAI\Cart\PriceTransformers\DecimalPriceTransformer;
-use MasyukAI\Cart\PriceTransformers\IntegerPriceTransformer;
 use MasyukAI\Cart\Storage\SessionStorage;
-use ReflectionMethod;
 
-describe('Price Transformer Integration', function () {
+/**
+ * Integration tests for PriceTransformer with Cart system
+ * 
+ * These tests verify that the Cart system correctly integrates with PriceTransformers
+ * to handle price conversion between input, storage, and display formats.
+ * 
+ * Note: Individual transformer behavior is tested in Unit/PriceTransformers/*Test.php
+ */
+describe('Cart-PriceTransformer Integration', function () {
     beforeEach(function () {
         session()->flush();
         
@@ -18,96 +23,125 @@ describe('Price Transformer Integration', function () {
         $this->cart = new Cart(
             storage: $storage,
             events: null,
-            instanceName: 'test-session',
+            instanceName: 'integration-test',
             eventsEnabled: false
         );
         $this->cart->clear();
     });
 
-    it('uses decimal price transformer by default and transforms storage to display', function () {
-        // Use reflection to access the protected method
-        $reflection = new \ReflectionMethod($this->cart, 'getPriceTransformer');
-        $reflection->setAccessible(true);
-        $transformer = $reflection->invoke($this->cart);
-        
-        // Verify the default transformer is DecimalPriceTransformer
-        expect($transformer)->toBeInstanceOf(DecimalPriceTransformer::class);
-        
-        // Add an item with a price
-        $this->cart->add('product-1', 'Test Product', 19.99, 2);
-        
-        // The subtotal should return the display value (same as storage for decimal transformer)
-        $subtotal = $this->cart->subtotal();
-        expect($subtotal->getAmount())->toBe(39.98); // 2 * 19.99
-        
-        // The total should also return the display value
-        $total = $this->cart->total();
-        expect($total->getAmount())->toBe(39.98);
-        
-        // With DecimalPriceTransformer, raw values are stored as float decimals (not cents)
-        expect($this->cart->getRawSubTotal())->toBe(39.98); // Stored as decimal float
+    describe('Default Integration Behavior', function () {
+        it('uses the configured price transformer from service container', function () {
+            // Access transformer via reflection since it's protected
+            $reflection = new \ReflectionMethod($this->cart, 'getPriceTransformer');
+            $reflection->setAccessible(true);
+            $transformer = $reflection->invoke($this->cart);
+            
+            // Should use the default DecimalPriceTransformer
+            expect($transformer)->toBeInstanceOf(DecimalPriceTransformer::class);
+        });
+
+        it('applies price transformation consistently across all monetary calculations', function () {
+            // Add multiple items to test consistency
+            $this->cart->add('product-1', 'Product A', 15.25, 2);  // 30.50
+            $this->cart->add('product-2', 'Product B', 8.75, 1);   // 8.75
+            
+            $expectedTotal = 39.25; // 30.50 + 8.75
+            
+            // All monetary methods should return the same transformed values
+            expect($this->cart->subtotal()->getAmount())->toBe($expectedTotal);
+            expect($this->cart->subtotalWithoutConditions()->getAmount())->toBe($expectedTotal);
+            expect($this->cart->total()->getAmount())->toBe($expectedTotal);
+            
+            // For DecimalPriceTransformer, raw values should equal display values
+            expect($this->cart->getRawSubTotal())->toBe($expectedTotal);
+        });
     });
 
-    it('demonstrates price transformer integration concept', function () {
-        // While the integer transformer test shows some complexity in test setup,
-        // this demonstrates that the transformer interface is properly integrated
-        // and that different transformers can be used
-        
-        // Create transformers directly
-        $decimalTransformer = new DecimalPriceTransformer();
-        $integerTransformer = new IntegerPriceTransformer();
-        
-        // Test decimal transformer behavior (default)
-        expect($decimalTransformer->toStorage(19.99))->toBe(19.99);
-        expect($decimalTransformer->fromStorage(19.99))->toBe(19.99);
-        
-        // Test integer transformer behavior (cents)
-        expect($integerTransformer->toStorage(19.99))->toBe(1999);
-        expect($integerTransformer->fromStorage(1999))->toBe(19.99);
-        
-        // The key point is that our CalculatesTotals trait methods 
-        // (subtotal, total, subtotalWithoutConditions) all use the transformer
-        // to convert storage values to display values via fromStorage()
-        expect(true)->toBeTrue();
+    describe('Price Input Processing', function () {
+        it('normalizes various price input formats through the transformer', function () {
+            // The ManagesItems trait should use the transformer to normalize prices
+            $this->cart->add('product-1', 'Thousands Separator', '1,999.99', 1); // Comma as thousands separator
+            $this->cart->add('product-2', 'Currency Symbol', '$25.50', 1);       // With $ symbol
+            $this->cart->add('product-3', 'Standard Float', 10.75, 1);           // Regular float
+            
+            // Should normalize correctly: 1999.99 + 25.50 + 10.75 = 2036.24
+            expect($this->cart->total()->getAmount())->toBe(2036.24);
+        });
+
+        it('handles edge cases in price normalization', function () {
+            $this->cart->add('free-item', 'Free Product', 0.0, 1);
+            $this->cart->add('paid-item', 'Paid Product', 10.00, 1);
+            
+            expect($this->cart->total()->getAmount())->toBe(10.00);
+            expect($this->cart->countItems())->toBe(2);
+        });
     });
 
-    it('properly transforms subtotal without conditions', function () {
-        $this->cart->add('product-3', 'Test Product', 25.50, 1);
-        
-        // Add a condition that affects the total
-        $condition = new CartCondition(
-            name: 'discount',
-            type: 'discount',
-            target: 'total',
-            value: '-10%'
-        );
-        $this->cart->addCondition($condition);
-        
-        // Subtotal without conditions should be transformed properly
-        $subtotalWithoutConditions = $this->cart->subtotalWithoutConditions();
-        expect($subtotalWithoutConditions->getAmount())->toBe(25.50);
-        
-        // Total should be different due to condition
-        $total = $this->cart->total();
-        expect($total->getAmount())->toBe(22.95); // 25.50 - 10%
+    describe('Integration with Cart Conditions', function () {
+        it('applies price transformation to conditional calculations', function () {
+            $this->cart->add('product-1', 'Test Product', 25.50, 1);
+            
+            // Add a percentage discount condition
+            $condition = new CartCondition(
+                name: 'discount',
+                type: 'discount', 
+                target: 'total',
+                value: '-10%'
+            );
+            $this->cart->addCondition($condition);
+            
+            // Subtotal should remain unchanged by total-targeting conditions
+            expect($this->cart->subtotalWithoutConditions()->getAmount())->toBe(25.50);
+            
+            // Total should reflect the discount: 25.50 - 10% = 22.95
+            expect($this->cart->total()->getAmount())->toBe(22.95);
+        });
+
+        it('maintains precision in complex calculations with conditions', function () {
+            $this->cart->add('product-1', 'Product 1', 19.99, 2);   // 39.98
+            $this->cart->add('product-2', 'Product 2', 15.50, 1);   // 15.50
+            // Subtotal: 55.48
+            
+            // Add shipping
+            $this->cart->addShipping('Standard Shipping', 5.99);
+            
+            // Add tax
+            $taxCondition = new CartCondition(
+                name: 'tax',
+                type: 'tax',
+                target: 'total', 
+                value: '+8.5%'
+            );
+            $this->cart->addCondition($taxCondition);
+            
+            // Expected: (55.48 + 5.99) * 1.085 = 66.725 → 66.73 (rounded)
+            $expectedTotal = round((55.48 + 5.99) * 1.085, 2);
+            
+            expect($this->cart->total()->getAmount())->toBe($expectedTotal);
+        });
     });
 
-    it('maintains price transformer consistency across all monetary methods', function () {
-        $this->cart->add('product-4', 'Product 1', 15.25, 2);
-        $this->cart->add('product-5', 'Product 2', 8.75, 1);
-        
-        // All monetary methods should use the same transformer
-        $subtotal = $this->cart->subtotal();
-        $subtotalWithoutConditions = $this->cart->subtotalWithoutConditions();
-        $total = $this->cart->total();
-        
-        expect($subtotal->getAmount())->toBe(39.25); // (15.25 * 2) + 8.75
-        expect($subtotalWithoutConditions->getAmount())->toBe(39.25);
-        expect($total->getAmount())->toBe(39.25);
-        
-        // With DecimalPriceTransformer, raw storage values are decimal floats
-        expect($this->cart->getRawSubTotal())->toBe(39.25);
-        expect($this->cart->getRawSubTotalWithoutConditions())->toBe(39.25);
-        expect($this->cart->getRawTotal())->toBe(39.25);
+    describe('Consistency Verification', function () {
+        it('maintains consistent precision across operations', function () {
+            // Test floating point precision edge cases
+            $this->cart->add('item-1', 'Item 1', 0.1, 1);
+            $this->cart->add('item-2', 'Item 2', 0.2, 1);
+            
+            // Should be exactly 0.3, not 0.30000000000000004
+            expect($this->cart->total()->getAmount())->toBe(0.3);
+        });
+
+        it('handles cart clearing and re-population correctly', function () {
+            // Add items
+            $this->cart->add('product-1', 'Product 1', 10.00, 1);
+            expect($this->cart->total()->getAmount())->toBe(10.00);
+            
+            // Clear and re-add
+            $this->cart->clear();
+            expect($this->cart->total()->getAmount())->toBe(0.0);
+            
+            $this->cart->add('product-2', 'Product 2', 20.00, 1);
+            expect($this->cart->total()->getAmount())->toBe(20.00);
+        });
     });
 });

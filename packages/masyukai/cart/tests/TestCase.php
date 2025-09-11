@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace MasyukAI\Cart\Tests;
 
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Schema;
 use MasyukAI\Cart\CartServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 
@@ -93,9 +95,18 @@ abstract class TestCase extends Orchestra
 
     protected function setUpDatabase(): void
     {
-        $this->artisan('migrate', [
-            '--database' => 'testing',
-            '--path' => 'packages/core/database/migrations',
-        ]);
+        // Create the table directly using Schema
+        Schema::create('carts', function (Blueprint $table) {
+            $table->id();
+            $table->string('identifier')->index();
+            $table->string('instance')->default('default')->index();
+            $table->json('items')->nullable();
+            $table->json('conditions')->nullable();
+            $table->json('metadata')->nullable();
+            $table->bigInteger('version')->default(1)->index();
+            $table->timestamps();
+
+            $table->unique(['identifier', 'instance']);
+        });
     }
 }
