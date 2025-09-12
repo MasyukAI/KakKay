@@ -250,58 +250,6 @@ it('can swap cart ownership for specific instances', function () {
     expect($userWishlistAfter['product-1'])->toEqual($wishlistItems['product-1']);
 });
 
-it('can swap all instances from one identifier to another', function () {
-    $storage = $this->storage;
-
-    // Add items to multiple cart instances for guest
-    $defaultItems = [
-        'product-1' => [
-            'id' => 'product-1',
-            'name' => 'Default Product',
-            'price' => 10.00,
-            'quantity' => 1,
-            'attributes' => [],
-            'conditions' => [],
-        ],
-    ];
-
-    $wishlistItems = [
-        'product-2' => [
-            'id' => 'product-2',
-            'name' => 'Wishlist Product',
-            'price' => 20.00,
-            'quantity' => 1,
-            'attributes' => [],
-            'conditions' => [],
-        ],
-    ];
-
-    // Store data in multiple instances
-    $storage->putBoth('guest_session_789', 'default', $defaultItems, []);
-    $storage->putBoth('guest_session_789', 'wishlist', $wishlistItems, []);
-
-    // Verify guest carts exist
-    expect($storage->getItems('guest_session_789', 'default'))->toHaveCount(1);
-    expect($storage->getItems('guest_session_789', 'wishlist'))->toHaveCount(1);
-
-    // Swap all instances
-    $results = $this->cartMigration->swapAllInstances('guest_session_789', 'user_123');
-
-    // Verify all swaps were successful
-    expect($results)->toHaveKey('default');
-    expect($results)->toHaveKey('wishlist');
-    expect($results['default'])->toBeTrue();
-    expect($results['wishlist'])->toBeTrue();
-
-    // Verify guest carts are empty
-    expect($storage->getItems('guest_session_789', 'default'))->toBeEmpty();
-    expect($storage->getItems('guest_session_789', 'wishlist'))->toBeEmpty();
-
-    // Verify user carts have the items
-    expect($storage->getItems('user_123', 'default'))->toHaveCount(1);
-    expect($storage->getItems('user_123', 'wishlist'))->toHaveCount(1);
-});
-
 it('can swap through cart facade', function () {
     $storage = $this->storage;
 
@@ -366,59 +314,4 @@ it('can swap guest cart using convenience method', function () {
 
     $userItems = $storage->getItems('999', 'default');
     expect($userItems['product-1']['name'])->toBe('Convenience Test Product');
-});
-
-it('can swap all guest instances using convenience method', function () {
-    $storage = $this->storage;
-
-    // Set up guest session manually
-    session(['id' => 'guest_all_instances_test']);
-
-    // Add items to multiple guest cart instances
-    $defaultItems = [
-        'product-1' => [
-            'id' => 'product-1',
-            'name' => 'Default Product',
-            'price' => 10.00,
-            'quantity' => 1,
-            'attributes' => [],
-            'conditions' => [],
-        ],
-    ];
-
-    $wishlistItems = [
-        'product-2' => [
-            'id' => 'product-2',
-            'name' => 'Wishlist Product',
-            'price' => 20.00,
-            'quantity' => 1,
-            'attributes' => [],
-            'conditions' => [],
-        ],
-    ];
-
-    $guestSessionId = session()->getId();
-    $storage->putBoth($guestSessionId, 'default', $defaultItems, []);
-    $storage->putBoth($guestSessionId, 'wishlist', $wishlistItems, []);
-
-    // Verify guest carts exist
-    expect($storage->getItems($guestSessionId, 'default'))->toHaveCount(1);
-    expect($storage->getItems($guestSessionId, 'wishlist'))->toHaveCount(1);
-
-    // Swap all instances using convenience method
-    $results = $this->cartMigration->swapAllGuestInstancesToUser(99, $guestSessionId);
-
-    // Verify all swaps were successful
-    expect($results)->toHaveKey('default');
-    expect($results)->toHaveKey('wishlist');
-    expect($results['default'])->toBeTrue();
-    expect($results['wishlist'])->toBeTrue();
-
-    // Verify guest carts are empty
-    expect($storage->getItems($guestSessionId, 'default'))->toBeEmpty();
-    expect($storage->getItems($guestSessionId, 'wishlist'))->toBeEmpty();
-
-    // Verify user carts have the items
-    expect($storage->getItems('99', 'default'))->toHaveCount(1);
-    expect($storage->getItems('99', 'wishlist'))->toHaveCount(1);
 });

@@ -69,16 +69,20 @@ class CartMigrationService
      * - Migrates from identifier 'abc123' to identifier '42'
      * - For the 'default' cart instance
      */
-    public function migrateGuestCartToUser(int $userId, string $instance = 'default', ?string $oldSessionId = null): bool
+    public function migrateGuestCartToUser(string|int $userId, string $instance = 'default', string $sessionId): bool
     {
-        $guestIdentifier = $this->getIdentifier(null, $oldSessionId ?? session()->getId());
-        $userIdentifier = $this->getIdentifier($userId);
+        $guestIdentifier = $sessionId;
+        $userIdentifier = (string) $userId;
+
+        // ...existing code...
 
         // Get the storage directly to work with specific identifiers
         $storage = Cart::storage();
 
         // Get guest cart items for the specified instance
         $guestItems = $storage->getItems($guestIdentifier, $instance);
+
+        // ...existing code...
 
         // If guest cart is empty, nothing to migrate
         if (empty($guestItems)) {
@@ -88,28 +92,57 @@ class CartMigrationService
         // Get existing user cart items for the same instance
         $userItems = $storage->getItems($userIdentifier, $instance);
 
+        // ...existing code...
+
+        // If user cart is empty, forget it and swap guest cart to user
+        if (empty($userItems)) {
+            // $storage->forget($userIdentifier, $instance);
+            // Swap guest cart to user cart (ownership transfer)
+            $this->swap($guestIdentifier, $userIdentifier, $instance);
+
+            // Get Cart instances for the event
+            $cartManager = Cart::getFacadeRoot();
+            $targetCartInstance = $cartManager->getCartInstance($instance);
+
+            event(new CartMerged(
+                targetCart: $targetCartInstance,
+                sourceCart: $targetCartInstance, // Limited by design
+                totalItemsMerged: array_sum(array_column($guestItems, 'quantity')),
+                mergeStrategy: $this->config['merge_strategy'] ?? 'add_quantities',
+                hadConflicts: false
+            ));
+            return true;
+        }
+
         // Merge the cart data using arrays directly
+
+        // ...existing code...
         $mergedItems = $this->mergeItemsArray($guestItems, $userItems);
+
+        // ...existing code...
 
         // Save merged items to user cart
         $storage->putItems($userIdentifier, $instance, $mergedItems);
 
         // Also migrate conditions if any
         $guestConditions = $storage->getConditions($guestIdentifier, $instance);
+        // ...existing code...
         if (! empty($guestConditions)) {
             $userConditions = $storage->getConditions($userIdentifier, $instance);
             $mergedConditions = $this->mergeConditionsData($guestConditions, $userConditions);
             $storage->putConditions($userIdentifier, $instance, $mergedConditions);
         }
 
-        // Clear the guest cart after successful migration
+
+        // ...existing code...
         $storage->forget($guestIdentifier, $instance);
 
         // Get Cart instances for the event
         $cartManager = Cart::getFacadeRoot();
         $targetCartInstance = $cartManager->getCartInstance($instance);
 
-        // Dispatch cart merged event
+
+        // ...existing code...
         event(new CartMerged(
             targetCart: $targetCartInstance,
             sourceCart: $targetCartInstance, // Limited by design
@@ -124,9 +157,9 @@ class CartMigrationService
     /**
      * Migrate guest cart to user cart when user logs in (user object version).
      */
-    public function migrateGuestCartForUser(mixed $user, string $instance = 'default', ?string $oldSessionId = null): object
+    public function migrateGuestCartForUser(mixed $user, string $instance = 'default', string $sessionId): object
     {
-        $success = $this->migrateGuestCartToUser($user->id, $instance, $oldSessionId);
+        $success = $this->migrateGuestCartToUser($user->id, $instance, $sessionId);
 
         return (object) [
             'success' => $success,
@@ -134,51 +167,6 @@ class CartMigrationService
             'conflicts' => collect(),
             'message' => $success ? 'Cart migration completed successfully' : 'No items to migrate',
         ];
-    }
-
-    /**
-     * Merge cart data between different identifiers for a specific instance.
-     */
-    protected function mergeCartData(string $sourceIdentifier, string $targetIdentifier, string $instance): CartCollection
-    {
-        // Get source cart items using storage directly
-        $sourceItems = Cart::storage()->getItems($sourceIdentifier, $instance);
-        $targetItems = Cart::storage()->getItems($targetIdentifier, $instance);
-
-        $mergedItems = new CartCollection;
-        $mergeStrategy = config('cart.migration.merge_strategy', 'add_quantities');
-
-        foreach ($sourceItems as $itemId => $sourceItemData) {
-            $existingItem = $targetItems[$itemId] ?? null;
-
-            if ($existingItem) {
-                // Handle conflict based on strategy
-                $newQuantity = $this->resolveQuantityConflict(
-                    $existingItem['quantity'],
-                    $sourceItemData['quantity'],
-                    $mergeStrategy
-                );
-
-                // Update existing item quantity
-                $targetItems[$itemId]['quantity'] = $newQuantity;
-                $mergedItems->put($itemId, $targetItems[$itemId]);
-            } else {
-                // Add new item from source cart to target cart
-                $targetItems[$itemId] = $sourceItemData;
-                $mergedItems->put($itemId, $sourceItemData);
-            }
-        }
-
-        // Save merged items and conditions to target identifier
-        Cart::storage()->putItems($targetIdentifier, $instance, $targetItems);
-        $targetConditions = Cart::storage()->getConditions($targetIdentifier, $instance);
-        $sourceConditions = Cart::storage()->getConditions($sourceIdentifier, $instance);
-
-        // Merge conditions too
-        $mergedConditions = array_merge($targetConditions, $sourceConditions);
-        Cart::storage()->putConditions($targetIdentifier, $instance, $mergedConditions);
-
-        return $mergedItems;
     }
 
     /**
@@ -193,53 +181,6 @@ class CartMigrationService
             'replace_with_guest' => $guestQuantity,
             default => $userQuantity + $guestQuantity, // Fallback to add_quantities
         };
-    }
-
-    /**
-     * Get items that had conflicts during merge.
-     */
-    protected function getConflictItems(string $sourceIdentifier, string $targetIdentifier, string $instance): \Illuminate\Support\Collection
-    {
-        $sourceItems = Cart::storage()->getItems($sourceIdentifier, $instance);
-        $targetItems = Cart::storage()->getItems($targetIdentifier, $instance);
-
-        $conflicts = collect();
-
-        foreach ($sourceItems as $itemId => $sourceItemData) {
-            $existingItem = $targetItems[$itemId] ?? null;
-            if ($existingItem) {
-                $conflicts->push([
-                    'id' => $itemId,
-                    'name' => $sourceItemData['name'] ?? 'Unknown',
-                    'user_quantity' => $existingItem['quantity'] ?? 0,
-                    'guest_quantity' => $sourceItemData['quantity'] ?? 0,
-                ]);
-            }
-        }
-
-        return $conflicts;
-    }
-
-    /**
-     * Backup user cart to guest session (for logout scenarios).
-     */
-    public function backupUserCartToGuest(int $userId, string $instance = 'default', ?string $guestSessionId = null): bool
-    {
-        $userIdentifier = $this->getIdentifier($userId);
-        $guestIdentifier = $this->getIdentifier(null, $guestSessionId ?? session()->getId());
-
-        $userItems = Cart::storage()->getItems($userIdentifier, $instance);
-        $userConditions = Cart::storage()->getConditions($userIdentifier, $instance);
-
-        // If user cart is empty, nothing to backup
-        if (empty($userItems)) {
-            return false;
-        }
-
-        // Copy items and conditions to guest cart
-        Cart::storage()->putBoth($guestIdentifier, $instance, $userItems, $userConditions);
-
-        return true;
     }
 
     /**
@@ -260,23 +201,6 @@ class CartMigrationService
 
         // Instance names ('default', 'wishlist', etc.) remain unchanged
         // Only the cart identifier (who owns the cart) is managed automatically
-    }
-
-    /**
-     * Automatically switch cart instance based on authentication status.
-     *
-     * IMPORTANT: This method is intentionally a no-op to preserve package fundamentals.
-     * Instance names ('default', 'wishlist', etc.) should only be changed explicitly
-     * by the developer, not automatically by authentication state.
-     *
-     * The cart package automatically manages WHO owns the cart (identifiers) based on
-     * authentication, but WHICH cart type (instance) should remain developer-controlled.
-     */
-    public function autoSwitchCartInstance(): void
-    {
-        // Intentionally empty - preserves package fundamental that instance names
-        // like 'default' should not be automatically changed by authentication state.
-        // Only cart identifiers (who owns the cart) are managed automatically.
     }
 
     /**
@@ -305,26 +229,6 @@ class CartMigrationService
     public function getUserIdentifier(int $userId): string
     {
         return $this->getIdentifier($userId);
-    }
-
-    /**
-     * Migrate all instances from guest to user (default, wishlist, saved-for-later, etc.).
-     */
-    public function migrateAllGuestInstances(int $userId, ?string $oldSessionId = null): array
-    {
-        $guestIdentifier = $this->getGuestIdentifier($oldSessionId);
-        $userIdentifier = $this->getUserIdentifier($userId);
-
-        // Get all instances for the guest identifier
-        $instances = Cart::storage()->getInstances($guestIdentifier);
-        $results = [];
-
-        foreach ($instances as $instance) {
-            $success = $this->migrateGuestCartToUser($userId, $instance, $oldSessionId);
-            $results[$instance] = $success;
-        }
-
-        return $results;
     }
 
     /**
@@ -398,29 +302,6 @@ class CartMigrationService
     }
 
     /**
-     * Swap cart ownership for all instances from one identifier to another.
-     *
-     * This transfers all cart instances (default, wishlist, etc.) from the old
-     * identifier to the new identifier.
-     *
-     * @param  string  $oldIdentifier  The old identifier (e.g., guest session)
-     * @param  string  $newIdentifier  The new identifier (e.g., user ID)
-     * @return array Results for each instance swap
-     */
-    public function swapAllInstances(string $oldIdentifier, string $newIdentifier): array
-    {
-        $storage = $this->storage ?: Cart::storage();
-        $instances = $storage->getInstances($oldIdentifier);
-        $results = [];
-
-        foreach ($instances as $instance) {
-            $results[$instance] = $storage->swapIdentifier($oldIdentifier, $newIdentifier, $instance);
-        }
-
-        return $results;
-    }
-
-    /**
      * Swap guest cart when user logs in (simplified version of migration).
      *
      * Unlike migration which merges carts, this simply transfers the guest
@@ -437,20 +318,5 @@ class CartMigrationService
         $userIdentifier = $this->getIdentifier($userId);
 
         return $this->swap($guestIdentifier, $userIdentifier, $instance);
-    }
-
-    /**
-     * Swap all guest cart instances when user logs in.
-     *
-     * @param  int  $userId  The user ID that will take over cart ownership
-     * @param  string|null  $guestSessionId  The guest session ID to swap from
-     * @return array Results for each instance swap
-     */
-    public function swapAllGuestInstancesToUser(int $userId, ?string $guestSessionId = null): array
-    {
-        $guestIdentifier = $this->getIdentifier(null, $guestSessionId ?? session()->getId());
-        $userIdentifier = $this->getIdentifier($userId);
-
-        return $this->swapAllInstances($guestIdentifier, $userIdentifier);
     }
 }

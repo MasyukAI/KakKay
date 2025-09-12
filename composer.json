@@ -18,7 +18,6 @@
         "livewire/volt": "^1.7",
         "masyukai/cart": "@dev",
         "masyukai/chip": "@dev",
-        "masyukai/filament-cart-plugin": "@dev",
         "nnjeim/world": "^1.1",
         "propaganistas/laravel-phone": "^6.0",
         "ysfkaya/filament-phone-input": "^4.0"
@@ -43,10 +42,6 @@
         {
             "type": "path",
             "url": "./packages/masyukai/chip"
-        },
-        {
-            "type": "path",
-            "url": "./packages/masyukai/filament-cart-plugin"
         }
     ],
     "autoload": {

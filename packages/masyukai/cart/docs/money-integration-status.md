@@ -35,7 +35,7 @@ public function getRawSubtotal(): float
 }
 
 // In CalculatesTotals.php - still using floats  
-protected function getSubTotal(): float
+protected function getSubtotal(): float
 {
     return $this->getItems()->sum(fn (CartItem $item) => $item->getRawSubtotal());
 }

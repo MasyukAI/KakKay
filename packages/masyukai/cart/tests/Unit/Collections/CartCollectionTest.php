@@ -82,7 +82,7 @@ it('can get total quantity with getTotalQuantity method', function (): void {
     expect($this->collection->getTotalQuantity())->toBe(5);
 });
 
-it('can get subtotal with getSubTotal method', function (): void {
+it('can get subtotal with getSubtotal method', function (): void {
     $this->collection->addItem($this->item1); // 100 * 2 = 200
     $this->collection->addItem($this->item2); // 50 * 3 = 150
 

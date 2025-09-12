@@ -9,15 +9,14 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 
-class HandleUserLoginAttempt implements ShouldQueue
+class HandleUserLoginAttempt
 {
     /**
      * Handle the user login attempt event.
      * Store current session ID before authentication regenerates it.
      */
     public function handle(Attempting $event): void
-    {
-        // Only capture session ID if user is not already authenticated
+    {        // Only capture session ID if user is not already authenticated
         if (! Auth::check()) {
             $currentSessionId = session()->getId();
             $userIdentifier = $this->getUserIdentifier($event->credentials);

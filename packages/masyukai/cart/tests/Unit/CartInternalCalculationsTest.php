@@ -39,7 +39,7 @@ describe('Cart Internal Calculations', function () {
         // Total with conditions: 210
 
         // But subtotal without conditions should still be 250
-        expect($this->cart->getRawSubTotalWithoutConditions())->toBe(250.00);
+        expect($this->cart->getRawSubtotalWithoutConditions())->toBe(250.00);
         expect($this->cart->getRawSubtotal())->toBe(210.00);
     });
 
@@ -64,7 +64,7 @@ describe('Cart Internal Calculations', function () {
         $this->cart->addCondition($cartTax);
         // 210 + 10% = 231
 
-        expect($this->cart->getRawSubTotalWithoutConditions())->toBe(250.00);
+        expect($this->cart->getRawSubtotalWithoutConditions())->toBe(250.00);
         expect($this->cart->getRawSubtotal())->toBe(210.00);
         expect($this->cart->getRawTotal())->toBe(231.00);
     });
@@ -72,7 +72,7 @@ describe('Cart Internal Calculations', function () {
     it('internal calculations use raw methods consistently', function () {
         // Verify that internal calculations return floats (not formatted values)
         expect($this->cart->getRawSubtotal())->toBeFloat();
-        expect($this->cart->getRawSubTotalWithoutConditions())->toBeFloat();
+        expect($this->cart->getRawSubtotalWithoutConditions())->toBeFloat();
         expect($this->cart->getRawTotal())->toBeFloat();
 
         // Verify formatted methods return Money objects
@@ -109,7 +109,7 @@ describe('Cart Internal Calculations', function () {
         );
 
         expect($emptyCart->getRawSubtotal())->toBe(0.00);
-        expect($emptyCart->getRawSubTotalWithoutConditions())->toBe(0.00);
+        expect($emptyCart->getRawSubtotalWithoutConditions())->toBe(0.00);
         expect($emptyCart->getRawTotal())->toBe(0.00);
     });
 });

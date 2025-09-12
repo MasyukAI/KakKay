@@ -27,7 +27,6 @@ describe('HandleUserLogin', function () {
             ->with($user, 'default', $oldSessionId)
             ->andReturn($migrationResult)
             ->once();
-        $migrationService->shouldReceive('autoSwitchCartInstance')->once();
 
         $listener = new HandleUserLogin($migrationService);
 

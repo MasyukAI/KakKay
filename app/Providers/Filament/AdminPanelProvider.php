@@ -62,7 +62,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->plugins([
                 ResizedColumnPlugin::make(),
-                FilamentCartPlugin::make(),
+                // FilamentCartPlugin::make(),
             ])
             ->authMiddleware([
                 Authenticate::class,

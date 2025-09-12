@@ -36,10 +36,10 @@ uses(RefreshDatabase::class);
 beforeEach(function () {
     $this->cartMigration = new CartMigrationService;
 
-    // Create a test user
-    $this->user = new class
-    {
+    // Create a test user with email property for identifier
+    $this->user = new class {
         public $id = 1;
+        public $email = 'testuser@example.com';
 
         public function getAuthIdentifier()
         {
@@ -277,6 +277,9 @@ it('handles user login event automatically when configured', function () {
             'attributes' => [],
         ],
     ]);
+
+    // Set the cache key for migration (matches getUserIdentifier logic)
+    \Illuminate\Support\Facades\Cache::put('cart_migration_testuser@example.com', 'guest_session_login_123');
 
     $listener = new HandleUserLogin($this->cartMigration);
     $event = new Login('web', $this->user, false);

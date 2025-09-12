@@ -12,7 +12,7 @@ trait CalculatesTotals
     /**
      * Get cart subtotal with conditions applied
      */
-    protected function getSubTotal(): Money
+    protected function getSubtotal(): Money
     {
         $totalAmount = $this->getItems()->sum(fn (CartItem $item) => $item->getRawSubtotal());
         $currency = config('cart.money.default_currency', 'USD');
@@ -23,7 +23,7 @@ trait CalculatesTotals
     /**
      * Get cart subtotal without any conditions
      */
-    protected function getSubTotalWithoutConditions(): Money
+    protected function getSubtotalWithoutConditions(): Money
     {
         $totalAmount = $this->getItems()->sum(fn (CartItem $item) => $item->getRawSubtotalWithoutConditions());
         $currency = config('cart.money.default_currency', 'USD');
@@ -55,7 +55,7 @@ trait CalculatesTotals
      */
     public function subtotal(): Money
     {
-        return $this->getSubTotal();
+        return $this->getSubtotal();
     }
 
     /**
@@ -63,7 +63,7 @@ trait CalculatesTotals
      */
     public function subtotalWithoutConditions(): Money
     {
-        return $this->getSubTotalWithoutConditions();
+        return $this->getSubtotalWithoutConditions();
     }
 
     /**
@@ -79,7 +79,7 @@ trait CalculatesTotals
      */
     public function totalWithoutConditions(): Money
     {
-        return $this->getSubTotalWithoutConditions();
+        return $this->getSubtotalWithoutConditions();
     }
 
     /**
@@ -87,7 +87,7 @@ trait CalculatesTotals
      */
     public function savings(): Money
     {
-        $withoutConditions = $this->getSubTotalWithoutConditions();
+        $withoutConditions = $this->getSubtotalWithoutConditions();
         $withConditions = $this->getTotal();
 
         $savings = $withoutConditions->subtract($withConditions);
@@ -127,15 +127,15 @@ trait CalculatesTotals
      */
     public function getRawSubtotal(): float
     {
-        return $this->getSubTotal()->getAmount();
+        return $this->getSubtotal()->getAmount();
     }
 
     /**
      * Get raw cart subtotal without any conditions (for internal use like events)
      */
-    public function getRawSubTotalWithoutConditions(): float
+    public function getRawSubtotalWithoutConditions(): float
     {
-        return $this->getSubTotalWithoutConditions()->getAmount();
+        return $this->getSubtotalWithoutConditions()->getAmount();
     }
 
     /**

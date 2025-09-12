@@ -19,7 +19,7 @@ it('can register a dynamic condition with rules', function () {
         target: 'total',
         value: '-10%',
         rules: [
-            fn (Cart $cart) => $cart->getRawSubTotalWithoutConditions() > 100,
+            fn (Cart $cart) => $cart->getRawSubtotalWithoutConditions() > 100,
         ]
     );
 
@@ -37,7 +37,7 @@ it('applies dynamic condition when rules are met', function () {
         target: 'total',
         value: '-10%',
         rules: [
-            fn (Cart $cart) => $cart->getRawSubTotalWithoutConditions() > 100,
+            fn (Cart $cart) => $cart->getRawSubtotalWithoutConditions() > 100,
         ]
     );
 
@@ -82,7 +82,7 @@ it('can register multiple dynamic conditions with different rules', function () 
         target: 'total',
         value: '-10%',
         rules: [
-            fn (Cart $cart) => $cart->getRawSubTotalWithoutConditions() > 100,
+            fn (Cart $cart) => $cart->getRawSubtotalWithoutConditions() > 100,
         ]
     );
 
@@ -99,7 +99,7 @@ it('requires ALL rules to be met before applying condition', function () {
         target: 'total',
         value: '-15%',
         rules: [
-            fn (Cart $cart) => $cart->getRawSubTotalWithoutConditions() > 100, // Rule 1: Total > $100
+            fn (Cart $cart) => $cart->getRawSubtotalWithoutConditions() > 100, // Rule 1: Total > $100
             fn (Cart $cart) => $cart->getItems()->count() >= 3, // Rule 2: 3+ items
             fn (Cart $cart) => $cart->getItems()->sum('quantity') >= 5, // Rule 3: 5+ total quantity
         ]
@@ -236,7 +236,7 @@ it('handles multiple dynamic conditions being applied simultaneously', function 
         target: 'total',
         value: '-10%',
         rules: [
-            fn (Cart $cart) => $cart->getRawSubTotalWithoutConditions() > 200,
+            fn (Cart $cart) => $cart->getRawSubtotalWithoutConditions() > 200,
         ]
     );
 
@@ -252,7 +252,7 @@ it('handles multiple dynamic conditions being applied simultaneously', function 
     $conditionNames = $conditions->map(fn ($condition) => $condition->getName())->toArray();
 
     expect($this->cart->getItems()->count())->toBe(3);
-    expect($this->cart->getRawSubTotalWithoutConditions())->toBeGreaterThan(200);
+    expect($this->cart->getRawSubtotalWithoutConditions())->toBeGreaterThan(200);
     expect($conditions)->toHaveCount(2);
     expect($conditionNames)->toContain('Volume Discount');
     expect($conditionNames)->toContain('Big Spender Discount');
@@ -297,7 +297,7 @@ it('removes dynamic condition from registry', function () {
         target: 'total',
         value: '-10%',
         rules: [
-            fn (Cart $cart) => $cart->getRawSubTotalWithoutConditions() > 50,
+            fn (Cart $cart) => $cart->getRawSubtotalWithoutConditions() > 50,
         ]
     );
 
@@ -323,7 +323,7 @@ it('handles complex business logic rules', function () {
         target: 'total',
         value: '-15%',
         rules: [
-            fn (Cart $cart) => $cart->getRawSubTotalWithoutConditions() > 100,
+            fn (Cart $cart) => $cart->getRawSubtotalWithoutConditions() > 100,
             fn (Cart $cart) => $cart->getItems()->count() >= 3,
             fn (Cart $cart) => $cart->getItems()->filter(fn ($item) => $item->getAttribute('category') === 'premium'
             )->count() >= 1,

@@ -225,7 +225,7 @@ class CartController extends Controller
             value: '-10', // Offset shipping cost
             attributes: ['description' => 'Free shipping on orders $75+'],
             rules: [
-                fn($cart) => $cart->getRawSubTotalWithoutConditions() >= 75,
+                fn($cart) => $cart->getRawSubtotalWithoutConditions() >= 75,
             ]
         ));
         

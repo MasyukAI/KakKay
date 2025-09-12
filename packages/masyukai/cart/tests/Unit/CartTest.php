@@ -984,13 +984,13 @@ describe('Convenience condition methods', function () {
 });
 
 describe('Content alias methods', function () {
-    it('provides subtotal() as alias for getSubTotal()', function () {
+    it('provides subtotal() as alias for getSubtotal()', function () {
         $this->cart->add('item-1', 'Item 1', 25.50, 2);
 
         $subtotal = $this->cart->subtotal();
-        $getSubTotal = $this->cart->subtotal();
+        $getSubtotal = $this->cart->subtotal();
 
-        expect($subtotal->getAmount())->toBe($getSubTotal->getAmount());
+        expect($subtotal->getAmount())->toBe($getSubtotal->getAmount());
         expect($subtotal->getAmount())->toBe(51.0);
     });
 

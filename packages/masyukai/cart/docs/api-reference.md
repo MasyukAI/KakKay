@@ -1129,14 +1129,14 @@ Get total quantity of all items.
 $totalQuantity = Cart::getTotalQuantity();
 ```
 
-#### `getSubTotal(): float`
+#### `getSubtotal(): float`
 Get cart subtotal (before conditions).
 
 ```php
 $subtotal = Cart::subtotal();
 ```
 
-#### `getSubTotal(): float`
+#### `getSubtotal(): float`
 Get subtotal with item-level conditions applied.
 
 ```php

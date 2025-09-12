@@ -165,7 +165,7 @@ $bigSpenderDiscount = new CartCondition(
     target: 'total',
     value: '-10%',
     rules: [
-        fn($cart) => $cart->getRawSubTotalWithoutConditions() > 100,
+        fn($cart) => $cart->getRawSubtotalWithoutConditions() > 100,
     ]
 );
 
@@ -179,7 +179,7 @@ Rules are callable functions that receive the cart and optionally an item (for i
 
 ```php
 // Cart-level rule (receives only cart)
-$cartRule = fn($cart) => $cart->getRawSubTotalWithoutConditions() > 100;
+$cartRule = fn($cart) => $cart->getRawSubtotalWithoutConditions() > 100;
 
 // Item-level rule (receives cart and item)
 $itemRule = fn($cart, $item) => $item->quantity >= 3;
@@ -191,7 +191,7 @@ $condition = new CartCondition(
     target: 'total',
     value: '-15%',
     rules: [
-        fn($cart) => $cart->getRawSubTotalWithoutConditions() > 200,
+        fn($cart) => $cart->getRawSubtotalWithoutConditions() > 200,
         fn($cart) => $cart->getItems()->count() >= 3,
         fn($cart) => auth()->user()?->isVip() ?? false,
     ]
@@ -227,7 +227,7 @@ $freeShipping = new CartCondition(
     target: 'total',
     value: '-15', // Offset standard $15 shipping
     rules: [
-        fn($cart) => $cart->getRawSubTotalWithoutConditions() >= 50,
+        fn($cart) => $cart->getRawSubtotalWithoutConditions() >= 50,
     ]
 );
 
@@ -327,7 +327,7 @@ $holidayDiscount = new CartCondition(
     target: 'total',
     value: '-20%',
     rules: [
-        fn($cart) => $cart->getRawSubTotalWithoutConditions() > 75,
+        fn($cart) => $cart->getRawSubtotalWithoutConditions() > 75,
         fn($cart) => now()->between('2024-11-25', '2024-12-02'), // Black Friday week
         fn($cart) => $cart->getItems()->contains(fn($item) => 
             $item->getAttribute('category') === 'electronics'
@@ -347,7 +347,7 @@ $localDiscount = new CartCondition(
     rules: [
         fn($cart) => auth()->check(),
         fn($cart) => auth()->user()->address?->state === 'CA',
-        fn($cart) => $cart->getRawSubTotalWithoutConditions() > 50,
+        fn($cart) => $cart->getRawSubtotalWithoutConditions() > 50,
     ]
 );
 ```
@@ -410,7 +410,7 @@ class CartConditionsService
             value: '-15%',
             rules: [
                 fn($cart) => auth()->user()?->isVip() ?? false,
-                fn($cart) => $cart->getRawSubTotalWithoutConditions() > 100,
+                fn($cart) => $cart->getRawSubtotalWithoutConditions() > 100,
             ]
         ));
         
@@ -420,7 +420,7 @@ class CartConditionsService
             type: 'discount',
             target: 'total',
             value: '-10', // Offset shipping cost
-            rules: [fn($cart) => $cart->getRawSubTotalWithoutConditions() >= 75]
+            rules: [fn($cart) => $cart->getRawSubtotalWithoutConditions() >= 75]
         ));
     }
 }

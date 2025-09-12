@@ -9,7 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Cache;
 use MasyukAI\Cart\Services\CartMigrationService;
 
-class HandleUserLogin implements ShouldQueue
+class HandleUserLogin
 {
     public function __construct(
         private CartMigrationService $migrationService
@@ -40,9 +40,6 @@ class HandleUserLogin implements ShouldQueue
                 'message' => $result->message ?? 'Cart migration completed',
             ]);
         }
-
-        // Switch to user cart instance
-        $this->migrationService->autoSwitchCartInstance();
     }
 
     /**

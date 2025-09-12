@@ -162,37 +162,6 @@ describe('CartMigrationService Coverage Tests', function () {
         });
     });
 
-    describe('Backup Operations', function () {
-        it('can backup user cart to guest session', function () {
-            // Setup user cart data via storage
-            $storage = Cart::storage();
-            $userData = [
-                'backup_item' => [
-                    'id' => 'backup_item',
-                    'name' => 'Backup Product',
-                    'price' => 15.0,
-                    'quantity' => 1,
-                    'attributes' => [],
-                    'conditions' => [],
-                    'associated_model' => null,
-                ],
-            ];
-            $storage->putItems('111', 'default', $userData);
-
-            $result = $this->service->backupUserCartToGuest(111, 'default', 'backup_session');
-            expect($result)->toBeTrue();
-        });
-
-        it('returns false when user cart is empty for backup', function () {
-            // Ensure user cart is empty
-            $storage = Cart::storage();
-            $storage->forget('999', 'default');
-
-            $result = $this->service->backupUserCartToGuest(999, 'default', 'backup_empty');
-            expect($result)->toBeFalse();
-        });
-    });
-
     describe('Auto-switch Methods', function () {
         it('auto switch cart identifier when user is authenticated', function () {
             Auth::shouldReceive('check')->andReturn(true);
@@ -202,48 +171,6 @@ describe('CartMigrationService Coverage Tests', function () {
             expect(true)->toBeTrue(); // Method completes without error
         });
 
-        it('auto switch cart instance when user is not authenticated', function () {
-            Auth::shouldReceive('check')->andReturn(false);
-
-            $this->service->autoSwitchCartInstance();
-            expect(true)->toBeTrue(); // Method completes without error
-        });
-    });
-
-    describe('Multiple Instance Migration', function () {
-        it('can migrate multiple instances from guest to user', function () {
-            // Setup multiple guest cart instances via storage
-            $storage = Cart::storage();
-
-            $guestData1 = [
-                'item1' => [
-                    'id' => 'item1',
-                    'name' => 'Product 1',
-                    'price' => 10.0,
-                    'quantity' => 1,
-                    'attributes' => [],
-                    'conditions' => [],
-                    'associated_model' => null,
-                ],
-            ];
-            $guestData2 = [
-                'item2' => [
-                    'id' => 'item2',
-                    'name' => 'Product 2',
-                    'price' => 20.0,
-                    'quantity' => 1,
-                    'attributes' => [],
-                    'conditions' => [],
-                    'associated_model' => null,
-                ],
-            ];
-
-            $storage->putItems('multi_session', 'instance1', $guestData1);
-            $storage->putItems('multi_session', 'instance2', $guestData2);
-
-            $results = $this->service->migrateAllGuestInstances(333, 'multi_session');
-            expect($results)->toBeArray();
-        });
     });
 
     describe('Merge Strategy Testing', function () {
@@ -301,40 +228,6 @@ describe('CartMigrationService Coverage Tests', function () {
             expect($result)->toBeArray();
         });
 
-        it('can exercise mergeCartData method for coverage', function () {
-            $reflection = new ReflectionClass($this->service);
-            $method = $reflection->getMethod('mergeCartData');
-            $method->setAccessible(true);
-
-            // Setup test data in storage first
-            $storage = Cart::storage();
-            $sourceData = ['item1' => ['id' => 'item1', 'name' => 'Product 1', 'price' => 10.0, 'quantity' => 2, 'attributes' => [], 'conditions' => [], 'associated_model' => null]];
-            $targetData = ['item2' => ['id' => 'item2', 'name' => 'Product 2', 'price' => 20.0, 'quantity' => 1, 'attributes' => [], 'conditions' => [], 'associated_model' => null]];
-
-            $storage->putItems('source_id', 'default', $sourceData);
-            $storage->putItems('target_id', 'default', $targetData);
-
-            $result = $method->invokeArgs($this->service, ['source_id', 'target_id', 'default']);
-            expect($result)->toBeInstanceOf(\MasyukAI\Cart\Collections\CartCollection::class);
-        });
-
-        it('can exercise getConflictItems method for coverage', function () {
-            $reflection = new ReflectionClass($this->service);
-            $method = $reflection->getMethod('getConflictItems');
-            $method->setAccessible(true);
-
-            // Setup test data in storage first
-            $storage = Cart::storage();
-            $sourceData = ['item1' => ['id' => 'item1', 'name' => 'Product 1', 'price' => 10.0, 'quantity' => 2, 'attributes' => [], 'conditions' => [], 'associated_model' => null]];
-            $targetData = ['item1' => ['id' => 'item1', 'name' => 'Product 1', 'price' => 10.0, 'quantity' => 1, 'attributes' => [], 'conditions' => [], 'associated_model' => null]];
-
-            $storage->putItems('conflict_source', 'default', $sourceData);
-            $storage->putItems('conflict_target', 'default', $targetData);
-
-            $result = $method->invokeArgs($this->service, ['conflict_source', 'conflict_target', 'default']);
-            expect($result)->toBeInstanceOf(\Illuminate\Support\Collection::class);
-        });
-
         it('can resolve quantity conflicts for all strategies', function () {
             $reflection = new ReflectionClass($this->service);
             $method = $reflection->getMethod('resolveQuantityConflict');
@@ -362,55 +255,6 @@ describe('CartMigrationService Coverage Tests', function () {
             // default (unknown strategy)
             $result = $method->invokeArgs($this->service, [$userQuantity, $guestQuantity, 'unknown_strategy']);
             expect($result)->toBe(8);
-        });
-
-        it('merges items with all strategies in mergeCartData', function () {
-            $reflection = new ReflectionClass($this->service);
-            $method = $reflection->getMethod('mergeCartData');
-            $method->setAccessible(true);
-
-            $strategies = [
-                'add_quantities' => 8,
-                'keep_highest_quantity' => 5,
-                'keep_user_cart' => 5,
-                'replace_with_guest' => 3,
-                'unknown_strategy' => 8,
-            ];
-
-            foreach ($strategies as $strategy => $expectedQuantity) {
-                config(['cart.migration.merge_strategy' => $strategy]);
-
-                // Setup test data in storage
-                $storage = Cart::storage();
-                $sourceData = [
-                    'item1' => [
-                        'id' => 'item1',
-                        'name' => 'Product 1',
-                        'price' => 10.0,
-                        'quantity' => 3,
-                        'attributes' => [],
-                        'conditions' => [],
-                        'associated_model' => null,
-                    ],
-                ];
-                $targetData = [
-                    'item1' => [
-                        'id' => 'item1',
-                        'name' => 'Product 1',
-                        'price' => 10.0,
-                        'quantity' => 5,
-                        'attributes' => [],
-                        'conditions' => [],
-                        'associated_model' => null,
-                    ],
-                ];
-                $storage->putItems('source_id', 'default', $sourceData);
-                $storage->putItems('target_id', 'default', $targetData);
-
-                $result = $method->invokeArgs($this->service, ['source_id', 'target_id', 'default']);
-                expect($result)->toBeInstanceOf(\MasyukAI\Cart\Collections\CartCollection::class);
-                expect($result->get('item1')['quantity'])->toBe($expectedQuantity);
-            }
         });
     });
 });
