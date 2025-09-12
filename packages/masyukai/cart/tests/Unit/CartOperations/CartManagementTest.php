@@ -15,12 +15,13 @@ beforeEach(function () {
     $this->cart = new Cart(
         storage: $this->sessionStorage,
         events: app('events'),
+        identifier: 'management_test',
         instanceName: 'management_test',
         eventsEnabled: true
     );
 
     $this->cart->clear();
-    
+
     // Add some initial items for management operations
     $this->cart->add('product-1', 'Product 1', 10.00, 2);
     $this->cart->add('product-2', 'Product 2', 15.00, 3);
@@ -34,7 +35,7 @@ describe('Cart Item Management Operations', function () {
         expect($updatedItem)->toBeInstanceOf(CartItem::class);
         expect($updatedItem->quantity)->toBe(5);
         expect($this->cart->getTotalQuantity())->toBe(9); // 5 + 3 + 1
-        
+
         // Verify the item was actually updated in the cart
         expect($this->cart->get('product-1')->quantity)->toBe(5);
     });
@@ -51,7 +52,7 @@ describe('Cart Item Management Operations', function () {
 
     it('can remove specific items', function () {
         $initialCount = $this->cart->getItems()->count();
-        
+
         $removedItem = $this->cart->remove('product-2');
 
         expect($removedItem)->toBeInstanceOf(CartItem::class);
@@ -71,7 +72,7 @@ describe('Cart Item Management Operations', function () {
         expect($this->cart->isEmpty())->toBeTrue();
         expect($this->cart->getItems())->toHaveCount(0);
         expect($this->cart->getTotalQuantity())->toBe(0);
-        expect($this->cart->total()->getAmount())->toBe(0.0);
+        expect($this->cart->total()->getAmount())->toBe(0);
     });
 
     it('handles non-existent item operations gracefully', function () {
@@ -101,7 +102,7 @@ describe('Cart Content Analysis', function () {
 
     it('can check cart state', function () {
         expect($this->cart->isEmpty())->toBeFalse();
-        
+
         // Clear and test empty state
         $this->cart->clear();
         expect($this->cart->isEmpty())->toBeTrue();

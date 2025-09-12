@@ -63,13 +63,13 @@ final class CartMerged
         return [
             'target_cart' => [
                 'identifier' => $this->targetCart->getIdentifier(),
-                'instance_name' => $this->targetCart->getCurrentInstance(),
+                'instance_name' => $this->targetCart->instance(),
                 'items_count' => $this->targetCart->countItems(),
                 'total' => $this->targetCart->getRawTotal(),
             ],
             'source_cart' => [
                 'identifier' => $this->sourceCart->getIdentifier(),
-                'instance_name' => $this->sourceCart->getCurrentInstance(),
+                'instance_name' => $this->sourceCart->instance(),
                 'items_count' => $this->sourceCart->countItems(),
                 'total' => $this->sourceCart->getRawTotal(),
             ],

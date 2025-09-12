@@ -14,13 +14,14 @@ beforeEach(function () {
     // Initialize cart
     $this->cart = new Cart(
         storage: $this->sessionStorage,
+        identifier: 'test-user',
         events: app('events'),
         instanceName: 'conditions_test',
         eventsEnabled: true
     );
 
     $this->cart->clear();
-    
+
     // Add test items for condition testing
     $this->cart->add('product-1', 'Product 1', 100.00, 1);
     $this->cart->add('product-2', 'Product 2', 50.00, 2);
@@ -99,7 +100,7 @@ describe('Cart Item-Specific Conditions', function () {
 
         $item = $this->cart->get('product-1');
         expect($item->getConditions())->toHaveCount(1);
-        expect($item->getRawPriceSum())->toBe(80.00); // 100 - 20%
+        expect($item->getRawSubtotal())->toBe(80.00); // 100 - 20%
 
         // Adding to non-existent item should fail
         $result = $this->cart->addItemCondition('nonexistent', $itemDiscount);

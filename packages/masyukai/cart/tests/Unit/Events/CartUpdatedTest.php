@@ -144,7 +144,13 @@ beforeEach(function (): void {
 });
 
 it('can be instantiated with required parameters', function (): void {
-    $cart = app(Cart::class);
+    $cart = new Cart(
+        identifier: 'event_test',
+        storage: app(\MasyukAI\Cart\Storage\StorageInterface::class),
+        events: app('events'),
+        instanceName: 'default',
+        eventsEnabled: true
+    );
     $cart->add('product-1', 'Product 1', 100, 2);
     $reason = 'item_added';
 
@@ -157,7 +163,13 @@ it('can be instantiated with required parameters', function (): void {
 it('can be dispatched manually', function (): void {
     Event::fake();
 
-    $cart = app(Cart::class);
+    $cart = new Cart(
+        identifier: 'event_test',
+        storage: app(\MasyukAI\Cart\Storage\StorageInterface::class),
+        events: app('events'),
+        instanceName: 'default',
+        eventsEnabled: true
+    );
     $cart->add('product-1', 'Product 1', 100, 2);
     $reason = 'manual_test';
 
@@ -170,21 +182,33 @@ it('can be dispatched manually', function (): void {
 });
 
 it('contains proper cart data when event is created', function (): void {
-    $cart = app(Cart::class);
+    $cart = new Cart(
+        identifier: 'event_test',
+        storage: app(\MasyukAI\Cart\Storage\StorageInterface::class),
+        events: app('events'),
+        instanceName: 'default',
+        eventsEnabled: true
+    );
     $cart->add('product-1', 'Product 1', 100, 2);
 
     $event = new CartUpdated($cart, 'test_update');
 
     expect($event->cart->getRawTotal())->toBe(200.0)
         ->and($event->cart->has('product-1'))->toBeTrue()
-        ->and($event->cart->getCurrentInstance())->toBe('default')
+        ->and($event->cart->instance())->toBe('default')
         ->and($event->reason)->toBe('test_update');
 });
 
 it('cart update triggers ItemUpdated event which could fire CartUpdated', function (): void {
     Event::fake();
 
-    $cart = app(Cart::class);
+    $cart = new Cart(
+        identifier: 'event_test',
+        storage: app(\MasyukAI\Cart\Storage\StorageInterface::class),
+        events: app('events'),
+        instanceName: 'default',
+        eventsEnabled: true
+    );
     $cart->add('product-1', 'Product 1', 100, 2, ['color' => 'red']);
 
     // This will fire ItemUpdated event (as that's what Cart actually fires)
@@ -201,7 +225,13 @@ it('cart update triggers ItemUpdated event which could fire CartUpdated', functi
 it('cart condition updates can trigger manual CartUpdated', function (): void {
     Event::fake();
 
-    $cart = app(Cart::class);
+    $cart = new Cart(
+        identifier: 'event_test',
+        storage: app(\MasyukAI\Cart\Storage\StorageInterface::class),
+        events: app('events'),
+        instanceName: 'default',
+        eventsEnabled: true
+    );
     $cart->add('product-1', 'Product 1', 100, 2);
 
     $condition = new \MasyukAI\Cart\Conditions\CartCondition(
@@ -221,7 +251,13 @@ it('cart condition updates can trigger manual CartUpdated', function (): void {
 });
 
 it('preserves event data immutability', function (): void {
-    $cart = app(Cart::class);
+    $cart = new Cart(
+        identifier: 'event_test',
+        storage: app(\MasyukAI\Cart\Storage\StorageInterface::class),
+        events: app('events'),
+        instanceName: 'default',
+        eventsEnabled: true
+    );
     $cart->add('product-1', 'Product 1', 100, 2);
     $reason = 'immutability_test';
 

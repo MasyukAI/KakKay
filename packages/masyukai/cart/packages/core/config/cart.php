@@ -55,16 +55,13 @@ return [
     | Money & Currency Configuration
     |--------------------------------------------------------------------------
     |
-    | Laravel Money is used internally for all calculations to ensure precision.
-    | These settings control currency and precision behavior.
+    | Laravel Money is used internally for all calculations.
+    | Only currency configuration is needed - Laravel Money handles precision.
     |
     */
     'money' => [
         // Default currency for all Money objects
         'default_currency' => env('CART_DEFAULT_CURRENCY', 'MYR'),
-
-        // Currency precision (decimal places)
-        'default_precision' => env('CART_DEFAULT_PRECISION', 2),
     ],
 
     /*
@@ -102,31 +99,6 @@ return [
         // Strategy for handling conflicts when merging carts
         // Options: 'add_quantities', 'keep_highest_quantity', 'keep_user_cart', 'replace_with_guest'
         'merge_strategy' => env('CART_MERGE_STRATEGY', 'add_quantities'),
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Display & Formatting Configuration
-    |--------------------------------------------------------------------------
-    |
-    | Configure how money amounts are displayed to users.
-    |
-    */
-    'display' => [
-        // Enable automatic formatting by default (can be overridden globally)
-        'formatting_enabled' => env('CART_FORMATTING_ENABLED', true),
-
-        // Price transformer class - determines storage format
-        'transformer' => env('CART_PRICE_TRANSFORMER', \MasyukAI\Cart\PriceTransformers\IntegerPriceTransformer::class),
-
-        // Locale for number formatting
-        'locale' => env('CART_LOCALE', 'en_MY'),
-
-        // Display currency symbols
-        'show_currency_symbol' => env('CART_SHOW_CURRENCY_SYMBOL', true),
-
-        // Formatting style: 'currency', 'decimal', 'accounting'
-        'format_style' => env('CART_FORMAT_STYLE', 'currency'),
     ],
 
     /*

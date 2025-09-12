@@ -11,6 +11,7 @@ it('can add shipping conditions using addShipping method', function () {
     $storage = new SessionStorage(app('session.store'));
     $cart = new Cart(
         storage: $storage,
+        identifier: 'test-user',
         events: null,
         instanceName: 'shipping-test',
         eventsEnabled: false
@@ -39,6 +40,7 @@ it('can remove shipping conditions using removeShipping method', function () {
     $storage = new SessionStorage(app('session.store'));
     $cart = new Cart(
         storage: $storage,
+        identifier: 'test-user',
         events: null,
         instanceName: 'shipping-remove-test',
         eventsEnabled: false
@@ -66,6 +68,7 @@ it('replaces existing shipping when adding new shipping', function () {
     $storage = new SessionStorage(app('session.store'));
     $cart = new Cart(
         storage: $storage,
+        identifier: 'test-user',
         events: null,
         instanceName: 'shipping-replace-test',
         eventsEnabled: false
@@ -93,6 +96,7 @@ it('handles string and numeric shipping values correctly', function () {
     $storage = new SessionStorage(app('session.store'));
     $cart = new Cart(
         storage: $storage,
+        identifier: 'test-user',
         events: null,
         instanceName: 'shipping-values-test',
         eventsEnabled: false

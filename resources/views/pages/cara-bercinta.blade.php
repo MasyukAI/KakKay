@@ -31,7 +31,7 @@ class extends Component {
         Cart::add(
             (string) $product->id,
             $product->name,
-            $product->price, // Convert from cents to dollars for the cart
+            $product->price, // Keep price in cents for Money object compatibility
             1,
             [
                 'slug' => $product->slug,
@@ -39,14 +39,15 @@ class extends Component {
             ]
         );
 
-        // Notification::make()
-        //     ->title('Berjaya Ditambah!')
-        //     ->body('Produk telah ditambah ke keranjang!')
-        //     ->success()
-        //     ->icon('heroicon-o-check-circle')
-        //     ->iconColor('success')
-        //     ->duration(3000)
-        //     ->send();
+        // Show success notification
+        Notification::make()
+            ->title('Berjaya Ditambah!')
+            ->body('Produk telah ditambah ke keranjang!')
+            ->success()
+            ->icon('heroicon-o-check-circle')
+            ->iconColor('success')
+            ->duration(3000)
+            ->send();
 
         $this->dispatch('product-added-to-cart');
         return $this->redirect('/cart', navigate: true);

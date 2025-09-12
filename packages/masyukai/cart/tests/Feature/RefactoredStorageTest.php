@@ -46,10 +46,11 @@ afterEach(function () {
 describe('Refactored Cart Storage Structure', function () {
     it('stores items and conditions separately in database storage', function () {
         $cart = new Cart(
-            storage: $this->databaseStorage,
-            events: app('events'),
-            instanceName: 'test_instance',
-            eventsEnabled: false
+            $this->databaseStorage,
+            'test_instance',
+            app('events'),
+            'test_instance',
+            false
         );
 
         // Mock identifier to avoid auth dependencies
@@ -98,10 +99,11 @@ describe('Refactored Cart Storage Structure', function () {
 
         // Verify cart can be loaded correctly
         $newCart = new Cart(
-            storage: $this->databaseStorage,
-            events: app('events'),
-            instanceName: 'test_instance',
-            eventsEnabled: false
+            $this->databaseStorage,
+            'test_instance',
+            app('events'),
+            'test_instance',
+            false
         );
 
         expect($newCart->getItems())->toHaveCount(2);
@@ -112,10 +114,11 @@ describe('Refactored Cart Storage Structure', function () {
 
     it('uses session ID for guest users', function () {
         $cart = new Cart(
-            storage: $this->sessionStorage,
-            events: app('events'),
-            instanceName: 'guest_cart',
-            eventsEnabled: false
+            $this->sessionStorage,
+            'guest_cart',
+            app('events'),
+            'guest_cart',
+            false
         );
 
         // Set session ID
@@ -131,17 +134,19 @@ describe('Refactored Cart Storage Structure', function () {
 
     it('maintains separate storage for different instances', function () {
         $cart1 = new Cart(
-            storage: $this->databaseStorage,
-            events: app('events'),
-            instanceName: 'cart',
-            eventsEnabled: false
+            $this->databaseStorage,
+            'multi-instance-session',
+            app('events'),
+            'cart',
+            false
         );
 
         $cart2 = new Cart(
-            storage: $this->databaseStorage,
-            events: app('events'),
-            instanceName: 'wishlist',
-            eventsEnabled: false
+            $this->databaseStorage,
+            'multi-instance-session',
+            app('events'),
+            'wishlist',
+            false
         );
 
         // Set session ID for consistent identifier
@@ -183,6 +188,7 @@ describe('Refactored Cart Storage Structure', function () {
 
     it('handles conditions storage correctly', function () {
         $cart = new Cart(
+            identifier: 'conditions_test',
             storage: $this->databaseStorage,
             events: app('events'),
             instanceName: 'conditions_test',

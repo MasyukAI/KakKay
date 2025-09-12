@@ -15,7 +15,7 @@ new class extends Component {
         Cart::add(
             (string) $this->product->id,
             $this->product->name,
-            $this->product->price / 100, // Convert from cents to dollars
+            $this->product->price / 100, // Convert from cents to major units for cart
             $this->quantity,
             [
                 'imageUrl' => $this->product->getMedia('product-image-main')->first()?->getUrl() ?? 'https://flowbite.s3.amazonaws.com/blocks/e-commerce/book-placeholder.svg',

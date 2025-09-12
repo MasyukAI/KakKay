@@ -128,11 +128,11 @@ it('can use final total alias method', function (): void {
         conditions: [$this->condition1] // -10%
     );
 
-    expect($item->getRawPriceSum())->toBe(180.0) // Same as getRawPriceSum()
-        ->and($item->getRawPriceSum())->toBe($item->getRawPriceSum());
+    expect($item->getRawSubtotal())->toBe(180.0) // Same as getRawSubtotal()
+        ->and($item->getRawSubtotal())->toBe($item->getRawSubtotal());
 });
 
-it('can use withQuantity method (shopping cart style)', function (): void {
+it('can use setQuantity method (shopping cart style)', function (): void {
     $item = new CartItem(
         id: 'product-1',
         name: 'Test Product',
@@ -140,7 +140,7 @@ it('can use withQuantity method (shopping cart style)', function (): void {
         quantity: 2
     );
 
-    $newItem = $item->withQuantity(5);
+    $newItem = $item->setQuantity(5);
 
     expect($newItem->quantity)->toBe(5)
         ->and($newItem)->not->toBe($item); // Should be new instance

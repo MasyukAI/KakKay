@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use MasyukAI\Cart\Conditions\CartCondition;
 use MasyukAI\Cart\Models\CartItem;
-use MasyukAI\Cart\Support\CartMoney;
 
 beforeEach(function (): void {
     $this->condition1 = new CartCondition(
@@ -71,9 +70,9 @@ it('can calculate price sum', function (): void {
         quantity: 3
     );
 
-    expect($item->getPriceSum())
-        ->toBeInstanceOf(CartMoney::class)
-        ->and($item->getRawPriceSum())->toBe(150.0);
+    expect($item->getSubtotal())
+        ->toBeInstanceOf(\Akaunting\Money\Money::class)
+        ->and($item->getRawSubtotal())->toBe(150.0);
 });
 
 it('can get single attribute', function (): void {
@@ -124,7 +123,8 @@ it('can calculate price with conditions', function (): void {
         conditions: [$this->condition1] // -10%
     );
 
-    expect($item->getRawPrice())->toBe(90.0);
+    expect($item->getRawPrice())->toBe(90.0) // Raw price with conditions applied
+        ->and($item->getRawPriceWithoutConditions())->toBe(100.0); // Price without conditions
 });
 
 it('can calculate price sum with conditions', function (): void {
@@ -136,7 +136,8 @@ it('can calculate price sum with conditions', function (): void {
         conditions: [$this->condition1] // -10%
     );
 
-    expect($item->getRawPriceSum())->toBe(180.0);
+    expect($item->getRawSubtotal())->toBe(180.0) // Raw subtotal with conditions applied
+        ->and($item->getRawSubtotalWithoutConditions())->toBe(200.0); // Subtotal without conditions
 });
 
 it('can calculate discount amount', function (): void {
@@ -186,9 +187,9 @@ it('can convert to array', function (): void {
     ]);
 
     // But calculated values are still accessible via methods
-    expect($item->getPriceSum()->getAmount())->toBe(180.0); // (100 - 10%) * 2 = 180
+    expect($item->getSubtotal()->getAmount())->toBe(180.0); // (100 - 10%) * 2 = 180
     expect($item->getPriceWithoutConditions()->getAmount())->toBe(100.0); // Original price
-    expect($item->getPriceSumWithoutConditions()->getAmount())->toBe(200.0); // Original total
+    expect($item->getSubtotalWithoutConditions()->getAmount())->toBe(200.0); // Original total
     expect($item->getDiscountAmount()->getAmount())->toBe(20.0);
 });
 
@@ -328,7 +329,7 @@ it('handles complex conditions correctly', function (): void {
     // Price after 20% discount: 80.0
     // Price after $5 charge: 85.0
     // Sum with conditions: 85.0 * 2 = 170.0
-    expect($item->getRawPriceSum())->toBe(170.0)
+    expect($item->getRawSubtotal())->toBe(170.0) // Raw subtotal with conditions
         ->and($item->getDiscountAmount()->getAmount())->toBe(30.0); // 200 - 170
 });
 

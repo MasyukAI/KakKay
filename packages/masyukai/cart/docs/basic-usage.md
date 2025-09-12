@@ -95,7 +95,7 @@ $item = Cart::get('product-1');
 if ($item) {
     echo "Item: {$item->name}";
     echo "Quantity: {$item->quantity}";
-    echo "Total: {$item->getPriceSum()}";
+    echo "Total: {$item->getSubtotal()}";
 }
 ```
 
@@ -269,8 +269,8 @@ echo $item->conditions;            // Collection of conditions
 echo $item->associatedModel;       // Associated Eloquent model
 
 // Calculated properties
-echo $item->getPriceSum();                     // price * quantity
-echo $item->getPriceSum();       // with item conditions applied
+echo $item->getSubtotal();                     // price * quantity
+echo $item->getSubtotal();       // with item conditions applied
 echo $item->getPrice();          // single unit price with conditions
 echo $item->getDiscountAmount();               // total discount applied
 ```

@@ -9,7 +9,7 @@ use MasyukAI\Cart\Storage\SessionStorage;
 beforeEach(function () {
     $sessionStore = new \Illuminate\Session\Store('testing', new \Illuminate\Session\ArraySessionHandler(120));
     $this->storage = new SessionStorage($sessionStore);
-    $this->cart = new Cart($this->storage);
+    $this->cart = new Cart($this->storage, 'dynamic_conditions_test');
 });
 
 it('can register a dynamic condition with rules', function () {
@@ -279,7 +279,7 @@ it('works with item-level dynamic conditions', function () {
 
     $item = $this->cart->get('product-a');
     expect($item->conditions)->toHaveCount(0);
-    expect($item->getPriceSum()->getAmount())->toBe(60.0);
+    expect($item->getSubtotal()->getAmount())->toBe(60.0);
 
     // Update quantity to 5 - use relative update (3 + 2 = 5)
     $this->cart->update('product-a', ['quantity' => 2]);
@@ -287,7 +287,7 @@ it('works with item-level dynamic conditions', function () {
     $item = $this->cart->get('product-a');
     expect($item->conditions)->toHaveCount(1);
     expect($item->conditions->first()->getName())->toBe('Bulk Item Discount');
-    expect($item->getPriceSum()->getAmount())->toBe(80.0); // 5 * 20 * 0.8
+    expect($item->getSubtotal()->getAmount())->toBe(80.0); // 5 * 20 * 0.8
 });
 
 it('removes dynamic condition from registry', function () {

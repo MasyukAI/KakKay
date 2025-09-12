@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MasyukAI\Cart\Collections;
 
+use Akaunting\Money\Money;
 use Illuminate\Support\Collection;
 use MasyukAI\Cart\Conditions\CartCondition;
 
@@ -100,16 +101,17 @@ class CartConditionCollection extends Collection
     /**
      * Apply all conditions to a value
      */
-    public function applyAll(float $value): float
+    public function applyAll(float $value): Money
     {
         $result = $this->sortByOrder()->reduce(
             fn (float $carry, CartCondition $condition) => $condition->apply($carry),
             $value
         );
 
-        // Round to 2 decimal places to ensure precision consistency
-        // This prevents high-precision Money calculations from producing results like 218.889
-        return round((float) $result, 2);
+        // Return as Laravel Money object (default currency from config)
+        $currency = config('cart.money.default_currency', 'MYR');
+
+        return \Akaunting\Money\Money::{$currency}($result);
     }
 
     /**
@@ -140,7 +142,7 @@ class CartConditionCollection extends Collection
             'percentages' => $this->percentages()->count(),
             'total_discount_amount' => $baseValue > 0 ? $this->getTotalDiscount($baseValue) : 0,
             'total_charges_amount' => $baseValue > 0 ? $this->getTotalCharges($baseValue) : 0,
-            'net_adjustment' => $baseValue > 0 ? $this->applyAll($baseValue) - $baseValue : 0,
+            'net_adjustment' => $baseValue > 0 ? (float) $this->applyAll($baseValue)->getValue() - $baseValue : 0,
         ];
     }
 

@@ -4,123 +4,98 @@ declare(strict_types=1);
 
 namespace MasyukAI\Cart\Traits;
 
-use MasyukAI\Cart\Contracts\PriceTransformerInterface;
+use Akaunting\Money\Money;
 use MasyukAI\Cart\Models\CartItem;
-use MasyukAI\Cart\Support\CartMoney;
 
 trait CalculatesTotals
 {
     /**
-     * Get the price transformer instance
+     * Get cart subtotal with conditions applied
      */
-    protected function getPriceTransformer(): PriceTransformerInterface
+    protected function getSubTotal(): Money
     {
-        if (function_exists('app') && app()->bound(PriceTransformerInterface::class)) {
-            return app(PriceTransformerInterface::class);
-        }
+        $totalAmount = $this->getItems()->sum(fn (CartItem $item) => $item->getRawSubtotal());
+        $currency = config('cart.money.default_currency', 'USD');
 
-        // Fallback to a default transformer if not in Laravel context
-        return new \MasyukAI\Cart\PriceTransformers\DecimalPriceTransformer();
-    }
-
-    /**
-     * Get cart subtotal with item-level conditions applied
-     */
-    protected function getSubTotalMoney(): CartMoney
-    {
-        $totalAmount = $this->getItems()->sum(fn (CartItem $item) => $item->getRawPriceSum());
-        $transformer = $this->getPriceTransformer();
-        $displayAmount = $transformer->fromStorage($totalAmount);
-
-        return CartMoney::fromAmount($displayAmount);
+        return Money::{$currency}($totalAmount);
     }
 
     /**
      * Get cart subtotal without any conditions
      */
-    protected function getSubTotalWithoutConditionsMoney(): CartMoney
+    protected function getSubTotalWithoutConditions(): Money
     {
-        $totalAmount = $this->getItems()->sum(fn (CartItem $item) => $item->getRawPriceSumWithoutConditions());
-        $transformer = $this->getPriceTransformer();
-        $displayAmount = $transformer->fromStorage($totalAmount);
+        $totalAmount = $this->getItems()->sum(fn (CartItem $item) => $item->getRawSubtotalWithoutConditions());
+        $currency = config('cart.money.default_currency', 'USD');
 
-        return CartMoney::fromAmount($displayAmount);
+        return Money::{$currency}($totalAmount);
     }
 
     /**
      * Get cart total with all conditions applied
      */
-    protected function getTotalMoney(): CartMoney
+    protected function getTotal(): Money
     {
-        $subtotal = $this->getSubTotalMoney();
-        $subtotalAmount = $subtotal->getAmount();
-        $totalAmount = $this->applyCartConditions($subtotalAmount);
+        // Start with subtotal (items with their conditions)
+        $subtotalAmount = $this->getItems()->sum(fn (CartItem $item) => $item->getRawSubtotal());
 
-        return CartMoney::fromAmount($totalAmount);
+        // Apply cart-level conditions
+        $cartConditions = $this->getConditions() ?? collect();
+        $finalAmount = $cartConditions->reduce(function ($amount, $condition) {
+            return $condition->apply($amount);
+        }, $subtotalAmount);
+
+        $currency = config('cart.money.default_currency', 'USD');
+
+        return Money::{$currency}($finalAmount);
     }
 
     /**
      * Get cart subtotal (with item-level conditions applied) - returns Money object for chaining
      */
-    public function subtotal(): CartMoney
+    public function subtotal(): Money
     {
-        return $this->getSubTotalMoney();
+        return $this->getSubTotal();
     }
 
     /**
      * Get cart subtotal without any conditions (raw base prices) - returns Money object for chaining
      */
-    public function subtotalWithoutConditions(): CartMoney
+    public function subtotalWithoutConditions(): Money
     {
-        return $this->getSubTotalWithoutConditionsMoney();
+        return $this->getSubTotalWithoutConditions();
     }
 
     /**
      * Get cart total with all conditions applied (item + cart-level) - returns Money object for chaining
      */
-    public function total(): CartMoney
+    public function total(): Money
     {
-        return $this->getTotalMoney();
+        return $this->getTotal();
     }
 
     /**
      * Get cart total without any conditions (raw base prices) - returns Money object for chaining
      */
-    public function totalWithoutConditions(): CartMoney
+    public function totalWithoutConditions(): Money
     {
-        return $this->getSubTotalWithoutConditionsMoney();
+        return $this->getSubTotalWithoutConditions();
     }
 
     /**
      * Get savings (subtotal without conditions - total) - returns Money object for chaining
      */
-    public function savings(): CartMoney
+    public function savings(): Money
     {
-        $withoutConditions = $this->getSubTotalWithoutConditionsMoney();
-        $withConditions = $this->getTotalMoney();
+        $withoutConditions = $this->getSubTotalWithoutConditions();
+        $withConditions = $this->getTotal();
 
         $savings = $withoutConditions->subtract($withConditions);
 
+        $currency = config('cart.money.default_currency', 'USD');
+
         // Return zero if savings would be negative
-        return $savings->isNegative() || $savings->isZero() ? CartMoney::fromAmount(0) : $savings;
-    }
-
-    /**
-     * Formatted methods for backward compatibility
-     */
-    public function subtotalFormatted(): string
-    {
-        return $this->subtotal()->format();
-    }
-
-    public function totalFormatted(): string
-    {
-        return $this->total()->format();
-    }
-
-    public function savingsFormatted(): string
-    {
-        return $this->savings()->format();
+        return $savings->isNegative() || $savings->isZero() ? Money::{$currency}(0) : $savings;
     }
 
     /**
@@ -144,7 +119,7 @@ trait CalculatesTotals
      */
     public function getRawTotal(): float
     {
-        return $this->getTotalMoney()->getAmount();
+        return $this->getTotal()->getAmount();
     }
 
     /**
@@ -152,7 +127,7 @@ trait CalculatesTotals
      */
     public function getRawSubtotal(): float
     {
-        return $this->getSubTotalMoney()->getAmount();
+        return $this->getSubTotal()->getAmount();
     }
 
     /**
@@ -160,7 +135,7 @@ trait CalculatesTotals
      */
     public function getRawSubTotalWithoutConditions(): float
     {
-        return $this->getSubTotalWithoutConditionsMoney()->getAmount();
+        return $this->getSubTotalWithoutConditions()->getAmount();
     }
 
     /**

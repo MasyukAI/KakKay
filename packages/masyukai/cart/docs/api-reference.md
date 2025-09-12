@@ -148,7 +148,7 @@ class CartItem
     public static function make(string $id, string $name, float $price, int $quantity, array $attributes = []): self
     
     // Price Calculations
-    public function getPriceSum(): float
+    public function getSubtotal(): float
     public function getFormattedPrice(): string
     public function getFormattedPriceSum(): string
     
@@ -1337,11 +1337,11 @@ public readonly string|object|null $associatedModel;
 
 ### Methods
 
-#### `getPriceSum(): float`
+#### `getSubtotal(): float`
 Get total price (price × quantity).
 
 ```php
-$total = $item->getPriceSum();
+$total = $item->getSubtotal();
 ```
 
 #### `getPrice(): float`
@@ -1351,11 +1351,11 @@ Get single unit price with conditions applied.
 $price = $item->getPrice();
 ```
 
-#### `getPriceSum(): float`
+#### `getSubtotal(): float`
 Get total price with conditions applied.
 
 ```php
-$total = $item->getPriceSum();
+$total = $item->getSubtotal();
 ```
 
 #### `getDiscountAmount(): float`
@@ -1567,7 +1567,7 @@ Extends Laravel's Collection with cart-specific methods.
 Calculate sum with optional callback.
 
 ```php
-$total = $items->sum(fn($item) => $item->getPriceSum());
+$total = $items->sum(fn($item) => $item->getSubtotal());
 ```
 
 #### `totalQuantity(): int`
@@ -1783,7 +1783,7 @@ class CheckoutService
                 'price' => $item->price,
                 'quantity' => $item->quantity,
                 'attributes' => $item->attributes->toArray(),
-                'total' => $item->getPriceSum(),
+                'total' => $item->getSubtotal(),
             ]);
         }
         
@@ -1964,14 +1964,14 @@ class SubscriptionCartManager
     {
         return Cart::getItems()
             ->reject(fn($item) => $item->getAttribute('one_time'))
-            ->sum(fn($item) => $item->getPriceSum());
+            ->sum(fn($item) => $item->getSubtotal());
     }
     
     public function calculateOneTimeTotal(): float
     {
         return Cart::getItems()
             ->filter(fn($item) => $item->getAttribute('one_time'))
-            ->sum(fn($item) => $item->getPriceSum());
+            ->sum(fn($item) => $item->getSubtotal());
     }
     
     protected function clearSubscriptionItems(): void

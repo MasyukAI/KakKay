@@ -175,12 +175,12 @@ echo "Total: $" . Cart::total() . "\n";         // Total: $1,362.34 (all conditi
 
 // 4. Access rich data
 foreach (Cart::content() as $item) {
-    echo "{$item->name} x{$item->quantity} = ${$item->getPriceSum()}\n";
+    echo "{$item->name} x{$item->quantity} = ${$item->getSubtotal()}\n";
     // iPhone 15 Pro x1 = $999.99 (with item-level conditions applied)
     // AirPods Pro (2nd gen) x2 = $499.98 (with item-level conditions applied)
     
     // For raw prices without conditions:
-    echo "Raw price: ${$item->getPriceSumWithoutConditions()}\n";
+    echo "Raw price: ${$item->getSubtotalWithoutConditions()}\n";
 }
 ```
 
@@ -202,9 +202,9 @@ Cart::savings()                     // "$387.63" - total discount amount
 // Item-level formatted methods
 $item->getPrice()                   // "$899.99" - single price with conditions
 $item->getPriceWithoutConditions()  // "$999.99" - single price without conditions
-$item->getPriceSum()                // "$1,799.98" - line total (price × qty) with conditions
-$item->getPriceSumWithoutConditions() // "$1,999.98" - line total without conditions
-$item->subtotal()                   // "$1,799.98" - alias for getPriceSum()
+$item->getSubtotal()                // "$1,799.98" - line total (price × qty) with conditions
+$item->getSubtotalWithoutConditions() // "$1,999.98" - line total without conditions
+$item->subtotal()                   // "$1,799.98" - alias for getSubtotal()
 $item->discountAmount()             // "$200.00" - item-level discount amount
 ```
 
@@ -221,8 +221,8 @@ Cart::getRawSavings()               // 387.63 - total discount amount
 // Item-level raw methods
 $item->getRawPrice()                // 899.99 - single price with conditions
 $item->getRawPriceWithoutConditions() // 999.99 - single price without conditions
-$item->getRawPriceSum()             // 1799.98 - line total with conditions
-$item->getRawPriceSumWithoutConditions() // 1999.98 - line total without conditions
+$item->getRawSubtotal()             // 1799.98 - line total with conditions
+$item->getRawSubtotalWithoutConditions() // 1999.98 - line total without conditions
 $item->getRawDiscountAmount()       // 200.00 - item-level discount amount
 ```
 

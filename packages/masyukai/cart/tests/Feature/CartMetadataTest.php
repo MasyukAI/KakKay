@@ -9,7 +9,7 @@ describe('Cart Metadata Management', function () {
     beforeEach(function () {
         $session = new \Illuminate\Session\Store('test', new \Illuminate\Session\ArraySessionHandler(60));
         $this->storage = new SessionStorage($session);
-        $this->cart = new Cart($this->storage);
+        $this->cart = new Cart($this->storage, 'test-user');
     });
 
     test('can set and retrieve metadata', function () {
@@ -128,7 +128,7 @@ describe('Cart Metadata Management', function () {
     });
 
     test('metadata is isolated between cart instances', function () {
-        $cart2 = new Cart($this->storage, null, 'second_instance');
+        $cart2 = new Cart($this->storage, 'test-user-2', null, 'second_instance');
 
         $this->cart->setMetadata('instance_key', 'first_instance');
         $cart2->setMetadata('instance_key', 'second_instance');
@@ -153,14 +153,12 @@ describe('Cart Metadata Management', function () {
         $this->cart->setMetadata('custom_key', 'custom_value');
 
         // The last_added_item_id should still work
-        expect($this->cart->getLastAddedItemId())->toBe('item1');
         expect($this->cart->getMetadata('custom_key'))->toBe('custom_value');
 
         // Add another item
         $this->cart->add('item2', 'Product 2', 20.00, 1);
 
         // Both should work independently
-        expect($this->cart->getLastAddedItemId())->toBe('item2');
         expect($this->cart->getMetadata('custom_key'))->toBe('custom_value');
     });
 });

@@ -20,7 +20,7 @@ trait ManagesConditions
         $conditions = $this->getConditions();
         $conditions->put($condition->getName(), $condition);
         $conditionsArray = $conditions->toArray();
-        $this->storage->putConditions($this->getIdentifier(), $this->getStorageInstanceName(), $conditionsArray);
+        $this->storage->putConditions($this->getIdentifier(), $this->instance(), $conditionsArray);
 
         // Dispatch condition added event
         if ($this->eventsEnabled && $this->events) {
@@ -51,7 +51,7 @@ trait ManagesConditions
      */
     public function getConditions(): CartConditionCollection
     {
-        $conditions = $this->storage->getConditions($this->getIdentifier(), $this->getStorageInstanceName());
+        $conditions = $this->storage->getConditions($this->getIdentifier(), $this->instance());
 
         if (! $conditions || ! is_array($conditions)) {
             return new CartConditionCollection;
@@ -93,7 +93,7 @@ trait ManagesConditions
 
         $conditions->forget($name);
         $conditionsArray = $conditions->toArray();
-        $this->storage->putConditions($this->getIdentifier(), $this->getStorageInstanceName(), $conditionsArray);
+        $this->storage->putConditions($this->getIdentifier(), $this->instance(), $conditionsArray);
 
         // Dispatch condition removed event
         if ($this->eventsEnabled && $this->events && $removedCondition) {
@@ -108,7 +108,7 @@ trait ManagesConditions
      */
     public function clearConditions(): bool
     {
-        $this->storage->putConditions($this->getIdentifier(), $this->getStorageInstanceName(), []);
+        $this->storage->putConditions($this->getIdentifier(), $this->instance(), []);
 
         return true;
     }
@@ -138,7 +138,7 @@ trait ManagesConditions
         }
 
         $conditionsArray = $conditions->toArray();
-        $this->storage->putConditions($this->getIdentifier(), $this->getStorageInstanceName(), $conditionsArray);
+        $this->storage->putConditions($this->getIdentifier(), $this->instance(), $conditionsArray);
 
         return true;
     }
@@ -365,16 +365,5 @@ trait ManagesConditions
         }
 
         return null;
-    }
-
-    /**
-     * Apply cart conditions to subtotal
-     */
-    private function applyCartConditions(float $subtotal): float
-    {
-        $conditions = $this->getConditions()
-            ->filter(fn (CartCondition $condition) => in_array($condition->getTarget(), ['total', 'subtotal']));
-
-        return $conditions->applyAll($subtotal);
     }
 }

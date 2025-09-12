@@ -574,7 +574,8 @@ it('shouldApply returns true for static and evaluates rules for dynamic', functi
             {
                 return false;
             }
-        }
+        },
+        identifier: 'test-user'
     );
     $item = new \MasyukAI\Cart\Models\CartItem(
         id: 'test',

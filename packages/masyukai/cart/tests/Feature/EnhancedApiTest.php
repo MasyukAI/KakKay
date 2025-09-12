@@ -10,7 +10,13 @@ describe('Enhanced Cart API', function () {
     beforeEach(function () {
         $session = new \Illuminate\Session\Store('test', new \Illuminate\Session\ArraySessionHandler(60));
         $this->storage = new SessionStorage($session);
-        $this->cart = new Cart($this->storage);
+        $this->cart = new Cart(
+            storage: $this->storage,
+            identifier: 'enhanced_api_test',
+            events: null,
+            instanceName: 'enhanced_api_test',
+            eventsEnabled: true
+        );
     });
 
     test('can use intuitive method aliases', function () {
@@ -81,16 +87,16 @@ describe('Enhanced Cart API', function () {
     test('can use shopping-cart style item methods', function () {
         $item = $this->cart->add('item1', 'Product 1', 10.00, 2);
 
-        // Test withQuantity alias
-        $newItem = $item->withQuantity(5);
+        // Test setQuantity
+        $newItem = $item->setQuantity(5);
         expect($newItem->quantity)->toBe(5)
             ->and($item->quantity)->toBe(2); // Original unchanged
 
-        // Test getRawPriceSum method
-        expect($item->getRawPriceSum())->toBe(20.00);
+        // Test getRawSubtotal method
+        expect($item->getRawSubtotal())->toBe(20.00);
 
         // Test discountAmount alias
-        expect($item->discountAmount()->getAmount())->toBe(0.00);
+        expect($item->discountAmount()->getAmount())->toBe(0);
     });
 
     test('enhanced collection methods work', function () {

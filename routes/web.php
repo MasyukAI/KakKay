@@ -2,6 +2,7 @@
 
 use App\Livewire\Home;
 use Livewire\Volt\Volt;
+use Akaunting\Money\Money;
 use MasyukAI\Cart\Facades\Cart;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PageController;
@@ -48,8 +49,5 @@ Volt::route('shipping-policy', 'shipping-policy');
 Volt::route('terms-of-service', 'terms-of-service');
 
 Route::get('saiffil', function () {
-    Cart::add(id: '293ad', name: 'Saiffil', price: 100000, quantity: 1, attributes: [
-        'image' => 'https://saiffil.com/wp-content/uploads/2023/10/cropped-favicon-32x32.png',
-        'url' => 'https://saiffil.com',
-    ]);
+    echo Money::USD(7777)->getAmount();
 })->name('saiffil');

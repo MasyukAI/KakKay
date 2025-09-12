@@ -12,7 +12,13 @@ use MasyukAI\Cart\Storage\SessionStorage;
 beforeEach(function () {
     $sessionStore = new Store('testing', new ArraySessionHandler(120));
     $storage = new SessionStorage($sessionStore);
-    $this->cart = new Cart($storage, null, 'test-instance', false);
+    $this->cart = new Cart(
+        storage: $storage,
+        identifier: 'test-instance',
+        events: null,
+        instanceName: 'test-instance',
+        eventsEnabled: false
+    );
 
     $this->item = new CartItem(
         id: 'test-item',

@@ -5,18 +5,16 @@ declare(strict_types=1);
 use MasyukAI\Cart\Cart;
 use MasyukAI\Cart\Conditions\CartCondition;
 use MasyukAI\Cart\Storage\SessionStorage;
-use MasyukAI\Cart\Support\CartMoney;
 
 describe('Comprehensive Serialization and Persistence Coverage', function () {
     beforeEach(function () {
-        CartMoney::resetFormatting();
-
         $sessionStore = new \Illuminate\Session\Store('testing', new \Illuminate\Session\ArraySessionHandler(120));
         $sessionStorage = new SessionStorage($sessionStore);
 
         $this->cart = new Cart(
             storage: $sessionStorage,
             events: new \Illuminate\Events\Dispatcher,
+            identifier: 'test_serialization',
             instanceName: 'test_serialization',
             eventsEnabled: true
         );
@@ -78,7 +76,7 @@ describe('Comprehensive Serialization and Persistence Coverage', function () {
     });
 
     afterEach(function () {
-        CartMoney::resetFormatting();
+        // CartMoney::resetFormatting(); (removed)
     });
 
     describe('CartItem Serialization', function () {
@@ -88,7 +86,7 @@ describe('Comprehensive Serialization and Persistence Coverage', function () {
 
             // Verify essential fields are present
             expect($array)->toHaveKeys([
-                'id', 'name', 'price', 'quantity', 'subtotal',
+                'id', 'name', 'price', 'quantity',
                 'attributes', 'conditions', 'associated_model',
             ]);
 
@@ -99,6 +97,7 @@ describe('Comprehensive Serialization and Persistence Coverage', function () {
             expect($array['quantity'])->toBe(2);
 
             // Verify calculated values are included
+            expect(array_key_exists('subtotal', $array))->toBeTrue();
             expect(is_numeric($array['subtotal']) ? $array['subtotal'] : (is_object($array['subtotal']) && method_exists($array['subtotal'], 'getAmount') ? $array['subtotal']->getAmount() : $array['subtotal']))->toBeNumeric(); // Should be calculated subtotal
 
             // Verify nested data is serialized
@@ -150,6 +149,7 @@ describe('Comprehensive Serialization and Persistence Coverage', function () {
             expect($array['price'])->toBe(100.00); // Raw price
 
             // But subtotal should be calculated (for display purposes)
+            expect(array_key_exists('subtotal', $array))->toBeTrue();
             expect($array['subtotal'])->not->toBe(200.00); // Should include conditions
         });
     });
@@ -227,7 +227,7 @@ describe('Comprehensive Serialization and Persistence Coverage', function () {
             // Verify each item has correct structure
             foreach ($content['items'] as $item) {
                 expect($item)->toHaveKeys([
-                    'id', 'name', 'price', 'quantity', 'subtotal',
+                    'id', 'name', 'price', 'quantity',
                     'attributes', 'conditions', 'associated_model',
                 ]);
             }
@@ -260,7 +260,7 @@ describe('Comprehensive Serialization and Persistence Coverage', function () {
             // Get original calculations
             $originalSubtotal = $this->cart->getRawSubtotal();
             $originalTotal = $this->cart->getRawTotal();
-            $originalItemTotal = $this->cart->get('item-1')->getRawPriceSum();
+            $originalItemTotal = $this->cart->get('item-1')->getRawSubtotal();
 
             // Serialize cart content
             $serializedContent = $this->cart->content();
@@ -294,7 +294,7 @@ describe('Comprehensive Serialization and Persistence Coverage', function () {
             // Verify calculations are identical (no double-application)
             expect($this->cart->getRawSubtotal())->toBe($originalSubtotal);
             expect($this->cart->getRawTotal())->toBe($originalTotal);
-            expect($this->cart->get('item-1')->getRawPriceSum())->toBe($originalItemTotal);
+            expect($this->cart->get('item-1')->getRawSubtotal())->toBe($originalItemTotal);
         });
 
         it('maintains data integrity through multiple serialization cycles', function () {
@@ -338,11 +338,11 @@ describe('Comprehensive Serialization and Persistence Coverage', function () {
             $this->cart->add('format-item', 'Format Test Item', 19.99, 1);
 
             // Test without formatting
-            CartMoney::disableFormatting();
+            // CartMoney::disableFormatting(); (removed)
             $contentUnformatted = $this->cart->content();
 
             // Test with formatting
-            CartMoney::enableFormatting();
+            // CartMoney::enableFormatting(); (removed)
             $contentFormatted = $this->cart->content();
 
             // The content() method returns raw values for persistence
@@ -360,7 +360,7 @@ describe('Comprehensive Serialization and Persistence Coverage', function () {
         });
 
         it('stores raw values in item arrays regardless of formatting', function () {
-            CartMoney::enableFormatting();
+            // CartMoney::enableFormatting(); (removed)
 
             $item = $this->cart->get('item-1');
             $array = $item->toArray();
@@ -370,6 +370,7 @@ describe('Comprehensive Serialization and Persistence Coverage', function () {
             expect($array['price'])->toBeFloat();
 
             // But calculated values like subtotal may be formatted
+            expect(array_key_exists('subtotal', $array))->toBeTrue();
             expect((string) $array['subtotal'])->toBeString(); // When formatting is enabled
         });
     });

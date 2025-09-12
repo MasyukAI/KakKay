@@ -13,6 +13,7 @@ describe('Comprehensive Immutability Guarantees', function () {
         $sessionStorage = new SessionStorage($sessionStore);
 
         $this->cart = new Cart(
+            identifier: 'test_immutability',
             storage: $sessionStorage,
             events: new \Illuminate\Events\Dispatcher,
             instanceName: 'test_immutability',
@@ -129,9 +130,9 @@ describe('Comprehensive Immutability Guarantees', function () {
             expect($originalItem)->not->toBe($modifiedItem);
         });
 
-        it('ensures withQuantity() creates new instance', function () {
+        it('ensures setQuantity() creates new instance', function () {
             $originalItem = $this->originalItem;
-            $newItem = $originalItem->withQuantity(10);
+            $newItem = $originalItem->setQuantity(10);
 
             expect($originalItem->quantity)->toBe(2);
             expect($newItem->quantity)->toBe(10);

@@ -94,7 +94,7 @@ it('can apply all conditions to a value', function () {
     // Apply 10% discount: $100 * 0.9 = $90
     // Apply 8% tax: $90 * 1.08 = $97.20
     $result = $collection->applyAll(100.0);
-    expect($result)->toBe(97.2);
+    expect($result->getAmount())->toBe(97.2);
 });
 
 it('can create collection from array', function () {

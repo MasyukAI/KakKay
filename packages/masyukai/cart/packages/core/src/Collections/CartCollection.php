@@ -56,7 +56,7 @@ class CartCollection extends Collection
      */
     protected function getSubTotal(): float
     {
-        return $this->sum(fn ($item) => $item->getRawPriceSum());
+        return $this->sum(fn ($item) => $item->getRawSubtotal());
     }
 
     /**
@@ -66,7 +66,7 @@ class CartCollection extends Collection
      */
     protected function getSubTotalWithoutConditions(): float
     {
-        return $this->sum(fn ($item) => $item->getRawPriceSumWithoutConditions());
+        return $this->sum(fn ($item) => $item->getRawSubtotalWithoutConditions());
     }
 
     /**
@@ -76,7 +76,7 @@ class CartCollection extends Collection
     {
         // For collection, we don't have formatting config, so just return the raw value
         // Individual Cart instances would handle formatting
-        return $this->getSubTotal();
+        return $this->getSubtotal();
     }
 
     /**
@@ -276,7 +276,7 @@ class CartCollection extends Collection
         return $this->sum(function (CartItem $item) {
             $discount = $item->getDiscountAmount();
 
-            return $discount instanceof \MasyukAI\Cart\Support\CartMoney ? $discount->getAmount() : (float) $discount;
+            return $discount instanceof \Akaunting\Money\Money ? $discount->getAmount() : (float) $discount;
         });
     }
 

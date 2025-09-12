@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 use MasyukAI\Cart\Cart;
-use MasyukAI\Cart\Storage\SessionStorage;
-use MasyukAI\Cart\Storage\DatabaseStorage;
-use Masyukai\Cart\Models\CartItem;
 use MasyukAI\Cart\Conditions\CartCondition;
+use Masyukai\Cart\Models\CartItem;
+use MasyukAI\Cart\Storage\DatabaseStorage;
+use MasyukAI\Cart\Storage\SessionStorage;
 
 beforeEach(function () {
     // Ensure events dispatcher is available
@@ -37,6 +37,7 @@ beforeEach(function () {
     // Initialize cart with session storage for most tests
     $this->cart = new Cart(
         storage: $this->sessionStorage,
+        identifier: 'test-user',
         events: new \Illuminate\Events\Dispatcher,
         instanceName: 'bulletproof_test',
         eventsEnabled: true

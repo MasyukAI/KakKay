@@ -15,6 +15,7 @@ it('validates ConditionAdded event works correctly', function () {
 
     $cart = new Cart(
         storage: new SessionStorage($sessionStore),
+        identifier: 'test-user',
         events: $events,
         instanceName: 'condition_test',
         eventsEnabled: true
@@ -55,6 +56,7 @@ it('validates ConditionRemoved event works correctly', function () {
 
     $cart = new Cart(
         storage: new SessionStorage($sessionStore),
+        identifier: 'test-user',
         events: $events,
         instanceName: 'condition_test',
         eventsEnabled: true
@@ -95,6 +97,7 @@ it('validates item-level condition events work correctly', function () {
 
     $cart = new Cart(
         storage: new SessionStorage($sessionStore),
+        identifier: 'test-user',
         events: $events,
         instanceName: 'condition_test',
         eventsEnabled: true
@@ -144,6 +147,7 @@ it('validates events are not dispatched when disabled', function () {
 
     $cart = new Cart(
         storage: new SessionStorage($sessionStore),
+        identifier: 'test-user',
         events: $events,
         instanceName: 'no_events_test',
         eventsEnabled: false  // Events disabled
@@ -170,6 +174,7 @@ it('validates condition events include comprehensive data', function () {
 
     $cart = new Cart(
         storage: new SessionStorage($sessionStore),
+        identifier: 'test-user',
         events: $events,
         instanceName: 'data_test',
         eventsEnabled: true

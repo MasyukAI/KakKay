@@ -60,7 +60,7 @@ final class ItemRemoved
             'quantity' => $this->item->quantity,
             'price' => $this->item->price,
             'identifier' => $this->cart->getIdentifier(),
-            'instance_name' => $this->cart->getCurrentInstance(),
+            'instance_name' => $this->cart->instance(),
             'timestamp' => now()->toISOString(),
         ];
     }

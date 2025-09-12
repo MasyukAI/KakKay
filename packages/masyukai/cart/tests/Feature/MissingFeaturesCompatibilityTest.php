@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use MasyukAI\Cart\Cart;
 use MasyukAI\Cart\CartManager;
 use MasyukAI\Cart\Conditions\CartCondition;
 use MasyukAI\Cart\Storage\SessionStorage;
@@ -32,24 +31,6 @@ describe('Missing Features Compatibility Tests', function () {
         $count = $this->cart->count();
 
         expect($count)->toBe(5); // 2 + 3 items
-    });
-
-    it('can use associate() method after add()', function () {
-        $item = $this->cart->add('1', 'Product 1', 10.00, 1);
-
-        $cartAfterAssociate = $this->cart->associate('stdClass'); // Use built-in class
-
-        expect($cartAfterAssociate)->toBeInstanceOf(Cart::class);
-
-        $items = $this->cart->getItems();
-        $associatedItem = $items->get('1');
-
-        expect($associatedItem->associatedModel)->toBe('stdClass');
-    });
-
-    it('throws exception when using associate() without adding item first', function () {
-        expect(fn () => $this->cart->associate('stdClass'))
-            ->toThrow(InvalidArgumentException::class, 'No item has been added to associate with. Call add() first.');
     });
 
     describe('Condition Management', function () {
@@ -120,22 +101,7 @@ describe('Missing Features Compatibility Tests', function () {
         });
     });
 
-    describe('Metadata Storage', function () {
-
-        it('can store and retrieve metadata', function () {
-            $this->cart->add('1', 'Product 1', 10.00, 1);
-            $cart2 = $this->cart->associate('stdClass'); // Use built-in class
-
-            // The last added item should be stored as metadata
-            $lastAddedItemId = $this->storage->getMetadata(
-                $this->cart->getIdentifier(),
-                $this->cart->getStorageInstanceName(),
-                'last_added_item_id'
-            );
-
-            expect($lastAddedItemId)->toBe('1');
-        });
-    });
+    describe('Metadata Storage', function () {});
 
     describe('Enhanced Calculation Methods', function () {
 
@@ -166,17 +132,6 @@ describe('Missing Features Compatibility Tests', function () {
     });
 
     describe('Comprehensive Feature Test', function () {
-
-        it('can chain multiple operations like original package', function () {
-            $this->cart->add('1', 'Product 1', 10.00, 2);
-            $cart = $this->cart->associate('stdClass'); // Use built-in class
-
-            expect($cart)->toBeInstanceOf(Cart::class);
-
-            $items = $cart->getItems();
-            expect($items)->toHaveCount(1);
-            expect($items->get('1')->associatedModel)->toBe('stdClass');
-        });
 
         it('maintains correct state across different instances', function () {
             $defaultCart = $this->cartManager->getCartInstance('default');

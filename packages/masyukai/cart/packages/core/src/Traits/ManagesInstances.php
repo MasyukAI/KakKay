@@ -32,10 +32,10 @@ trait ManagesInstances
     {
         return new static(
             $this->storage,
+            $this->identifier,
             $this->events,
             $name,
-            $this->eventsEnabled,
-            $this->config
+            $this->eventsEnabled
         );
     }
 
@@ -44,29 +44,12 @@ trait ManagesInstances
      */
     public function clear(): bool
     {
-        $this->storage->forget($this->getIdentifier(), $this->getStorageInstanceName());
+        $this->storage->forget($this->getIdentifier(), $this->instance());
 
         if ($this->eventsEnabled && $this->events) {
             $this->events->dispatch(new CartCleared($this));
         }
 
         return true;
-    }
-
-    /**
-     * Get the current instance name
-     */
-    public function getCurrentInstance(): string
-    {
-        return $this->instanceName;
-    }
-
-    /**
-     * Get the instance name to use for storage operations
-     */
-    public function getStorageInstanceName(): string
-    {
-        // Instance name is ALWAYS what was set via setInstance(), never modified
-        return $this->instanceName;
     }
 }

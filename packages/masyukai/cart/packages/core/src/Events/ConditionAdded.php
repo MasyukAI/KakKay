@@ -66,7 +66,7 @@ final class ConditionAdded
     public function getConditionImpact(): float
     {
         $baseValue = $this->target
-            ? $this->cart->get($this->target)?->getRawPriceSum() ?? 0
+            ? $this->cart->get($this->target)?->getRawSubtotal() ?? 0
             : $this->cart->getRawSubtotal();
 
         return $this->condition->getCalculatedValue($baseValue);
@@ -97,7 +97,7 @@ final class ConditionAdded
                 'target' => $this->condition->getTarget(),
             ],
             'cart' => [
-                'instance' => $this->cart->getStorageInstanceName(),
+                'instance' => $this->cart->instance(),
                 'items_count' => $this->cart->countItems(),
                 'total_quantity' => $this->cart->getTotalQuantity(),
                 'subtotal' => $this->cart->getRawSubtotal(),

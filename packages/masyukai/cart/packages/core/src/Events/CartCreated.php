@@ -49,7 +49,7 @@ final class CartCreated
     {
         return [
             'identifier' => $this->cart->getIdentifier(),
-            'instance_name' => $this->cart->getCurrentInstance(),
+            'instance_name' => $this->cart->instance(),
             'timestamp' => now()->toISOString(),
         ];
     }

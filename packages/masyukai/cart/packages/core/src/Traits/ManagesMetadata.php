@@ -11,7 +11,7 @@ trait ManagesMetadata
      */
     public function setMetadata(string $key, mixed $value): static
     {
-        $this->storage->putMetadata($this->getIdentifier(), $this->getStorageInstanceName(), $key, $value);
+        $this->storage->putMetadata($this->getIdentifier(), $this->instance(), $key, $value);
 
         return $this;
     }
@@ -21,7 +21,7 @@ trait ManagesMetadata
      */
     public function getMetadata(string $key, mixed $default = null): mixed
     {
-        return $this->storage->getMetadata($this->getIdentifier(), $this->getStorageInstanceName(), $key) ?? $default;
+        return $this->storage->getMetadata($this->getIdentifier(), $this->instance(), $key) ?? $default;
     }
 
     /**
@@ -29,7 +29,7 @@ trait ManagesMetadata
      */
     public function hasMetadata(string $key): bool
     {
-        return $this->storage->getMetadata($this->getIdentifier(), $this->getStorageInstanceName(), $key) !== null;
+        return $this->storage->getMetadata($this->getIdentifier(), $this->instance(), $key) !== null;
     }
 
     /**
@@ -37,7 +37,7 @@ trait ManagesMetadata
      */
     public function removeMetadata(string $key): static
     {
-        $this->storage->putMetadata($this->getIdentifier(), $this->getStorageInstanceName(), $key, null);
+        $this->storage->putMetadata($this->getIdentifier(), $this->instance(), $key, null);
 
         return $this;
     }

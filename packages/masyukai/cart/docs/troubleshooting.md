@@ -419,7 +419,7 @@ public function toArray($request)
                 'name' => $item->name,
                 'price' => number_format($item->price, 2),
                 'quantity' => $item->quantity,
-                'total' => number_format($item->getPriceSum(), 2),
+                'total' => number_format($item->getSubtotal(), 2),
             ];
         }),
         'totals' => [
@@ -485,7 +485,7 @@ class CartDiagnostic extends Command
                 $item->name,
                 $item->price,
                 $item->quantity,
-                $item->getPriceSum()
+                $item->getSubtotal()
             ));
         }
         

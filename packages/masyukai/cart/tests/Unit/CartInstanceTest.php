@@ -24,10 +24,11 @@ it('validates instance isolation and setInstance behavior', function () {
 
     // Create a cart with default instance
     $defaultCart = new Cart(
-        storage: $this->sessionStorage,
-        events: app('events'),
-        instanceName: 'default',
-        eventsEnabled: true
+        $this->sessionStorage,
+        'test_session_id',
+        app('events'),
+        'default',
+        true
     );
 
     // Add item to default instance
@@ -37,10 +38,11 @@ it('validates instance isolation and setInstance behavior', function () {
 
     // Create cart with different instance but SAME identifier (test_session_id)
     $wishlistCart = new Cart(
-        storage: $this->sessionStorage,
-        events: app('events'),
-        instanceName: 'wishlist',  // Different instance name
-        eventsEnabled: true
+        $this->sessionStorage,
+        'test_session_id',
+        app('events'),
+        'wishlist',
+        true
     );
 
     // Verify the cart has the correct instance name
@@ -68,10 +70,11 @@ it('validates setInstance method behavior', function () {
     // and ISOLATED data (different instances should not share data)
 
     $cart1 = new Cart(
-        storage: $this->sessionStorage,
-        events: app('events'),
-        instanceName: 'instance_a',
-        eventsEnabled: true
+        $this->sessionStorage,
+        'test_session_id',
+        app('events'),
+        'instance_a',
+        true
     );
 
     // Add item to first cart
@@ -80,7 +83,7 @@ it('validates setInstance method behavior', function () {
     expect($cart1->instance())->toBe('instance_a');
 
     // Use setInstance to get a new cart
-    $cart2 = $cart1->setInstance('instance_b');
+    $cart2 = $cart1->setInstance('instance_b', app('events'));
 
     // The returned cart should have the new instance name
     expect($cart2->instance())->toBe('instance_b');

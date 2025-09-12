@@ -11,11 +11,11 @@ use MasyukAI\Cart\Storage\SessionStorage;
 beforeEach(function () {
     $sessionStore = new Store('testing', new ArraySessionHandler(120));
     $storage = new SessionStorage($sessionStore);
-    $this->cart = new Cart($storage, null, 'test-instance', false);
+    $this->cart = new Cart($storage, 'test-user', null, 'test-instance', false);
 
     $sessionStore2 = new Store('testing', new ArraySessionHandler(120));
     $storage2 = new SessionStorage($sessionStore2);
-    $this->sourceCart = new Cart($storage2, null, 'source-instance', false);
+    $this->sourceCart = new Cart($storage2, 'source-user', null, 'source-instance', false);
 });
 
 it('can be instantiated with target cart, source cart and strategy', function () {

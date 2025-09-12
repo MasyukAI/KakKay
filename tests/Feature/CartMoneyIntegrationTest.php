@@ -104,11 +104,11 @@ it('demonstrates money integration with cart package', function () {
     $item1 = $cart->get('product-1');
     $item2 = $cart->get('product-2');
 
-    expect($item1->money()->getAmount())->toBe(19.99);
-    expect($item1->sumMoney()->getAmount())->toBe(39.98); // 19.99 * 2
+    expect($item1->money()->getAmount())->toBe(1999.0); // 19.99 stored as 1999 cents
+    expect($item1->sumMoney()->getAmount())->toBe(3998.0); // 39.98 stored as 3998 cents
 
-    expect($item2->money()->getAmount())->toBe(299.99);
-    expect($item2->sumMoney()->getAmount())->toBe(299.99); // 299.99 * 1
+    expect($item2->money()->getAmount())->toBe(29999.0); // 299.99 stored as 29999 cents
+    expect($item2->sumMoney()->getAmount())->toBe(29999.0); // 299.99 stored as 29999 cents
 
     // Test cart totals with Money precision
     expect($cart->count())->toBe(3); // Total quantity: 2 + 1 = 3
@@ -124,12 +124,12 @@ it('shows money precision advantages over float arithmetic', function () {
     $item = $cart->get('item-1');
 
     // Money maintains precision: 0.1 * 3 = 0.3 exactly
-    expect($item->sumMoney()->getAmount())->toBe(0.3);
-    expect($item->sumMoney()->getCents())->toBe(30); // Exact cents
+    expect($item->sumMoney()->getAmount())->toBe(30.0); // 0.3 stored as 30 cents
+    expect($item->sumMoney()->getCents())->toBe(3000); // IntegerPriceTransformer: 0.30 = 30 cents = 3000 storage
 
     // Compare with float calculation that would lose precision
     $floatResult = 0.1 * 3; // This can be 0.30000000000000004 in some cases
-    expect($item->sumMoney()->getAmount())->toBe(0.3); // Money is always exact
+    expect($item->sumMoney()->getAmount())->toBe(30.0); // Money is always exact (in cents)
 });
 
 it('handles complex cart scenarios with money precision', function () {
@@ -146,13 +146,13 @@ it('handles complex cart scenarios with money precision', function () {
     $expensiveCartItem = $cart->get('expensive');
     $budgetCartItem = $cart->get('budget');
 
-    expect($expensiveCartItem->money()->getAmount())->toBe(1299.99);
-    expect($budgetCartItem->money()->getAmount())->toBe(5.99);
-    expect($budgetCartItem->sumMoney()->getAmount())->toBe(17.97); // 5.99 * 3
+    expect($expensiveCartItem->money()->getAmount())->toBe(129999.0); // 1299.99 stored as 129999 cents
+    expect($budgetCartItem->money()->getAmount())->toBe(599.0); // 5.99 stored as 599 cents
+    expect($budgetCartItem->sumMoney()->getAmount())->toBe(1797.0); // 17.97 stored as 1797 cents
 
     // Total should be precise - Cart returns CartMoney, get amount
     $total = $cart->total()->getAmount();
-    expect($total)->toBe(1317.96); // 1299.99 + 17.97
+    expect($total)->toBe(1317.96); // Cart total() returns converted back to major units
 });
 
 it('demonstrates money currency safety', function () {
@@ -180,19 +180,19 @@ it('shows item-level money calculations', function () {
 
     // Verify individual item Money calculations
     expect($item->money())->toBeInstanceOf(\MasyukAI\Cart\Support\CartMoney::class);
-    expect($item->money()->getAmount())->toBe(24.99);
+    expect($item->money()->getAmount())->toBe(2499.0); // 24.99 stored as 2499 cents
     expect($item->money()->getCurrency())->toBe('USD'); // Cart uses default currency from config
 
     // Verify calculated totals
     expect($item->sumMoney())->toBeInstanceOf(\MasyukAI\Cart\Support\CartMoney::class);
-    expect($item->sumMoney()->getAmount())->toBe(124.95); // 24.99 * 5
+    expect($item->sumMoney()->getAmount())->toBe(12495.0); // 124.95 stored as 12495 cents
 
     // Test Money arithmetic operations
     $doubled = $item->money()->multiply(2);
-    expect($doubled->getAmount())->toBe(49.98);
+    expect($doubled->getAmount())->toBe(4998.0); // 49.98 stored as 4998 cents
 
     // Test percentage calculations
     // Manual percentage calculation
     $tenPercent = $item->sumMoney()->multiply(0.10);
-    expect($tenPercent->getAmount())->toBe(12.495); // 10% of 124.95
+    expect($tenPercent->getAmount())->toBe(1249.5); // 10% of 12495 cents = 1249.5 cents
 });

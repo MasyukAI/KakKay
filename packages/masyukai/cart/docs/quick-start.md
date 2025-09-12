@@ -240,7 +240,7 @@ $item = Cart::get('iphone-15');
 echo $item->name;                    // "iPhone 15 Pro"
 echo $item->price;                   // 999.99
 echo $item->quantity;                // 1
-echo $item->getPriceSum();           // 999.99 (price × quantity)
+echo $item->getSubtotal();           // 999.99 (price × quantity)
 echo $item->getAttribute('color');    // "Natural Titanium"
 ```
 

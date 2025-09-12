@@ -30,6 +30,7 @@ describe('Cart Events', function () {
         });
 
         $this->cart = new Cart(
+            identifier: 'test_cart',
             storage: new SessionStorage($sessionStore),
             events: $this->events,
             instanceName: 'test_cart',
@@ -122,6 +123,7 @@ describe('Cart Events', function () {
 
     it('does not dispatch condition events when events are disabled', function () {
         $cartWithoutEvents = new Cart(
+            identifier: 'no_events_cart',
             storage: new SessionStorage(new \Illuminate\Session\Store('testing', new \Illuminate\Session\ArraySessionHandler(120))),
             events: new \Illuminate\Events\Dispatcher,
             instanceName: 'no_events_cart',
@@ -154,6 +156,7 @@ beforeEach(function () {
     });
 
     $this->cart = new Cart(
+        identifier: 'test_cart',
         storage: new SessionStorage($sessionStore),
         events: $this->events,
         instanceName: 'test_cart',

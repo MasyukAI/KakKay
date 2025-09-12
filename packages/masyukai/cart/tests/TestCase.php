@@ -48,12 +48,8 @@ abstract class TestCase extends Orchestra
         $app['config']->set('app.env', 'testing');
         $app['config']->set('database.default', 'testing');
 
-        // Force DecimalPriceTransformer for consistent tests
-        $app['config']->set('cart.display.transformer', \MasyukAI\Cart\PriceTransformers\DecimalPriceTransformer::class);
-
         // Set USD currency for consistent test formatting
-        $app['config']->set('cart.money.default_currency', 'USD');
-        $app['config']->set('cart.money.default_locale', 'en_US');
+        $app['config']->set('cart.default_currency', 'USD');
 
         $app['config']->set('database.connections.testing', [
             'driver' => 'sqlite',

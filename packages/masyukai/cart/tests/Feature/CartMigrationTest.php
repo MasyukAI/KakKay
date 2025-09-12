@@ -68,7 +68,8 @@ it('can migrate guest cart to user cart', function () {
     });
 
     $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'carts');
-    $cart = new \MasyukAI\Cart\Cart($storage);
+    $guestSessionId = session()->getId();
+    $cart = new \MasyukAI\Cart\Cart($storage, $guestSessionId);
 
     // Add items to guest cart using the cart instance (not facade)
     $cart->add('product-1', 'Test Product 1', 10.00, 2);
@@ -241,8 +242,8 @@ it('dispatches cart merged event on successful migration', function () {
     $this->cartMigration->migrateGuestCartToUser(1, 'default', $guestSessionId);
 
     Event::assertDispatched(CartMerged::class, function ($event) {
-        return $event->targetCart->getCurrentInstance() === 'default' &&
-               $event->sourceCart->getCurrentInstance() === 'default' &&
+        return $event->targetCart->instance() === 'default' &&
+               $event->sourceCart->instance() === 'default' &&
                $event->totalItemsMerged === 2;
     });
 });
@@ -251,7 +252,7 @@ it('handles user login event automatically when configured', function () {
     // Initialize cart with database storage
     $connection = app('db')->connection();
     $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'carts');
-    $cart = new \MasyukAI\Cart\Cart($storage);
+    $cart = new \MasyukAI\Cart\Cart($storage, 'migration_test');
 
     // Configure auto migration
     config(['cart.migration.auto_migrate_on_login' => true]);

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use Masyukai\Cart\Models\CartItem;
 use MasyukAI\Cart\Cart;
-use MasyukAI\Cart\Storage\SessionStorage;
+use Masyukai\Cart\Models\CartItem;
 use MasyukAI\Cart\Storage\DatabaseStorage;
+use MasyukAI\Cart\Storage\SessionStorage;
 
 beforeEach(function () {
     // Ensure events dispatcher is available
@@ -36,6 +36,7 @@ beforeEach(function () {
     // Initialize cart with session storage for most tests
     $this->cart = new Cart(
         storage: $this->sessionStorage,
+        identifier: 'test-user',
         events: new \Illuminate\Events\Dispatcher,
         instanceName: 'bulletproof_test',
         eventsEnabled: true
@@ -71,7 +72,7 @@ describe('Cart calculations and information', function () {
         expect($item->name)->toBe('Product 1');
         expect($item->price)->toBe(10.99);
         expect($item->quantity)->toBe(2);
-        expect($item->getRawPriceSum())->toBe(21.98);
+        expect($item->getRawSubtotal())->toBe(21.98);
 
         expect($this->cart->get('nonexistent'))->toBeNull();
     });
@@ -83,8 +84,8 @@ describe('Cart calculations and information', function () {
 
         expect($this->cart->isEmpty())->toBeTrue();
         expect($this->cart->getTotalQuantity())->toBe(0);
-        expect($this->cart->subtotal()->getAmount())->toBe(0.0);
-        expect($this->cart->total()->getAmount())->toBe(0.0);
+        expect($this->cart->subtotal()->getAmount())->toBe(0);
+        expect($this->cart->total()->getAmount())->toBe(0);
     });
 
     it('provides correct cart state after operations', function () {
@@ -123,7 +124,7 @@ describe('Cart calculations and information', function () {
     it('handles precision and rounding correctly', function () {
         // Clear cart for clean test
         $this->cart->clear();
-        
+
         // Test with prices that might cause rounding issues
         $prices = [0.01, 0.10, 0.33, 1.333333, 9.999999, 10.006];
 

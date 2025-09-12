@@ -15,6 +15,7 @@ describe('Cart Internal Calculations', function () {
         $this->cart = new Cart(
             storage: $sessionStorage,
             events: new \Illuminate\Events\Dispatcher,
+            identifier: 'test_internal_calc',
             instanceName: 'test_internal_calc',
             eventsEnabled: true
         );
@@ -74,13 +75,9 @@ describe('Cart Internal Calculations', function () {
         expect($this->cart->getRawSubTotalWithoutConditions())->toBeFloat();
         expect($this->cart->getRawTotal())->toBeFloat();
 
-        // Verify they're not the same as formatted methods when formatting is enabled
-        \MasyukAI\Cart\Support\CartMoney::enableFormatting();
-
-        expect($this->cart->getRawSubtotal())->toBeFloat();
-        expect((string) $this->cart->subtotal())->toBeString(); // Should be formatted
-
-        \MasyukAI\Cart\Support\CartMoney::disableFormatting();
+        // Verify formatted methods return Money objects
+        expect($this->cart->subtotal())->toBeInstanceOf(\Akaunting\Money\Money::class);
+        expect($this->cart->total())->toBeInstanceOf(\Akaunting\Money\Money::class);
     });
 
     it('savings calculation uses correct raw methods', function () {
@@ -106,6 +103,7 @@ describe('Cart Internal Calculations', function () {
         $emptyCart = new Cart(
             storage: $sessionStorage,
             events: new \Illuminate\Events\Dispatcher,
+            identifier: 'empty_test_cart',
             instanceName: 'empty_test_cart',
             eventsEnabled: true
         );

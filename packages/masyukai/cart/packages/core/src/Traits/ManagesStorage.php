@@ -14,7 +14,7 @@ trait ManagesStorage
      */
     public function getItems(): CartCollection
     {
-        $items = $this->storage->getItems($this->getIdentifier(), $this->getStorageInstanceName());
+        $items = $this->storage->getItems($this->getIdentifier(), $this->instance());
 
         if (! $items || ! is_array($items)) {
             return new CartCollection;
@@ -80,28 +80,6 @@ trait ManagesStorage
     }
 
     /**
-     * Store cart data (shopping-cart style)
-     */
-    public function store(): void
-    {
-        // Cart is automatically stored, but this provides explicit control
-        $this->save($this->getItems());
-
-        // Note: No specific event needed for store operation
-    }
-
-    /**
-     * Restore cart data (shopping-cart style)
-     */
-    public function restore(): void
-    {
-        // Cart is automatically loaded, but this provides explicit control
-        $this->getItems();
-
-        // Note: No specific event needed for restore operation
-    }
-
-    /**
      * Convert cart to array (alias for content())
      */
     public function toArray(): array
@@ -115,7 +93,7 @@ trait ManagesStorage
     private function save(CartCollection $items): void
     {
         $itemsArray = $items->toArray();
-        $this->storage->putItems($this->getIdentifier(), $this->getStorageInstanceName(), $itemsArray);
+        $this->storage->putItems($this->getIdentifier(), $this->instance(), $itemsArray);
     }
 
     /**

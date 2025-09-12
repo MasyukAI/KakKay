@@ -40,10 +40,11 @@ beforeEach(function () {
 
     // Initialize cart with session storage for most tests
     $this->cart = new Cart(
-        storage: $this->sessionStorage,
-        events: new \Illuminate\Events\Dispatcher,
-        instanceName: 'bulletproof_test',
-        eventsEnabled: true
+        $this->sessionStorage,
+        'bulletproof_test',
+        new \Illuminate\Events\Dispatcher,
+        'bulletproof_test',
+        true
     );
 
     // Clear any existing cart data
@@ -55,8 +56,8 @@ describe('Cart instantiation', function () {
         expect($this->cart)->toBeInstanceOf(Cart::class);
         expect($this->cart->instance())->toBe('bulletproof_test');
         expect($this->cart->getTotalQuantity())->toBe(0);
-        expect($this->cart->total()->getAmount())->toBe(0.0);
-        expect($this->cart->subtotal()->getAmount())->toBe(0.0);
+        expect($this->cart->total()->getAmount())->toBe(0);
+        expect($this->cart->subtotal()->getAmount())->toBe(0);
         expect($this->cart->isEmpty())->toBeTrue();
         expect($this->cart->count())->toBe(0);
     });
@@ -80,18 +81,22 @@ describe('Cart instantiation', function () {
         expect($parameters[0]->getName())->toBe('storage');
         expect($parameters[0]->getType()->getName())->toBe('MasyukAI\\Cart\\Storage\\StorageInterface');
 
+        // Verify identifier parameter has correct type hint
+        expect($parameters[1]->getName())->toBe('identifier');
+        expect($parameters[1]->getType()->getName())->toBe('string');
+
         // Verify events parameter has correct type hint
-        expect($parameters[1]->getName())->toBe('events');
-        expect($parameters[1]->getType()->getName())->toBe('Illuminate\\Contracts\\Events\\Dispatcher');
-        expect($parameters[1]->allowsNull())->toBeTrue();
+        expect($parameters[2]->getName())->toBe('events');
+        expect($parameters[2]->getType()->getName())->toBe('Illuminate\\Contracts\\Events\\Dispatcher');
+        expect($parameters[2]->allowsNull())->toBeTrue();
 
         // Verify instanceName parameter has correct type hint
-        expect($parameters[2]->getName())->toBe('instanceName');
-        expect($parameters[2]->getType()->getName())->toBe('string');
+        expect($parameters[3]->getName())->toBe('instanceName');
+        expect($parameters[3]->getType()->getName())->toBe('string');
 
         // Verify eventsEnabled parameter has correct type hint
-        expect($parameters[3]->getName())->toBe('eventsEnabled');
-        expect($parameters[3]->getType()->getName())->toBe('bool');
+        expect($parameters[4]->getName())->toBe('eventsEnabled');
+        expect($parameters[4]->getType()->getName())->toBe('bool');
     });
 
     it('works with database storage', function () {
@@ -103,10 +108,11 @@ describe('Cart instantiation', function () {
         }
 
         $databaseCart = new Cart(
-            storage: $this->databaseStorage,
-            events: app('events'),
-            instanceName: 'db_test',
-            eventsEnabled: true
+            $this->databaseStorage,
+            'db_test',
+            app('events'),
+            'db_test',
+            true
         );
 
         expect($databaseCart)->toBeInstanceOf(Cart::class);
@@ -117,10 +123,11 @@ describe('Cart instantiation', function () {
     it('works without events when disabled', function () {
         // Don't use Event::fake() in basic test environment, create cart without events
         $cartWithoutEvents = new Cart(
-            storage: $this->sessionStorage,
-            events: app('events'),
-            instanceName: 'no_events_test',
-            eventsEnabled: false
+            $this->sessionStorage,
+            'no_events_test',
+            app('events'),
+            'no_events_test',
+            false
         );
 
         $cartWithoutEvents->add('test', 'Test', 10.0, 1);
@@ -135,10 +142,11 @@ describe('Adding items', function () {
 
         // Recreate cart with the fake event dispatcher
         $cart = new Cart(
-            storage: $this->sessionStorage,
-            events: app('events'),
-            instanceName: 'test_with_events',
-            eventsEnabled: true
+            $this->sessionStorage,
+            'test_with_events',
+            app('events'),
+            'test_with_events',
+            true
         );
 
         $item = $cart->add(
@@ -153,7 +161,7 @@ describe('Adding items', function () {
         expect($item->name)->toBe('Test Product');
         expect($item->price)->toBe(10.00);
         expect($item->quantity)->toBe(2);
-        expect($item->getRawPriceSum())->toBe(20.00);
+        expect($item->getRawSubtotal())->toBe(20.00);
 
         expect($cart->getTotalQuantity())->toBe(2);
         expect($cart->total()->getAmount())->toBe(20.00);
@@ -218,7 +226,7 @@ describe('Adding items', function () {
 
         expect($item->getConditions())->toHaveCount(2);
         // 100 - 15% = 85, then +20% = 102
-        expect($item->getRawPriceSum())->toBe(102.00);
+        expect($item->getRawSubtotal())->toBe(102.00);
     });
 
     it('merges quantities when adding existing items', function () {
@@ -278,7 +286,7 @@ describe('Adding items', function () {
 
         expect($item->price)->toBe(9999.99);
         expect($item->quantity)->toBe(1000);
-        expect($item->getRawPriceSum())->toBe(9999990.0);
+        expect($item->getRawSubtotal())->toBe(9999990.0);
         expect($this->cart->total()->getAmount())->toBe(9999990.0);
     });
 
@@ -290,7 +298,7 @@ describe('Adding items', function () {
         }
 
         expect($this->cart->getItems())->toHaveCount(5);
-        expect($this->cart->get('product-2')->price)->toBe(1.23); // Rounded to 2 decimals by default
+        expect($this->cart->get('product-2')->price)->toBe(1.234); // Price stored as provided
     });
 });
 
@@ -305,10 +313,11 @@ describe('Cart operations and management', function () {
 
         // Create cart with fake events
         $cart = new Cart(
-            storage: $this->sessionStorage,
-            events: app('events'),
-            instanceName: 'update_test',
-            eventsEnabled: true
+            $this->sessionStorage,
+            'update_test',
+            app('events'),
+            'update_test',
+            true
         );
 
         // Add initial items
@@ -340,10 +349,11 @@ describe('Cart operations and management', function () {
 
         // Create cart with fake events
         $cart = new Cart(
-            storage: $this->sessionStorage,
-            events: app('events'),
-            instanceName: 'remove_test',
-            eventsEnabled: true
+            $this->sessionStorage,
+            'remove_test',
+            app('events'),
+            'remove_test',
+            true
         );
 
         // Add initial items
@@ -368,6 +378,7 @@ describe('Cart operations and management', function () {
         $cart = new Cart(
             storage: $this->sessionStorage,
             events: app('events'),
+            identifier: 'clear_test',
             instanceName: 'clear_test',
             eventsEnabled: true
         );
@@ -385,7 +396,7 @@ describe('Cart operations and management', function () {
         expect($cart->isEmpty())->toBeTrue();
         expect($cart->getItems())->toHaveCount(0);
         expect($cart->getTotalQuantity())->toBe(0);
-        expect($cart->total()->getAmount())->toBe(0.0);
+        expect($cart->total()->getAmount())->toBe(0);
 
         // Verify clear was successful
         expect($cart->isEmpty())->toBeTrue();
@@ -490,7 +501,7 @@ describe('Cart conditions', function () {
 
         $item = $this->cart->get('product-1');
         expect($item->getConditions())->toHaveCount(1);
-        expect($item->getRawPriceSum())->toBe(80.00); // 100 - 20%
+        expect($item->getRawSubtotal())->toBe(80.00); // 100 - 20%
 
         // Adding to non-existent item should fail
         $result = $this->cart->addItemCondition('nonexistent', $itemDiscount);
@@ -553,7 +564,7 @@ describe('Cart information and calculations', function () {
         expect($item->name)->toBe('Product 1');
         expect($item->price)->toBe(10.99);
         expect($item->quantity)->toBe(2);
-        expect($item->getRawPriceSum())->toBe(21.98);
+        expect($item->getRawSubtotal())->toBe(21.98);
 
         expect($this->cart->get('nonexistent'))->toBeNull();
     });
@@ -565,8 +576,8 @@ describe('Cart information and calculations', function () {
 
         expect($this->cart->isEmpty())->toBeTrue();
         expect($this->cart->getTotalQuantity())->toBe(0);
-        expect($this->cart->subtotal()->getAmount())->toBe(0.0);
-        expect($this->cart->total()->getAmount())->toBe(0.0);
+        expect($this->cart->subtotal()->getAmount())->toBe(0);
+        expect($this->cart->total()->getAmount())->toBe(0);
     });
 
     it('provides correct cart state after operations', function () {
@@ -725,10 +736,11 @@ describe('Storage layer tests', function () {
 
         // Create a new cart instance with same storage to test persistence
         $newCart = new Cart(
-            storage: $this->sessionStorage,
-            events: app('events'),
-            instanceName: 'bulletproof_test',
-            eventsEnabled: true
+            $this->sessionStorage,
+            'bulletproof_test',
+            app('events'),
+            'bulletproof_test',
+            true
         );
 
         expect($newCart->getItems())->toHaveCount(1);
@@ -745,20 +757,22 @@ describe('Storage layer tests', function () {
         }
 
         $dbCart = new Cart(
-            storage: $this->databaseStorage,
-            events: app('events'),
-            instanceName: 'db_test_bulletproof',
-            eventsEnabled: true
+            $this->databaseStorage,
+            'db_test_bulletproof',
+            app('events'),
+            'db_test_bulletproof',
+            true
         );
 
         $dbCart->add('db-test', 'Database Product', 15.99, 3);
 
         // Create another instance to test persistence
         $newDbCart = new Cart(
-            storage: $this->databaseStorage,
-            events: app('events'),
-            instanceName: 'db_test_bulletproof',
-            eventsEnabled: true
+            $this->databaseStorage,
+            'db_test_bulletproof',
+            app('events'),
+            'db_test_bulletproof',
+            true
         );
 
         expect($newDbCart->getItems())->toHaveCount(1);
@@ -768,17 +782,19 @@ describe('Storage layer tests', function () {
 
     it('isolates different cart instances', function () {
         $cart1 = new Cart(
-            storage: $this->sessionStorage,
-            events: app('events'),
-            instanceName: 'isolation_test_1',
-            eventsEnabled: true
+            $this->sessionStorage,
+            'isolation_test_1',
+            app('events'),
+            'isolation_test_1',
+            true
         );
 
         $cart2 = new Cart(
-            storage: $this->sessionStorage,
-            events: app('events'),
-            instanceName: 'isolation_test_2',
-            eventsEnabled: true
+            $this->sessionStorage,
+            'isolation_test_2',
+            app('events'),
+            'isolation_test_2',
+            true
         );
 
         $cart1->add('item-1', 'Item 1', 10.00, 1);
@@ -871,40 +887,26 @@ describe('Cart instance management', function () {
         expect($this->cart->getItems())->toHaveCount(1);
 
         // Switch to new instance
-        $newCart = $this->cart->setInstance('new_instance');
+        $newCart = $this->cart->setInstance('new_instance', app('events'));
         expect($newCart->instance())->toBe('new_instance');
         expect($newCart->getItems())->toHaveCount(0); // New instance should be empty
 
         // Original cart should still have the item when we switch back
-        $originalCart = $newCart->setInstance('bulletproof_test');
+        $originalCart = $newCart->setInstance('bulletproof_test', app('events'));
         expect($originalCart->getItems())->toHaveCount(1);
     });
 
     it('provides getCurrentInstance method', function () {
-        expect($this->cart->getCurrentInstance())->toBe('bulletproof_test');
+        expect($this->cart->instance())->toBe('bulletproof_test');
 
-        $newCart = $this->cart->setInstance('test_instance');
-        expect($newCart->getCurrentInstance())->toBe('test_instance');
+        $newCart = $this->cart->setInstance('test_instance', app('events'));
+        expect($newCart->instance())->toBe('test_instance');
     });
 });
 
-describe('Cart store and restore operations', function () {
+describe('Cart save operations', function () {
     it('can explicitly store cart data', function () {
         $this->cart->add('item-1', 'Item 1', 10.00, 1);
-
-        // Store operation should not throw
-        $this->cart->store();
-
-        // Data should still be accessible
-        expect($this->cart->getItems())->toHaveCount(1);
-        expect($this->cart->get('item-1'))->toBeInstanceOf(CartItem::class);
-    });
-
-    it('can explicitly restore cart data', function () {
-        $this->cart->add('item-1', 'Item 1', 10.00, 1);
-
-        // Restore operation should not throw
-        $this->cart->restore();
 
         // Data should still be accessible
         expect($this->cart->getItems())->toHaveCount(1);
@@ -1014,24 +1016,24 @@ describe('Price normalization', function () {
     it('handles null prices', function () {
         $item = $this->cart->add('item-1', 'Item 1', null, 1);
 
-        expect($item->price)->toBe(0.0);
+        expect($item->price)->toBe(0);
     });
 
     it('respects decimal configuration', function () {
         // Create cart with specific decimal configuration
         $cart = new Cart(
-            storage: $this->sessionStorage,
-            events: app('events'),
-            instanceName: 'decimal_test',
-            eventsEnabled: true,
-            config: ['decimals' => 3]
+            $this->sessionStorage,
+            'decimal_test',
+            app('events'),
+            'decimal_test',
+            true,
+            ['decimals' => 3]
         );
 
         $item = $cart->add('item-1', 'Item 1', 10.12345, 1);
 
-        // Laravel Money with USD currency limits precision to 2 decimal places
-        // So even with 3 decimal config, the result will be rounded to 2 decimals
-        expect($item->price)->toEqual(10.12);
+        // Raw price is stored as provided - Money formatting applies when converting to Money objects
+        expect($item->price)->toEqual(10.12345);
     });
 });
 

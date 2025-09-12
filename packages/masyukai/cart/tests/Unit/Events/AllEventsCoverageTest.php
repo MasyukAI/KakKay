@@ -25,8 +25,11 @@ describe('Event Classes Basic Coverage', function () {
         }
 
         $this->cart = new Cart(
-            storage: $this->storage,
-            events: app('events')
+            $this->storage,
+            'test-user',
+            app('events'),
+            'default',
+            true
         );
 
         $this->item = new CartItem(
@@ -40,7 +43,7 @@ describe('Event Classes Basic Coverage', function () {
     describe('CartMerged Event', function () {
         it('can be instantiated', function () {
             $targetCart = $this->cart;
-            $sourceCart = $this->cart->setInstance('source');
+            $sourceCart = $this->cart->setInstance('source', app('events'));
 
             $event = new CartMerged($targetCart, $sourceCart, 5, 'add_quantities', true);
 
@@ -238,7 +241,7 @@ describe('Event Classes Basic Coverage', function () {
 
         it('works with different cart instances', function () {
             $defaultCart = $this->cart;
-            $wishlistCart = $this->cart->setInstance('wishlist');
+            $wishlistCart = $this->cart->setInstance('wishlist', app('events'));
 
             $event1 = new CartCreated($defaultCart);
             $event2 = new CartCreated($wishlistCart);

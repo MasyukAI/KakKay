@@ -1,20 +1,30 @@
 <?php
 
-
 namespace App\Livewire;
 
-use Livewire\Component;
-use MasyukAI\Cart\Facades\Cart as CartFacade;
-use Illuminate\Support\Facades\Log;
+use App\Models\Product;
 use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\Log;
+use Livewire\Component;
+use Livewire\Attributes\On;
+use MasyukAI\Cart\Facades\Cart as CartFacade;
 
 class Cart extends Component
 {
     public array $cartItems = [];
+
     public string $voucherCode = '';
+
     public $suggestedProducts;
 
     public function mount(): void
+    {
+        $this->loadCartItems();
+        $this->loadSuggestedProducts();
+    }
+
+    #[On('product-added-to-cart')]
+    public function refreshCart(): void
     {
         $this->loadCartItems();
         $this->loadSuggestedProducts();
@@ -24,18 +34,20 @@ class Cart extends Component
     {
         try {
             $cartContents = CartFacade::getItems();
+            
             $this->cartItems = $cartContents->map(function ($item) {
                 return [
                     'id' => (string) $item->id,
                     'name' => (string) $item->name,
-                    'price' => (int) $item->getPrice(),
+                    'price' => (string) $item->getPrice(), // Return Money object for formatting
                     'quantity' => (int) $item->quantity,
                     'slug' => $item->attributes->get('slug', 'cara-bercinta'),
                 ];
             })->values()->toArray();
+            
         } catch (\Exception $e) {
             $this->cartItems = [];
-            Log::error('Cart loading error: ' . $e->getMessage());
+            Log::error('Cart loading error: '.$e->getMessage());
         }
     }
 
@@ -53,9 +65,12 @@ class Cart extends Component
     {
         if ($quantity <= 0) {
             $this->removeItem($itemId);
+
             return;
         }
-    CartFacade::update($itemId, ['quantity' => $quantity]);
+
+        // Use absolute quantity update by passing as array
+        CartFacade::update($itemId, ['quantity' => ['value' => $quantity]]);
         $this->loadCartItems();
         $this->dispatch('product-added-to-cart');
     }
@@ -111,7 +126,7 @@ class Cart extends Component
 
     public function applyVoucher(): void
     {
-        if (!empty($this->voucherCode)) {
+        if (! empty($this->voucherCode)) {
             Notification::make()
                 ->title('Voucher Berjaya!')
                 ->body("Kod voucher '{$this->voucherCode}' telah digunakan.")
@@ -124,58 +139,47 @@ class Cart extends Component
         }
     }
 
-    public function addToCart(int $productId): void
+    public function addToCart(Product $product, int $quantity = 1): void
     {
-        $product = \App\Models\Product::find($productId);
-        if (!$product) {
-            Notification::make()
-                ->title('Produk Tidak Dijumpai')
-                ->body('Produk yang diminta tidak wujud.')
-                ->danger()
-                ->icon('heroicon-o-exclamation-triangle')
-                ->iconColor('danger')
-                ->duration(5000)
-                ->send();
-            return;
-        }
+        // Add item to cart - price is already in cents (integer)
         CartFacade::add(
-            (string) $product->id,
-            $product->name,
-            $product->price,
-            1,
-            ['slug' => $product->slug]
+            id: $product->id,
+            name: $product->name,
+            price: $product->price, // Keep as cents (integer)
+            quantity: $quantity,
+            attributes: [
+                'slug' => $product->slug,
+                'image' => $product->getFirstMediaUrl() ?: null,
+                'weight' => $product->getShippingWeight(),
+            ]
         );
+
         $this->loadCartItems();
         $this->loadSuggestedProducts();
-        $this->dispatch('product-added-to-cart');
-        Notification::make()
-            ->title('Buku dimasukkan!')
-            ->body("'{$product->name}' telah dimasukkan!")
-            ->success()
-            ->icon('heroicon-o-shopping-cart')
-            ->iconColor('success')
-            ->duration(4000)
-            ->send();
+
+        // Dispatch browser event for UI feedback
+        $this->dispatch('item-added-to-cart', [
+            'product' => $product->name,
+            'quantity' => $quantity,
+        ]);
     }
 
-    public function getSubtotal(): int
+    public function getSubtotal(): \Akaunting\Money\Money
     {
-        return (int) CartFacade::subtotal();
+        return CartFacade::subtotal(); // Return Money object directly for formatting
     }
 
-    public function getShipping(): int
+    public function getShipping(): \Akaunting\Money\Money
     {
-        return 990;
+        $currency = config('cart.money.default_currency', 'MYR');
+        return \Akaunting\Money\Money::{$currency}(990); // RM9.90 as Money object
     }
 
-    public function getTotal(): int
+    public function getTotal(): \Akaunting\Money\Money
     {
-        return $this->getSubtotal() + $this->getShipping();
-    }
-
-    public function formatPrice(int $cents): string
-    {
-        return 'RM' . number_format($cents / 100, 2);
+        $subtotal = $this->getSubtotal();
+        $shipping = $this->getShipping();
+        return $subtotal->add($shipping);
     }
 
     public function render()

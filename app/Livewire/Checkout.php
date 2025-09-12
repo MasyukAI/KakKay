@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use MasyukAI\Cart\Facades\Cart as CartFacade;
-use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
 class Checkout extends Component implements HasSchemas
 {
@@ -34,14 +33,16 @@ class Checkout extends Component implements HasSchemas
     {
         $this->loadCartItems();
         $this->loadPaymentMethods();
-        
+
         // Initialize form with default values
         $this->form->fill([
             'country' => 'Malaysia',
             'city' => 'Kuala Lumpur',
             'delivery_method' => 'standard',
         ]);
-    }    public function form(Schema $schema): Schema
+    }
+
+    public function form(Schema $schema): Schema
     {
         return $schema
             ->components([
@@ -261,7 +262,10 @@ class Checkout extends Component implements HasSchemas
     #[Computed]
     public function getSubtotal(): int
     {
-        return (int) CartFacade::subtotal(); // Use Cart facade for consistency
+        $subtotal = CartFacade::subtotal();
+
+        // CartFacade::subtotal() returns a CartMoney object, get the amount in cents
+        return (int) ($subtotal * 100); // Convert major units to cents for formatPrice
     }
 
     #[Computed]
@@ -291,10 +295,11 @@ class Checkout extends Component implements HasSchemas
     #[Computed]
     public function getTotal(): int
     {
-        // is there a native function from Cart package
         $cartTotal = CartFacade::total();
+        // CartFacade::total() returns a CartMoney object, convert to cents
+        $cartTotalInCents = (int) ($cartTotal * 100);
 
-        return $cartTotal - $this->getSavings() + $this->getShipping() + $this->getTax();
+        return $cartTotalInCents - $this->getSavings() + $this->getShipping() + $this->getTax();
     }
 
     public function formatPrice(int $cents): string

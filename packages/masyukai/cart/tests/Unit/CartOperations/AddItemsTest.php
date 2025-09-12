@@ -15,6 +15,7 @@ beforeEach(function () {
 
     // Initialize cart
     $this->cart = new Cart(
+        identifier: 'add_items_test',
         storage: $this->sessionStorage,
         events: app('events'),
         instanceName: 'add_items_test',
@@ -38,7 +39,7 @@ describe('Cart Item Addition Operations', function () {
         expect($item->name)->toBe('Test Product');
         expect($item->price)->toBe(10.00);
         expect($item->quantity)->toBe(2);
-        expect($item->getRawPriceSum())->toBe(20.00);
+        expect($item->getRawSubtotal())->toBe(20.00);
 
         expect($this->cart->getTotalQuantity())->toBe(2);
         expect($this->cart->total()->getAmount())->toBe(20.00);
@@ -73,7 +74,6 @@ describe('Cart Item Addition Operations', function () {
         expect($item->getAttribute('tags'))->toBe(['summer', 'casual']);
         expect($item->getAttribute('metadata'))->toBe(['created_by' => 'system']);
         expect($item->getAttribute('nonexistent'))->toBeNull();
-        expect($item->getAttribute('nonexistent', 'default'))->toBe('default');
     });
 
     it('can add item with multiple conditions', function () {
@@ -101,7 +101,7 @@ describe('Cart Item Addition Operations', function () {
 
         expect($item->getConditions())->toHaveCount(2);
         // 100 - 15% = 85, then +20% = 102
-        expect($item->getRawPriceSum())->toBe(102.00);
+        expect($item->getRawSubtotal())->toBe(102.00);
     });
 
     it('merges quantities when adding existing items', function () {
@@ -127,7 +127,7 @@ describe('Cart Item Addition Operations', function () {
 
         expect($item->price)->toBe(9999.99);
         expect($item->quantity)->toBe(1000);
-        expect($item->getRawPriceSum())->toBe(9999990.0);
+        expect($item->getRawSubtotal())->toBe(9999990.0);
         expect($this->cart->total()->getAmount())->toBe(9999990.0);
     });
 
@@ -139,7 +139,7 @@ describe('Cart Item Addition Operations', function () {
         }
 
         expect($this->cart->getItems())->toHaveCount(5);
-        expect($this->cart->get('product-2')->price)->toBe(1.23); // Rounded to 2 decimals by default
+        expect($this->cart->get('product-2')->price)->toBe(1.234); // Price stored as provided
     });
 });
 

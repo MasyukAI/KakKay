@@ -115,9 +115,7 @@ describe('CartServiceProvider', function () {
             'registerCartManager',
             'registerMigrationService',
             'registerEventListeners',
-            'registerPriceTransformers',
             'registerEnhancedServices',
-            'registerOctaneCompatibility',
             'configurePackage',
             'registeringPackage',
             'bootingPackage',
@@ -133,15 +131,15 @@ describe('CartServiceProvider', function () {
         $provider = new CartServiceProvider($app);
 
         $reflection = new ReflectionClass($provider);
-        
+
         // Test that configurePackage exists and is callable
         $configureMethod = $reflection->getMethod('configurePackage');
         expect($configureMethod->isPublic())->toBeTrue();
-        
+
         // Test that registeringPackage exists and is callable
         $registeringMethod = $reflection->getMethod('registeringPackage');
         expect($registeringMethod->isPublic())->toBeTrue();
-        
+
         // Test that bootingPackage exists and is callable
         $bootingMethod = $reflection->getMethod('bootingPackage');
         expect($bootingMethod->isPublic())->toBeTrue();
@@ -151,9 +149,6 @@ describe('CartServiceProvider', function () {
 // --- Integration-style tests for real container/config/event logic ---
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
-use MasyukAI\Cart\Contracts\PriceTransformerInterface;
-use MasyukAI\Cart\PriceTransformers\DecimalPriceTransformer;
-use MasyukAI\Cart\PriceTransformers\IntegerPriceTransformer;
 use MasyukAI\Cart\Services\CartMigrationService;
 use MasyukAI\Cart\Storage\CacheStorage;
 use MasyukAI\Cart\Storage\DatabaseStorage;
@@ -161,7 +156,7 @@ use MasyukAI\Cart\Storage\SessionStorage;
 
 beforeEach(function () {
     Config::set('cart.storage', 'session');
-    Config::set('cart.price_formatting.transformer', DecimalPriceTransformer::class);
+    // Config::set('cart.price_formatting.transformer', DecimalPriceTransformer::class);
     Config::set('cart.migration.auto_migrate_on_login', true);
 });
 
@@ -194,31 +189,14 @@ it('integration: registers migration service', function () {
     expect($app->make(CartMigrationService::class))->toBeInstanceOf(CartMigrationService::class);
 });
 
-it('integration: registers price transformers', function () {
-    $app = app();
-    $provider = new \MasyukAI\Cart\CartServiceProvider($app);
-    try {
-        $provider->register();
-        expect($app->make('cart.price.transformer.decimal'))->toBeInstanceOf(DecimalPriceTransformer::class);
-        expect($app->make('cart.price.transformer.integer'))->toBeInstanceOf(IntegerPriceTransformer::class);
-        expect($app->make(PriceTransformerInterface::class))->toBeInstanceOf(DecimalPriceTransformer::class);
-    } catch (\Illuminate\Contracts\Container\BindingResolutionException $e) {
-        if (str_contains($e->getMessage(), 'Target class') && str_contains($e->getMessage(), 'does not exist')) {
-            $this->markTestSkipped('Skipped due to missing binding in test environment: '.$e->getMessage());
-        } else {
-            throw $e;
-        }
-    }
-});
-
 it('integration: publishes config, migrations, and views', function () {
     $app = app();
     $provider = new \MasyukAI\Cart\CartServiceProvider($app);
-    
+
     // Test configurePackage instead of boot since Spatie Package Tools handles publishing
-    $package = new \Spatie\LaravelPackageTools\Package();
+    $package = new \Spatie\LaravelPackageTools\Package;
     $provider->configurePackage($package);
-    
+
     expect($package->name)->toBe('cart');
     expect($package->commands)->toHaveCount(3);
     expect(true)->toBeTrue(); // Package was configured successfully

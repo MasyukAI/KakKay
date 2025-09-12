@@ -101,6 +101,7 @@ describe('Custom Condition Extensibility and Examples', function () {
         $this->cart = new Cart(
             storage: $sessionStorage,
             events: new \Illuminate\Events\Dispatcher,
+            identifier: 'test_custom_conditions',
             instanceName: 'test_custom_conditions',
             eventsEnabled: true
         );

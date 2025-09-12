@@ -167,14 +167,6 @@ readonly class SessionStorage implements StorageInterface
     }
 
     /**
-     * Get the full storage key (legacy for backward compatibility)
-     */
-    private function getKey(string $identifier, string $instance): string
-    {
-        return "{$this->keyPrefix}.{$identifier}.{$instance}";
-    }
-
-    /**
      * Get the items storage key
      */
     private function getItemsKey(string $identifier, string $instance): string

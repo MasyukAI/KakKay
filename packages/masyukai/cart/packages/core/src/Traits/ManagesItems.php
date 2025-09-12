@@ -11,17 +11,26 @@ use MasyukAI\Cart\Events\ItemUpdated;
 use MasyukAI\Cart\Exceptions\InvalidCartItemException;
 use MasyukAI\Cart\Exceptions\UnknownModelException;
 use MasyukAI\Cart\Models\CartItem;
-use MasyukAI\Cart\Support\CartMoney;
 
 trait ManagesItems
 {
     /**
+     * Evaluate dynamic conditions if the method exists
+     */
+    private function evaluateDynamicConditionsIfAvailable(): void
+    {
+        if (method_exists($this, 'evaluateDynamicConditions')) {
+            $this->evaluateDynamicConditions();
+        }
+    }
+
+    /**
      * Add item(s) to the cart
      */
     public function add(
-        string|array $id,
+        string|int|array $id,
         ?string $name = null,
-        float|string|null $price = null,
+        float|int|string|null $price = null,
         int $quantity = 1,
         array $attributes = [],
         array|object|null $conditions = null,
@@ -31,6 +40,9 @@ trait ManagesItems
         if (is_array($id)) {
             return $this->addMultiple($id);
         }
+
+        // Normalize ID to string for consistent handling
+        $id = (string) $id;
 
         // Create cart item
         $item = $this->createCartItem([
@@ -45,6 +57,7 @@ trait ManagesItems
 
         // Check if item already exists in cart
         $cartItems = $this->getItems();
+
         if ($cartItems->has($id)) {
             // Update existing item quantity
             $existingItem = $cartItems->get($id);
@@ -55,17 +68,12 @@ trait ManagesItems
         $cartItems->put($id, $item);
         $this->save($cartItems);
 
-        // Track the last added item for associate() method compatibility
-        $this->setLastAddedItemId($id);
-
         if ($this->eventsEnabled && $this->events) {
             $this->events->dispatch(new ItemAdded($item, $this));
         }
 
         // Evaluate dynamic conditions after adding item
-        if (method_exists($this, 'evaluateDynamicConditions')) {
-            $this->evaluateDynamicConditions();
-        }
+        $this->evaluateDynamicConditionsIfAvailable();
 
         return $item;
     }
@@ -97,8 +105,11 @@ trait ManagesItems
     /**
      * Update cart item
      */
-    public function update(string $id, array $data): ?CartItem
+    public function update(string|int $id, array $data): ?CartItem
     {
+        // Normalize ID to string for consistent handling
+        $id = (string) $id;
+
         $cartItems = $this->getItems();
 
         if (! $cartItems->has($id)) {
@@ -145,9 +156,7 @@ trait ManagesItems
         }
 
         // Evaluate dynamic conditions after updating item
-        if (method_exists($this, 'evaluateDynamicConditions')) {
-            $this->evaluateDynamicConditions();
-        }
+        $this->evaluateDynamicConditionsIfAvailable();
 
         return $item;
     }
@@ -155,8 +164,11 @@ trait ManagesItems
     /**
      * Remove item from cart
      */
-    public function remove(string $id): ?CartItem
+    public function remove(string|int $id): ?CartItem
     {
+        // Normalize ID to string for consistent handling
+        $id = (string) $id;
+
         $cartItems = $this->getItems();
 
         if (! $cartItems->has($id)) {
@@ -172,9 +184,7 @@ trait ManagesItems
         }
 
         // Evaluate dynamic conditions after removing item
-        if (method_exists($this, 'evaluateDynamicConditions')) {
-            $this->evaluateDynamicConditions();
-        }
+        $this->evaluateDynamicConditionsIfAvailable();
 
         return $item;
     }
@@ -182,16 +192,22 @@ trait ManagesItems
     /**
      * Get cart item by ID
      */
-    public function get(string $id): ?CartItem
+    public function get(string|int $id): ?CartItem
     {
+        // Normalize ID to string for consistent handling
+        $id = (string) $id;
+
         return $this->getItems()->get($id);
     }
 
     /**
      * Check if cart has item with given ID
      */
-    public function has(string $id): bool
+    public function has(string|int $id): bool
     {
+        // Normalize ID to string for consistent handling
+        $id = (string) $id;
+
         return $this->getItems()->has($id);
     }
 
@@ -210,9 +226,6 @@ trait ManagesItems
     {
         $this->validateCartItem($data);
 
-        // Pass cart's decimals config as precision if available
-        $precision = $this->config['decimals'] ?? null;
-
         return new CartItem(
             id: $data['id'],
             name: $data['name'],
@@ -220,8 +233,7 @@ trait ManagesItems
             quantity: $data['quantity'],
             attributes: $data['attributes'] ?? [],
             conditions: $data['conditions'] ?? [],
-            associatedModel: $data['associated_model'] ?? null,
-            precision: $precision
+            associatedModel: $data['associated_model'] ?? null
         );
     }
 
@@ -255,39 +267,22 @@ trait ManagesItems
     }
 
     /**
-     * Normalize price using PriceTransformer for consistent storage
+     * Normalize price input (sanitization only, no transformation)
      */
-    private function normalizePrice(float|string|null $price): float
+    private function normalizePrice(float|int|string|null $price): float|int
     {
         if (is_null($price)) {
-            return 0.0;
+            return 0;
         }
 
-        // Use PriceTransformer for consistent price handling
-        if (app()->bound(\MasyukAI\Cart\Contracts\PriceTransformerInterface::class)) {
-            $transformer = app(\MasyukAI\Cart\Contracts\PriceTransformerInterface::class);
-            
-            // Clean string input first
-            if (is_string($price)) {
-                $price = str_replace([',', '$', '€', '£', ' '], '', $price);
-                $price = (float) $price;
-            }
-            
-            return $transformer->toStorage($price);
+        // Only sanitize string input - no transformation
+        if (is_string($price)) {
+            $price = str_replace([',', '$', '€', '£', '¥', '₹', 'RM', ' '], '', $price);
+
+            return str_contains($price, '.') ? (float) $price : (int) $price;
         }
 
-        // Fallback: If cart has local decimals config, use simple rounding
-        if (isset($this->config['decimals'])) {
-            // Handle string normalization locally
-            if (is_string($price)) {
-                $price = str_replace([',', '$', '€', '£', ' '], '', $price);
-            }
-
-            return round((float) $price, $this->config['decimals']);
-        }
-
-        // Final fallback: Use CartMoney for proper parsing and normalization
-        $money = CartMoney::fromAmount($price);
-        return $money->getAmount();
+        // Return numeric values as-is
+        return $price;
     }
 }

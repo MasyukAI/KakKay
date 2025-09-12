@@ -7,7 +7,6 @@ namespace MasyukAI\Cart;
 use Illuminate\Auth\Events\Attempting;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Contracts\Events\Dispatcher;
-use MasyukAI\Cart\Cart;
 use MasyukAI\Cart\Listeners\HandleUserLogin;
 use MasyukAI\Cart\Listeners\HandleUserLoginAttempt;
 use MasyukAI\Cart\Services\CartMigrationService;
@@ -39,16 +38,13 @@ class CartServiceProvider extends PackageServiceProvider
         $this->registerStorageDrivers();
         $this->registerCartManager();
         $this->registerMigrationService();
-        $this->registerPriceTransformers();
         $this->registerEnhancedServices();
     }
 
     public function bootingPackage(): void
     {
         $this->registerEventListeners();
-        $this->registerOctaneCompatibility();
     }
-
 
     /**
      * Register storage drivers
@@ -72,6 +68,7 @@ class CartServiceProvider extends PackageServiceProvider
 
         $this->app->bind('cart.storage.database', function (\Illuminate\Contracts\Foundation\Application $app) {
             $connection = $app->make(\Illuminate\Database\ConnectionResolverInterface::class)->connection();
+
             return new DatabaseStorage(
                 $connection,
                 config('cart.database.table', 'carts')
@@ -87,11 +84,11 @@ class CartServiceProvider extends PackageServiceProvider
         $this->app->singleton('cart', function (\Illuminate\Contracts\Foundation\Application $app) {
             $driver = config('cart.storage', 'session');
             $storage = $app->make("cart.storage.{$driver}");
+
             return new CartManager(
                 storage: $storage,
                 events: $app->make(Dispatcher::class),
-                eventsEnabled: config('cart.events', true),
-                config: config('cart', [])
+                eventsEnabled: config('cart.events', true)
             );
         });
 
@@ -122,31 +119,6 @@ class CartServiceProvider extends PackageServiceProvider
     }
 
     /**
-     * Register price transformers
-     */
-    protected function registerPriceTransformers(): void
-    {
-        $this->app->bind('cart.display.transformer.decimal', function (\Illuminate\Contracts\Foundation\Application $app) {
-            return new \MasyukAI\Cart\PriceTransformers\DecimalPriceTransformer(
-                precision: config('cart.money.default_precision', 2)
-            );
-        });
-
-        $this->app->bind('cart.display.transformer.integer', function (\Illuminate\Contracts\Foundation\Application $app) {
-            return new \MasyukAI\Cart\PriceTransformers\IntegerPriceTransformer(
-                precision: config('cart.money.default_precision', 2)
-            );
-        });
-
-        // Register the configured transformer
-        $this->app->bind(\MasyukAI\Cart\Contracts\PriceTransformerInterface::class, function (\Illuminate\Contracts\Foundation\Application $app): \MasyukAI\Cart\Contracts\PriceTransformerInterface {
-            $transformerClass = config('cart.display.transformer');
-
-            return $app->make($transformerClass);
-        });
-    }
-
-    /**
      * Register enhanced cart services
      */
     protected function registerEnhancedServices(): void
@@ -158,27 +130,6 @@ class CartServiceProvider extends PackageServiceProvider
         $this->app->singleton(\MasyukAI\Cart\Services\CartRetryService::class, function ($app) {
             return new \MasyukAI\Cart\Services\CartRetryService;
         });
-    }
-
-    /**
-     * Register Octane compatibility listeners
-     */
-    protected function registerOctaneCompatibility(): void
-    {
-        // Auto-detect Octane and register necessary listeners
-        if (class_exists('\Laravel\Octane\Contracts\OperationTerminated')) {
-            $this->app->booted(function () {
-                if ($this->app->bound('events')) {
-                    $events = $this->app->make('events');
-
-                    // Register state reset listener for Octane
-                    $events->listen(
-                        '\Laravel\Octane\Contracts\OperationTerminated',
-                        \MasyukAI\Cart\Listeners\ResetCartState::class
-                    );
-                }
-            });
-        }
     }
 
     /**

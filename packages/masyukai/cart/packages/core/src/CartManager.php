@@ -9,15 +9,12 @@ use MasyukAI\Cart\Exceptions\CartConflictException;
 use MasyukAI\Cart\Services\CartMetricsService;
 use MasyukAI\Cart\Services\CartRetryService;
 use MasyukAI\Cart\Storage\StorageInterface;
-use MasyukAI\Cart\Traits\ManagesPricing;
 
 /**
  * Cart Manager handles global instance switching for the Cart facade
  */
 class CartManager
 {
-    use ManagesPricing;
-
     private Cart $currentCart;
 
     private string $currentInstance = 'default';
@@ -29,15 +26,14 @@ class CartManager
     public function __construct(
         private StorageInterface $storage,
         private ?Dispatcher $events = null,
-        private bool $eventsEnabled = true,
-        private array $config = []
+        private bool $eventsEnabled = true
     ) {
         $this->currentCart = new Cart(
             storage: $this->storage,
+            identifier: $this->resolveIdentifier(),
             events: $this->events,
             instanceName: $this->currentInstance,
-            eventsEnabled: $this->eventsEnabled,
-            config: $this->config
+            eventsEnabled: $this->eventsEnabled
         );
 
         // Initialize services if available
@@ -61,14 +57,14 @@ class CartManager
     /**
      * Get a cart instance without changing the global state
      */
-    public function getCartInstance(string $name): Cart
+    public function getCartInstance(string $name, ?string $identifier = null): Cart
     {
         return new Cart(
             storage: $this->storage,
+            identifier: $this->resolveIdentifier($identifier),
             events: $this->events,
             instanceName: $name,
-            eventsEnabled: $this->eventsEnabled,
-            config: $this->config
+            eventsEnabled: $this->eventsEnabled
         );
     }
 
@@ -86,13 +82,14 @@ class CartManager
     public function setInstance(string $name): static
     {
         if ($this->currentInstance !== $name) {
+            $currentIdentifier = $this->currentCart->getIdentifier();
             $this->currentInstance = $name;
             $this->currentCart = new Cart(
                 storage: $this->storage,
+                identifier: $currentIdentifier,
                 events: $this->events,
                 instanceName: $name,
-                eventsEnabled: $this->eventsEnabled,
-                config: $this->config
+                eventsEnabled: $this->eventsEnabled
             );
         }
 
@@ -112,22 +109,6 @@ class CartManager
         $session = app(\Illuminate\Session\SessionManager::class)->driver();
 
         return new \MasyukAI\Cart\Storage\SessionStorage($session, $sessionKey ?? config('cart.session.key', 'cart'));
-    }
-
-    /**
-     * Enable formatting globally.
-     */
-    public function enableFormatting(): void
-    {
-        \MasyukAI\Cart\Support\CartMoney::enableFormatting();
-    }
-
-    /**
-     * Disable formatting globally.
-     */
-    public function disableFormatting(): void
-    {
-        \MasyukAI\Cart\Support\CartMoney::disableFormatting();
     }
 
     /**
@@ -311,5 +292,68 @@ class CartManager
         $migrationService = new \MasyukAI\Cart\Services\CartMigrationService([], $this->storage);
 
         return $migrationService->swap($oldIdentifier, $newIdentifier, $instance);
+    }
+
+    /**
+     * Resolve storage identifier (auth()->id() for authenticated users, session()->id() for guests)
+     */
+    protected function resolveIdentifier(?string $customIdentifier = null): string
+    {
+        // Use custom identifier if provided
+        if ($customIdentifier !== null) {
+            return $customIdentifier;
+        }
+
+        // Try authenticated user first
+        if ($authenticatedId = $this->getAuthenticatedUserId()) {
+            return $authenticatedId;
+        }
+
+        // Fall back to session ID for guests
+        if ($sessionId = $this->getSessionId()) {
+            return $sessionId;
+        }
+
+        // If neither is available, throw exception
+        throw new \RuntimeException(
+            'Cart identifier cannot be determined: neither auth nor session services are available'
+        );
+    }
+
+    /**
+     * Get authenticated user ID if available
+     */
+    protected function getAuthenticatedUserId(): ?string
+    {
+        try {
+            if (! app()->bound('auth')) {
+                return null;
+            }
+
+            $auth = app(\Illuminate\Contracts\Auth\Factory::class);
+            $guard = $auth->guard();
+
+            return $guard->check() ? (string) $guard->id() : null;
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Get session ID if available
+     */
+    protected function getSessionId(): ?string
+    {
+        try {
+            if (! app()->bound('session')) {
+                return null;
+            }
+
+            $session = app(\Illuminate\Session\SessionManager::class);
+
+            return $session->getId();
+        } catch (\Throwable $e) {
+            return null;
+        }
     }
 }

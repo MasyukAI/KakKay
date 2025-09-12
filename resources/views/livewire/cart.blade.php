@@ -114,7 +114,7 @@
                                                 </flux:badge>
                                             </div> --}}
                                             <p class="text-2xl font-bold cart-text-accent">
-                                                {{ $this->formatPrice($item['price']) }}
+                                                {{ $item['price'] }}
                                             </p>
                                         </div>
 
@@ -160,7 +160,7 @@
                             <div class="space-y-4 mb-6">
                                 <div class="flex justify-between">
                                     <span class="cart-text-muted">Subtotal</span>
-                                    <span class="font-semibold">{{ $this->formatPrice($this->getSubtotal()) }}</span>
+                                    <span class="font-semibold">{{ $this->getSubtotal() }}</span>
                                 </div>
 
                                 {{-- <div class="flex justify-between text-green-400">
@@ -170,7 +170,7 @@
 
                                 <div class="flex justify-between">
                                     <span class="cart-text-muted">Penghantaran</span>
-                                    <span class="font-semibold">{{ $this->formatPrice($this->getShipping()) }}</span>
+                                    <span class="font-semibold">{{ $this->getShipping() }}</span>
                                 </div>
 
                                 {{-- <div class="flex justify-between">
@@ -182,7 +182,7 @@
 
                                 <div class="flex justify-between text-xl font-bold">
                                     <span>Jumlah</span>
-                                    <span class="cart-text-accent">{{ $this->formatPrice($this->getTotal()) }}</span>
+                                    <span class="cart-text-accent">{{ $this->getTotal() }}</span>
                                 </div>
                             </div>
 
@@ -250,7 +250,7 @@
 
                                     <div class="flex items-center justify-between">
                                         <span class="text-xl font-bold cart-text-accent">
-                                            {{ $this->formatPrice($product->price) }}
+                                            {{ \Akaunting\Money\Money::MYR($product->price) }}
                                         </span>
                                         {{-- <flux:badge variant="solid" color="pink" size="sm">
                                             <flux:icon.sparkles class="h-3 w-3 mr-1" />

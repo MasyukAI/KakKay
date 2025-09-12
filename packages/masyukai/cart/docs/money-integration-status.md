@@ -29,7 +29,7 @@ The cart package still uses `float` arithmetic everywhere:
 
 ```php
 // In CartItem.php - still using floats
-public function getRawPriceSum(): float
+public function getRawSubtotal(): float
 {
     return $this->price * $this->quantity;  // ❌ Float math
 }
@@ -37,7 +37,7 @@ public function getRawPriceSum(): float
 // In CalculatesTotals.php - still using floats  
 protected function getSubTotal(): float
 {
-    return $this->getItems()->sum(fn (CartItem $item) => $item->getRawPriceSum());
+    return $this->getItems()->sum(fn (CartItem $item) => $item->getRawSubtotal());
 }
 ```
 

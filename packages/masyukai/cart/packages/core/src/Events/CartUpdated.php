@@ -55,7 +55,7 @@ final class CartUpdated
     {
         return [
             'identifier' => $this->cart->getIdentifier(),
-            'instance_name' => $this->cart->getCurrentInstance(),
+            'instance_name' => $this->cart->instance(),
             'reason' => $this->reason,
             'items_count' => $this->cart->countItems(),
             'total_quantity' => $this->cart->getTotalQuantity(),
