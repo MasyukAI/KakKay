@@ -27,7 +27,6 @@ class CartServiceProvider extends PackageServiceProvider
             ->hasMigrations(['create_carts_table'])
             ->hasCommands([
                 \MasyukAI\Cart\Console\Commands\ClearAbandonedCartsCommand::class,
-                \MasyukAI\Cart\Console\Commands\MigrateGuestCartCommand::class,
                 \MasyukAI\Cart\Console\Commands\CartMetricsCommand::class,
             ]);
     }

@@ -190,15 +190,12 @@ it('integration: registers migration service', function () {
 });
 
 it('integration: publishes config, migrations, and views', function () {
-    $app = app();
-    $provider = new \MasyukAI\Cart\CartServiceProvider($app);
-
-    // Test configurePackage instead of boot since Spatie Package Tools handles publishing
+    $provider = new \MasyukAI\Cart\CartServiceProvider(app());
     $package = new \Spatie\LaravelPackageTools\Package;
     $provider->configurePackage($package);
 
     expect($package->name)->toBe('cart');
-    expect($package->commands)->toHaveCount(3);
+    expect($package->commands)->toHaveCount(3);  // Now 3 commands
     expect(true)->toBeTrue(); // Package was configured successfully
 });
 
