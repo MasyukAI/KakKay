@@ -255,7 +255,7 @@
                             <div class="space-y-4 mb-6">
                                 <div class="flex justify-between">
                                     <span class="cart-text-muted">Subtotal</span>
-                                    <span class="font-semibold">{{ $this->formatPrice($this->getSubtotal()) }}</span>
+                                    <span class="font-semibold">{{ $this->getSubtotal()->format() }}</span>
                                 </div>
 
                                 {{-- <div class="flex justify-between text-green-400">
@@ -265,7 +265,7 @@
 
                                 <div class="flex justify-between">
                                     <span class="cart-text-muted">Penghantaran</span>
-                                    <span class="font-semibold">{{ $this->formatPrice($this->getShipping()) }}</span>
+                                    <span class="font-semibold">{{ $this->getShippingMoney()->format() }}</span>
                                 </div>
 
                                 {{-- <div class="flex justify-between">
@@ -277,7 +277,7 @@
 
                                 <div class="flex justify-between text-xl font-bold">
                                     <span>Jumlah</span>
-                                    <span class="cart-text-accent">{{ $this->formatPrice($this->getTotal()) }}</span>
+                                    <span class="cart-text-accent">{{ $this->getTotal()->format() }}</span>
                                 </div>
                             </div>
 

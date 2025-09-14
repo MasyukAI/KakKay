@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use Akaunting\Money\Money;
 use App\Services\CheckoutService;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -202,7 +203,7 @@ class Checkout extends Component implements HasSchemas
                 return [
                     'id' => (string) $item->id,
                     'name' => (string) $item->name,
-                    'price' => (int) ($item->price),
+                    'price' => (int) ($item->getRawPrice() * 100), // Convert to cents for payment processing
                     'quantity' => (int) $item->quantity,
                     'attributes' => $item->attributes->toArray(),
                 ];
@@ -260,12 +261,9 @@ class Checkout extends Component implements HasSchemas
     }
 
     #[Computed]
-    public function getSubtotal(): int
+    public function getSubtotal(): \Akaunting\Money\Money
     {
-        $subtotal = CartFacade::subtotal();
-
-        // CartFacade::subtotal() returns a CartMoney object, get the amount in cents
-        return (int) ($subtotal * 100); // Convert major units to cents for formatPrice
+        return CartFacade::subtotal(); // Return Money object directly for formatting
     }
 
     #[Computed]
@@ -275,36 +273,26 @@ class Checkout extends Component implements HasSchemas
     }
 
     #[Computed]
-    public function getShipping(): int
-    {
-        $deliveryMethod = $this->data['delivery_method'] ?? 'standard';
-
-        return match ($deliveryMethod) {
-            'express' => 4900, // RM49
-            'fast' => 1500,    // RM15
-            default => 500,    // RM5 Standard shipping
-        };
-    }
-
-    #[Computed]
-    public function getTax(): int
-    {
-        return 0; // No tax applied
-    }
-
-    #[Computed]
-    public function getTotal(): int
+    public function getTotal(): \Akaunting\Money\Money
     {
         $cartTotal = CartFacade::total();
-        // CartFacade::total() returns a CartMoney object, convert to cents
-        $cartTotalInCents = (int) ($cartTotal * 100);
-
-        return $cartTotalInCents - $this->getSavings() + $this->getShipping() + $this->getTax();
+        $shipping = $this->getShippingMoney();
+        
+        return $cartTotal->add($shipping);
     }
 
-    public function formatPrice(int $cents): string
+    public function getShippingMoney(): \Akaunting\Money\Money
     {
-        return 'RM'.number_format($cents / 100, 2);
+        $deliveryMethod = $this->data['delivery_method'] ?? 'standard';
+        $currency = config('cart.money.default_currency', 'MYR');
+        
+        $shippingAmount = match ($deliveryMethod) {
+            'express' => 4900, // RM49 in cents
+            'fast' => 1500,    // RM15 in cents
+            default => 500,    // RM5 in cents
+        };
+
+        return \Akaunting\Money\Money::{$currency}($shippingAmount);
     }
 
     public function applyVoucher(): void

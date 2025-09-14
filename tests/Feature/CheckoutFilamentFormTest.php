@@ -17,7 +17,8 @@ test('checkout component has required methods', function () {
     
     expect(method_exists($checkout, 'form'))->toBeTrue();
     expect(method_exists($checkout, 'processCheckout'))->toBeTrue();
-    expect(method_exists($checkout, 'formatPrice'))->toBeTrue();
+    expect(method_exists($checkout, 'getSubtotal'))->toBeTrue();
+    expect(method_exists($checkout, 'getTotal'))->toBeTrue();
 });
 
 test('checkout route works', function () {
