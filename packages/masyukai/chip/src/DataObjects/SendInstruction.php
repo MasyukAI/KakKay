@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Masyukai\Chip\DataObjects;
+namespace MasyukAI\Chip\DataObjects;
 
 use Carbon\Carbon;
 
@@ -13,9 +13,11 @@ class SendInstruction
         public readonly int $bank_account_id,
         public readonly string $amount,
         public readonly string $state,
-        public readonly ?string $email,
-        public readonly ?string $description,
-        public readonly ?string $reference,
+        public readonly string $email,
+        public readonly string $description,
+        public readonly string $reference,
+        public readonly ?string $receipt_url,
+        public readonly ?string $slug,
         public readonly string $created_at,
         public readonly string $updated_at,
     ) {}
@@ -26,10 +28,12 @@ class SendInstruction
             id: (int) $data['id'],
             bank_account_id: (int) $data['bank_account_id'],
             amount: (string) $data['amount'],
-            state: $data['state'] ?? 'pending',
-            email: $data['email'] ?? null,
-            description: $data['description'] ?? null,
-            reference: $data['reference'] ?? null,
+            state: $data['state'] ?? 'received',
+            email: $data['email'],
+            description: $data['description'],
+            reference: $data['reference'],
+            receipt_url: $data['receipt_url'] ?? null,
+            slug: $data['slug'] ?? null,
             created_at: $data['created_at'],
             updated_at: $data['updated_at'],
         );
@@ -55,24 +59,49 @@ class SendInstruction
         return (int) (((float) $this->amount) * 100);
     }
 
+    public function isReceived(): bool
+    {
+        return $this->state === 'received';
+    }
+
+    public function isEnquiring(): bool
+    {
+        return $this->state === 'enquiring';
+    }
+
+    public function isExecuting(): bool
+    {
+        return $this->state === 'executing';
+    }
+
+    public function isReviewing(): bool
+    {
+        return $this->state === 'reviewing';
+    }
+
+    public function isAccepted(): bool
+    {
+        return $this->state === 'accepted';
+    }
+
     public function isCompleted(): bool
     {
         return $this->state === 'completed';
     }
 
-    public function isCancelled(): bool
+    public function isRejected(): bool
     {
-        return $this->state === 'cancelled';
+        return $this->state === 'rejected';
+    }
+
+    public function isDeleted(): bool
+    {
+        return $this->state === 'deleted';
     }
 
     public function isPending(): bool
     {
-        return $this->state === 'pending';
-    }
-
-    public function isFailed(): bool
-    {
-        return $this->state === 'failed';
+        return in_array($this->state, ['received', 'enquiring', 'executing', 'reviewing', 'accepted']);
     }
 
     public function toArray(): array
@@ -85,6 +114,8 @@ class SendInstruction
             'email' => $this->email,
             'description' => $this->description,
             'reference' => $this->reference,
+            'receipt_url' => $this->receipt_url,
+            'slug' => $this->slug,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Masyukai\Chip\Services;
+namespace MasyukAI\Chip\Services;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
-use Masyukai\Chip\Events\PurchaseCreated;
-use Masyukai\Chip\Events\PurchasePaid;
-use Masyukai\Chip\Events\WebhookReceived;
-use Masyukai\Chip\DataObjects\Purchase;
-use Masyukai\Chip\Http\Requests\WebhookRequest;
-use Masyukai\Chip\Exceptions\WebhookVerificationException;
+use MasyukAI\Chip\DataObjects\Purchase;
+use MasyukAI\Chip\Events\PurchaseCreated;
+use MasyukAI\Chip\Events\PurchasePaid;
+use MasyukAI\Chip\Events\WebhookReceived;
+use MasyukAI\Chip\Exceptions\WebhookVerificationException;
+use MasyukAI\Chip\Http\Requests\WebhookRequest;
 
 class WebhookService
 {
-    public function verifySignature($payloadOrRequest, string $signature = null, string $publicKey = null): bool
+    public function verifySignature($payloadOrRequest, ?string $signature = null, ?string $publicKey = null): bool
     {
         // Handle both method signatures for backward compatibility
         if ($payloadOrRequest instanceof \Illuminate\Http\Request) {
@@ -29,15 +29,15 @@ class WebhookService
             $payload = $payloadOrRequest;
         }
 
-        if (!config('chip.webhooks.verify_signature')) {
+        if (! config('chip.webhooks.verify_signature')) {
             return true;
         }
 
-        if (!$signature) {
+        if (! $signature) {
             throw new WebhookVerificationException('Missing signature header');
         }
 
-        if (!$publicKey) {
+        if (! $publicKey) {
             throw new WebhookVerificationException('No public key configured');
         }
 
@@ -45,13 +45,13 @@ class WebhookService
             // Remove the "-----BEGIN PUBLIC KEY-----" and "-----END PUBLIC KEY-----" wrapper
             $cleanedKey = preg_replace('/-----[^-]+-----/', '', $publicKey);
             $cleanedKey = str_replace(["\n", "\r", ' '], '', $cleanedKey);
-            
+
             // Create a proper PEM format
-            $pemKey = "-----BEGIN PUBLIC KEY-----\n" . chunk_split($cleanedKey, 64, "\n") . "-----END PUBLIC KEY-----";
-            
+            $pemKey = "-----BEGIN PUBLIC KEY-----\n".chunk_split($cleanedKey, 64, "\n").'-----END PUBLIC KEY-----';
+
             // Create the public key resource
             $publicKeyResource = openssl_pkey_get_public($pemKey);
-            if (!$publicKeyResource) {
+            if (! $publicKeyResource) {
                 throw new WebhookVerificationException('Invalid public key format');
             }
 
@@ -69,24 +69,32 @@ class WebhookService
                     'signature' => $signature,
                 ]);
 
-            throw new WebhookVerificationException('Signature verification failed: ' . $e->getMessage());
+            throw new WebhookVerificationException('Signature verification failed: '.$e->getMessage());
         }
     }
 
     public function getPublicKey(?string $webhookId = null): string
     {
-        $cacheKey = config('chip.cache.prefix') . 'public_key' . ($webhookId ? ":{$webhookId}" : '');
+        $cacheKey = config('chip.cache.prefix').'public_key'.($webhookId ? ":{$webhookId}" : '');
         $ttl = config('chip.cache.ttl.public_key');
 
         return Cache::remember($cacheKey, $ttl, function () use ($webhookId) {
-            if ($webhookId) {
-                // Get webhook-specific public key
-                $webhook = app(ChipCollectService::class)->getWebhook($webhookId);
-                return $webhook->public_key;
-            }
+            try {
+                if ($webhookId) {
+                    // Get webhook-specific public key
+                    $webhook = app(ChipCollectService::class)->getWebhook($webhookId);
 
-            // Get general public key for success callbacks
-            return app(ChipCollectService::class)->getPublicKey();
+                    return $webhook['public_key'] ?? $webhook->public_key ?? '';
+                }
+
+                // Get general public key for success callbacks
+                $response = app(ChipCollectService::class)->getPublicKey();
+
+                return $response['public_key'] ?? '';
+            } catch (\Exception $e) {
+                // Fallback to configured public key if API call fails
+                return config('chip.webhooks.public_key', '');
+            }
         });
     }
 
@@ -105,20 +113,18 @@ class WebhookService
     {
         // You can add custom logic here to determine if a webhook should be processed
         // based on event type, configuration, etc.
-        
+
         return true;
     }
 
     /**
      * Process incoming webhook request.
-     * 
-     * @param WebhookRequest $request
-     * @return bool
+     *
      * @throws WebhookVerificationException
      */
     public function processWebhook(WebhookRequest $request): bool
     {
-        if (!$this->verifySignature($request)) {
+        if (! $this->verifySignature($request)) {
             throw new WebhookVerificationException('Invalid webhook signature');
         }
 
@@ -133,7 +139,7 @@ class WebhookService
             ]);
 
         // Dispatch generic webhook event
-        $webhook = \Masyukai\Chip\DataObjects\Webhook::fromArray([
+        $webhook = \MasyukAI\Chip\DataObjects\Webhook::fromArray([
             'event' => $event,
             'data' => $data,
             'timestamp' => now()->toISOString(),
@@ -148,16 +154,12 @@ class WebhookService
 
     /**
      * Handle specific webhook events.
-     * 
-     * @param string $event
-     * @param array $data
-     * @return void
      */
     protected function handleSpecificEvent(string $event, array $data): void
     {
         $eventMapping = config('chip.webhooks.event_mapping', []);
-        
-        if (!isset($eventMapping[$event])) {
+
+        if (! isset($eventMapping[$event])) {
             return;
         }
 
@@ -168,7 +170,7 @@ class WebhookService
                     Event::dispatch(new PurchaseCreated($purchase));
                 }
                 break;
-                
+
             case 'purchase.paid':
                 if (class_exists(PurchasePaid::class)) {
                     $purchase = Purchase::fromArray($data);
@@ -180,21 +182,16 @@ class WebhookService
 
     /**
      * Check if webhook event is allowed.
-     * 
-     * @param string $event
-     * @return bool
      */
     public function isEventAllowed(string $event): bool
     {
         $allowedEvents = config('chip.webhooks.allowed_events', []);
-        
+
         return in_array($event, $allowedEvents) || in_array('*', $allowedEvents);
     }
 
     /**
      * Get webhook configuration.
-     * 
-     * @return array
      */
     public function getWebhookConfig(): array
     {

@@ -10,31 +10,24 @@ return new class extends Migration
     {
         $tablePrefix = config('chip.database.table_prefix', 'chip_');
 
-        Schema::create($tablePrefix . 'send_instructions', function (Blueprint $table) {
+        Schema::create($tablePrefix.'send_instructions', function (Blueprint $table) {
             $table->id();
             $table->string('instruction_id')->unique();
             $table->integer('bank_account_id');
-            $table->string('amount');
-            $table->string('state')->default('pending');
-            $table->string('email')->nullable();
-            $table->text('description')->nullable();
-            $table->string('reference')->nullable();
-            $table->integer('amount_in_cents');
-            $table->string('currency', 3);
-            $table->string('recipient_bank_account_id');
-            $table->json('recipient_details')->nullable();
-            $table->string('status');
+            $table->string('amount'); // Keep as string to match API
+            $table->string('state')->default('received'); // Default should be 'received' per API
+            $table->string('email');
+            $table->text('description');
+            $table->string('reference');
+            $table->string('receipt_url')->nullable();
+            $table->string('slug')->nullable();
             $table->json('metadata')->nullable();
-            $table->timestamp('sent_at')->nullable();
-            $table->timestamp('completed_at')->nullable();
-            $table->string('failure_reason')->nullable();
             $table->json('raw_response')->nullable();
             $table->timestamps();
 
-            $table->index(['status', 'created_at']);
-            $table->index('recipient_bank_account_id');
-            $table->index('sent_at');
-            $table->index('completed_at');
+            $table->index(['state', 'created_at']);
+            $table->index('bank_account_id');
+            $table->index('reference');
         });
     }
 
@@ -42,6 +35,6 @@ return new class extends Migration
     {
         $tablePrefix = config('chip.database.table_prefix', 'chip_');
 
-        Schema::dropIfExists($tablePrefix . 'send_instructions');
+        Schema::dropIfExists($tablePrefix.'send_instructions');
     }
 };

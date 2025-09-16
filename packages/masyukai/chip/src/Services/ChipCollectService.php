@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Masyukai\Chip\Services;
+namespace MasyukAI\Chip\Services;
 
 use Illuminate\Support\Facades\Log;
-use Masyukai\Chip\Clients\ChipCollectClient;
-use Masyukai\Chip\DataObjects\Client;
-use Masyukai\Chip\DataObjects\ClientDetails;
-use Masyukai\Chip\DataObjects\CurrencyConversion;
-use Masyukai\Chip\DataObjects\IssuerDetails;
-use Masyukai\Chip\DataObjects\Payment;
-use Masyukai\Chip\DataObjects\Product;
-use Masyukai\Chip\DataObjects\Purchase;
-use Masyukai\Chip\DataObjects\PurchaseDetails;
-use Masyukai\Chip\DataObjects\TransactionData;
-use Masyukai\Chip\Exceptions\ChipValidationException;
+use MasyukAI\Chip\Clients\ChipCollectClient;
+use MasyukAI\Chip\DataObjects\Client;
+use MasyukAI\Chip\DataObjects\ClientDetails;
+use MasyukAI\Chip\DataObjects\CurrencyConversion;
+use MasyukAI\Chip\DataObjects\IssuerDetails;
+use MasyukAI\Chip\DataObjects\Payment;
+use MasyukAI\Chip\DataObjects\Product;
+use MasyukAI\Chip\DataObjects\Purchase;
+use MasyukAI\Chip\DataObjects\PurchaseDetails;
+use MasyukAI\Chip\DataObjects\TransactionData;
+use MasyukAI\Chip\Exceptions\ChipValidationException;
 
 class ChipCollectService
 {
@@ -532,8 +532,182 @@ class ChipCollectService
      */
     public function getPublicKey(): string
     {
-        // This would typically come from the CHIP API or configuration
-        // For now, return a configured public key
-        return config('chip.webhooks.public_key') ?: 'default_public_key_for_testing';
+        try {
+            return $this->client->get('public_key/');
+        } catch (\Exception $e) {
+            Log::error('Failed to get CHIP public key', [
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Get account balance
+     */
+    public function getAccountBalance(): array
+    {
+        try {
+            return $this->client->get('account/balance/');
+        } catch (\Exception $e) {
+            Log::error('Failed to get CHIP account balance', [
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Get account turnover
+     */
+    public function getAccountTurnover(array $filters = []): array
+    {
+        try {
+            $queryString = http_build_query($filters);
+            $endpoint = 'account/turnover/'.($queryString ? '?'.$queryString : '');
+
+            return $this->client->get($endpoint);
+        } catch (\Exception $e) {
+            Log::error('Failed to get CHIP account turnover', [
+                'filters' => $filters,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * List company statements
+     */
+    public function listCompanyStatements(array $filters = []): array
+    {
+        try {
+            $queryString = http_build_query($filters);
+            $endpoint = 'company_statements/'.($queryString ? '?'.$queryString : '');
+
+            return $this->client->get($endpoint);
+        } catch (\Exception $e) {
+            Log::error('Failed to get CHIP company statements', [
+                'filters' => $filters,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Get a company statement
+     */
+    public function getCompanyStatement(string $statementId): array
+    {
+        try {
+            return $this->client->get("company_statements/{$statementId}/");
+        } catch (\Exception $e) {
+            Log::error('Failed to get CHIP company statement', [
+                'statement_id' => $statementId,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Cancel a company statement
+     */
+    public function cancelCompanyStatement(string $statementId): array
+    {
+        try {
+            return $this->client->post("company_statements/{$statementId}/cancel/");
+        } catch (\Exception $e) {
+            Log::error('Failed to cancel CHIP company statement', [
+                'statement_id' => $statementId,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Create a webhook
+     */
+    public function createWebhook(array $data): array
+    {
+        try {
+            return $this->client->post('webhooks/', $data);
+        } catch (\Exception $e) {
+            Log::error('Failed to create CHIP webhook', [
+                'data' => $data,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Get a webhook
+     */
+    public function getWebhook(string $webhookId): array
+    {
+        try {
+            return $this->client->get("webhooks/{$webhookId}/");
+        } catch (\Exception $e) {
+            Log::error('Failed to get CHIP webhook', [
+                'webhook_id' => $webhookId,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Update a webhook
+     */
+    public function updateWebhook(string $webhookId, array $data): array
+    {
+        try {
+            return $this->client->put("webhooks/{$webhookId}/", $data);
+        } catch (\Exception $e) {
+            Log::error('Failed to update CHIP webhook', [
+                'webhook_id' => $webhookId,
+                'data' => $data,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Delete a webhook
+     */
+    public function deleteWebhook(string $webhookId): void
+    {
+        try {
+            $this->client->delete("webhooks/{$webhookId}/");
+        } catch (\Exception $e) {
+            Log::error('Failed to delete CHIP webhook', [
+                'webhook_id' => $webhookId,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * List webhooks
+     */
+    public function listWebhooks(array $filters = []): array
+    {
+        try {
+            $queryString = http_build_query($filters);
+            $endpoint = 'webhooks/'.($queryString ? '?'.$queryString : '');
+
+            return $this->client->get($endpoint);
+        } catch (\Exception $e) {
+            Log::error('Failed to list CHIP webhooks', [
+                'filters' => $filters,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
     }
 }

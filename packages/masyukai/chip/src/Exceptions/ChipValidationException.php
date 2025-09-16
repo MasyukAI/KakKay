@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Masyukai\Chip\Exceptions;
+namespace MasyukAI\Chip\Exceptions;
 
 use Illuminate\Contracts\Validation\Validator;
 
@@ -25,7 +25,7 @@ class ChipValidationException extends ChipApiException
 
     public function hasValidationErrors(): bool
     {
-        return !empty($this->getValidationErrors());
+        return ! empty($this->getValidationErrors());
     }
 
     public function hasFieldError(string $field): bool
@@ -51,7 +51,7 @@ class ChipValidationException extends ChipApiException
                 $errors[] = "{$field}: {$error}";
             }
         }
-        
+
         return implode(', ', $errors);
     }
 

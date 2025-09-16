@@ -10,7 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use MasyukAI\Cart\Facades\Cart;
-use Masyukai\Chip\Events\PurchasePaid;
+use MasyukAI\Chip\Events\PurchasePaid;
 
 class HandlePaymentSuccess implements ShouldQueue
 {

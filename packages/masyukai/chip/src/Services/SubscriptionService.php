@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Masyukai\Chip\Services;
+namespace MasyukAI\Chip\Services;
 
-use Masyukai\Chip\DataObjects\Purchase;
+use MasyukAI\Chip\DataObjects\Purchase;
 
 class SubscriptionService
 {

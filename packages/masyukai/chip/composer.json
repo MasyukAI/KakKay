@@ -31,12 +31,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Masyukai\\Chip\\": "src/"
+            "MasyukAI\\Chip\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Masyukai\\Chip\\Tests\\": "tests/"
+            "MasyukAI\\Chip\\Tests\\": "tests/"
         }
     },
     "scripts": {
@@ -54,10 +54,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Masyukai\\Chip\\ChipServiceProvider"
+                "MasyukAI\\Chip\\ChipServiceProvider"
             ],
             "aliases": {
-                "Chip": "Masyukai\\Chip\\Facades\\Chip"
+                "Chip": "MasyukAI\\Chip\\Facades\\Chip"
             }
         }
     },

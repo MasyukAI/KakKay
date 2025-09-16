@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Masyukai\Chip\DataObjects;
+namespace MasyukAI\Chip\DataObjects;
 
 use Carbon\Carbon;
 
@@ -80,12 +80,12 @@ class BankAccount
 
     public function canReceivePayments(): bool
     {
-        return $this->is_crediting_account && $this->isVerified() && !$this->isDeleted();
+        return $this->is_crediting_account && $this->isVerified() && ! $this->isDeleted();
     }
 
     public function canSendPayments(): bool
     {
-        return $this->is_debiting_account && $this->isVerified() && !$this->isDeleted();
+        return $this->is_debiting_account && $this->isVerified() && ! $this->isDeleted();
     }
 
     public function toArray(): array

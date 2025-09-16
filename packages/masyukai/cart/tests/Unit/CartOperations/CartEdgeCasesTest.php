@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use MasyukAI\Cart\Cart;
 use MasyukAI\Cart\Conditions\CartCondition;
-use Masyukai\Cart\Models\CartItem;
+use MasyukAI\Cart\Models\CartItem;
 use MasyukAI\Cart\Storage\DatabaseStorage;
 use MasyukAI\Cart\Storage\SessionStorage;
 

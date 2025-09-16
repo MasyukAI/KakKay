@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Masyukai\Chip\DataObjects;
+namespace MasyukAI\Chip\DataObjects;
 
 class IssuerDetails
 {

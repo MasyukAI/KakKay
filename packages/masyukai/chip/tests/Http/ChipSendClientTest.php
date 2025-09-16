@@ -1,9 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Http;
-use Masyukai\Chip\Exceptions\ChipApiException;
-use Masyukai\Chip\Exceptions\ChipValidationException;
-use Masyukai\Chip\Clients\ChipSendClient;
+use MasyukAI\Chip\Clients\ChipSendClient;
+use MasyukAI\Chip\Exceptions\ChipApiException;
+use MasyukAI\Chip\Exceptions\ChipValidationException;
 
 beforeEach(function () {
     $this->client = new ChipSendClient('test_api_key', 'test_secret_key', 'sandbox');
@@ -17,6 +17,7 @@ describe('ChipSendClient Authentication', function () {
 
         Http::assertSent(function ($request) {
             $headers = $request->headers();
+
             return isset($headers['epoch'][0]) &&
                    isset($headers['checksum'][0]) &&
                    isset($headers['Authorization'][0]) &&
@@ -32,10 +33,10 @@ describe('ChipSendClient Authentication', function () {
         Http::assertSent(function ($request) {
             $epoch = $request->header('epoch')[0];
             $checksum = $request->header('checksum')[0];
-            
+
             // The checksum should be a hash of the epoch with the API secret
             $expectedChecksum = hash_hmac('sha256', $epoch, 'test_secret_key');
-            
+
             return $checksum === $expectedChecksum;
         });
     });
@@ -47,6 +48,7 @@ describe('ChipSendClient Authentication', function () {
 
         Http::assertSent(function ($request) {
             $checksum = $request->header('checksum')[0];
+
             return is_string($checksum) && strlen($checksum) === 64; // SHA256 hex length
         });
     });
@@ -59,7 +61,7 @@ describe('ChipSendClient Request Methods', function () {
         $response = $this->client->get('/test');
 
         expect($response)->toBe(['data' => ['id' => '123']]);
-        Http::assertSent(fn($request) => $request->method() === 'GET');
+        Http::assertSent(fn ($request) => $request->method() === 'GET');
     });
 
     it('can make POST requests with JSON body', function () {
@@ -69,7 +71,7 @@ describe('ChipSendClient Request Methods', function () {
 
         expect($response)->toBe(['data' => ['created' => true]]);
         Http::assertSent(function ($request) {
-            return $request->method() === 'POST' && 
+            return $request->method() === 'POST' &&
                    json_decode($request->body(), true) === ['name' => 'Test'];
         });
     });
@@ -79,7 +81,7 @@ describe('ChipSendClient Error Handling', function () {
     it('throws ChipValidationException with proper error details', function () {
         Http::fake(['*' => Http::response([
             'error' => 'Invalid amount',
-            'code' => 'INVALID_AMOUNT'
+            'code' => 'INVALID_AMOUNT',
         ], 400)]);
 
         try {
@@ -91,8 +93,8 @@ describe('ChipSendClient Error Handling', function () {
             expect($e->getErrorDetails())->toBe([
                 'validation_errors' => [
                     'error' => 'Invalid amount',
-                    'code' => 'INVALID_AMOUNT'
-                ]
+                    'code' => 'INVALID_AMOUNT',
+                ],
             ]);
         }
     });
@@ -100,7 +102,7 @@ describe('ChipSendClient Error Handling', function () {
     it('handles network timeouts', function () {
         Http::fake(['*' => Http::response(null, 408)]);
 
-        expect(fn() => $this->client->get('/test'))
+        expect(fn () => $this->client->get('/test'))
             ->toThrow(ChipApiException::class);
     });
 });
@@ -138,6 +140,7 @@ describe('ChipSendClient Timestamp Generation', function () {
 
         Http::assertSent(function ($request) use ($beforeTime, $afterTime) {
             $timestamp = (int) $request->header('epoch')[0];
+
             return $timestamp >= $beforeTime && $timestamp <= $afterTime;
         });
     });

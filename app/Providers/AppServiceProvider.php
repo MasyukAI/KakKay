@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
-use Masyukai\Chip\Events\PurchasePaid;
+use MasyukAI\Chip\Events\PurchasePaid;
 
 class AppServiceProvider extends ServiceProvider
 {

@@ -1,16 +1,30 @@
 <?php
 
-use Illuminate\Support\Facades\Http;
-use Masyukai\Chip\DataObjects\Purchase;
-use Masyukai\Chip\DataObjects\Client;
-use Masyukai\Chip\Services\ChipCollectService;
-use Masyukai\Chip\Services\WebhookService;
-use Masyukai\Chip\Clients\ChipCollectClient;
+use MasyukAI\Chip\Clients\ChipCollectClient;
+use MasyukAI\Chip\DataObjects\Client;
+use MasyukAI\Chip\DataObjects\Purchase;
+use MasyukAI\Chip\Services\ChipCollectService;
+use MasyukAI\Chip\Services\WebhookService;
 
 beforeEach(function () {
     $this->client = Mockery::mock(ChipCollectClient::class);
     $this->webhookService = Mockery::mock(WebhookService::class);
     $this->service = new ChipCollectService($this->client, $this->webhookService);
+});
+
+describe('ChipCollectService Public Key', function () {
+    it('returns the public key as a PEM string', function () {
+        $pemString = "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA7...\n-----END PUBLIC KEY-----\n";
+        $this->client->shouldReceive('get')
+            ->with('public_key/')
+            ->andReturn($pemString);
+
+        $publicKey = $this->service->getPublicKey();
+
+        expect($publicKey)->toBeString();
+        expect($publicKey)->toContain('BEGIN PUBLIC KEY');
+        expect($publicKey)->toContain('END PUBLIC KEY');
+    });
 });
 
 describe('ChipCollectService Purchase Management', function () {
@@ -30,9 +44,9 @@ describe('ChipCollectService Purchase Management', function () {
                     [
                         'name' => 'Test Product',
                         'price' => 10000,
-                        'quantity' => 1
-                    ]
-                ]
+                        'quantity' => 1,
+                    ],
+                ],
             ],
             'brand_id' => 'test_brand_id',
             'payment' => null,
@@ -80,11 +94,11 @@ describe('ChipCollectService Purchase Management', function () {
             'purchase' => [
                 'currency' => 'MYR',
                 'products' => [
-                    ['name' => 'Test Product', 'price' => 10000, 'quantity' => 1]
-                ]
+                    ['name' => 'Test Product', 'price' => 10000, 'quantity' => 1],
+                ],
             ],
             'brand_id' => 'test_brand_id',
-            'reference' => 'ORDER_001'
+            'reference' => 'ORDER_001',
         ];
 
         $this->client->shouldReceive('post')
@@ -115,9 +129,9 @@ describe('ChipCollectService Purchase Management', function () {
                     [
                         'name' => 'Test Product',
                         'price' => 10000,
-                        'quantity' => 1
-                    ]
-                ]
+                        'quantity' => 1,
+                    ],
+                ],
             ],
             'brand_id' => 'test_brand_id',
             'payment' => null,
@@ -187,9 +201,9 @@ describe('ChipCollectService Purchase Management', function () {
                     [
                         'name' => 'Test Product',
                         'price' => 10000,
-                        'quantity' => 1
-                    ]
-                ]
+                        'quantity' => 1,
+                    ],
+                ],
             ],
             'brand_id' => 'test_brand_id',
             'payment' => null,
@@ -248,8 +262,8 @@ describe('ChipCollectService Purchase Management', function () {
             'names' => [
                 'fpx' => 'FPX Online Banking',
                 'visa' => 'Visa',
-                'mastercard' => 'Mastercard'
-            ]
+                'mastercard' => 'Mastercard',
+            ],
         ];
 
         $this->client->shouldReceive('get')
@@ -273,13 +287,13 @@ describe('ChipCollectService Client Management', function () {
             'personal_code' => null,
             'brand_id' => 'test_brand_id',
             'created_on' => '2024-01-01T12:00:00Z',
-            'updated_on' => '2024-01-01T12:00:00Z'
+            'updated_on' => '2024-01-01T12:00:00Z',
         ];
 
         $requestData = [
             'email' => 'john@example.com',
             'phone' => '+60123456789',
-            'full_name' => 'John Doe'
+            'full_name' => 'John Doe',
         ];
 
         $this->client->shouldReceive('post')
@@ -303,7 +317,7 @@ describe('ChipCollectService Client Management', function () {
             'personal_code' => null,
             'brand_id' => 'test_brand_id',
             'created_on' => '2024-01-01T12:00:00Z',
-            'updated_on' => '2024-01-01T12:00:00Z'
+            'updated_on' => '2024-01-01T12:00:00Z',
         ];
 
         $this->client->shouldReceive('get')
@@ -322,13 +336,13 @@ describe('ChipCollectService Client Management', function () {
             [
                 'id' => 'client_123',
                 'email' => 'john@example.com',
-                'full_name' => 'John Doe'
+                'full_name' => 'John Doe',
             ],
             [
                 'id' => 'client_456',
                 'email' => 'jane@example.com',
-                'full_name' => 'Jane Smith'
-            ]
+                'full_name' => 'Jane Smith',
+            ],
         ];
 
         $this->client->shouldReceive('get')

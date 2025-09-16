@@ -1,8 +1,8 @@
 <?php
 
-use Masyukai\Chip\Exceptions\ChipApiException;
-use Masyukai\Chip\Exceptions\ChipValidationException;
-use Masyukai\Chip\Exceptions\WebhookVerificationException;
+use MasyukAI\Chip\Exceptions\ChipApiException;
+use MasyukAI\Chip\Exceptions\ChipValidationException;
+use MasyukAI\Chip\Exceptions\WebhookVerificationException;
 
 describe('ChipApiException', function () {
     it('creates exception with message and status code', function () {
@@ -16,7 +16,7 @@ describe('ChipApiException', function () {
     it('stores error details from API response', function () {
         $errorDetails = [
             'field' => 'amount_in_cents',
-            'message' => 'Must be greater than 0'
+            'message' => 'Must be greater than 0',
         ];
 
         $exception = new ChipApiException('Validation failed', 422, $errorDetails);
@@ -36,8 +36,8 @@ describe('ChipApiException', function () {
         $errorDetails = [
             'errors' => [
                 'amount_in_cents' => ['Must be greater than 0'],
-                'currency' => ['Invalid currency code']
-            ]
+                'currency' => ['Invalid currency code'],
+            ],
         ];
 
         $exception = new ChipApiException('Validation failed', 422, $errorDetails);
@@ -51,7 +51,7 @@ describe('ChipApiException', function () {
         $responseData = [
             'error' => 'Insufficient funds',
             'code' => 'INSUFFICIENT_FUNDS',
-            'details' => ['available_balance' => 5000]
+            'details' => ['available_balance' => 5000],
         ];
 
         $exception = ChipApiException::fromResponse($responseData, 402);
@@ -60,14 +60,14 @@ describe('ChipApiException', function () {
         expect($exception->getStatusCode())->toBe(402);
         expect($exception->getErrorDetails())->toBe([
             'code' => 'INSUFFICIENT_FUNDS',
-            'details' => ['available_balance' => 5000]
+            'details' => ['available_balance' => 5000],
         ]);
     });
 
     it('handles missing error message in response', function () {
         $responseData = [
             'code' => 'UNKNOWN_ERROR',
-            'details' => ['timestamp' => '2024-01-01T12:00:00Z']
+            'details' => ['timestamp' => '2024-01-01T12:00:00Z'],
         ];
 
         $exception = ChipApiException::fromResponse($responseData, 500);
@@ -81,7 +81,7 @@ describe('ChipValidationException', function () {
     it('creates validation exception with field errors', function () {
         $errors = [
             'amount_in_cents' => ['Required field'],
-            'currency' => ['Invalid currency code']
+            'currency' => ['Invalid currency code'],
         ];
 
         $exception = new ChipValidationException('Validation failed', $errors);
@@ -93,7 +93,7 @@ describe('ChipValidationException', function () {
     it('checks if specific field has error', function () {
         $errors = [
             'amount_in_cents' => ['Required field'],
-            'currency' => ['Invalid currency code']
+            'currency' => ['Invalid currency code'],
         ];
 
         $exception = new ChipValidationException('Validation failed', $errors);
@@ -105,7 +105,7 @@ describe('ChipValidationException', function () {
     it('gets errors for specific field', function () {
         $errors = [
             'amount_in_cents' => ['Required field', 'Must be positive'],
-            'currency' => ['Invalid currency code']
+            'currency' => ['Invalid currency code'],
         ];
 
         $exception = new ChipValidationException('Validation failed', $errors);
@@ -117,7 +117,7 @@ describe('ChipValidationException', function () {
     it('formats all validation errors as string', function () {
         $errors = [
             'amount_in_cents' => ['Required field'],
-            'currency' => ['Invalid currency code']
+            'currency' => ['Invalid currency code'],
         ];
 
         $exception = new ChipValidationException('Validation failed', $errors);
@@ -130,10 +130,10 @@ describe('ChipValidationException', function () {
     it('creates exception from Laravel validator', function () {
         $validator = validator([
             'amount_in_cents' => null,
-            'currency' => 'INVALID'
+            'currency' => 'INVALID',
         ], [
             'amount_in_cents' => 'required|integer|min:1',
-            'currency' => 'required|in:MYR,USD,SGD'
+            'currency' => 'required|in:MYR,USD,SGD',
         ]);
 
         // Check if validation fails without throwing exception
@@ -201,7 +201,7 @@ describe('Exception Inheritance', function () {
     it('implements custom exception interface if defined', function () {
         // If you have a custom ChipExceptionInterface
         // expect(new ChipApiException('test'))->toBeInstanceOf(ChipExceptionInterface::class);
-        
+
         // For now, just ensure they're proper exceptions
         expect(new ChipApiException('test'))->toBeInstanceOf(\Throwable::class);
         expect(new ChipValidationException('test', []))->toBeInstanceOf(\Throwable::class);

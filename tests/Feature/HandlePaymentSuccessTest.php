@@ -9,10 +9,10 @@ use App\Models\User;
 use App\Services\StockService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use MasyukAI\Cart\Facades\Cart;
-use Masyukai\Chip\DataObjects\ClientDetails;
-use Masyukai\Chip\DataObjects\Purchase;
-use Masyukai\Chip\DataObjects\PurchaseDetails;
-use Masyukai\Chip\Events\PurchasePaid;
+use MasyukAI\Chip\DataObjects\ClientDetails;
+use MasyukAI\Chip\DataObjects\Purchase;
+use MasyukAI\Chip\DataObjects\PurchaseDetails;
+use MasyukAI\Chip\Events\PurchasePaid;
 
 uses(RefreshDatabase::class);
 
@@ -98,8 +98,8 @@ test('cart is cleared after successful payment', function () {
         ]),
         brand_id: 'test_brand',
         payment: null,
-        issuer_details: \Masyukai\Chip\DataObjects\IssuerDetails::fromArray(['legal_name' => 'Test Bank']),
-        transaction_data: \Masyukai\Chip\DataObjects\TransactionData::fromArray([
+        issuer_details: \MasyukAI\Chip\DataObjects\IssuerDetails::fromArray(['legal_name' => 'Test Bank']),
+        transaction_data: \MasyukAI\Chip\DataObjects\TransactionData::fromArray([
             'payment_method' => 'fpx',
             'extra' => [],
             'country' => 'MY',

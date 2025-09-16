@@ -5,8 +5,8 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
-use Masyukai\Chip\Events\WebhookReceived;
-use Masyukai\Chip\Tests\TestCase;
+use MasyukAI\Chip\Events\WebhookReceived;
+use MasyukAI\Chip\Tests\TestCase;
 
 class FeatureTestCase extends TestCase
 {

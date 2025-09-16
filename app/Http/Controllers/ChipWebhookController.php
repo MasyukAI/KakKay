@@ -7,9 +7,9 @@ use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
-use Masyukai\Chip\Events\PurchaseCreated;
-use Masyukai\Chip\Events\PurchasePaid;
-use Masyukai\Chip\Services\WebhookService;
+use MasyukAI\Chip\Events\PurchaseCreated;
+use MasyukAI\Chip\Events\PurchasePaid;
+use MasyukAI\Chip\Services\WebhookService;
 
 class ChipWebhookController extends Controller
 {
@@ -26,8 +26,9 @@ class ChipWebhookController extends Controller
     {
         try {
             // Verify signature
-            if (!$this->webhookService->verifySignature($request)) {
+            if (! $this->webhookService->verifySignature($request)) {
                 Log::error('CHIP webhook signature verification failed');
+
                 return response('Unauthorized', 401);
             }
 

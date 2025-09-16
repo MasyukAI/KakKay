@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Masyukai\Chip\DataObjects;
+namespace MasyukAI\Chip\DataObjects;
 
 use Carbon\Carbon;
 
@@ -29,7 +29,7 @@ class Webhook
         // Handle webhook event data (from webhook payload)
         if (isset($data['event'])) {
             return new self(
-                id: $data['id'] ?? 'webhook_event_' . uniqid(),
+                id: $data['id'] ?? 'webhook_event_'.uniqid(),
                 type: 'webhook_event',
                 created_on: isset($data['timestamp']) ? strtotime($data['timestamp']) : time(),
                 updated_on: isset($data['timestamp']) ? strtotime($data['timestamp']) : time(),
@@ -43,10 +43,10 @@ class Webhook
                 timestamp: $data['timestamp'] ?? null,
             );
         }
-        
+
         // Handle webhook configuration data (for webhook endpoints)
         return new self(
-            id: $data['id'] ?? 'webhook_' . uniqid(),
+            id: $data['id'] ?? 'webhook_'.uniqid(),
             type: $data['type'] ?? 'webhook',
             created_on: $data['created_on'] ?? strtotime($data['created_at'] ?? 'now'),
             updated_on: $data['updated_on'] ?? strtotime($data['updated_at'] ?? 'now'),
@@ -67,7 +67,7 @@ class Webhook
         if ($this->event && str_starts_with($this->event, 'purchase.') && $this->data) {
             return Purchase::fromArray($this->data);
         }
-        
+
         return null;
     }
 

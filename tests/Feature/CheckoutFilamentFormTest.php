@@ -1,6 +1,9 @@
 <?php
 
 use App\Livewire\Checkout;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+uses(RefreshDatabase::class);
 
 test('checkout component class exists', function () {
     expect(class_exists(Checkout::class))->toBeTrue();
@@ -22,6 +25,9 @@ test('checkout component has required methods', function () {
 });
 
 test('checkout route works', function () {
+    // Install world data for the test
+    $this->artisan('world:install')->assertSuccessful();
+    
     $response = $this->get('/checkout');
     
     // Should either show checkout page or redirect to cart (when no items)

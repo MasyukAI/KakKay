@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Masyukai\Chip\Http\Requests;
+namespace MasyukAI\Chip\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Masyukai\Chip\Services\WebhookService;
+use MasyukAI\Chip\Services\WebhookService;
 
 class WebhookRequest extends FormRequest
 {
@@ -13,7 +13,7 @@ class WebhookRequest extends FormRequest
 
     public function authorize(): bool
     {
-        if (!config('chip.webhooks.verify_signature')) {
+        if (! config('chip.webhooks.verify_signature')) {
             return true;
         }
 
@@ -22,7 +22,7 @@ class WebhookRequest extends FormRequest
             $payload = $this->getContent();
             $webhookId = $this->route('webhook_id');
 
-            if (!$signature || !$payload) {
+            if (! $signature || ! $payload) {
                 return false;
             }
 
@@ -80,16 +80,18 @@ class WebhookRequest extends FormRequest
     public function isPurchaseEvent(): bool
     {
         $event = $this->getEvent();
+
         return $event && str_starts_with($event, 'purchase.');
     }
 
     public function getPurchaseId(): ?string
     {
-        if (!$this->isPurchaseEvent()) {
+        if (! $this->isPurchaseEvent()) {
             return null;
         }
 
         $data = $this->getData();
+
         return $data['id'] ?? null;
     }
 

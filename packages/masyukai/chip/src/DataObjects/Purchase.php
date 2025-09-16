@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Masyukai\Chip\DataObjects;
+namespace MasyukAI\Chip\DataObjects;
 
 use Carbon\Carbon;
 
@@ -59,16 +59,16 @@ class Purchase
     public static function fromArray(array $data): self
     {
         // Handle both API response structure and simplified test data
-        
+
         // For timestamps, convert string dates to timestamps if needed
         $created_on = $data['created_on'] ?? null;
-        if (!$created_on && isset($data['created_at'])) {
+        if (! $created_on && isset($data['created_at'])) {
             $created_on = is_string($data['created_at']) ? strtotime($data['created_at']) : $data['created_at'];
         }
         $created_on = $created_on ?? time();
 
         $updated_on = $data['updated_on'] ?? null;
-        if (!$updated_on && isset($data['updated_at'])) {
+        if (! $updated_on && isset($data['updated_at'])) {
             $updated_on = is_string($data['updated_at']) ? strtotime($data['updated_at']) : $data['updated_at'];
         }
         $updated_on = $updated_on ?? time();

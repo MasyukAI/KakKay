@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Masyukai\Chip;
+namespace MasyukAI\Chip;
 
 use Illuminate\Support\ServiceProvider;
-use Masyukai\Chip\Clients\ChipCollectClient;
-use Masyukai\Chip\Clients\ChipSendClient;
-use Masyukai\Chip\Services\ChipCollectService;
-use Masyukai\Chip\Services\ChipSendService;
-use Masyukai\Chip\Services\WebhookService;
+use MasyukAI\Chip\Clients\ChipCollectClient;
+use MasyukAI\Chip\Clients\ChipSendClient;
+use MasyukAI\Chip\Services\ChipCollectService;
+use MasyukAI\Chip\Services\ChipSendService;
+use MasyukAI\Chip\Services\WebhookService;
 
 class ChipServiceProvider extends ServiceProvider
 {

@@ -11,10 +11,10 @@ use App\Models\User;
 use App\Services\StockService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use Masyukai\Chip\DataObjects\ClientDetails;
-use Masyukai\Chip\DataObjects\Purchase;
-use Masyukai\Chip\DataObjects\PurchaseDetails;
-use Masyukai\Chip\Events\PurchasePaid;
+use MasyukAI\Chip\DataObjects\ClientDetails;
+use MasyukAI\Chip\DataObjects\Purchase;
+use MasyukAI\Chip\DataObjects\PurchaseDetails;
+use MasyukAI\Chip\Events\PurchasePaid;
 
 class TestPaymentSuccessCommand extends Command
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Masyukai\Chip\DataObjects;
+namespace MasyukAI\Chip\DataObjects;
 
 use Carbon\Carbon;
 
@@ -79,7 +79,7 @@ class Client
     // Compatibility properties for tests
     public function __get($name)
     {
-        return match($name) {
+        return match ($name) {
             'fullName' => $this->full_name,
             'personalCode' => $this->personal_code,
             'streetAddress' => $this->street_address,
@@ -112,7 +112,7 @@ class Client
 
     public function isCompany(): bool
     {
-        return !empty($this->legal_name) || !empty($this->registration_number);
+        return ! empty($this->legal_name) || ! empty($this->registration_number);
     }
 
     public function toArray(): array

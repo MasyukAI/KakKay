@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Masyukai\Chip\Clients;
+namespace MasyukAI\Chip\Clients;
 
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Masyukai\Chip\Exceptions\ChipApiException;
+use MasyukAI\Chip\Exceptions\ChipApiException;
 
 class ChipCollectClient
 {
@@ -96,8 +96,27 @@ class ChipCollectClient
         throw new ChipApiException('API request failed: '.$e->getMessage(), 0, [], $e);
     }
 
-    public function get(string $endpoint): array
+    /**
+     * Get data from the API. Returns array for most endpoints, string for public_key/ endpoint.
+     */
+    public function get(string $endpoint): array|string
     {
+        if ($endpoint === 'public_key/' || $endpoint === '/public_key/') {
+            $url = $this->getBaseUrl().'/'.ltrim($endpoint, '/');
+            $response = Http::withHeaders([
+                'Authorization' => "Bearer {$this->apiKey}",
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
+                'User-Agent' => config('chip.defaults.creator_agent', 'MasyukAI/Chip Laravel Package'),
+            ])->timeout($this->timeout)->get($url);
+
+            if ($response->failed()) {
+                $this->handleFailedResponse($response);
+            }
+
+            return $response->body(); // PEM string
+        }
+
         return $this->request('GET', $endpoint);
     }
 

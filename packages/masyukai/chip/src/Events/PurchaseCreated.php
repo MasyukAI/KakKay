@@ -2,16 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Masyukai\Chip\Events;
+namespace MasyukAI\Chip\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use Masyukai\Chip\DataObjects\Purchase;
+use MasyukAI\Chip\DataObjects\Purchase;
 
 class PurchaseCreated implements ShouldBroadcast
 {

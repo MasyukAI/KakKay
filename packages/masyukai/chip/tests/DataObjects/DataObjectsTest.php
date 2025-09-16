@@ -1,11 +1,11 @@
 <?php
 
-use Masyukai\Chip\DataObjects\Purchase;
-use Masyukai\Chip\DataObjects\Payment;
-use Masyukai\Chip\DataObjects\Client;
-use Masyukai\Chip\DataObjects\SendInstruction;
-use Masyukai\Chip\DataObjects\BankAccount;
-use Masyukai\Chip\DataObjects\Webhook;
+use MasyukAI\Chip\DataObjects\BankAccount;
+use MasyukAI\Chip\DataObjects\Client;
+use MasyukAI\Chip\DataObjects\Payment;
+use MasyukAI\Chip\DataObjects\Purchase;
+use MasyukAI\Chip\DataObjects\SendInstruction;
+use MasyukAI\Chip\DataObjects\Webhook;
 
 describe('Purchase DataObject', function () {
     it('creates a purchase from array data', function () {
@@ -19,7 +19,7 @@ describe('Purchase DataObject', function () {
             'is_recurring' => false,
             'metadata' => ['order_id' => '123'],
             'created_at' => '2024-01-01T12:00:00Z',
-            'updated_at' => '2024-01-01T12:00:00Z'
+            'updated_at' => '2024-01-01T12:00:00Z',
         ];
 
         $purchase = Purchase::fromArray($data);
@@ -39,7 +39,7 @@ describe('Purchase DataObject', function () {
             'id' => 'purchase_123',
             'amount_in_cents' => 10000,
             'currency' => 'MYR',
-            'status' => 'created'
+            'status' => 'created',
         ];
 
         $purchase = Purchase::fromArray($data);
@@ -55,7 +55,7 @@ describe('Purchase DataObject', function () {
             'id' => 'purchase_123',
             'amount_in_cents' => 12345,
             'currency' => 'MYR',
-            'status' => 'created'
+            'status' => 'created',
         ]);
 
         expect($purchase->getAmountInMajorUnits())->toBe(123.45);
@@ -75,7 +75,7 @@ describe('Payment DataObject', function () {
             'pending_unfreeze_on' => null,
             'description' => 'Test payment',
             'paid_on' => 1640995800, // timestamp
-            'remote_paid_on' => 1640995800
+            'remote_paid_on' => 1640995800,
         ];
 
         $payment = Payment::fromArray($data);
@@ -101,7 +101,7 @@ describe('Payment DataObject', function () {
             'pending_unfreeze_on' => null,
             'description' => null,
             'paid_on' => null,
-            'remote_paid_on' => null
+            'remote_paid_on' => null,
         ]);
 
         expect($payment->description)->toBeNull();
@@ -120,7 +120,7 @@ describe('Payment DataObject', function () {
             'pending_unfreeze_on' => null,
             'description' => 'Test payment',
             'paid_on' => 1640995800,
-            'remote_paid_on' => 1640995800
+            'remote_paid_on' => 1640995800,
         ]);
 
         expect($payment->getNetAmountInMajorUnits())->toBe(99.50);
@@ -139,12 +139,12 @@ describe('Client DataObject', function () {
                 'line1' => '123 Main Street',
                 'city' => 'Kuala Lumpur',
                 'state' => 'Selangor',
-                'country' => 'MY'
+                'country' => 'MY',
             ],
             'identity_type' => 'nric',
             'identity_number' => '123456-78-9012',
             'date_of_birth' => '1990-01-01',
-            'nationality' => 'MY'
+            'nationality' => 'MY',
         ];
 
         $client = Client::fromArray($data);
@@ -157,7 +157,7 @@ describe('Client DataObject', function () {
             'line1' => '123 Main Street',
             'city' => 'Kuala Lumpur',
             'state' => 'Selangor',
-            'country' => 'MY'
+            'country' => 'MY',
         ]);
         expect($client->identityType)->toBe('nric');
         expect($client->identityNumber)->toBe('123456-78-9012');
@@ -166,7 +166,7 @@ describe('Client DataObject', function () {
     it('handles minimal client data', function () {
         $client = Client::fromArray([
             'id' => 'client_123',
-            'full_name' => 'John Doe'
+            'full_name' => 'John Doe',
         ]);
 
         expect($client->fullName)->toBe('John Doe');
@@ -202,12 +202,12 @@ describe('SendInstruction DataObject', function () {
         expect($instruction->created_at)->toBe('2023-07-20T10:41:25.190Z');
     });
 
-    it('handles failed send instruction', function () {
+    it('handles rejected send instruction', function () {
         $instruction = SendInstruction::fromArray([
             'id' => 51,
             'bank_account_id' => 2,
             'amount' => '250.00',
-            'state' => 'failed',
+            'state' => 'rejected',
             'email' => 'test2@example.com',
             'description' => 'Another payment',
             'reference' => 'TRANSFER_002',
@@ -215,8 +215,8 @@ describe('SendInstruction DataObject', function () {
             'updated_at' => '2023-07-20T11:41:25.302Z',
         ]);
 
-        expect($instruction->state)->toBe('failed');
-        expect($instruction->isFailed())->toBeTrue();
+        expect($instruction->state)->toBe('rejected');
+        expect($instruction->isRejected())->toBeTrue();
         expect($instruction->isCompleted())->toBeFalse();
     });
 });
@@ -281,9 +281,9 @@ describe('Webhook DataObject', function () {
                 'id' => 'purchase_123',
                 'amount_in_cents' => 10000,
                 'currency' => 'MYR',
-                'status' => 'paid'
+                'status' => 'paid',
             ],
-            'timestamp' => '2024-01-01T16:00:00Z'
+            'timestamp' => '2024-01-01T16:00:00Z',
         ];
 
         $webhook = Webhook::fromArray($data);
@@ -293,7 +293,7 @@ describe('Webhook DataObject', function () {
             'id' => 'purchase_123',
             'amount_in_cents' => 10000,
             'currency' => 'MYR',
-            'status' => 'paid'
+            'status' => 'paid',
         ]);
         expect($webhook->timestamp)->toBe('2024-01-01T16:00:00Z');
     });
@@ -305,8 +305,8 @@ describe('Webhook DataObject', function () {
                 'id' => 'purchase_123',
                 'amount_in_cents' => 10000,
                 'currency' => 'MYR',
-                'status' => 'created'
-            ]
+                'status' => 'created',
+            ],
         ]);
 
         $purchase = $webhook->getPurchase();
@@ -321,8 +321,8 @@ describe('Webhook DataObject', function () {
             'event' => 'send_instruction.completed',
             'data' => [
                 'id' => 'send_123',
-                'status' => 'completed'
-            ]
+                'status' => 'completed',
+            ],
         ]);
 
         $purchase = $webhook->getPurchase();

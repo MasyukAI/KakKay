@@ -1,11 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Event;
-use Masyukai\Chip\Events\PurchaseCreated;
-use Masyukai\Chip\Events\PurchasePaid;
-use Masyukai\Chip\Events\WebhookReceived;
-use Masyukai\Chip\DataObjects\Purchase;
-use Masyukai\Chip\DataObjects\Webhook;
+use MasyukAI\Chip\DataObjects\Purchase;
+use MasyukAI\Chip\DataObjects\Webhook;
+use MasyukAI\Chip\Events\PurchaseCreated;
+use MasyukAI\Chip\Events\PurchasePaid;
+use MasyukAI\Chip\Events\WebhookReceived;
 
 beforeEach(function () {
     Event::fake();
@@ -18,7 +18,7 @@ describe('PurchaseCreated Event', function () {
             'amount_in_cents' => 10000,
             'currency' => 'MYR',
             'reference' => 'ORDER_001',
-            'status' => 'created'
+            'status' => 'created',
         ];
 
         $purchase = Purchase::fromArray($purchaseData);
@@ -34,7 +34,7 @@ describe('PurchaseCreated Event', function () {
             'id' => 'purchase_123',
             'amount_in_cents' => 10000,
             'currency' => 'MYR',
-            'status' => 'created'
+            'status' => 'created',
         ]);
 
         $event = new PurchaseCreated($purchase);
@@ -47,7 +47,7 @@ describe('PurchaseCreated Event', function () {
             'id' => 'purchase_123',
             'amount_in_cents' => 10000,
             'currency' => 'MYR',
-            'status' => 'created'
+            'status' => 'created',
         ]);
 
         $event = new PurchaseCreated($purchase);
@@ -62,7 +62,7 @@ describe('PurchaseCreated Event', function () {
             'id' => 'purchase_123',
             'amount_in_cents' => 10000,
             'currency' => 'MYR',
-            'status' => 'created'
+            'status' => 'created',
         ]);
 
         $event = new PurchaseCreated($purchase);
@@ -81,7 +81,7 @@ describe('PurchasePaid Event', function () {
             'amount_in_cents' => 10000,
             'currency' => 'MYR',
             'reference' => 'ORDER_001',
-            'status' => 'paid'
+            'status' => 'paid',
         ];
 
         $purchase = Purchase::fromArray($purchaseData);
@@ -97,7 +97,7 @@ describe('PurchasePaid Event', function () {
             'id' => 'purchase_123',
             'amount_in_cents' => 10000,
             'currency' => 'MYR',
-            'status' => 'paid'
+            'status' => 'paid',
         ]);
 
         $event = new PurchasePaid($purchase);
@@ -110,7 +110,7 @@ describe('PurchasePaid Event', function () {
             'id' => 'purchase_123',
             'amount_in_cents' => 10000,
             'currency' => 'MYR',
-            'status' => 'paid'
+            'status' => 'paid',
         ]);
 
         $event = new PurchasePaid($purchase);
@@ -125,7 +125,7 @@ describe('PurchasePaid Event', function () {
             'id' => 'purchase_123',
             'amount_in_cents' => 10000,
             'currency' => 'MYR',
-            'status' => 'paid'
+            'status' => 'paid',
         ]);
 
         $event = new PurchasePaid($purchase);
@@ -144,9 +144,9 @@ describe('WebhookReceived Event', function () {
             'data' => [
                 'id' => 'purchase_123',
                 'amount_in_cents' => 10000,
-                'status' => 'paid'
+                'status' => 'paid',
             ],
-            'timestamp' => '2024-01-01T12:00:00Z'
+            'timestamp' => '2024-01-01T12:00:00Z',
         ];
 
         $webhook = Webhook::fromArray($webhookData);
@@ -160,7 +160,7 @@ describe('WebhookReceived Event', function () {
         $webhook = Webhook::fromArray([
             'event' => 'purchase.paid',
             'data' => ['id' => 'purchase_123'],
-            'timestamp' => '2024-01-01T12:00:00Z'
+            'timestamp' => '2024-01-01T12:00:00Z',
         ]);
 
         $event = new WebhookReceived($webhook);
@@ -174,8 +174,8 @@ describe('WebhookReceived Event', function () {
             'data' => [
                 'id' => 'purchase_123',
                 'amount_in_cents' => 10000,
-                'status' => 'paid'
-            ]
+                'status' => 'paid',
+            ],
         ];
 
         $webhook = Webhook::fromArray($webhookData);
@@ -188,7 +188,7 @@ describe('WebhookReceived Event', function () {
     it('can determine webhook event type', function () {
         $webhook = Webhook::fromArray([
             'event' => 'send_instruction.completed',
-            'data' => ['id' => 'send_123']
+            'data' => ['id' => 'send_123'],
         ]);
 
         $event = new WebhookReceived($webhook);
@@ -203,7 +203,7 @@ describe('Event Broadcasting Configuration', function () {
     it('uses correct queue for background events', function () {
         $webhook = Webhook::fromArray([
             'event' => 'test.event',
-            'data' => ['id' => 'test_123']
+            'data' => ['id' => 'test_123'],
         ]);
 
         $event = new WebhookReceived($webhook);
@@ -216,7 +216,7 @@ describe('Event Broadcasting Configuration', function () {
             'id' => 'purchase_123',
             'amount_in_cents' => 10000,
             'currency' => 'MYR',
-            'status' => 'paid'
+            'status' => 'paid',
         ]);
 
         $event = new PurchasePaid($purchase);
@@ -233,14 +233,14 @@ describe('Event Data Serialization', function () {
             'currency' => 'MYR',
             'reference' => 'ORDER_001',
             'status' => 'created',
-            'metadata' => ['order_id' => '456']
+            'metadata' => ['order_id' => '456'],
         ]);
 
         $event = new PurchaseCreated($purchase);
         $broadcastData = $event->broadcastWith();
 
         expect($broadcastData['purchase'])->toHaveKeys([
-            'id', 'amount_in_cents', 'currency', 'reference', 'status', 'metadata'
+            'id', 'amount_in_cents', 'currency', 'reference', 'status', 'metadata',
         ]);
         expect($broadcastData['purchase']['id'])->toBe('purchase_123');
         expect($broadcastData['purchase']['metadata'])->toBe(['order_id' => '456']);
@@ -251,7 +251,7 @@ describe('Event Data Serialization', function () {
             'id' => 'purchase_123',
             'amount_in_cents' => 10000,
             'currency' => 'MYR',
-            'status' => 'paid'
+            'status' => 'paid',
         ]);
 
         $event = new PurchasePaid($purchase);

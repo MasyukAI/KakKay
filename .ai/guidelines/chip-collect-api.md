@@ -73,7 +73,7 @@ return [
 
 #### Simple Payment
 ```php
-use Masyukai\Chip\Facades\Chip;
+use MasyukAI\Chip\Facades\Chip;
 
 $purchase = Chip::createPurchase([
     'client' => [
@@ -210,7 +210,7 @@ The application already has `ChipWebhookController` that handles webhook verific
 
 ```php
 // app/Http/Controllers/ChipWebhookController.php
-use Masyukai\Chip\Services\WebhookService;
+use MasyukAI\Chip\Services\WebhookService;
 
 class ChipWebhookController extends Controller
 {
@@ -249,7 +249,7 @@ Route::post('/webhooks/chip', [ChipWebhookController::class, 'handle'])->name('w
 The package dispatches Laravel events for webhook processing:
 
 ```php
-use Masyukai\Chip\Events\{PurchaseCreated, PurchasePaid};
+use MasyukAI\Chip\Events\{PurchaseCreated, PurchasePaid};
 
 // Listen to purchase events
 Event::listen(PurchasePaid::class, function (PurchasePaid $event) {
@@ -267,7 +267,7 @@ Event::listen(PurchasePaid::class, function (PurchasePaid $event) {
 
 ### Basic Transfer
 ```php
-use Masyukai\Chip\Facades\ChipSend;
+use MasyukAI\Chip\Facades\ChipSend;
 
 $transfer = ChipSend::createTransfer([
     'amount' => 10000, // RM 100.00 in cents
@@ -346,7 +346,7 @@ $purchase = Chip::createPurchase([
 
 ### API Exceptions
 ```php
-use Masyukai\Chip\Exceptions\{ChipException, ValidationException, PaymentException};
+use MasyukAI\Chip\Exceptions\{ChipException, ValidationException, PaymentException};
 
 try {
     $purchase = Chip::createPurchase($data);
@@ -376,7 +376,7 @@ try {
 
 ### Using Package in Tests
 ```php
-use Masyukai\Chip\Facades\Chip;
+use MasyukAI\Chip\Facades\Chip;
 
 class PaymentTest extends TestCase
 {

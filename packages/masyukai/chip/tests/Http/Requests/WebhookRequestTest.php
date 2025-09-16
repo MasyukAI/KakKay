@@ -1,12 +1,10 @@
 <?php
 
-use Illuminate\Http\Request;
-use Masyukai\Chip\Http\Requests\WebhookRequest;
-use Masyukai\Chip\Exceptions\WebhookVerificationException;
+use MasyukAI\Chip\Http\Requests\WebhookRequest;
 
 describe('WebhookRequest Validation', function () {
     it('validates required event field', function () {
-        $request = new WebhookRequest();
+        $request = new WebhookRequest;
         $request->replace(['data' => ['id' => 'test_123']]);
 
         $validator = validator($request->all(), $request->rules());
@@ -16,7 +14,7 @@ describe('WebhookRequest Validation', function () {
     });
 
     it('validates required data field', function () {
-        $request = new WebhookRequest();
+        $request = new WebhookRequest;
         $request->replace(['event' => 'purchase.paid']);
 
         $validator = validator($request->all(), $request->rules());
@@ -26,10 +24,10 @@ describe('WebhookRequest Validation', function () {
     });
 
     it('validates event field is string', function () {
-        $request = new WebhookRequest();
+        $request = new WebhookRequest;
         $request->replace([
             'event' => 123,
-            'data' => ['id' => 'test_123']
+            'data' => ['id' => 'test_123'],
         ]);
 
         $validator = validator($request->all(), $request->rules());
@@ -39,10 +37,10 @@ describe('WebhookRequest Validation', function () {
     });
 
     it('validates data field is array', function () {
-        $request = new WebhookRequest();
+        $request = new WebhookRequest;
         $request->replace([
             'event' => 'purchase.paid',
-            'data' => 'invalid_data'
+            'data' => 'invalid_data',
         ]);
 
         $validator = validator($request->all(), $request->rules());
@@ -52,16 +50,16 @@ describe('WebhookRequest Validation', function () {
     });
 
     it('passes validation with valid data', function () {
-        $request = new WebhookRequest();
+        $request = new WebhookRequest;
         $request->replace([
             'event' => 'purchase.paid',
             'data' => [
                 'id' => 'purchase_123',
                 'amount_in_cents' => 10000,
                 'currency' => 'MYR',
-                'status' => 'paid'
+                'status' => 'paid',
             ],
-            'timestamp' => '2024-01-01T12:00:00Z'
+            'timestamp' => '2024-01-01T12:00:00Z',
         ]);
 
         $validator = validator($request->all(), $request->rules());
@@ -70,11 +68,11 @@ describe('WebhookRequest Validation', function () {
     });
 
     it('allows optional timestamp field', function () {
-        $request = new WebhookRequest();
+        $request = new WebhookRequest;
         $request->replace([
             'event' => 'purchase.created',
             'data' => ['id' => 'purchase_123'],
-            'timestamp' => '2024-01-01T12:00:00Z'
+            'timestamp' => '2024-01-01T12:00:00Z',
         ]);
 
         $validator = validator($request->all(), $request->rules());
@@ -83,11 +81,11 @@ describe('WebhookRequest Validation', function () {
     });
 
     it('validates timestamp format when provided', function () {
-        $request = new WebhookRequest();
+        $request = new WebhookRequest;
         $request->replace([
             'event' => 'purchase.created',
             'data' => ['id' => 'purchase_123'],
-            'timestamp' => 'invalid_timestamp'
+            'timestamp' => 'invalid_timestamp',
         ]);
 
         $validator = validator($request->all(), $request->rules());
@@ -99,28 +97,28 @@ describe('WebhookRequest Validation', function () {
 
 describe('WebhookRequest Authorization', function () {
     it('always authorizes webhook requests', function () {
-        $request = new WebhookRequest();
-        
+        $request = new WebhookRequest;
+
         expect($request->authorize())->toBeTrue();
     });
 });
 
 describe('WebhookRequest Custom Methods', function () {
     it('extracts webhook signature from headers', function () {
-        $request = new WebhookRequest();
+        $request = new WebhookRequest;
         $request->headers->set('X-Signature', 'test_signature_123');
 
         expect($request->getSignature())->toBe('test_signature_123');
     });
 
     it('returns null when signature header is missing', function () {
-        $request = new WebhookRequest();
+        $request = new WebhookRequest;
 
         expect($request->getSignature())->toBeNull();
     });
 
     it('gets webhook event type', function () {
-        $request = new WebhookRequest();
+        $request = new WebhookRequest;
         $request->replace(['event' => 'purchase.paid', 'data' => []]);
 
         expect($request->getEvent())->toBe('purchase.paid');
@@ -130,17 +128,17 @@ describe('WebhookRequest Custom Methods', function () {
         $data = [
             'id' => 'purchase_123',
             'amount_in_cents' => 10000,
-            'status' => 'paid'
+            'status' => 'paid',
         ];
 
-        $request = new WebhookRequest();
+        $request = new WebhookRequest;
         $request->replace(['event' => 'purchase.paid', 'data' => $data]);
 
         expect($request->getData())->toBe($data);
     });
 
     it('checks if webhook is for specific event type', function () {
-        $request = new WebhookRequest();
+        $request = new WebhookRequest;
         $request->replace(['event' => 'purchase.paid', 'data' => []]);
 
         expect($request->isEvent('purchase.paid'))->toBeTrue();
@@ -148,10 +146,10 @@ describe('WebhookRequest Custom Methods', function () {
     });
 
     it('checks if webhook is purchase related', function () {
-        $purchaseRequest = new WebhookRequest();
+        $purchaseRequest = new WebhookRequest;
         $purchaseRequest->replace(['event' => 'purchase.paid', 'data' => []]);
 
-        $sendRequest = new WebhookRequest();
+        $sendRequest = new WebhookRequest;
         $sendRequest->replace(['event' => 'send_instruction.completed', 'data' => []]);
 
         expect($purchaseRequest->isPurchaseEvent())->toBeTrue();
@@ -159,20 +157,20 @@ describe('WebhookRequest Custom Methods', function () {
     });
 
     it('extracts purchase ID from purchase events', function () {
-        $request = new WebhookRequest();
+        $request = new WebhookRequest;
         $request->replace([
             'event' => 'purchase.paid',
-            'data' => ['id' => 'purchase_123', 'status' => 'paid']
+            'data' => ['id' => 'purchase_123', 'status' => 'paid'],
         ]);
 
         expect($request->getPurchaseId())->toBe('purchase_123');
     });
 
     it('returns null for purchase ID on non-purchase events', function () {
-        $request = new WebhookRequest();
+        $request = new WebhookRequest;
         $request->replace([
             'event' => 'send_instruction.completed',
-            'data' => ['id' => 'send_123']
+            'data' => ['id' => 'send_123'],
         ]);
 
         expect($request->getPurchaseId())->toBeNull();

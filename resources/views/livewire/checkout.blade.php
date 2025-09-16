@@ -64,7 +64,7 @@
                         </li>
                     </ol>
                 </div>
-
+{{-- 
                 @if(session('success'))
                     <flux:callout variant="success" class="mb-6">
                         {{ session('success') }}
@@ -81,7 +81,7 @@
                     <flux:callout variant="info" class="mb-6">
                         {{ session('message') }}
                     </flux:callout>
-                @endif
+                @endif --}}
 
                 <div class="lg:flex lg:items-start lg:gap-12 xl:gap-16">
                     <div class="min-w-0 flex-1 space-y-8">
@@ -90,15 +90,12 @@
                         <div class="relative">
                             <div class="filament-checkout-form">
                                 {{ $this->form }}
+
+                                @error('data.field_name')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
                             
-                            <!-- Country Code Display -->
-                            <div class="mt-4 p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-lg">
-                                <div class="flex items-center gap-2 text-sm text-blue-200">
-                                    <flux:icon.information-circle class="h-4 w-4" />
-                                    <span>Kod negara terpilih: <strong>{{ $selectedCountryCode }}</strong></span>
-                                </div>
-                            </div>
                         </div>
 
                         <!-- Payment Methods - Kept hidden for now -->

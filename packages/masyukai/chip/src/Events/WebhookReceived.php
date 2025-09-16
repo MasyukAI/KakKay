@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Masyukai\Chip\Events;
+namespace MasyukAI\Chip\Events;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use Masyukai\Chip\DataObjects\Webhook;
+use MasyukAI\Chip\DataObjects\Webhook;
 
 class WebhookReceived implements ShouldQueue
 {
@@ -24,9 +24,6 @@ class WebhookReceived implements ShouldQueue
 
     /**
      * Check if this webhook is for a specific event type.
-     *
-     * @param string $eventType
-     * @return bool
      */
     public function isEventType(string $eventType): bool
     {

@@ -60,7 +60,7 @@ it('can add product to cart', function () {
     expect($cartItem->quantity)->toBe(1);
 
     // Price should be stored correctly and retrievable in cents
-    expect($cartItem->getPrice()->getCents())->toBe(1999);
+    expect($cartItem->getPrice()->getAmount())->toBe(1999.0);
 });
 
 it('can display cart items with correct prices', function () {
@@ -80,7 +80,7 @@ it('can display cart items with correct prices', function () {
 
     $item = $cartItems[0];
     expect($item['name'])->toBe('Test Book');
-    expect($item['price'])->toBe(2499); // Price in cents
+    expect($item['price'])->toBe('RM24.99'); // Price formatted as string
     expect($item['quantity'])->toBe(2);
 });
 
@@ -123,7 +123,7 @@ it('can format prices correctly', function () {
     $cart->assertDontSee('1999'); // Should not show raw cents
 
     // Test the component has the correct item price
-    $cart->assertSet('cartItems.0.price', 1999);
+    $cart->assertSet('cartItems.0.price', 'RM19.99');
 });
 
 it('can update item quantity', function () {

@@ -1,9 +1,9 @@
 <?php
 
-use Masyukai\Chip\DataObjects\SendInstruction;
-use Masyukai\Chip\DataObjects\BankAccount;
-use Masyukai\Chip\Services\ChipSendService;
-use Masyukai\Chip\Clients\ChipSendClient;
+use MasyukAI\Chip\Clients\ChipSendClient;
+use MasyukAI\Chip\DataObjects\BankAccount;
+use MasyukAI\Chip\DataObjects\SendInstruction;
+use MasyukAI\Chip\Services\ChipSendService;
 
 describe('ChipSendService', function () {
     beforeEach(function () {
@@ -66,7 +66,7 @@ describe('ChipSendService', function () {
         ];
 
         $this->client->shouldReceive('get')
-            ->with("send/send_instructions/50")
+            ->with('send/send_instructions/50')
             ->andReturn($instructionData);
 
         $instruction = $this->service->getSendInstruction('50');

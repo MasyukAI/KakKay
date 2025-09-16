@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Masyukai\Chip\Clients;
+namespace MasyukAI\Chip\Clients;
 
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Masyukai\Chip\Exceptions\ChipApiException;
-use Masyukai\Chip\Exceptions\ChipValidationException;
+use MasyukAI\Chip\Exceptions\ChipApiException;
+use MasyukAI\Chip\Exceptions\ChipValidationException;
 
 class ChipSendClient
 {

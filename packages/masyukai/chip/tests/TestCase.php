@@ -1,10 +1,10 @@
 <?php
 
-namespace Masyukai\Chip\Tests;
+namespace MasyukAI\Chip\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use MasyukAI\Chip\ChipServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
-use Masyukai\Chip\ChipServiceProvider;
 
 abstract class TestCase extends Orchestra
 {
@@ -15,7 +15,7 @@ abstract class TestCase extends Orchestra
         parent::setUp();
 
         // Load package migrations
-        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
     }
 
     protected function getPackageProviders($app): array
@@ -61,7 +61,7 @@ abstract class TestCase extends Orchestra
 
     protected function getTestPublicKey(): string
     {
-        return "-----BEGIN PUBLIC KEY-----
+        return '-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyV7Z8iFMnkLJSPwEW8P1
 GrT0xP3ZdQKk9L1mJY6fRd4QwQ8F7mW9vJx2Q3h8gKl7QvW0x3ZqF8cNx1Q5wNY
 YKdF2L9m8rT7vKxH1qFy0Z8vRnKl6Q7x9F3mJ1wEzGz8KjF3vP9Qr4xY1wL6nM8
@@ -77,6 +77,6 @@ BR1x4G6mZ0wWzS7vQ2qL5y4R6FwVzY8KjM7vWzQ6rBR2x4G7mZ1wXzS8vQ3qL
 rBR4x4G9mZ3wZzT0vQ5qL8y7R9FwYzZ1KjN0vWzQ9rBR5x4H0mZ4w0zT1vQ6q
 L9y8S0FwZzZ2KjN1vWzR0rBR6x4H1mZ5w1zT2vQ7qM0y9S1FwazZ3KjN2vWz
 R1rBR7x4H2mZ6w2zT3vQ8qM1z0S2Fw
------END PUBLIC KEY-----";
+-----END PUBLIC KEY-----';
     }
 }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Masyukai\Chip\Exceptions;
+namespace MasyukAI\Chip\Exceptions;
 
 use Exception;
 
@@ -44,14 +44,14 @@ class ChipApiException extends Exception
 
     public function hasErrorDetails(): bool
     {
-        return !empty($this->errorData);
+        return ! empty($this->errorData);
     }
 
     public function getFormattedMessage(): string
     {
         $message = $this->getMessage();
-        
-        if (!empty($this->errorData)) {
+
+        if (! empty($this->errorData)) {
             $details = [];
             foreach ($this->errorData as $key => $value) {
                 if (is_array($value)) {
@@ -59,23 +59,23 @@ class ChipApiException extends Exception
                 }
                 $details[] = "{$key}: {$value}";
             }
-            
-            if (!empty($details)) {
-                $message .= ' - ' . implode(', ', $details);
+
+            if (! empty($details)) {
+                $message .= ' - '.implode(', ', $details);
             }
         }
-        
+
         return $message;
     }
 
     public static function fromResponse(array $responseData, int $statusCode): self
     {
         $message = $responseData['error'] ?? $responseData['message'] ?? 'Unknown API error';
-        
+
         // Extract the error details, excluding the message
         $errorDetails = $responseData;
         unset($errorDetails['error'], $errorDetails['message']);
-        
+
         return new self($message, $statusCode, $errorDetails);
     }
 

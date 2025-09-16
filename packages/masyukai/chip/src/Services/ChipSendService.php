@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Masyukai\Chip\Services;
+namespace MasyukAI\Chip\Services;
 
-use Masyukai\Chip\Clients\ChipSendClient;
-use Masyukai\Chip\DataObjects\BankAccount;
-use Masyukai\Chip\DataObjects\SendInstruction;
+use MasyukAI\Chip\Clients\ChipSendClient;
+use MasyukAI\Chip\DataObjects\BankAccount;
+use MasyukAI\Chip\DataObjects\SendInstruction;
 
 class ChipSendService
 {
@@ -159,8 +159,140 @@ class ChipSendService
             'business_justification' => $businessJustification,
         ];
 
-        $response = $this->client->post('send/send_limits/increase', $data);
+        return $this->client->post('send/send_limits/request_increase', $data);
+    }
 
-        return $response['data'] ?? $response;
+    /**
+     * Create a send limit
+     */
+    public function createSendLimit(array $data): array
+    {
+        return $this->client->post('send/send_limits', $data);
+    }
+
+    /**
+     * Get a send limit
+     */
+    public function getSendLimit(string $id): array
+    {
+        return $this->client->get("send/send_limits/{$id}");
+    }
+
+    /**
+     * Resend send limit approval requests
+     */
+    public function resendSendLimitApprovalRequests(string $id): array
+    {
+        return $this->client->post("send/send_limits/{$id}/resend_approval_requests");
+    }
+
+    /**
+     * Create a group
+     */
+    public function createGroup(array $data): array
+    {
+        return $this->client->post('send/groups', $data);
+    }
+
+    /**
+     * Get a group
+     */
+    public function getGroup(string $id): array
+    {
+        return $this->client->get("send/groups/{$id}");
+    }
+
+    /**
+     * Update a group
+     */
+    public function updateGroup(string $id, array $data): array
+    {
+        return $this->client->put("send/groups/{$id}", $data);
+    }
+
+    /**
+     * Delete a group
+     */
+    public function deleteGroup(string $id): void
+    {
+        $this->client->delete("send/groups/{$id}");
+    }
+
+    /**
+     * List groups
+     */
+    public function listGroups(array $filters = []): array
+    {
+        $queryString = http_build_query($filters);
+        $endpoint = 'send/groups'.($queryString ? '?'.$queryString : '');
+
+        return $this->client->get($endpoint);
+    }
+
+    /**
+     * Create a webhook for CHIP Send
+     */
+    public function createSendWebhook(array $data): array
+    {
+        return $this->client->post('send/webhooks', $data);
+    }
+
+    /**
+     * Get a CHIP Send webhook
+     */
+    public function getSendWebhook(string $id): array
+    {
+        return $this->client->get("send/webhooks/{$id}");
+    }
+
+    /**
+     * Update a CHIP Send webhook
+     */
+    public function updateSendWebhook(string $id, array $data): array
+    {
+        return $this->client->put("send/webhooks/{$id}", $data);
+    }
+
+    /**
+     * Delete a CHIP Send webhook
+     */
+    public function deleteSendWebhook(string $id): void
+    {
+        $this->client->delete("send/webhooks/{$id}");
+    }
+
+    /**
+     * List CHIP Send webhooks
+     */
+    public function listSendWebhooks(array $filters = []): array
+    {
+        $queryString = http_build_query($filters);
+        $endpoint = 'send/webhooks'.($queryString ? '?'.$queryString : '');
+
+        return $this->client->get($endpoint);
+    }
+
+    /**
+     * Delete a send instruction
+     */
+    public function deleteSendInstruction(string $id): void
+    {
+        $this->client->delete("send/send_instructions/{$id}");
+    }
+
+    /**
+     * Resend a send instruction webhook
+     */
+    public function resendSendInstructionWebhook(string $id): array
+    {
+        return $this->client->post("send/send_instructions/{$id}/resend_webhook");
+    }
+
+    /**
+     * Resend a bank account webhook
+     */
+    public function resendBankAccountWebhook(string $id): array
+    {
+        return $this->client->post("send/bank_accounts/{$id}/resend_webhook");
     }
 }

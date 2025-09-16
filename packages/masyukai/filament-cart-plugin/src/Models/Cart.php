@@ -63,8 +63,8 @@ class Cart extends Model
     protected function totalQuantity(): Attribute
     {
         return Attribute::make(
-            get: fn () => is_array($this->items) 
-                ? array_sum(array_column($this->items, 'quantity')) 
+            get: fn () => is_array($this->items)
+                ? array_sum(array_column($this->items, 'quantity'))
                 : 0,
         );
     }
@@ -76,10 +76,10 @@ class Cart extends Model
     {
         return Attribute::make(
             get: function () {
-                if (!is_array($this->items)) {
+                if (! is_array($this->items)) {
                     return 0;
                 }
-                
+
                 return array_sum(array_map(function ($item) {
                     return ($item['price'] ?? 0) * ($item['quantity'] ?? 0);
                 }, $this->items));
@@ -100,7 +100,7 @@ class Cart extends Model
      */
     public function getFormattedSubtotalAttribute(): string
     {
-        return '$' . number_format($this->subtotal, 2);
+        return '$'.number_format($this->subtotal, 2);
     }
 
     /**
@@ -125,8 +125,8 @@ class Cart extends Model
     public function scopeNotEmpty($query): void
     {
         $query->whereNotNull('items')
-              ->where('items', '!=', '[]')
-              ->where('items', '!=', '{}');
+            ->whereRaw("items::text != '[]'")
+            ->whereRaw("items::text != '{}' ");
     }
 
     /**

@@ -64,7 +64,7 @@ return [
     'webhooks' => [
         'public_key' => env('CHIP_WEBHOOK_PUBLIC_KEY'),
         'verify_signature' => env('CHIP_WEBHOOK_VERIFY_SIGNATURE', true),
-        'middleware' => ['api'], // Add this line
+        'middleware' => ['api'],
         'allowed_events' => [
             'purchase.created',
             'purchase.paid',
@@ -72,10 +72,14 @@ return [
             'payment.created',
             'payment.paid',
             'payment.failed',
+            // CHIP Send webhook events
+            'bank_account_status',
+            'budget_allocation_status',
+            'send_instruction_status',
         ],
         'event_mapping' => [
-            'purchase.created' => \Masyukai\Chip\Events\PurchaseCreated::class,
-            'purchase.paid' => \Masyukai\Chip\Events\PurchasePaid::class,
+            'purchase.created' => \MasyukAI\Chip\Events\PurchaseCreated::class,
+            'purchase.paid' => \MasyukAI\Chip\Events\PurchasePaid::class,
         ],
     ],
 

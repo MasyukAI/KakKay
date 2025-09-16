@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Http;
-use Masyukai\Chip\Exceptions\ChipApiException;
-use Masyukai\Chip\Clients\ChipCollectClient;
+use MasyukAI\Chip\Clients\ChipCollectClient;
+use MasyukAI\Chip\Exceptions\ChipApiException;
 
 beforeEach(function () {
     $this->client = new ChipCollectClient(
@@ -42,7 +42,7 @@ describe('ChipCollectClient Request Methods', function () {
         $response = $this->client->get('/test');
 
         expect($response)->toBe(['data' => ['id' => '123']]);
-        Http::assertSent(fn($request) => $request->method() === 'GET');
+        Http::assertSent(fn ($request) => $request->method() === 'GET');
     });
 
     it('can make POST requests', function () {
@@ -51,7 +51,7 @@ describe('ChipCollectClient Request Methods', function () {
         $response = $this->client->post('/test', ['name' => 'Test']);
 
         expect($response)->toBe(['data' => ['created' => true]]);
-        Http::assertSent(fn($request) => $request->method() === 'POST');
+        Http::assertSent(fn ($request) => $request->method() === 'POST');
     });
 
     it('can make PUT requests', function () {
@@ -60,7 +60,7 @@ describe('ChipCollectClient Request Methods', function () {
         $response = $this->client->put('/test', ['name' => 'Updated']);
 
         expect($response)->toBe(['data' => ['updated' => true]]);
-        Http::assertSent(fn($request) => $request->method() === 'PUT');
+        Http::assertSent(fn ($request) => $request->method() === 'PUT');
     });
 
     it('can make DELETE requests', function () {
@@ -69,7 +69,7 @@ describe('ChipCollectClient Request Methods', function () {
         $response = $this->client->delete('/test');
 
         expect($response)->toBe([]);
-        Http::assertSent(fn($request) => $request->method() === 'DELETE');
+        Http::assertSent(fn ($request) => $request->method() === 'DELETE');
     });
 });
 
@@ -77,35 +77,35 @@ describe('ChipCollectClient Error Handling', function () {
     it('throws ChipApiException on 400 error', function () {
         Http::fake(['*' => Http::response(['error' => 'Bad Request'], 400)]);
 
-        expect(fn() => $this->client->get('/test'))
+        expect(fn () => $this->client->get('/test'))
             ->toThrow(ChipApiException::class, 'Bad Request');
     });
 
     it('throws ChipApiException on 401 error', function () {
         Http::fake(['*' => Http::response(['error' => 'Unauthorized'], 401)]);
 
-        expect(fn() => $this->client->get('/test'))
+        expect(fn () => $this->client->get('/test'))
             ->toThrow(ChipApiException::class, 'Unauthorized');
     });
 
     it('throws ChipApiException on 404 error', function () {
         Http::fake(['*' => Http::response(['error' => 'Not Found'], 404)]);
 
-        expect(fn() => $this->client->get('/test'))
+        expect(fn () => $this->client->get('/test'))
             ->toThrow(ChipApiException::class, 'Not Found');
     });
 
     it('throws ChipApiException on 500 error', function () {
         Http::fake(['*' => Http::response(['error' => 'Internal Server Error'], 500)]);
 
-        expect(fn() => $this->client->get('/test'))
+        expect(fn () => $this->client->get('/test'))
             ->toThrow(ChipApiException::class, 'Internal Server Error');
     });
 
     it('includes error details in exception', function () {
         Http::fake(['*' => Http::response([
             'error' => 'Validation failed',
-            'details' => ['field' => 'required']
+            'details' => ['field' => 'required'],
         ], 422)]);
 
         try {
@@ -114,7 +114,7 @@ describe('ChipCollectClient Error Handling', function () {
             expect($e->getMessage())->toBe('Validation failed');
             expect($e->getErrorDetails())->toBe([
                 'error' => 'Validation failed',
-                'details' => ['field' => 'required']
+                'details' => ['field' => 'required'],
             ]);
             expect($e->getStatusCode())->toBe(422);
         }
@@ -125,16 +125,16 @@ describe('ChipCollectClient Retry Logic', function () {
     it('throws exception on server errors without retrying', function () {
         Http::fake(['*' => Http::response(['error' => 'Server Error'], 500)]);
 
-        expect(fn() => $this->client->get('/test'))
+        expect(fn () => $this->client->get('/test'))
             ->toThrow(ChipApiException::class, 'Server Error');
-            
+
         Http::assertSentCount(1); // Should only make 1 request (no retry implemented)
     });
 
     it('gives up after max retries', function () {
         Http::fake(['*' => Http::response(['error' => 'Server Error'], 500)]);
 
-        expect(fn() => $this->client->get('/test'))
+        expect(fn () => $this->client->get('/test'))
             ->toThrow(ChipApiException::class);
     });
 });

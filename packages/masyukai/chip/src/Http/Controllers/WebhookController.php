@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Masyukai\Chip\Http\Controllers;
+namespace MasyukAI\Chip\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
-use Masyukai\Chip\DataObjects\Webhook;
-use Masyukai\Chip\Events\WebhookReceived;
-use Masyukai\Chip\Http\Requests\WebhookRequest;
-use Masyukai\Chip\Services\WebhookService;
+use MasyukAI\Chip\DataObjects\Webhook;
+use MasyukAI\Chip\Events\WebhookReceived;
+use MasyukAI\Chip\Http\Requests\WebhookRequest;
+use MasyukAI\Chip\Services\WebhookService;
 
 class WebhookController extends Controller
 {

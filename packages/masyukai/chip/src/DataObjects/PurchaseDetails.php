@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Masyukai\Chip\DataObjects;
+namespace MasyukAI\Chip\DataObjects;
 
 class PurchaseDetails
 {
@@ -28,7 +28,7 @@ class PurchaseDetails
     {
         return new self(
             currency: $data['currency'] ?? 'MYR',
-            products: isset($data['products']) ? array_map(fn($product) => Product::fromArray($product), $data['products']) : [],
+            products: isset($data['products']) ? array_map(fn ($product) => Product::fromArray($product), $data['products']) : [],
             total: $data['total'] ?? 0,
             language: $data['language'] ?? 'en',
             notes: $data['notes'] ?? null,
@@ -61,7 +61,7 @@ class PurchaseDetails
     {
         return [
             'currency' => $this->currency,
-            'products' => array_map(fn($product) => $product->toArray(), $this->products),
+            'products' => array_map(fn ($product) => $product->toArray(), $this->products),
             'total' => $this->total,
             'language' => $this->language,
             'notes' => $this->notes,

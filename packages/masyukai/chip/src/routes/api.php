@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
-use Masyukai\Chip\Http\Controllers\WebhookController;
+use MasyukAI\Chip\Http\Controllers\WebhookController;
 
 Route::prefix('chip')->group(function () {
     Route::post('webhook', [WebhookController::class, 'handle'])

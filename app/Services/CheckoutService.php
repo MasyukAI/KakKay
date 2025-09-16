@@ -18,7 +18,7 @@ class CheckoutService
     protected PaymentMethodService $paymentMethodService;
 
     protected ShippingService $shippingService;
-    
+
     protected PaymentGatewayInterface $paymentGateway;
 
     public function __construct(
@@ -55,7 +55,7 @@ class CheckoutService
                 // Process payment with the gateway
                 $gatewayResult = $this->paymentGateway->createPurchase($customerDataWithReference, $cartItems);
 
-                if (!$gatewayResult['success']) {
+                if (! $gatewayResult['success']) {
                     throw new \Exception($gatewayResult['error'] ?? 'Payment processing failed');
                 }
 
@@ -140,21 +140,28 @@ class CheckoutService
      */
     protected function createOrder(User $user, Address $address, array $customerData, array $cartItems): Order
     {
-        $subtotal = collect($cartItems)->sum(fn ($item) => $item['price'] * $item['quantity']);
-        
-        // Check if there's a shipping condition in the cart
-        $shippingValue = \MasyukAI\Cart\Facades\Cart::getShippingValue();
-        
+        // Use cart's built-in calculation methods instead of manual calculation
+        $subtotal = (int) Cart::getRawSubtotal(); // Already includes item-level conditions
+
+        // Get shipping from cart conditions (preferred) or calculate fallback
         $shipping = 0;
+        $shippingValue = Cart::getShippingValue();
         if ($shippingValue !== null) {
             $shipping = (int) ($shippingValue * 100); // Convert to cents
         } else {
             // Fall back to calculating shipping if no condition exists
             $shipping = $this->shippingService->calculateShipping($customerData['delivery_method'] ?? 'standard');
         }
-        
-        $tax = 0; // No tax applied
-        $total = $subtotal + $shipping + $tax;
+
+        $tax = 0; // No tax applied (could use Cart::getCondition('tax') if needed)
+
+        // Use cart's total calculation method - this includes all cart-level conditions
+        $total = (int) Cart::getRawTotal();
+
+        // If no cart-level conditions exist, total will equal subtotal, so add shipping
+        if ($total === $subtotal) {
+            $total = $subtotal + $shipping + $tax;
+        }
 
         $order = Order::create([
             'user_id' => $user->id,
@@ -242,20 +249,105 @@ class CheckoutService
     }
 
     /**
-     * Calculate total amount from cart items, including shipping
+     * Get cart subtotal using built-in cart calculations
+     */
+    public function getCartSubtotal(): int
+    {
+        return (int) Cart::getRawSubtotal();
+    }
+
+    /**
+     * Get cart total using built-in cart calculations
+     */
+    public function getCartTotal(): int
+    {
+        return (int) Cart::getRawTotal();
+    }
+
+    /**
+     * Get cart savings using built-in cart calculations
+     */
+    public function getCartSavings(): int
+    {
+        $subtotalWithoutConditions = (int) Cart::getRawSubtotalWithoutConditions();
+        $subtotalWithConditions = (int) Cart::getRawSubtotal();
+
+        return max(0, $subtotalWithoutConditions - $subtotalWithConditions);
+    }
+
+    /**
+     * Get shipping cost (from cart conditions or calculated)
+     */
+    public function getShippingCost(string $method = 'standard'): int
+    {
+        $shippingValue = Cart::getShippingValue();
+        if ($shippingValue !== null) {
+            return (int) ($shippingValue * 100); // Convert to cents
+        }
+
+        return $this->shippingService->calculateShipping($method);
+    }
+
+    /**
+     * Get cart summary with all calculations
+     */
+    public function getCartSummary(): array
+    {
+        return [
+            'items_count' => Cart::count(),
+            'total_quantity' => Cart::getTotalQuantity(),
+            'subtotal' => $this->getCartSubtotal(),
+            'total' => $this->getCartTotal(),
+            'savings' => $this->getCartSavings(),
+            'shipping_cost' => $this->getShippingCost(),
+            'has_conditions' => Cart::getConditions()->isNotEmpty(),
+            'shipping_method' => Cart::getShippingMethod(),
+        ];
+    }
+
+    /**
+     * Calculate total amount from cart using built-in cart calculations
      */
     protected function calculateCartTotal(array $cartItems): int
     {
+        // Use cart's built-in total calculation which includes all conditions
+        $cartTotal = (int) Cart::getRawTotal();
+
+        // If cart total is available and valid, use it
+        if ($cartTotal > 0) {
+            return $cartTotal;
+        }
+
+        // Fallback to manual calculation only if cart total is not available
         $itemsTotal = collect($cartItems)->sum(fn ($item) => $item['price'] * $item['quantity']);
-        
+
         // Add shipping cost if available
         $shippingValue = Cart::getShippingValue();
         if ($shippingValue !== null) {
             // Convert shipping from dollars to cents
             $shippingInCents = (int) ($shippingValue * 100);
+
             return $itemsTotal + $shippingInCents;
         }
-        
+
         return $itemsTotal;
+    }
+
+    /**
+     * Get purchase status from payment gateway
+     */
+    public function getPurchaseStatus(string $purchaseId): ?array
+    {
+        try {
+            // Use the payment gateway to check purchase status
+            return $this->paymentGateway->getPurchaseStatus($purchaseId);
+        } catch (\Exception $e) {
+            Log::error('Failed to get purchase status', [
+                'purchase_id' => $purchaseId,
+                'error' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
     }
 }

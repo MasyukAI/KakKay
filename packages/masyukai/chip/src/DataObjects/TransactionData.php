@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Masyukai\Chip\DataObjects;
+namespace MasyukAI\Chip\DataObjects;
 
 class TransactionData
 {
@@ -25,17 +25,17 @@ class TransactionData
 
     public function getLastAttempt(): ?array
     {
-        return !empty($this->attempts) ? $this->attempts[0] : null;
+        return ! empty($this->attempts) ? $this->attempts[0] : null;
     }
 
     public function hasFailedAttempts(): bool
     {
-        return !empty(array_filter($this->attempts, fn($attempt) => !($attempt['successful'] ?? true)));
+        return ! empty(array_filter($this->attempts, fn ($attempt) => ! ($attempt['successful'] ?? true)));
     }
 
     public function getFailedAttempts(): array
     {
-        return array_filter($this->attempts, fn($attempt) => !($attempt['successful'] ?? true));
+        return array_filter($this->attempts, fn ($attempt) => ! ($attempt['successful'] ?? true));
     }
 
     public function toArray(): array

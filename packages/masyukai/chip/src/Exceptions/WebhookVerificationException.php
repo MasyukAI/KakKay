@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Masyukai\Chip\Exceptions;
+namespace MasyukAI\Chip\Exceptions;
 
 use Exception;
 
