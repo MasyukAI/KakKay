@@ -99,7 +99,7 @@
       position:relative; isolation:isolate;
     }
     .logo::after{ content:""; position:absolute; inset:2px; border-radius:10px; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.35), transparent 45%); mix-blend:screen; }
-    .brand h1{ font: 800 clamp(1.0rem, 2vw + .4rem, 1.4rem) Montserrat, system-ui, sans-serif; letter-spacing:.3px; margin:0; }
+    .brand h1{ font: 900 clamp(1.0rem, 2vw + .4rem, 1.4rem) Montserrat, system-ui, sans-serif; letter-spacing:.3px; margin:0; }
     .tagline{ color:#f7e9f4; opacity:.9; font-family:"Poppins", "Montserrat", system-ui, sans-serif; }
 
     nav{ display:flex; gap:14px; flex-wrap:wrap; }

@@ -10,235 +10,121 @@ class extends Component {
     //
 } ?>
 
-<div>
-  <!-- NAVIGATION HEADER -->
-  <div class="container">
-    <header style="padding: 1.5rem 0;">
-  <a href="/">
-        <div class="brand">
-          <div class="logo" aria-hidden="true"></div>
-            <div>
-              <h1>Kak Kay</h1>
-              <div class="tagline  text-xs sm:text-base">Counsellor • Therapist • KKDI Creator</div>
-            </div>
-        </div>
-      </a>
-      <div class="flex items-center gap-4 ml-auto">
-        <div class="relative">
-          <flux:button variant="primary" href="{{ route('cart') }}" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-lg">
-            <flux:icon.shopping-bag class="h-6 w-6" />
-            <span class="hidden sm:inline font-medium">Troli</span>
-            <div class="absolute top-0 right-0">
-              @livewire('cart-counter')
-            </div>
-          </flux:button>
-        </div>
-      </div>
-    </header>
-  </div>
+<div class="relative isolate overflow-hidden bg-[#0f0218] text-white">
+    <div class="pointer-events-none absolute -top-48 -left-36 h-[520px] w-[520px] rounded-full bg-gradient-to-br from-pink-500/35 via-purple-500/25 to-rose-500/35 blur-3xl"></div>
+    <div class="pointer-events-none absolute top-1/3 -right-32 h-[520px] w-[520px] rounded-full bg-gradient-to-br from-fuchsia-500/30 via-rose-500/20 to-orange-400/30 blur-3xl"></div>
+    <div class="pointer-events-none absolute bottom-[-260px] left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-gradient-to-br from-purple-600/30 via-indigo-500/20 to-pink-400/35 blur-3xl"></div>
 
-  <!-- Minimalistic Heading -->
-  <div class="max-w-3xl mx-auto px-4 pt-16 pb-10 text-center">
-    <h1 class="font-display text-4xl md:text-5xl font-semibold text-white mb-2 tracking-tight">Terma Perkhidmatan</h1>
-    <div class="flex justify-center mb-4">
-      <span class="block w-16 h-1 rounded bg-gradient-to-r from-pink-400 to-purple-500 opacity-80"></span>
-    </div>
-    <p class="text-base md:text-lg text-white/80 font-normal leading-relaxed">
-      Syarat-syarat penggunaan laman web dan pembelian produk daripada Kak Kay.
-    </p>
-  </div>
+    <div class="relative z-10">
+    <x-brand-header />
 
-  <!-- CONTENT -->
-  <main class="relative">
-    <!-- Enhanced decorative elements -->
-    <div class="decorative-blob absolute top-20 left-4 w-32 h-32 bg-gradient-to-r from-orchid/20 to-blush/20 rounded-full"></div>
-    <div class="decorative-blob absolute top-40 right-8 w-24 h-24 bg-gradient-to-r from-rose/20 to-pink/20 rounded-full" style="animation-delay: -2s;"></div>
-    <div class="decorative-blob absolute bottom-60 left-12 w-20 h-20 bg-gradient-to-r from-purple/15 to-magenta/15 rounded-full" style="animation-delay: -4s;"></div>
-    <div class="decorative-blob absolute bottom-40 right-16 w-28 h-28 bg-gradient-to-r from-blush/15 to-rose/15 rounded-full" style="animation-delay: -1s;"></div>
-    
-    <section class="max-w-4xl mx-auto px-4 py-16">
-      <div class="prose prose-lg max-w-none">
-        <div class="rad-card rounded-2xl border p-8 mb-8">
-          <p class="text-slate-600 text-sm mb-4">Berkuat kuasa: 3 September 2025</p>
-          <p class="leading-relaxed text-slate-700 mb-6">
-            Terma & Syarat ini mengatur penggunaan laman web dan pembelian produk daripada <strong>Kamalia Kamal Resources International (Kak Kay)</strong>. Dengan menggunakan perkhidmatan kami, anda bersetuju untuk mematuhi terma-terma berikut.
-          </p>
-        </div>
-
-        <div class="space-y-8">
-          <div class="rad-card rounded-2xl border p-6">
-            <h2 class="font-display text-2xl text-maroon mb-4">1. Penerimaan Terma</h2>
-            <div class="text-slate-700 space-y-4">
-              <p>Dengan mengakses dan menggunakan laman web ini, anda bersetuju untuk terikat dengan Terma & Syarat ini. Jika anda tidak bersetuju dengan mana-mana bahagian terma ini, sila jangan gunakan perkhidmatan kami.</p>
-              
-              <div class="p-4 rounded-xl bg-champagne/20 border border-champagne/30">
-                <p class="text-sm"><strong>Nota:</strong> Terma ini boleh dikemas kini dari semasa ke semasa. Sila semak secara berkala untuk perubahan terkini.</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="rad-card rounded-2xl border p-6">
-            <h2 class="font-display text-2xl text-maroon mb-4">2. Maklumat Syarikat</h2>
-            <div class="text-slate-700 space-y-4">
-              <div class="grid md:grid-cols-2 gap-4">
-                <div class="p-4 rounded-xl bg-white/60 border">
-                  <h4 class="font-semibold text-maroon mb-2">Butiran Perniagaan</h4>
-                  <div class="text-sm space-y-1">
-                    <p><strong>Nama:</strong> Kamalia Kamal Resources International</p>
-                    <p><strong>Jenis:</strong> Sendirian Berhad</p>
-                    <p><strong>SSM:</strong> 202101019097 (1419397-X)</p>
-                  </div>
+    <main class="pb-24">
+        <div class="mx-auto max-w-7xl space-y-24 px-6 sm:px-8">
+        <x-policy-hero eyebrow="Terma & Syarat" chip="Disemak 3 September 2025" title="Terma Perkhidmatan Kak Kay" subtitle="Terma ini wujud untuk melindungi anda dan komuniti Kak Kay. Dengan menggunakan laman dan produk kami, anda bersetuju untuk mematuhi garis panduan ini.">
+            <div class="policy-highlight-card">
+                <span class="text-xl">🤝</span>
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.32em] text-white/70">Amanah</p>
+                    <p class="text-white/85 text-sm">Kami menghormati hak & pengalaman anda</p>
                 </div>
-                <div class="p-4 rounded-xl bg-white/60 border">
-                  <h4 class="font-semibold text-maroon mb-2">Alamat Perniagaan</h4>
-                  <div class="text-sm">
-                    <p>24, Jalan Pakis 1,</p>
-                    <p>Taman Fern Grove,</p>
-                    <p>43200 Cheras, Selangor</p>
-                    <p>Malaysia</p>
-                  </div>
+            </div>
+            <div class="policy-highlight-card">
+                <span class="text-xl">📚</span>
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.32em] text-white/70">Penggunaan</p>
+                    <p class="text-white/85 text-sm">Sumber untuk kegunaan peribadi & pasangan</p>
                 </div>
-              </div>
             </div>
-          </div>
-
-          <div class="rad-card rounded-2xl border p-6">
-            <h2 class="font-display text-2xl text-maroon mb-4">3. Produk & Perkhidmatan</h2>
-            <div class="text-slate-700 space-y-4">
-              <p><strong>Produk yang Ditawarkan:</strong></p>
-              <ul class="list-disc list-inside ml-4 space-y-2">
-                <li>E-book dan buku bercetak mengenai pembangunan diri dan perhubungan</li>
-                <li>Khidmat kaunseling dan terapi (jika berkenaan)</li>
-                <li>Program pembangunan diri</li>
-                <li>Kandungan digital dan bahan pembelajaran</li>
-              </ul>
-              
-              <div class="mt-4 p-4 rounded-xl bg-rose/5 border border-rose/20">
-                <p class="text-sm"><strong>Penafian:</strong> Produk kami adalah untuk tujuan pendidikan dan pembangunan diri. Ia bukan pengganti khidmat profesional seperti terapi psikologi klinikal atau kaunseling perubatan.</p>
-              </div>
+            <div class="policy-highlight-card">
+                <span class="text-xl">🛡️</span>
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.32em] text-white/70">Perlindungan</p>
+                    <p class="text-white/85 text-sm">Harta intelek & komuniti Kak Kay dijaga</p>
+                </div>
             </div>
-          </div>
+        </x-policy-hero>
 
-          <div class="rad-card rounded-2xl border p-6">
-            <h2 class="font-display text-2xl text-maroon mb-4">4. Pembelian & Pembayaran</h2>
-            <div class="text-slate-700 space-y-4">
-              <h4 class="font-semibold text-maroon">Proses Pembelian:</h4>
-              <ul class="list-disc list-inside ml-4 space-y-2">
-                <li>Semua harga dinyatakan dalam Ringgit Malaysia (RM)</li>
-                <li>Harga termasuk GST (jika berkenaan)</li>
-                <li>Pembayaran mesti dibuat sepenuhnya sebelum produk dihantar</li>
-              </ul>
-              
-              <h4 class="font-semibold text-maroon mt-4">Kaedah Pembayaran:</h4>
-              <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
-                <div class="text-center p-2 bg-white/60 rounded-lg border text-xs">FPX</div>
-                <div class="text-center p-2 bg-white/60 rounded-lg border text-xs">Visa</div>
-                <div class="text-center p-2 bg-white/60 rounded-lg border text-xs">Mastercard</div>
-                <div class="text-center p-2 bg-white/60 rounded-lg border text-xs">eWallet</div>
-              </div>
+        <section class="space-y-10">
+            <div class="policy-card space-y-4">
+                <p class="text-sm uppercase tracking-[0.28em] text-white/60">Berkuat kuasa: 3 September 2025</p>
+                <p class="text-base leading-relaxed text-white/80">
+                    Terma & Syarat ini mengatur bagaimana anda menggunakan laman web, kandungan dan produk yang ditawarkan oleh <strong>Kamalia Kamal Resources International (Kak Kay)</strong>. Dengan membuat pembelian atau mengakses laman kami, anda bersetuju dengan terma-terma berikut.
+                </p>
             </div>
-          </div>
 
-          <div class="rad-card rounded-2xl border p-6">
-            <h2 class="font-display text-2xl text-maroon mb-4">5. Hak Cipta & Harta Intelek</h2>
-            <div class="text-slate-700 space-y-4">
-              <p><strong>Semua kandungan di laman web ini adalah hak cipta Kak Kay.</strong></p>
-              
-              <h4 class="font-semibold text-maroon">Yang Tidak Dibenarkan:</h4>
-              <ul class="list-disc list-inside ml-4 space-y-2">
-                <li>Menyalin, mengedar, atau menjual semula produk digital tanpa kebenaran</li>
-                <li>Berkongsi akaun atau maklumat login</li>
-                <li>Menggunakan kandungan untuk tujuan komersial tanpa lesen</li>
-                <li>Mengedit atau mengubah kandungan asal</li>
-              </ul>
-              
-              <h4 class="font-semibold text-maroon mt-4">Yang Dibenarkan:</h4>
-              <ul class="list-disc list-inside ml-4 space-y-2">
-                <li>Penggunaan peribadi untuk pembelajaran dan pembangunan diri</li>
-                <li>Berkongsi testimoni dan ulasan yang jujur</li>
-                <li>Merujuk kandungan dengan petikan yang sesuai</li>
-              </ul>
+            <div class="policy-card space-y-4">
+                <h2 class="font-display text-3xl text-white">1. Penerimaan Terma</h2>
+                <p class="text-base leading-relaxed text-white/80">Dengan menggunakan laman web atau membeli produk daripada Kak Kay, anda bersetuju untuk mematuhi terma ini. Jika anda tidak bersetuju, sila hentikan penggunaan perkhidmatan kami.</p>
+                <div class="policy-mini-card">
+                    <p class="text-sm text-white/75">Terma mungkin dikemas kini dari semasa ke semasa. Perubahan akan diumumkan melalui laman ini.</p>
+                </div>
             </div>
-          </div>
 
-          <div class="rad-card rounded-2xl border p-6">
-            <h2 class="font-display text-2xl text-maroon mb-4">6. Tingkah Laku Pengguna</h2>
-            <div class="text-slate-700 space-y-4">
-              <p><strong>Anda bersetuju untuk TIDAK:</strong></p>
-              <ul class="list-disc list-inside ml-4 space-y-2">
-                <li>Menggunakan perkhidmatan untuk aktiviti yang menyalahi undang-undang</li>
-                <li>Mengganggu atau merosakkan operasi laman web</li>
-                <li>Menghantar spam atau kandungan yang tidak diingini</li>
-                <li>Menyamar sebagai orang lain atau entiti lain</li>
-                <li>Melanggar hak orang lain</li>
-              </ul>
-            </div>
-          </div>
-
-          <div class="rad-card rounded-2xl border p-6">
-            <h2 class="font-display text-2xl text-maroon mb-4">7. Penafian & Had Liabiliti</h2>
-            <div class="text-slate-700 space-y-4">
-              <div class="p-4 rounded-xl bg-rose/5 border border-rose/20">
-                <h4 class="font-semibold text-maroon mb-2">Penafian Penting</h4>
-                <ul class="text-sm space-y-1">
-                  <li>• Produk kami adalah untuk tujuan pendidikan dan motivasi sahaja</li>
-                  <li>• Hasil individu mungkin berbeza-beza</li>
-                  <li>• Tiada jaminan hasil atau kejayaan yang spesifik</li>
-                  <li>• Bukan pengganti nasihat profesional dalam kesihatan mental</li>
+            <div class="policy-card space-y-4">
+                <h2 class="font-display text-3xl text-white">2. Penggunaan Produk</h2>
+                <p class="text-base leading-relaxed text-white/80">Produk kami — digital atau fizikal — adalah untuk kegunaan peribadi anda dan pasangan sahaja. Semua kandungan dilindungi hak cipta.</p>
+                <ul class="space-y-2 text-sm text-white/80">
+                    <li>Dilarang mengedar, menyalin, atau menjual semula kandungan tanpa kebenaran bertulis.</li>
+                    <li>Anda dibenarkan menyimpan salinan digital untuk rujukan sendiri.</li>
+                    <li>Kami berhak menamatkan akses jika terdapat penyalahgunaan.</li>
                 </ul>
-              </div>
-              
-              <p class="mt-4">Kami tidak bertanggungjawab terhadap sebarang kerugian atau kerosakan yang timbul daripada penggunaan produk atau perkhidmatan kami, kecuali yang dikehendaki oleh undang-undang.</p>
             </div>
-          </div>
 
-          <div class="rad-card rounded-2xl border p-6">
-            <h2 class="font-display text-2xl text-maroon mb-4">8. Penamatan</h2>
-            <div class="text-slate-700 space-y-4">
-              <p>Kami berhak untuk menamatkan atau menggantung akses anda kepada perkhidmatan kami jika:</p>
-              <ul class="list-disc list-inside ml-4 space-y-2">
-                <li>Anda melanggar Terma & Syarat ini</li>
-                <li>Kami mengesyaki aktiviti penipuan atau menyalahi undang-undang</li>
-                <li>Atas budi bicara kami dengan notis yang munasabah</li>
-              </ul>
+            <div class="policy-card space-y-4">
+                <h2 class="font-display text-3xl text-white">3. Pembelian &amp; Pembayaran</h2>
+                <ul class="space-y-2 text-sm text-white/80">
+                    <li>Harga adalah dalam Ringgit Malaysia (RM) dan tertakluk kepada promosi semasa.</li>
+                    <li>Pembayaran diproses melalui gateway yang selamat (FPX, kad kredit/debit, e-wallet).</li>
+                    <li>Anda bertanggungjawab memastikan maklumat pembayaran yang tepat.</li>
+                    <li>Resit dan bukti pembelian dihantar ke e-mel anda secara automatik.</li>
+                </ul>
             </div>
-          </div>
 
-          <div class="rad-card rounded-2xl border p-6">
-            <h2 class="font-display text-2xl text-maroon mb-4">9. Undang-undang yang Berkenaan</h2>
-            <div class="text-slate-700 space-y-4">
-              <p>Terma & Syarat ini dikawal oleh undang-undang Malaysia. Sebarang pertikaian akan diselesaikan di mahkamah Malaysia yang mempunyai bidang kuasa.</p>
-              
-              <div class="p-4 rounded-xl bg-champagne/20 border border-champagne/30">
-                <p class="text-sm"><strong>Penyelesaian Pertikaian:</strong> Kami menggalakkan penyelesaian secara aman melalui perbincangan sebelum tindakan undang-undang.</p>
-              </div>
+            <div class="policy-card space-y-4">
+                <h2 class="font-display text-3xl text-white">4. Dasar Pemulangan</h2>
+                <p class="text-base leading-relaxed text-white/80">Rujuk <a href="/refund-policy" class="text-pink-200 underline">Dasar Pemulangan</a> untuk maklumat lengkap. Secara ringkas:</p>
+                <ul class="space-y-2 text-sm text-white/80">
+                    <li>Produk digital: jaminan 7 hari selepas mencuba teknik yang disyorkan.</li>
+                    <li>Produk fizikal: pemulangan atau pertukaran dalam masa 14 hari.</li>
+                    <li>Kami mungkin meminta bukti pembelian atau bukti kerosakan.</li>
+                </ul>
             </div>
-          </div>
 
-          <div class="rad-card rounded-2xl border p-6">
-            <h2 class="font-display text-2xl text-maroon mb-4">10. Perubahan Terma</h2>
-            <div class="text-slate-700 space-y-4">
-              <p>Kami berhak untuk mengubah Terma & Syarat ini pada bila-bila masa. Perubahan akan berkuat kuasa serta-merta selepas disiarkan di laman web ini.</p>
-              
-              <p>Penggunaan berterusan perkhidmatan kami selepas perubahan menandakan penerimaan anda terhadap terma yang telah dikemas kini.</p>
+            <div class="policy-card space-y-4">
+                <h2 class="font-display text-3xl text-white">5. Hak Harta Intelek</h2>
+                <p class="text-base leading-relaxed text-white/80">Segala kandungan, termasuk teks, grafik, modul latihan, dan video adalah hak milik Kak Kay.</p>
+                <ul class="space-y-2 text-sm text-white/80">
+                    <li>Kandungan hanya untuk kegunaan peribadi.</li>
+                    <li>Pengedaran tanpa kebenaran boleh dikenakan tindakan.</li>
+                    <li>Sebarang idea atau maklum balas yang diberikan menjadi hak kami untuk ditambah baik.</li>
+                </ul>
             </div>
-          </div>
 
+            <div class="policy-card space-y-4">
+                <h2 class="font-display text-3xl text-white">6. Perkongsian Komuniti</h2>
+                <p class="text-base leading-relaxed text-white/80">Apabila berkongsi pengalaman atau testimoni, anda memberi kami kebenaran untuk memaparkannya (dengan identiti dirahsiakan jika diminta).</p>
+                <ul class="space-y-2 text-sm text-white/80">
+                    <li>Kami tidak akan berkongsi maklumat sensitif tanpa kebenaran.</li>
+                    <li>Anda boleh menarik balik kebenaran pada bila-bila masa.</li>
+                </ul>
+            </div>
+
+            <div class="policy-card space-y-4">
+                <h2 class="font-display text-3xl text-white">7. Had Tanggungjawab</h2>
+                <p class="text-base leading-relaxed text-white/80">Produk Kak Kay dibina untuk membantu, namun hasil mungkin berbeza bagi setiap individu. Kami tidak bertanggungjawab atas kerugian tidak langsung yang berlaku akibat penggunaan produk.</p>
+            </div>
+
+            <div class="policy-card space-y-4">
+                <h2 class="font-display text-3xl text-white">8. Pindaan Terma</h2>
+                <p class="text-base leading-relaxed text-white/80">Kami mungkin mengemas kini terma ini dari semasa ke semasa. Perubahan akan dimuat naik ke laman ini dengan tarikh berkuat kuasa yang baharu.</p>
+            </div>
+        </section>
         </div>
-      </div>
-    </section>
-  </main>
+    </main>
 
-  <!-- BACK TO HOME -->
-  <section class="max-w-4xl mx-auto px-4 pb-16">
-    <div class="text-center">
-  <a href="{{ route('home') }}" class="btn primary rounded-full px-8 py-3 font-semibold text-white shadow-glow hover:scale-105 transition-all duration-300">
-        Kembali ke Laman Utama
-      </a>
-    </div>
-  </section>
-
-  <div class="container">
-        <x-footer />
+        <div class="container pb-12">
+            <x-footer />
+        </div>
+    </main>
     </div>
 </div>

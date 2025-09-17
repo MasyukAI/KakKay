@@ -4,19 +4,12 @@
     <div class="pointer-events-none absolute -bottom-64 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-gradient-to-br from-purple-600/30 via-indigo-500/20 to-pink-400/30 blur-3xl"></div>
 
     <div class="relative z-10">
-        <header class="mx-auto flex w-full max-w-7xl items-center justify-between px-6 pt-10 sm:px-8">
-            <a href="/" class="flex items-center gap-4">
-                <div class="logo" aria-hidden="true"></div>
-                <div class="space-y-0.5">
-                    <h1 class="text-xl font-black tracking-tight">Kak Kay</h1>
-                    <div class="tagline text-xs sm:text-base">Counsellor • Therapist • KKDI Creator</div>
-                </div>
-            </a>
+        <x-brand-header>
             <a href="{{ route('home') }}" class="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.32em] text-white/70 transition hover:border-white/50 hover:text-white">
                 <flux:icon.arrow-left class="h-4 w-4" />
                 <span class="hidden md:inline">Sambung pilih buku</span>
             </a>
-        </header>
+        </x-brand-header>
 
         <main class="space-y-12 pb-24 sm:space-y-16">
             <section class="pt-20">
@@ -71,15 +64,17 @@
                         <div class="lg:grid lg:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[minmax(0,1fr)_420px] lg:gap-12">
                             <div class="space-y-6">
                                 @foreach($cartItems as $item)
-                                    <div class="cart-item-card relative overflow-hidden rounded-[32px] border border-white/15 bg-white/5 p-6 shadow-[0_25px_70px_rgba(12,5,24,0.4)] sm:p-7">
+                                    <div wire:key="cart-item-{{ $item['id'] }}" class="cart-item-card relative overflow-hidden rounded-[32px] border border-white/15 bg-white/5 p-6 shadow-[0_25px_70px_rgba(12,5,24,0.4)] sm:p-7">
                                         <div class="flex flex-col gap-6 sm:flex-row">
                                             <div class="relative w-full sm:w-36 sm:flex-shrink-0">
-                                                <div class="absolute -inset-5 rounded-[36px] bg-gradient-to-br from-pink-400/35 via-fuchsia-400/20 to-purple-500/35 opacity-80 blur-3xl"></div>
-                                                <div class="relative rounded-[28px] border border-white/10 bg-gradient-to-br from-pink-500/30 via-rose-400/20 to-purple-500/25 p-[6px] shadow-[0_20px_60px_rgba(17,0,34,0.45)]">
-                                                    <div class="overflow-hidden rounded-[22px] border border-white/12 bg-[#14021f]/40 shadow-[0_12px_45px_rgba(17,0,34,0.35)]">
-                                                        <img src="{{ asset('storage/images/cover/' . $item['slug'] . '.png') }}" alt="{{ $item['name'] }}" class="block h-full w-full object-cover">
+                                                <div class="absolute -inset-5 rounded-[36px] bg-gradient-to-br from-yellow-300/40 via-amber-400/30 to-pink-400/20 opacity-80 blur-2xl"></div>
+                                                <div class="relative rounded-[28px] p-[3px] bg-gradient-to-br from-yellow-400 via-amber-400 to-pink-400 shadow-[0_0_32px_4px_rgba(255,215,0,0.18)]">
+                                                    <div class="relative rounded-[25px] bg-[#14021f]/60 p-[3px] shadow-[0_8px_32px_rgba(255,215,0,0.10)]">
+                                                        <div class="overflow-hidden rounded-[22px] border-2 border-yellow-300/80 bg-[#14021f]/40 shadow-[0_12px_45px_rgba(255,215,0,0.10)]">
+                                                            <img src="{{ asset('storage/images/cover/' . $item['slug'] . '.png') }}" alt="{{ $item['name'] }}" class="block h-full w-full object-cover">
+                                                        </div>
                                                     </div>
-                                                    <div class="pointer-events-none absolute inset-0 rounded-[28px] ring-1 ring-white/10 ring-offset-2 ring-offset-[#12021f]"></div>
+                                                    <div class="pointer-events-none absolute inset-0 rounded-[28px] ring-2 ring-yellow-200/30 ring-offset-2 ring-offset-yellow-100/10"></div>
                                                 </div>
                                             </div>
                                             <div class="relative flex flex-1 flex-col justify-between gap-6">
@@ -98,8 +93,14 @@
                                                     <div class="flex items-center gap-3">
                                                         <flux:button variant="subtle" size="sm"
                                                             wire:click="decrementQuantity('{{ $item['id'] }}')"
-                                                            class="cursor-pointer flex h-11 w-11 items-center justify-center rounded-xl border border-white/15 bg-white/10 transition hover:bg-white/20">
-                                                            <flux:icon.minus class="h-4 w-4" />
+                                                            wire:loading.attr="disabled"
+                                                            wire:target="decrementQuantity('{{ $item['id'] }}')"
+                                                            class="cursor-pointer flex h-11 w-11 items-center justify-center rounded-xl border border-white/15 bg-white/10 transition hover:bg-white/20 disabled:opacity-50">
+                                                            <flux:icon.minus class="h-4 w-4" wire:loading.remove wire:target="decrementQuantity('{{ $item['id'] }}')"/>
+                                                            <svg wire:loading wire:target="decrementQuantity('{{ $item['id'] }}')" class="h-4 w-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+                                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                                <path class="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                            </svg>
                                                         </flux:button>
 
                                                         <span class="min-w-[3rem] rounded-xl border border-white/15 bg-white/15 px-4 py-2 text-center text-lg font-semibold text-white">
@@ -108,8 +109,14 @@
 
                                                         <flux:button variant="subtle" size="sm"
                                                             wire:click="incrementQuantity('{{ $item['id'] }}')"
-                                                            class="cursor-pointer flex h-11 w-11 items-center justify-center rounded-xl border border-white/15 bg-white/10 transition hover:bg-white/20">
-                                                            <flux:icon.plus class="h-4 w-4" />
+                                                            wire:loading.attr="disabled"
+                                                            wire:target="incrementQuantity('{{ $item['id'] }}')"
+                                                            class="cursor-pointer flex h-11 w-11 items-center justify-center rounded-xl border border-white/15 bg-white/10 transition hover:bg-white/20 disabled:opacity-50">
+                                                            <flux:icon.plus class="h-4 w-4" wire:loading.remove wire:target="incrementQuantity('{{ $item['id'] }}')"/>
+                                                            <svg wire:loading wire:target="incrementQuantity('{{ $item['id'] }}')" class="h-4 w-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+                                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                                <path class="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                            </svg>
                                                         </flux:button>
                                                     </div>
 
@@ -164,8 +171,6 @@
                                             <flux:icon.credit-card class="h-5 w-5" />
                                             Terus ke bayaran
                                         </flux:button>
-
-                                        <p class="text-xs text-white/60">Bayaran selamat, boleh pilih FPX atau kad. Ada soalan? DM Kak Kay di Instagram sebelum buat pembayaran.</p>
                                     </div>
                                 </div>
                             </aside>
@@ -181,11 +186,11 @@
                 <div class="mx-auto max-w-7xl px-6 sm:px-8">
                     <div class="mx-auto max-w-3xl text-center">
                         <h3 class="font-display text-3xl text-white sm:text-4xl">Yang lain ni orang beli juga</h3>
-                        <p class="mt-3 text-lg leading-relaxed text-white/80">Tambah satu lagi judul untuk lengkapkan ritual. Semua ni antara pilihan feveret geng KKDI.</p>
+                        <p class="mt-3 text-lg leading-relaxed text-white/80">Tambah satu lagi judul untuk lebih lengkap. Semua ni antara pilihan feveret geng KKDI.</p>
                     </div>
                     <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                         @foreach($suggestedProducts as $product)
-                            <div class="group relative flex h-full flex-col overflow-hidden rounded-[30px] border border-white/15 bg-white/5 p-5 text-left text-white/80 shadow-[0_25px_70px_rgba(12,5,24,0.4)] transition duration-300 hover:-translate-y-2 hover:shadow-[0_35px_90px_rgba(236,72,153,0.3)]">
+                            <div wire:key="suggested-product-{{ $product->id }}" class="group relative flex h-full flex-col overflow-hidden rounded-[30px] border border-white/15 bg-white/5 p-5 text-left text-white/80 shadow-[0_25px_70px_rgba(12,5,24,0.4)] transition duration-300 hover:-translate-y-2 hover:shadow-[0_35px_90px_rgba(236,72,153,0.3)]">
                                 <a href="/{{ $product->slug }}" class="block">
                                     <div class="relative overflow-hidden rounded-[22px]">
                                         <img src="{{ asset('storage/images/cover/' . $product->slug . '.png') }}" alt="{{ $product->name }}" class="w-full rounded-[22px] border border-white/20 object-cover shadow-[0_20px_60px_rgba(17,0,34,0.45)]">
@@ -204,12 +209,23 @@
                                         </div>
                                     </div>
                                 </a>
-                                <flux:button variant="primary" size="sm"
+                                <button type="button"
                                     wire:click.prevent="addToCart({{ $product->id }})"
-                                    class="cart-button-primary mt-5 flex items-center justify-center gap-2">
-                                    <flux:icon.shopping-cart class="h-4 w-4" />
-                                    Tambah
-                                </flux:button>
+                                    wire:loading.attr="disabled"
+                                    wire:target="addToCart({{ $product->id }})"
+                                    class="cart-button-primary mt-5 flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 px-6 py-3 text-sm font-semibold text-white shadow-[0_22px_52px_rgba(236,72,153,0.45)] ring-1 ring-white/20 transition-all duration-300 ease-out hover:shadow-[0_28px_64px_rgba(236,72,153,0.6)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f0218] disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <span wire:loading wire:target="addToCart({{ $product->id }})" class="flex items-center gap-2">
+                                        <svg class="h-4 w-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        <span>Menambah...</span>
+                                    </span>
+                                    <span wire:loading.remove wire:target="addToCart({{ $product->id }})" class="flex items-center gap-2">
+                                        <flux:icon.shopping-cart class="h-4 w-4" />
+                                        <span>Tambah</span>
+                                    </span>
+                                </button>
                             </div>
                         @endforeach
                     </div>

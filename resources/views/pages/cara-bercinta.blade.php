@@ -58,6 +58,12 @@ class extends Component {
   <div class="absolute top-1/3 -right-24 h-[520px] w-[520px] rounded-full bg-gradient-to-br from-fuchsia-500/30 via-rose-500/20 to-orange-400/30 blur-3xl"></div>
   <div class="absolute bottom-[-240px] left-1/2 h-[460px] w-[460px] -translate-x-1/2 rounded-full bg-gradient-to-br from-purple-600/30 via-indigo-500/20 to-pink-400/40 blur-3xl"></div>
 
+  @php
+      $cartQuantity = Cart::getTotalQuantity();
+  @endphp
+
+  <x-brand-header :cart-quantity="$cartQuantity" />
+
   <main class="relative">
     <!-- HERO -->
     <section class="pt-20 pb-24 lg:pb-32">

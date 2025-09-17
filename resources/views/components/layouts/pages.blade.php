@@ -50,6 +50,46 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
+        .logo {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            flex: none;
+            background: linear-gradient(135deg, #E0115F, #6A00F4);
+            box-shadow: 0 6px 16px rgba(224, 17, 95, 0.4);
+            position: relative;
+            isolation: isolate;
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            border-radius: 10px;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.35), transparent 45%);
+            mix-blend-mode: screen;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand h1 {
+            margin: 0;
+            letter-spacing: .3px;
+            font-size: clamp(1.0rem, 2vw + .4rem, 1.4rem);
+            font-family: 'Montserrat', system-ui, sans-serif;
+            font-weight: 900;
+        }
+
+        .tagline {
+            color: #f7e9f4;
+            opacity: 0.9;
+            font-family: 'Poppins', 'Montserrat', system-ui, sans-serif;
+        }
+
         /* Enhanced Background Patterns */
         .bg-velvet {
             background:

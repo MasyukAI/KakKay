@@ -5,33 +5,7 @@
 
     <div class="relative z-10">
         <!-- Header Navigation -->
-        <header class="mx-auto flex w-full max-w-7xl items-center justify-between px-6 pt-10 sm:px-8">
-            <a href="/" class="flex items-center gap-4">
-                <div class="logo" aria-hidden="true"></div>
-                <div class="space-y-0.5">
-                    <h1 class="text-xl font-black tracking-tight">Kak Kay</h1>
-                    <div class="tagline text-xs sm:text-base">Counsellor • Therapist • KKDI Creator</div>
-                </div>
-            </a>
-            @php
-                $hasCartItems = ($cartQuantity ?? 0) > 0;
-                $cartButtonBase = 'group relative flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f0218]';
-                $cartButtonPalette = $hasCartItems
-                    ? 'bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 text-white shadow-[0_22px_52px_rgba(236,72,153,0.45)] ring-1 ring-white/20'
-                    : 'border border-white/20 bg-white/10 text-white/80 shadow-[0_12px_32px_rgba(12,5,24,0.35)] hover:border-white/40 hover:text-white';
-            @endphp
-            <div class="flex items-center gap-4">
-                <flux:button href="{{ route('cart') }}" class="{{ $cartButtonBase }} {{ $cartButtonPalette }} hover:-translate-y-0.5 hover:scale-[1.03] hover:shadow-[0_28px_70px_rgba(236,72,153,0.5)]">
-                    <span class="pointer-events-none absolute inset-0 rounded-full opacity-0 transition duration-300 group-hover:opacity-50 {{ $hasCartItems ? 'bg-white/20' : 'bg-gradient-to-r from-pink-400/20 via-rose-400/10 to-purple-500/20' }}"></span>
-                    <span class="pointer-events-none absolute -inset-1 rounded-full blur-xl opacity-0 transition duration-500 group-hover:opacity-60 {{ $hasCartItems ? 'bg-pink-500/30' : 'bg-white/15' }}"></span>
-                    <flux:icon.shopping-bag class="relative z-10 h-5 w-5 {{ $hasCartItems ? 'text-white' : 'text-white/80' }}" />
-                    <span class="relative z-10 hidden sm:inline">Troli</span>
-                    <span class="absolute -top-2 -right-2 z-20">
-                        @livewire('cart-counter')
-                    </span>
-                </flux:button>
-            </div>
-        </header>
+        <x-brand-header :cart-quantity="$cartQuantity ?? null" />
 
         <!-- Checkout Content -->
         <section class="pt-20">
@@ -157,7 +131,7 @@
 
                         <!-- Order Summary Sidebar -->
                         <aside class="mt-10 space-y-6 lg:mt-0">
-                            <div class="cart-summary-card sticky top-6 p-6 sm:p-8">
+                            <div class="cart-summary-card sticky p-6 sm:p-8">
                                 <div class="absolute -top-20 right-0 h-48 w-48 rounded-full bg-gradient-to-br from-pink-400/30 via-purple-400/20 to-orange-300/30 blur-3xl"></div>
                                 <div class="relative space-y-6">
                                     <div class="space-y-3">

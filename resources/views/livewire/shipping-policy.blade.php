@@ -10,287 +10,145 @@ class extends Component {
     //
 } ?>
 
+<div class="relative isolate overflow-hidden bg-[#0f0218] text-white">
+    <div class="pointer-events-none absolute -top-48 -left-36 h-[520px] w-[520px] rounded-full bg-gradient-to-br from-pink-500/35 via-purple-500/25 to-rose-500/35 blur-3xl"></div>
+    <div class="pointer-events-none absolute top-1/3 -right-32 h-[520px] w-[520px] rounded-full bg-gradient-to-br from-fuchsia-500/30 via-rose-500/20 to-orange-400/30 blur-3xl"></div>
+    <div class="pointer-events-none absolute bottom-[-260px] left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-gradient-to-br from-purple-600/30 via-indigo-500/20 to-pink-400/35 blur-3xl"></div>
 
-<div class="container">
-  <!-- NAVIGATION HEADER -->
-  <header style="padding: 1.5rem 0;">
-    <a href="/">
-      <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
-        <div>
-          <h1>Kak Kay</h1>
-          <div class="tagline text-xs sm:text-base">Counsellor • Therapist • KKDI Creator</div>
-        </div>
-      </div>
-    </a>
-    <div class="flex items-center gap-4 ml-auto">
-      <div class="relative">
-        <flux:button variant="primary" href="{{ route('cart') }}" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-lg">
-          <flux:icon.shopping-bag class="h-6 w-6" />
-          <span class="hidden sm:inline font-medium">Troli</span>
-          <div class="absolute top-0 right-0">
-            @livewire('cart-counter')
-          </div>
-        </flux:button>
-      </div>
-    </div>
-  </header>
+    <div class="relative z-10">
+    <x-brand-header />
 
-  <!-- Minimalistic Heading -->
-  <div class="max-w-3xl mx-auto px-4 pt-16 pb-10 text-center">
-    <h1 class="font-display text-4xl md:text-5xl font-semibold text-white mb-2 tracking-tight">Dasar Penghantaran & Pengembalian</h1>
-    <div class="flex justify-center mb-4">
-      <span class="block w-16 h-1 rounded bg-gradient-to-r from-pink-400 to-purple-500 opacity-80"></span>
-    </div>
-    <p class="text-base md:text-lg text-white/80 font-normal leading-relaxed">
-      Maklumat lengkap mengenai penghantaran produk, kos, tempoh masa, dan prosedur pengembalian.
-    </p>
-  </div>
-
-  <!-- CONTENT -->
-  <main class="relative">
-    <!-- Enhanced decorative elements -->
-    <div class="decorative-blob absolute top-20 left-4 w-32 h-32 bg-gradient-to-r from-orchid/20 to-blush/20 rounded-full"></div>
-    <div class="decorative-blob absolute top-40 right-8 w-24 h-24 bg-gradient-to-r from-rose/20 to-pink/20 rounded-full" style="animation-delay: -2s;"></div>
-    <div class="decorative-blob absolute bottom-60 left-12 w-20 h-20 bg-gradient-to-r from-purple/15 to-magenta/15 rounded-full" style="animation-delay: -4s;"></div>
-    <div class="decorative-blob absolute bottom-40 right-16 w-28 h-28 bg-gradient-to-r from-blush/15 to-rose/15 rounded-full" style="animation-delay: -1s;"></div>
-    
-    <section class="max-w-4xl mx-auto px-4 py-16">
-      <div class="prose prose-lg max-w-none">
-        <!-- PRODUK DIGITAL -->
-        <div class="rad-card rounded-2xl border p-8 mb-8 bg-gradient-to-r from-champagne/20 to-cream/20">
-          <h2 class="font-display text-3xl text-maroon mb-4">📱 Produk Digital</h2>
-          <p class="text-lg text-slate-700 leading-relaxed mb-4">
-            Untuk e-book dan produk digital lain, anda akan menerima produk secara serta-merta selepas pembayaran berjaya.
-          </p>
-          <div class="grid md:grid-cols-2 gap-4">
-            <div class="p-4 rounded-xl bg-white/60 border">
-              <h4 class="font-semibold text-maroon mb-2">✅ Kelebihan Digital</h4>
-              <ul class="text-sm text-slate-700 space-y-1">
-                <li>• Akses serta-merta</li>
-                <li>• Tiada kos penghantaran</li>
-                <li>• Boleh baca di mana-mana</li>
-                <li>• Backup selamanya</li>
-              </ul>
-            </div>
-            <div class="p-4 rounded-xl bg-white/60 border">
-              <h4 class="font-semibold text-maroon mb-2">📧 Cara Menerima</h4>
-              <ul class="text-sm text-slate-700 space-y-1">
-                <li>• E-mel dengan pautan muat turun</li>
-                <li>• Link aktif selama 30 hari</li>
-                <li>• Boleh muat turun 3 kali</li>
-                <li>• Sokongan teknikal tersedia</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <!-- PRODUK FIZIKAL -->
-        <div class="space-y-8">
-          <div class="rad-card rounded-2xl border p-6">
-            <h2 class="font-display text-2xl text-maroon mb-4">📦 Penghantaran Produk Fizikal</h2>
-            <div class="text-slate-700 space-y-4">
-              <div class="grid md:grid-cols-2 gap-6">
+    <main class="pb-24">
+        <div class="mx-auto max-w-7xl space-y-24 px-6 sm:px-8">
+        <x-policy-hero eyebrow="Dasar Penghantaran" chip="Kemaskini 2025" title="Penghantaran & Pengembalian Kak Kay" subtitle="Kami pastikan setiap buku, modul, dan hadiah digital sampai dengan selamat — terus ke pintu rumah anda.">
+            <div class="policy-highlight-card">
+                <span class="text-xl">🚚</span>
                 <div>
-                  <h4 class="font-semibold text-maroon mb-3">Kawasan Penghantaran</h4>
-                  <ul class="space-y-2">
-                    <li class="flex items-center gap-2">
-                      <span class="w-2 h-2 rounded-full bg-rose"></span>
-                      <span><strong>Semenanjung Malaysia:</strong> 2-3 hari bekerja</span>
-                    </li>
-                    <li class="flex items-center gap-2">
-                      <span class="w-2 h-2 rounded-full bg-rose"></span>
-                      <span><strong>Sabah & Sarawak:</strong> 4-7 hari bekerja</span>
-                    </li>
-                  </ul>
+                    <p class="text-xs font-semibold uppercase tracking-[0.32em] text-white/70">Penghantaran</p>
+                    <p class="text-white/85 text-sm">3–5 hari bekerja (Semenanjung)</p>
                 </div>
+            </div>
+            <div class="policy-highlight-card">
+                <span class="text-xl">📦</span>
                 <div>
-                  <h4 class="font-semibold text-maroon mb-3">Kos Penghantaran</h4>
-                  <div class="space-y-2">
-                    <div class="p-3 rounded-lg bg-champagne/20 border">
-                      <p class="font-medium">Semenanjung Malaysia</p>
-                      <p class="text-sm">RM 7.00 (Pos Laju)</p>
+                    <p class="text-xs font-semibold uppercase tracking-[0.32em] text-white/70">Pembungkusan</p>
+                    <p class="text-white/85 text-sm">Setiap buku dibalut kalis air</p>
+                </div>
+            </div>
+            <div class="policy-highlight-card">
+                <span class="text-xl">💬</span>
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.32em] text-white/70">Sokongan</p>
+                    <p class="text-white/85 text-sm">WhatsApp dalam 24 jam</p>
+                </div>
+            </div>
+        </x-policy-hero>
+
+        <section class="space-y-10">
+            <div class="policy-card space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <h2 class="font-display text-3xl text-white">📱 Produk Digital (E-Book &amp; Modul)</h2>
+                    <span class="policy-chip">Akses Serta-merta</span>
+                </div>
+                <p class="text-base leading-relaxed text-white/80">
+                    Semua produk digital dihantar automatik ke e-mel dan akaun anda sebaik sahaja pembayaran disahkan. Jika pautan muat turun tamat tempoh, kami akan bantu hantar semula dalam masa 24 jam bekerja.
+                </p>
+                <div class="grid gap-4 md:grid-cols-2">
+                    <div class="policy-mini-card">
+                        <h3 class="text-white font-semibold">✅ Kelebihan Digital</h3>
+                        <ul class="space-y-1 text-sm text-white/75">
+                            <li>Akses segera selepas pembayaran</li>
+                            <li>Tiada kos penghantaran</li>
+                            <li>Boleh dibaca di telefon, tablet atau komputer</li>
+                            <li>Backup sepanjang hayat</li>
+                        </ul>
                     </div>
-                    <div class="p-3 rounded-lg bg-cream/20 border">
-                      <p class="font-medium">Sabah, Sarawak</p>
-                      <p class="text-sm">RM 15.00 (Pos Laju)</p>
+                    <div class="policy-mini-card">
+                        <h3 class="text-white font-semibold">📧 Cara Menerima</h3>
+                        <ul class="space-y-1 text-sm text-white/75">
+                            <li>Pautan muat turun dihantar melalui e-mel</li>
+                            <li>Pautan aktif selama 30 hari</li>
+                            <li>Sokongan pelanggan tersedia jika pautan tamat tempoh</li>
+                        </ul>
                     </div>
-                  </div>
                 </div>
-              </div>
             </div>
-          </div>
 
-          <div class="rad-card rounded-2xl border p-6">
-            <h2 class="font-display text-2xl text-maroon mb-4">📋 Pemprosesan Pesanan</h2>
-            <div class="text-slate-700 space-y-4">
-              <div class="grid md:grid-cols-3 gap-4">
-                <div class="text-center p-4 bg-white/60 rounded-xl border">
-                  <div class="text-2xl mb-2">🛒</div>
-                  <p class="font-semibold text-maroon">1. Pesanan Diterima</p>
-                  <p class="text-sm">Pesanan diproses dalam 1-2 hari bekerja</p>
+            <div class="policy-card space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <h2 class="font-display text-3xl text-white">📦 Produk Fizikal (Buku &amp; Kit)</h2>
+                    <span class="policy-chip">Penghantaran Seluruh Malaysia</span>
                 </div>
-                <div class="text-center p-4 bg-white/60 rounded-xl border">
-                  <div class="text-2xl mb-2">📦</div>
-                  <p class="font-semibold text-maroon">2. Pembungkusan</p>
-                  <p class="text-sm">Dibungkus dengan teliti dan selamat</p>
+                <p class="text-base leading-relaxed text-white/80">
+                    Pesanan diproses dalam 24 jam bekerja. Buku dibungkus kalis air dan dihantar menggunakan rakan logistik yang dipercayai untuk melindungi kandungan daripada kerosakan.
+                </p>
+                <div class="grid gap-4 md:grid-cols-2">
+                    <div class="policy-mini-card">
+                        <h3 class="text-white font-semibold">⏱️ Tempoh Penghantaran</h3>
+                        <ul class="space-y-1 text-sm text-white/75">
+                            <li>Semenanjung Malaysia: 3 – 5 hari bekerja</li>
+                            <li>Sabah &amp; Sarawak: 5 – 7 hari bekerja</li>
+                            <li>Singapura &amp; Brunei: 7 – 10 hari bekerja</li>
+                        </ul>
+                    </div>
+                    <div class="policy-mini-card">
+                        <h3 class="text-white font-semibold">💰 Kos Penghantaran</h3>
+                        <ul class="space-y-1 text-sm text-white/75">
+                            <li>RM9.90 (Semenanjung Malaysia)</li>
+                            <li>RM15.90 (Sabah &amp; Sarawak)</li>
+                            <li>RM25.00 (Singapura &amp; Brunei)</li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="text-center p-4 bg-white/60 rounded-xl border">
-                  <div class="text-2xl mb-2">🚚</div>
-                  <p class="font-semibold text-maroon">3. Penghantaran</p>
-                  <p class="text-sm">Nombor tracking dihantar via Email</p>
-                </div>
-              </div>
-              
-              <div class="mt-6 p-4 rounded-xl bg-blush/5 border border-blush/20">
-                <h4 class="font-semibold text-maroon mb-2">📅 Jadual Pemprosesan</h4>
-                <ul class="text-sm space-y-1">
-                  <li>• <strong>Isnin - Jumaat:</strong> Pesanan sebelum 2:00 PM diproses hari yang sama</li>
-                  <li>• <strong>Sabtu:</strong> Pesanan sebelum 12:00 PM diproses hari yang sama</li>
-                  <li>• <strong>Ahad & Cuti Umum:</strong> Pesanan diproses pada hari bekerja berikutnya</li>
-                </ul>
-              </div>
             </div>
-          </div>
 
-          <div class="rad-card rounded-2xl border p-6">
-            <h2 class="font-display text-2xl text-maroon mb-4">📍 Penghantaran Khusus</h2>
-            <div class="text-slate-700 space-y-4">
-              <div class="grid md:grid-cols-2 gap-4">
-                <div class="p-4 rounded-xl bg-champagne/20 border border-champagne/30">
-                  <h4 class="font-semibold text-maroon mb-2">🏢 Alamat Pejabat</h4>
-                  <p class="text-sm mb-2">Untuk penghantaran ke pejabat, sila pastikan:</p>
-                  <ul class="text-xs space-y-1">
-                    <li>• Nama penerima yang jelas</li>
-                    <li>• Nombor telefon yang boleh dihubungi</li>
-                    <li>• Nama syarikat dan tingkat/unit</li>
-                  </ul>
+            <div class="policy-card space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <h2 class="font-display text-3xl text-white">🚚 Aliran Penghantaran Kami</h2>
+                    <span class="policy-chip">Langkah Demi Langkah</span>
                 </div>
-                <div class="p-4 rounded-xl bg-cream/20 border border-cream/30">
-                  <h4 class="font-semibold text-maroon mb-2">🏠 Alamat Rumah</h4>
-                  <p class="text-sm mb-2">Untuk penghantaran ke rumah:</p>
-                  <ul class="text-xs space-y-1">
-                    <li>• Alamat lengkap dengan poskod</li>
-                    <li>• Nama jalan dan nombor rumah yang tepat</li>
-                    <li>• Landmark berdekatan (jika perlu)</li>
-                  </ul>
-                </div>
-              </div>
+                <ol class="list-decimal space-y-3 pl-5 text-base leading-relaxed text-white/75">
+                    <li><strong>Pengesahan Pesanan:</strong> Pesanan diproses dalam masa 24 jam selepas pembayaran disahkan.</li>
+                    <li><strong>Pembungkusan Premium:</strong> Setiap buku dibalut menggunakan bahan kalis air dan penyerap hentakan.</li>
+                    <li><strong>Nombor Penjejakan:</strong> Kami hantar nombor tracking melalui e-mel atau WhatsApp selepas parcel diposkan.</li>
+                    <li><strong>Penghantaran:</strong> Penghantaran dilakukan pada hari bekerja (Isnin - Jumaat, kecuali cuti umum).</li>
+                </ol>
             </div>
-          </div>
 
-          {{-- <div class="rad-card rounded-2xl border p-6">
-            <h2 class="font-display text-2xl text-maroon mb-4">🔄 Pengembalian Produk Fizikal</h2>
-            <div class="text-slate-700 space-y-4">
-              <p class="text-lg font-medium">Jika anda perlu memulangkan produk fizikal:</p>
-              
-              <div class="grid md:grid-cols-2 gap-4 mt-4">
-                <div class="p-4 rounded-xl bg-white/60 border">
-                  <h4 class="font-semibold text-maroon mb-2">✅ Syarat Pengembalian</h4>
-                  <ul class="text-sm space-y-1">
-                    <li>• Dalam tempoh 14 hari</li>
-                    <li>• Produk dalam keadaan baik</li>
-                    <li>• Pembungkusan asal (jika ada)</li>
-                    <li>• Resit atau bukti pembelian</li>
-                  </ul>
+            <div class="policy-card space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <h2 class="font-display text-3xl text-white">🔁 Pengembalian &amp; Pertukaran</h2>
+                    <span class="policy-chip">Kami Jaga Kepuasan Anda</span>
                 </div>
-                <div class="p-4 rounded-xl bg-white/60 border">
-                  <h4 class="font-semibold text-maroon mb-2">📮 Alamat Pengembalian</h4>
-                  <div class="text-sm">
-                    <p class="font-medium">Kamalia Kamal (Kak Kay)</p>
-                    <p>123, Jalan Kasih Sayang</p>
-                    <p>Taman Bahagia</p>
-                    <p>50200 Kuala Lumpur</p>
-                    <p>Malaysia</p>
-                  </div>
+                <p class="text-base leading-relaxed text-white/80">
+                    Jika parcel anda tiba dalam keadaan rosak atau cacat, hubungi kami segera. Kami akan bantu dengan penggantian baharu atau pengembalian bergantung kepada situasi.
+                </p>
+                <div class="grid gap-4 md:grid-cols-2">
+                    <div class="policy-mini-card">
+                        <h3 class="text-white font-semibold">📝 Syarat Pengembalian</h3>
+                        <ul class="space-y-1 text-sm text-white/75">
+                            <li>Permohonan dibuat dalam 3 hari bekerja selepas penerimaan</li>
+                            <li>Sertakan foto/video sebagai bukti kerosakan</li>
+                            <li>Item perlu berada dalam keadaan asal</li>
+                        </ul>
+                    </div>
+                    <div class="policy-mini-card">
+                        <h3 class="text-white font-semibold">📦 Cara Memohon</h3>
+                        <ol class="list-decimal space-y-1 pl-5 text-sm text-white/75">
+                            <li>Hubungi kami melalui WhatsApp @kakkay.official</li>
+                            <li>Sertakan nombor pesanan dan bukti kerosakan</li>
+                            <li>Kami sediakan label penghantaran balikan jika diperlukan</li>
+                        </ol>
+                    </div>
                 </div>
-              </div>
-              
-              <div class="mt-4 p-4 rounded-xl bg-rose/5 border border-rose/20">
-                <p class="text-sm"><strong>Nota Penting:</strong> Kos pos pengembalian ditanggung oleh pelanggan kecuali produk rosak atau salah item dihantar.</p>
-              </div>
             </div>
-          </div> --}}
-
-          <div class="rad-card rounded-2xl border p-6">
-            <h2 class="font-display text-2xl text-maroon mb-4">🚨 Isu Penghantaran</h2>
-            <div class="text-slate-700 space-y-4">
-              <div class="grid md:grid-cols-2 gap-4">
-                <div>
-                  <h4 class="font-semibold text-maroon mb-3">Pakej Hilang/Rosak</h4>
-                  <ul class="text-sm space-y-2">
-                    <li class="flex items-start gap-2">
-                      <span class="w-2 h-2 rounded-full bg-rose mt-2"></span>
-                      <span>Hubungi kami dalam 7 hari jika pakej tidak sampai</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                      <span class="w-2 h-2 rounded-full bg-rose mt-2"></span>
-                      <span>Untuk pakej rosak, ambil gambar dan lapor segera</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                      <span class="w-2 h-2 rounded-full bg-rose mt-2"></span>
-                      <span>Kami akan menghantar ganti atau refund penuh</span>
-                    </li>
-                  </ul>
-                </div>
-                <div>
-                  <h4 class="font-semibold text-maroon mb-3">Alamat Salah</h4>
-                  <ul class="text-sm space-y-2">
-                    <li class="flex items-start gap-2">
-                      <span class="w-2 h-2 rounded-full bg-rose mt-2"></span>
-                      <span>Periksa alamat dengan teliti sebelum checkout</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                      <span class="w-2 h-2 rounded-full bg-rose mt-2"></span>
-                      <span>Kos penghantaran semula ditanggung pelanggan</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                      <span class="w-2 h-2 rounded-full bg-rose mt-2"></span>
-                      <span>Hubungi kami segera untuk perubahan alamat</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="rad-card rounded-2xl border p-6">
-            <h2 class="font-display text-2xl text-maroon mb-4">📞 Tracking & Sokongan</h2>
-            <div class="text-slate-700 space-y-4">
-              <div class="grid md:grid-cols-3 gap-4">
-                <div class="text-center p-4 bg-white/60 rounded-xl border">
-                  <div class="text-2xl mb-2">🔍</div>
-                  <p class="font-semibold text-maroon">Tracking Number</p>
-                  <p class="text-sm">Diberikan dalam 24 jam selepas posting</p>
-                </div>
-                <div class="text-center p-4 bg-white/60 rounded-xl border">
-                  <div class="text-2xl mb-2">💬</div>
-                  <p class="font-semibold text-maroon">Email Updates</p>
-                  <p class="text-sm">Kemas kini status penghantaran secara real-time</p>
-                </div>
-                <div class="text-center p-4 bg-white/60 rounded-xl border">
-                  <div class="text-2xl mb-2">🕐</div>
-                  <p class="font-semibold text-maroon">Sokongan Berterusan</p>
-                  <p class="text-sm">Team khidmat pelanggan sedia membantu</p>
-                </div>
-              </div>
-            </div>
-          </div>
+        </section>
         </div>
-      </div>
-    </section>
-  </main>
+    </main>
 
-  <!-- BACK TO HOME -->
-  <section class="max-w-4xl mx-auto px-4 pb-16">
-    <div class="text-center">
-  <a href="{{ route('home') }}" class="btn primary rounded-full px-8 py-3 font-semibold text-white shadow-glow hover:scale-105 transition-all duration-300">
-        Kembali ke Laman Utama
-      </a>
-    </div>
-  </section>
-
-  <div class="container">
-        <x-footer />
+        <div class="container pb-12">
+            <x-footer />
+        </div>
+    </main>
     </div>
 </div>

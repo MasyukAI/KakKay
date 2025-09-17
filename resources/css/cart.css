@@ -78,7 +78,7 @@ html, body {
     }
 } */
 
-    .tagline{ color:#f7e9f4; opacity:.85; font-family:"Playfair Display", Georgia, serif; }
+    .tagline{ color:#f7e9f4; opacity:.9; font-family:"Poppins", "Montserrat", system-ui, sans-serif; }
     .container {
         width: 100vw;
         max-width: 1200px;
@@ -151,7 +151,7 @@ html, body {
 }
 
 .brand h1 {
-    font: 800 clamp(1.0rem, 2vw + .4rem, 1.4rem) Montserrat, system-ui, sans-serif;
+    font: 900 clamp(1.0rem, 2vw + .4rem, 1.4rem) Montserrat, system-ui, sans-serif;
     letter-spacing: .3px;
     margin: 0;
     color: white;

@@ -5,8 +5,8 @@ namespace App\Livewire;
 use App\Models\Product;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Log;
-use Livewire\Component;
 use Livewire\Attributes\On;
+use Livewire\Component;
 use MasyukAI\Cart\Facades\Cart as CartFacade;
 
 class Cart extends Component
@@ -34,7 +34,7 @@ class Cart extends Component
     {
         try {
             $cartContents = CartFacade::getItems();
-            
+
             $this->cartItems = $cartContents->map(function ($item) {
                 return [
                     'id' => (string) $item->id,
@@ -47,7 +47,7 @@ class Cart extends Component
                     'slug' => $item->attributes->get('slug', 'cara-bercinta'),
                 ];
             })->values()->toArray();
-            
+
         } catch (\Exception $e) {
             $this->cartItems = [];
             Log::error('Cart loading error: '.$e->getMessage());
@@ -82,8 +82,10 @@ class Cart extends Component
     {
         $item = CartFacade::get($itemId);
         if ($item) {
-            CartFacade::update($itemId, ['quantity' => $item->quantity + 1]);
+            $newQuantity = $item->quantity + 1;
+            CartFacade::update($itemId, ['quantity' => ['value' => $newQuantity]]);
             $this->loadCartItems();
+            $this->dispatch('product-added-to-cart');
             Notification::make()
                 ->title('Buku Ditambah')
                 ->body("Kuantiti '{$item->name}' telah ditambah.")
@@ -99,8 +101,17 @@ class Cart extends Component
         $item = CartFacade::get($itemId);
         if ($item) {
             $newQuantity = $item->quantity - 1;
-            CartFacade::update($itemId, ['quantity' => $newQuantity]);
+
+            // If quantity would become 0 or less, remove the item instead
+            if ($newQuantity <= 0) {
+                $this->removeItem($itemId);
+
+                return;
+            }
+
+            CartFacade::update($itemId, ['quantity' => ['value' => $newQuantity]]);
             $this->loadCartItems();
+            $this->dispatch('product-added-to-cart');
             Notification::make()
                 ->title('Buku Dikurangkan')
                 ->body("Kuantiti '{$item->name}' telah dikurangkan.")
@@ -118,6 +129,7 @@ class Cart extends Component
         CartFacade::remove($itemId);
         $this->loadCartItems();
         $this->loadSuggestedProducts();
+        $this->dispatch('product-added-to-cart'); // Refresh cart counter
         Notification::make()
             ->title('Buku Dikeluarkan!')
             ->body("'{$itemName}' telah dikeluarkan.")
@@ -142,8 +154,15 @@ class Cart extends Component
         }
     }
 
-    public function addToCart(Product $product, int $quantity = 1): void
+    public function addToCart($productId, int $quantity = 1): void
     {
+        // Handle both Product object and product ID
+        if ($productId instanceof Product) {
+            $product = $productId;
+        } else {
+            $product = Product::findOrFail($productId);
+        }
+
         // Add item to cart - price is already in cents (integer)
         CartFacade::add(
             id: $product->id,
@@ -160,11 +179,20 @@ class Cart extends Component
         $this->loadCartItems();
         $this->loadSuggestedProducts();
 
-        // Dispatch browser event for UI feedback
-        $this->dispatch('item-added-to-cart', [
+        // Dispatch consistent event for UI feedback
+        $this->dispatch('product-added-to-cart', [
             'product' => $product->name,
             'quantity' => $quantity,
         ]);
+
+        // Show notification
+        Notification::make()
+            ->title('Buku Ditambah!')
+            ->body("'{$product->name}' telah ditambah ke troli.")
+            ->success()
+            ->icon('heroicon-o-shopping-cart')
+            ->iconColor('success')
+            ->send();
     }
 
     public function getSubtotal(): \Akaunting\Money\Money
@@ -175,6 +203,7 @@ class Cart extends Component
     public function getShipping(): \Akaunting\Money\Money
     {
         $currency = config('cart.money.default_currency', 'MYR');
+
         return \Akaunting\Money\Money::{$currency}(990); // RM9.90 as Money object
     }
 
@@ -182,6 +211,7 @@ class Cart extends Component
     {
         $subtotal = $this->getSubtotal();
         $shipping = $this->getShipping();
+
         return $subtotal->add($shipping);
     }
 

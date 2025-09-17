@@ -4,39 +4,7 @@
     <div class="pointer-events-none absolute -bottom-64 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-gradient-to-br from-purple-600/30 via-indigo-500/20 to-pink-400/30 blur-3xl"></div>
 
     <div class="relative z-10">
-        <header class="mx-auto flex w-full max-w-7xl items-center justify-between px-6 pt-10 sm:px-8">
-            <a href="/" class="flex items-center gap-4">
-                <div class="logo" aria-hidden="true"></div>
-                <div class="space-y-0.5">
-                    <h1 class="text-xl font-black tracking-tight">Kak Kay</h1>
-                    <div class="tagline text-xs sm:text-base">Counsellor • Therapist • KKDI Creator</div>
-                </div>
-            </a>
-            {{-- <nav class="hidden items-center gap-6 text-sm font-semibold uppercase tracking-[0.22em] text-white/70 md:flex">
-                <a href="#ritual" class="transition hover:text-white">Ritual Cinta</a>
-                <a href="#featured" class="transition hover:text-white">Buku Terhangat</a>
-                <a href="#library" class="transition hover:text-white">Karya</a>
-                <a href="#community" class="transition hover:text-white">Komuniti</a>
-            </nav> --}}
-            @php
-                $hasCartItems = ($cartQuantity ?? 0) > 0;
-                $cartButtonBase = 'group relative flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f0218]';
-                $cartButtonPalette = $hasCartItems
-                    ? 'bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 text-white shadow-[0_22px_52px_rgba(236,72,153,0.45)] ring-1 ring-white/20'
-                    : 'border border-white/20 bg-white/10 text-white/80 shadow-[0_12px_32px_rgba(12,5,24,0.35)] hover:border-white/40 hover:text-white';
-            @endphp
-            <div class="flex items-center gap-4">
-                <flux:button href="{{ route('cart') }}" class="{{ $cartButtonBase }} {{ $cartButtonPalette }} hover:-translate-y-0.5 hover:scale-[1.03] hover:shadow-[0_28px_70px_rgba(236,72,153,0.5)]">
-                    <span class="pointer-events-none absolute inset-0 rounded-full opacity-0 transition duration-300 group-hover:opacity-50 {{ $hasCartItems ? 'bg-white/20' : 'bg-gradient-to-r from-pink-400/20 via-rose-400/10 to-purple-500/20' }}"></span>
-                    <span class="pointer-events-none absolute -inset-1 rounded-full blur-xl opacity-0 transition duration-500 group-hover:opacity-60 {{ $hasCartItems ? 'bg-pink-500/30' : 'bg-white/15' }}"></span>
-                    <flux:icon.shopping-bag class="relative z-10 h-5 w-5 {{ $hasCartItems ? 'text-white' : 'text-white/80' }}" />
-                    <span class="relative z-10 hidden sm:inline">Troli</span>
-                    <span class="absolute -top-2 -right-2 z-20">
-                        @livewire('cart-counter')
-                    </span>
-                </flux:button>
-            </div>
-        </header>
+        <x-brand-header :cart-quantity="$cartQuantity ?? null" />
 
         <main class="space-y-24 pb-24 sm:space-y-32">
             <!-- HERO -->
@@ -69,8 +37,8 @@
                                 ['label' => 'Acara Berkumpulan', 'value' => '300+'],
                                 ['label' => 'Ujian Karakter KKDI', 'value' => '250K+'],
                             ])
-                            @foreach ($heroStats as $stat)
-                                <div class="rounded-2xl border border-white/10 bg-white/10 p-4 text-sm text-white/80 shadow-[0_15px_35px_rgba(12,5,24,0.35)]">
+                            @foreach ($heroStats as $index => $stat)
+                                <div wire:key="hero-stat-{{ $index }}" class="rounded-2xl border border-white/10 bg-white/10 p-4 text-sm text-white/80 shadow-[0_15px_35px_rgba(12,5,24,0.35)]">
                                     <div class="text-2xl font-semibold text-white">{{ $stat['value'] }}</div>
                                     <div class="mt-1 text-xs uppercase tracking-[0.28em] text-white/60">{{ $stat['label'] }}</div>
                                 </div>
@@ -221,16 +189,16 @@
                         <h2 class="font-display text-3xl text-white sm:text-4xl">Rak cinta Kak Kay</h2>
                         <p class="mt-3 text-lg leading-relaxed text-white/80">Buku dan modul pilihan untuk topup rasa mesra, confident dan berani bersayang setiap hari.</p>
                     </div>
-                    <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 justify-center">
+                    <div class="mt-10 flex flex-wrap justify-center gap-6 max-w-6xl mx-auto">
                         @foreach ($products as $product)
-                            <a href="/{{ $product->slug }}" class="group relative flex h-full flex-col overflow-hidden rounded-[30px] border border-white/15 bg-white/5 p-5 text-left text-white/80 shadow-[0_25px_70px_rgba(12,5,24,0.4)] transition duration-300 hover:-translate-y-2 hover:shadow-[0_35px_90px_rgba(236,72,153,0.3)]">
+                            <a wire:key="product-{{ $product->id }}" href="/{{ $product->slug }}" class="group relative flex h-full flex-col overflow-hidden rounded-[30px] border border-white/15 bg-white/5 p-5 text-left text-white/80 shadow-[0_25px_70px_rgba(12,5,24,0.4)] transition duration-300 hover:-translate-y-2 hover:shadow-[0_35px_90px_rgba(236,72,153,0.3)] w-full max-w-sm sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                                 <div class="relative overflow-hidden rounded-[22px]">
                                     <img src="{{ asset('storage/images/cover/' . $product->slug . '.png') }}" alt="{{ $product->name }}" class="w-full rounded-[22px] border border-white/20 object-cover shadow-[0_20px_60px_rgba(17,0,34,0.45)]">
-                                    <div class="absolute inset-0 bg-gradient-to-t from-[#0f0218]/80 via-transparent to-transparent opacity-0 transition group-hover:opacity-100"></div>
-                                    <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between text-xs uppercase tracking-[0.28em] text-white/80">
+                                    {{-- <div class="absolute inset-0 bg-gradient-to-t from-[#0f0218]/80 via-transparent to-transparent opacity-0 transition group-hover:opacity-100"></div> --}}
+                                    {{-- <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between text-xs uppercase tracking-[0.28em] text-white/80">
                                         <span>{{ $product->category->name ?? 'Buku Kak Kay' }}</span>
                                         <span>{{ \Akaunting\Money\Money::MYR($product->price)->format() }}</span>
-                                    </div>
+                                    </div> --}}
                                 </div>
                                 <div class="mt-5 space-y-3">
                                     <h3 class="text-xl font-semibold text-white">{{ $product->name }}</h3>
@@ -262,8 +230,8 @@
                         ['quote' => 'Komuniti KKDI buat saya rasa tak keseorangan. Sis-sis semua sokong dengan ikhlas.', 'name' => 'Siti, Brunei'],
                     ])
                     <div class="mt-10 grid gap-6 md:grid-cols-3">
-                        @foreach ($testimonials as $testimonial)
-                            <figure class="flex h-full flex-col justify-between rounded-[26px] border border-white/10 bg-white/10 p-6 text-white/80 shadow-[0_20px_60px_rgba(12,5,24,0.35)]">
+                        @foreach ($testimonials as $index => $testimonial)
+                            <figure wire:key="testimonial-{{ $index }}" class="flex h-full flex-col justify-between rounded-[26px] border border-white/10 bg-white/10 p-6 text-white/80 shadow-[0_20px_60px_rgba(12,5,24,0.35)]">
                                 <blockquote class="text-lg leading-relaxed text-white/85">“{{ $testimonial['quote'] }}”</blockquote>
                                 <figcaption class="mt-6 text-sm uppercase tracking-[0.28em] text-white/60">— {{ $testimonial['name'] }}</figcaption>
                             </figure>

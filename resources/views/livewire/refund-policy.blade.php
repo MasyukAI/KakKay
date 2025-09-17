@@ -10,196 +10,158 @@ class extends Component {
     //
 } ?>
 
+<div class="relative isolate overflow-hidden bg-[#0f0218] text-white">
+    <div class="pointer-events-none absolute -top-48 -left-36 h-[520px] w-[520px] rounded-full bg-gradient-to-br from-pink-500/35 via-purple-500/25 to-rose-500/35 blur-3xl"></div>
+    <div class="pointer-events-none absolute top-1/3 -right-32 h-[520px] w-[520px] rounded-full bg-gradient-to-br from-fuchsia-500/30 via-rose-500/20 to-orange-400/30 blur-3xl"></div>
+    <div class="pointer-events-none absolute bottom-[-260px] left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-gradient-to-br from-purple-600/30 via-indigo-500/20 to-pink-400/35 blur-3xl"></div>
 
-<div class="container">
-  <!-- NAVIGATION HEADER -->
-  <header style="padding: 1.5rem 0;">
-    <a href="/">
-      <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
-        <div>
-          <h1>Kak Kay</h1>
-          <div class="tagline text-xs sm:text-base">Counsellor • Therapist • KKDI Creator</div>
+    <div class="relative z-10">
+    <x-brand-header />
+
+    <main class="pb-24">
+        <div class="mx-auto max-w-7xl space-y-24 px-6 sm:px-8">
+        <x-policy-hero eyebrow="Dasar Pemulangan" chip="Tanpa Risiko" title="Kepuasan Anda Adalah Keutamaan Kami" subtitle="Kami yakin dengan setiap produk Kak Kay. Jika ia tidak membantu anda, kami akan temani proses pemulangan tanpa banyak soal.">
+            <div class="policy-highlight-card">
+                <span class="text-xl">🔁</span>
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.32em] text-white/70">Produk Digital</p>
+                    <p class="text-white/85 text-sm">Jaminan pemulangan 7 hari</p>
+                </div>
+            </div>
+            <div class="policy-highlight-card">
+                <span class="text-xl">📦</span>
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.32em] text-white/70">Produk Fizikal</p>
+                    <p class="text-white/85 text-sm">Pertukaran sehingga 14 hari</p>
+                </div>
+            </div>
+            <div class="policy-highlight-card">
+                <span class="text-xl">💌</span>
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.32em] text-white/70">Sokongan</p>
+                    <p class="text-white/85 text-sm">Whatsapp & e-mel responsif</p>
+                </div>
+            </div>
+        </x-policy-hero>
+
+        <section class="space-y-10">
+            <div class="policy-card space-y-4">
+                <h2 class="font-display text-3xl text-white">Jaminan Kepuasan 100%</h2>
+                <p class="text-base leading-relaxed text-white/80">
+                    Kami mahu buku dan modul Kak Kay benar-benar membantu rumah tangga anda. Jika anda tidak merasai perubahan selepas mencuba, kami sedia memulangkan wang dan mendengar pengalaman anda.
+                </p>
+            </div>
+
+            <div class="policy-card space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <h2 class="font-display text-3xl text-white">📱 Produk Digital — Jaminan 7 Hari</h2>
+                    <span class="policy-chip">Tanpa Risiko</span>
+                </div>
+                <ul class="space-y-2 text-sm text-white/80">
+                    <li>Cuba sekurang-kurangnya <strong>dua teknik</strong> dalam tempoh 7 hari selepas pembelian.</li>
+                    <li>Jika langsung tidak membantu, hubungi kami untuk pemulangan penuh.</li>
+                    <li>Pemulangan wang diproses dalam <strong>3 – 5 hari bekerja</strong>.</li>
+                </ul>
+            </div>
+
+            <div class="policy-card space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <h2 class="font-display text-3xl text-white">📦 Produk Fizikal — Jaminan 14 Hari</h2>
+                    <span class="policy-chip">Pertukaran Mudah</span>
+                </div>
+                <ul class="space-y-2 text-sm text-white/80">
+                    <li>Permohonan dibuat dalam <strong>14 hari</strong> selepas menerima pesanan.</li>
+                    <li>Produk mestilah dalam keadaan asal dan tidak digunakan.</li>
+                    <li>Kos pos pemulangan ditanggung pelanggan kecuali rosak semasa penghantaran.</li>
+                    <li>Pemulangan wang diproses selepas pemeriksaan (<strong>5 – 7 hari bekerja</strong>).</li>
+                </ul>
+            </div>
+
+            <div class="policy-card space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <h2 class="font-display text-3xl text-white">📝 Cara Memohon Pemulangan</h2>
+                    <span class="policy-chip">3 Langkah Mudah</span>
+                </div>
+                <div class="grid gap-4 md:grid-cols-3">
+                    <div class="policy-mini-card text-center">
+                        <div class="text-2xl mb-2">📧</div>
+                        <p class="font-semibold text-white">Hubungi Kami</p>
+                        <p class="text-sm text-white/75">E-mel ke <a href="mailto:kakkaylovesme@gmail.com" class="underline text-pink-200">kakkaylovesme@gmail.com</a> bersama nombor pesanan.</p>
+                    </div>
+                    <div class="policy-mini-card text-center">
+                        <div class="text-2xl mb-2">📝</div>
+                        <p class="font-semibold text-white">Cerita Ringkas</p>
+                        <p class="text-sm text-white/75">Kongsi pengalaman anda supaya kami boleh tambah baik.</p>
+                    </div>
+                    <div class="policy-mini-card text-center">
+                        <div class="text-2xl mb-2">💰</div>
+                        <p class="font-semibold text-white">Terima Refund</p>
+                        <p class="text-sm text-white/75">Wang dipulangkan ke kaedah pembayaran asal.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="policy-card space-y-4">
+                <h2 class="font-display text-3xl text-white">Maklumat Yang Kami Perlukan</h2>
+                <ul class="space-y-2 text-sm text-white/80">
+                    <li>Nombor pesanan atau e-mel pembelian.</li>
+                    <li>Sebab pemulangan (supaya kami boleh tambah baik).</li>
+                    <li>Untuk produk fizikal: lampirkan gambar keadaan produk.</li>
+                    <li>Maklumat akaun jika pemulangan wang perlu dibuat secara manual.</li>
+                </ul>
+            </div>
+
+            <div class="policy-card space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <h2 class="font-display text-3xl text-white">Tempoh Pemprosesan</h2>
+                    <span class="policy-chip">Telus &amp; Pantas</span>
+                </div>
+                <div class="grid gap-4 md:grid-cols-2">
+                    <div class="policy-mini-card">
+                        <h3 class="text-white font-semibold">Produk Digital</h3>
+                        <ul class="space-y-1 text-sm text-white/75">
+                            <li>Respons awal dalam 24 jam</li>
+                            <li>Pengesahan pemulangan 1 – 2 hari bekerja</li>
+                            <li>Pemulangan wang 3 – 5 hari bekerja</li>
+                        </ul>
+                    </div>
+                    <div class="policy-mini-card">
+                        <h3 class="text-white font-semibold">Produk Fizikal</h3>
+                        <ul class="space-y-1 text-sm text-white/75">
+                            <li>Respons awal dalam 24 jam</li>
+                            <li>Pemeriksaan produk sebaik diterima semula</li>
+                            <li>Pemulangan wang 5 – 7 hari bekerja</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="policy-card space-y-4">
+                <h2 class="font-display text-3xl text-white">Pengecualian</h2>
+                <ul class="space-y-2 text-sm text-white/80">
+                    <li>Permohonan selepas tempoh jaminan.</li>
+                    <li>Produk rosak kerana penggunaan tidak wajar.</li>
+                    <li>Produk digital yang telah dikongsi atau diedarkan.</li>
+                    <li>Permohonan tanpa sebab yang munasabah.</li>
+                </ul>
+            </div>
+
+            <div class="policy-card space-y-6">
+                <h2 class="font-display text-3xl text-white">Komitmen Kami</h2>
+                <p class="text-base leading-relaxed text-white/80">Kami bukan sekadar menjual buku; kami mahu rumah tangga anda rasa lebih tenang dan penuh kasih. Setiap maklum balas membantu kami menulis bab baharu untuk pelanggan lain.</p>
+                <ul class="space-y-2 text-sm text-white/80">
+                    <li>💡 Kami dengar pengalaman anda sebelum memproses pemulangan.</li>
+                    <li>🎁 Kami akan cadangkan solusi alternatif jika itu lebih membantu.</li>
+                    <li>🤝 Kami sedia membantu walaupun selepas tempoh jaminan — hubungi kami dan kita bincang.</li>
+                </ul>
+            </div>
+        </section>
         </div>
-      </div>
-    </a>
-    <div class="flex items-center gap-4 ml-auto">
-      <div class="relative">
-        <flux:button variant="primary" href="{{ route('cart') }}" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-lg">
-          <flux:icon.shopping-bag class="h-6 w-6" />
-          <span class="hidden sm:inline font-medium">Troli</span>
-          <div class="absolute top-0 right-0">
-            @livewire('cart-counter')
-          </div>
-        </flux:button>
-      </div>
-    </div>
-  </header>
+    </main>
 
-  <!-- Minimalistic Heading -->
-  <div class="max-w-3xl mx-auto px-4 pt-16 pb-10 text-center">
-    <h1 class="font-display text-4xl md:text-5xl font-semibold text-white mb-2 tracking-tight">Dasar Pemulangan</h1>
-    <div class="flex justify-center mb-4">
-      <span class="block w-16 h-1 rounded bg-gradient-to-r from-pink-400 to-purple-500 opacity-80"></span>
-    </div>
-    <p class="text-base md:text-lg text-white/80 font-normal leading-relaxed">
-      Kepuasan anda adalah keutamaan kami. Ketahui hak dan jaminan anda sebagai pelanggan yang dihargai.
-    </p>
-  </div>
-
-  <!-- CONTENT -->
-  <main class="relative">
-    <!-- Enhanced decorative elements -->
-    <div class="decorative-blob absolute top-20 left-4 w-32 h-32 bg-gradient-to-r from-orchid/20 to-blush/20 rounded-full"></div>
-    <div class="decorative-blob absolute top-40 right-8 w-24 h-24 bg-gradient-to-r from-rose/20 to-pink/20 rounded-full" style="animation-delay: -2s;"></div>
-    <div class="decorative-blob absolute bottom-60 left-12 w-20 h-20 bg-gradient-to-r from-purple/15 to-magenta/15 rounded-full" style="animation-delay: -4s;"></div>
-    <div class="decorative-blob absolute bottom-40 right-16 w-28 h-28 bg-gradient-to-r from-blush/15 to-rose/15 rounded-full" style="animation-delay: -1s;"></div>
-    
-    <section class="max-w-4xl mx-auto px-4 py-16">
-      <div class="prose prose-lg max-w-none">
-        <div class="rad-card rounded-2xl border p-8 mb-8 bg-gradient-to-r from-champagne/20 to-cream/20">
-          <h2 class="font-display text-3xl text-maroon mb-4">Jaminan Kepuasan 100%</h2>
-          <p class="text-lg text-slate-700 leading-relaxed">
-            Kami yakin dengan kualiti dan keberkesanan produk kami. Jika anda tidak berpuas hati sepenuhnya, kami akan membantu anda dengan jaminan pemulangan yang adil dan mudah.
-          </p>
+        <div class="container pb-12">
+            <x-footer />
         </div>
-
-        <div class="space-y-8">
-          <div class="rad-card rounded-2xl border p-6">
-            <h2 class="font-display text-2xl text-maroon mb-4">1. Jaminan 7 Hari untuk Produk Digital</h2>
-            <div class="text-slate-700 space-y-4">
-              <p><strong>Untuk e-book dan produk digital:</strong></p>
-              <ul class="list-disc list-inside ml-4 space-y-2">
-                <li>Anda boleh meminta pemulangan dalam <strong>7 hari</strong> selepas pembelian</li>
-                <li>Cuba sekurang-kurangnya <strong>2 teknik</strong> yang diterangkan dalam buku</li>
-                <li>Jika teknik tersebut langsung tidak membantu, hubungi kami untuk penyelesaian</li>
-                <li>Pemulangan wang penuh akan diproses dalam 3-5 hari bekerja</li>
-              </ul>
-              
-              <div class="mt-4 p-4 rounded-xl bg-rose/5 border border-rose/20">
-                <p class="text-sm"><strong>Nota:</strong> Kami mahu hasil untuk rumah tangga anda. Jaminan ini membolehkan anda mencuba produk tanpa risiko.</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="rad-card rounded-2xl border p-6">
-            <h2 class="font-display text-2xl text-maroon mb-4">2. Jaminan 14 Hari untuk Produk Fizikal</h2>
-            <div class="text-slate-700 space-y-4">
-              <p><strong>Untuk buku bercetak dan produk fizikal:</strong></p>
-              <ul class="list-disc list-inside ml-4 space-y-2">
-                <li>Tempoh pemulangan <strong>14 hari</strong> dari tarikh penerimaan</li>
-                <li>Produk mesti dalam keadaan baik seperti baru</li>
-                <li>Kos pos pemulangan ditanggung oleh pelanggan</li>
-                <li>Pemulangan wang akan diproses selepas produk diterima dan diperiksa</li>
-              </ul>
-              
-              <div class="mt-4 p-4 rounded-xl bg-blush/5 border border-blush/20">
-                <p class="text-sm"><strong>Pengecualian:</strong> Produk yang rosak ketika dihantar akan diganti percuma atau dipulangkan wang sepenuhnya.</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="rad-card rounded-2xl border p-6">
-            <h2 class="font-display text-2xl text-maroon mb-4">3. Cara Meminta Pemulangan</h2>
-            <div class="text-slate-700 space-y-4">
-              <p><strong>Langkah mudah untuk pemulangan:</strong></p>
-              <div class="grid md:grid-cols-3 gap-4 mt-4">
-                <div class="text-center p-4 bg-white/60 rounded-xl border">
-                  <div class="text-2xl mb-2">📧</div>
-                  <p class="font-semibold text-maroon">1. Hubungi Kami</p>
-                  <p class="text-sm">E-mel kepada kakkaylovesme@gmail.com dengan butiran pesanan</p>
-                </div>
-                <div class="text-center p-4 bg-white/60 rounded-xl border">
-                  <div class="text-2xl mb-2">📝</div>
-                  <p class="font-semibold text-maroon">2. Maklum Sebab</p>
-                  <p class="text-sm">Beritahu kami sebab pemulangan untuk penambahbaikan</p>
-                </div>
-                <div class="text-center p-4 bg-white/60 rounded-xl border">
-                  <div class="text-2xl mb-2">💰</div>
-                  <p class="font-semibold text-maroon">3. Terima Refund</p>
-                  <p class="text-sm">Wang dikembalikan ke kaedah pembayaran asal</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="rad-card rounded-2xl border p-6">
-            <h2 class="font-display text-2xl text-maroon mb-4">4. Maklumat Diperlukan</h2>
-            <div class="text-slate-700 space-y-4">
-              <p>Untuk memproses permintaan pemulangan dengan cepat, sila sediakan:</p>
-              <ul class="list-disc list-inside ml-4 space-y-2">
-                <li>Nombor pesanan atau e-mel yang digunakan semasa pembelian</li>
-                <li>Sebab pemulangan (untuk membantu kami menambah baik)</li>
-                <li>Untuk produk fizikal: gambar produk dalam keadaan semasa</li>
-                <li>Maklumat akaun untuk pemulangan wang</li>
-              </ul>
-            </div>
-          </div>
-
-          <div class="rad-card rounded-2xl border p-6">
-            <h2 class="font-display text-2xl text-maroon mb-4">5. Tempoh Pemprosesan</h2>
-            <div class="text-slate-700 space-y-4">
-              <div class="grid md:grid-cols-2 gap-4">
-                <div class="p-4 rounded-xl bg-champagne/20 border border-champagne/30">
-                  <h4 class="font-semibold text-maroon mb-2">Produk Digital</h4>
-                  <ul class="text-sm space-y-1">
-                    <li>• Maklum balas dalam 24 jam</li>
-                    <li>• Pemprosesan 1-2 hari bekerja</li>
-                    <li>• Pemulangan wang 3-5 hari bekerja</li>
-                  </ul>
-                </div>
-                <div class="p-4 rounded-xl bg-cream/20 border border-cream/30">
-                  <h4 class="font-semibold text-maroon mb-2">Produk Fizikal</h4>
-                  <ul class="text-sm space-y-1">
-                    <li>• Maklum balas dalam 24 jam</li>
-                    <li>• Pemprosesan selepas terima produk</li>
-                    <li>• Pemulangan wang 5-7 hari bekerja</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="rad-card rounded-2xl border p-6">
-            <h2 class="font-display text-2xl text-maroon mb-4">6. Pengecualian</h2>
-            <div class="text-slate-700 space-y-4">
-              <p>Pemulangan tidak boleh diproses untuk:</p>
-              <ul class="list-disc list-inside ml-4 space-y-2">
-                <li>Permintaan selepas tempoh jaminan tamat</li>
-                <li>Produk yang rosak disebabkan penyalahgunaan</li>
-                <li>Produk digital yang telah dikongsi atau diedarkan</li>
-                <li>Permintaan tanpa sebab yang munasabah</li>
-              </ul>
-            </div>
-          </div>
-
-          <div class="rad-card rounded-2xl border p-6 bg-gradient-to-r from-rose/10 to-blush/10">
-            <h2 class="font-display text-2xl text-maroon mb-4">Komitmen Kami</h2>
-            <div class="text-slate-700 space-y-4">
-              <p class="text-lg font-medium">Kami bukan sekadar menjual buku, tetapi mahu melihat rumah tangga anda bahagia.</p>
-              <p>Jika teknik dalam buku kami tidak membantu, kami akan:</p>
-              <ul class="list-disc list-inside ml-4 space-y-2">
-                <li>Memberikan panduan tambahan secara percuma</li>
-                <li>Mencadangkan teknik alternatif yang sesuai</li>
-                <li>Memproses pemulangan dengan adil jika memang tidak sesuai</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- BACK TO HOME -->
-  <section class="max-w-4xl mx-auto px-4 pb-16">
-    <div class="text-center">
-  <a href="{{ route('home') }}" class="btn primary rounded-full px-8 py-3 font-semibold text-white shadow-glow hover:scale-105 transition-all duration-300">
-        Kembali ke Laman Utama
-      </a>
-    </div>
-  </section>
-
-  <div class="container">
-        <x-footer />
+    </main>
     </div>
 </div>
