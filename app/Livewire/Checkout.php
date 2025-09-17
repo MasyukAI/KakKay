@@ -483,7 +483,9 @@ class Checkout extends Component implements HasSchemas
 
     public function render()
     {
-        return view('livewire.checkout')
+        return view('livewire.checkout', [
+            'cartQuantity' => CartFacade::getTotalQuantity(),
+        ])
             ->layout('components.layouts.app');
     }
 }

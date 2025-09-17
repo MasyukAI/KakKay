@@ -1,308 +1,246 @@
-<div class="checkout-container">
-    <!-- Header Navigation -->
-    <div class="cart-container">
-        <header class="cart-header">
-            <div class="flex items-center justify-between">
-                <a href="/">
-                    <div class="brand">
-                    <div class="logo" aria-hidden="true"></div>
-                        <div>
-                        <h1>Kak Kay</h1>
-                        <div class="tagline  text-xs sm:text-base">Counsellor • Therapist • KKDI Creator</div>
-                        </div>
-                    </div>
-                </a>
+<div class="checkout-container relative min-h-screen overflow-hidden bg-[#0f0218] text-white">
+    <div class="pointer-events-none absolute -top-48 -left-40 h-[520px] w-[520px] rounded-full bg-gradient-to-br from-pink-500/35 via-purple-500/25 to-rose-500/40 blur-3xl"></div>
+    <div class="pointer-events-none absolute top-1/2 -right-32 h-[520px] w-[520px] -translate-y-1/2 rounded-full bg-gradient-to-br from-fuchsia-500/25 via-rose-500/25 to-orange-400/35 blur-3xl"></div>
+    <div class="pointer-events-none absolute -bottom-60 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-gradient-to-br from-purple-600/30 via-indigo-500/20 to-pink-400/30 blur-3xl"></div>
 
-                <div class="flex items-center gap-6">
-
-
-                    <div class="relative">
-                        <flux:button variant="primary" href="{{ route('cart') }}" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-lg">
-                            <flux:icon.shopping-bag class="h-6 w-6" />
-                            <span class="hidden sm:inline font-medium">Troli</span>
-                            <div class="absolute top-0 right-0">
-                            @livewire('cart-counter')
-                            </div>
-                        </flux:button>
-                    </div>
+    <div class="relative z-10">
+        <!-- Header Navigation -->
+        <header class="mx-auto flex w-full max-w-7xl items-center justify-between px-6 pt-10 sm:px-8">
+            <a href="/" class="flex items-center gap-4">
+                <div class="logo" aria-hidden="true"></div>
+                <div class="space-y-0.5">
+                    <h1 class="text-xl font-black tracking-tight">Kak Kay</h1>
+                    <div class="tagline text-xs sm:text-base">Counsellor • Therapist • KKDI Creator</div>
                 </div>
+            </a>
+            @php
+                $hasCartItems = ($cartQuantity ?? 0) > 0;
+                $cartButtonBase = 'group relative flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f0218]';
+                $cartButtonPalette = $hasCartItems
+                    ? 'bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 text-white shadow-[0_22px_52px_rgba(236,72,153,0.45)] ring-1 ring-white/20'
+                    : 'border border-white/20 bg-white/10 text-white/80 shadow-[0_12px_32px_rgba(12,5,24,0.35)] hover:border-white/40 hover:text-white';
+            @endphp
+            <div class="flex items-center gap-4">
+                <flux:button href="{{ route('cart') }}" class="{{ $cartButtonBase }} {{ $cartButtonPalette }} hover:-translate-y-0.5 hover:scale-[1.03] hover:shadow-[0_28px_70px_rgba(236,72,153,0.5)]">
+                    <span class="pointer-events-none absolute inset-0 rounded-full opacity-0 transition duration-300 group-hover:opacity-50 {{ $hasCartItems ? 'bg-white/20' : 'bg-gradient-to-r from-pink-400/20 via-rose-400/10 to-purple-500/20' }}"></span>
+                    <span class="pointer-events-none absolute -inset-1 rounded-full blur-xl opacity-0 transition duration-500 group-hover:opacity-60 {{ $hasCartItems ? 'bg-pink-500/30' : 'bg-white/15' }}"></span>
+                    <flux:icon.shopping-bag class="relative z-10 h-5 w-5 {{ $hasCartItems ? 'text-white' : 'text-white/80' }}" />
+                    <span class="relative z-10 hidden sm:inline">Troli</span>
+                    <span class="absolute -top-2 -right-2 z-20">
+                        @livewire('cart-counter')
+                    </span>
+                </flux:button>
             </div>
         </header>
-    </div>
 
-    <!-- Checkout Content -->
-    <section class="py-10">
-        <div class="cart-container">
-            <form wire:submit="processCheckout" class="max-w-screen-xl mx-auto">
-                
-                <!-- Progress Steps -->
-                <div class="mb-12">
-                    <ol class="flex items-center justify-center w-full max-w-2xl mx-auto text-center text-xs sm:text-sm font-medium text-gray-300 gap-1 sm:gap-0">
-                        <a href="{{ route('cart') }}" class="flex items-centerfocus:outline-none" style="text-decoration: none;">
-                            <li class="flex items-center text-pink-400">
-                                <span class="flex items-center">
-                                    <flux:icon.check-circle class="me-1 h-3 w-3 sm:h-4 sm:w-4" />
-                                    Troli
-                                </span>
-                            </li>
-                        </a>
-                        <li class="flex items-center mx-1 sm:mx-2">
-                            <svg class="w-4 h-4 sm:w-6 sm:h-6 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+        <!-- Checkout Content -->
+        <section class="pt-20">
+            <div class="mx-auto max-w-7xl px-6 sm:px-8">
+                <div class="relative mx-auto max-w-3xl">
+                    <div class="absolute left-6 right-6 top-6 hidden h-px bg-white/15 sm:block"></div>
+                    <ol class="relative flex items-center justify-between gap-6 text-xs font-semibold uppercase tracking-[0.28em] text-white/60">
+                        <li class="flex flex-col items-center gap-3">
+                            <a href="{{ route('cart') }}" class="group flex h-12 w-12 items-center justify-center rounded-full border border-white/25 bg-white/10 text-pink-200 shadow-[0_10px_35px_rgba(236,72,153,0.28)] transition hover:border-white/50 hover:text-white">
+                                <flux:icon.check-circle class="h-5 w-5" />
+                            </a>
+                            <span>Troli</span>
                         </li>
-                        <li class="flex items-center text-pink-400">
-                            <span class="flex items-center">
-                                <flux:icon.check-circle class="me-1 h-3 w-3 sm:h-4 sm:w-4" />
-                                Bayaran
-                            </span>
+                        <li class="flex flex-col items-center gap-3">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-full border border-white/40 bg-gradient-to-br from-pink-500 via-rose-500 to-purple-500 text-white shadow-[0_16px_45px_rgba(236,72,153,0.45)]">
+                                <flux:icon.credit-card class="h-5 w-5" />
+                            </div>
+                            <span class="text-white">Bayaran</span>
                         </li>
-                        <li class="flex items-center mx-1 sm:mx-2">
-                            <svg class="w-4 h-4 sm:w-6 sm:h-6 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
-                        </li>
-                        <li class="flex shrink-0 items-center text-gray-400">
-                            <flux:icon.clock class="me-1 h-3 w-3 sm:h-4 sm:w-4" />
-                            Pesanan
+                        <li class="flex flex-col items-center gap-3">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white/60">
+                                <flux:icon.clock class="h-5 w-5" />
+                            </div>
+                            <span>Pesanan</span>
                         </li>
                     </ol>
                 </div>
-{{-- 
-                @if(session('success'))
-                    <flux:callout variant="success" class="mb-6">
-                        {{ session('success') }}
-                    </flux:callout>
-                @endif
+            </div>
+        </section>
 
-                @if(session('error'))
-                    <flux:callout variant="danger" class="mb-6">
-                        {{ session('error') }}
-                    </flux:callout>
-                @endif
+        <section class="pt-16 pb-24">
+            <div class="mx-auto max-w-7xl px-6 sm:px-8">
+                <form wire:submit="processCheckout" class="relative grid gap-10 lg:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[minmax(0,1fr)_400px]">
+                        <div class="min-w-0 space-y-8">
+                            <!-- Shipping & Contact Form -->
+                            <div class="relative overflow-hidden rounded-[36px] border border-white/10 bg-white/10 p-6 backdrop-blur-xl shadow-[0_30px_90px_rgba(15,3,37,0.45)]">
+                                <div class="absolute -top-16 -left-10 h-32 w-32 rounded-full bg-gradient-to-br from-rose-400/30 via-purple-400/20 to-indigo-400/30 blur-3xl"></div>
+                                <div class="absolute -bottom-10 -right-8 h-32 w-32 rounded-full bg-gradient-to-br from-rose-400/20 via-pink-300/20 to-orange-300/25 blur-3xl"></div>
+                                <div class="relative flex items-start justify-between gap-4 border-b border-white/10 pb-6">
+                                    <div>
+                                        <h3 class="text-2xl font-semibold text-white">Maklumat Penghantaran</h3>
+                                        <p class="mt-1 text-sm text-white/70">Kami gunakan maklumat ini untuk resit digital & penghantaran.</p>
+                                    </div>
+                                    <div class="rounded-full border border-white/15 bg-white/5 px-4 py-1 text-xs uppercase tracking-[0.3em] text-white/60">Langkah 1</div>
+                                </div>
+                                <div class="relative mt-6 space-y-6">
+                                    {{ $this->form }}
 
-                @if(session('message'))
-                    <flux:callout variant="info" class="mb-6">
-                        {{ session('message') }}
-                    </flux:callout>
-                @endif --}}
-
-                <div class="lg:flex lg:items-start lg:gap-12 xl:gap-16">
-                    <div class="min-w-0 flex-1 space-y-8">
-                        
-                        <!-- Filament Form -->
-                        <div class="relative">
-                            <div class="filament-checkout-form">
-                                {{ $this->form }}
-
-                                @error('data.field_name')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
+                                    @error('data.field_name')
+                                        <div class="rounded-2xl border border-red-400/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
                             </div>
-                            
-                        </div>
 
-                        <!-- Payment Methods - Kept hidden for now -->
-                        <div class="cart-card p-6 space-y-4 opacity-0 hidden">
-                            {{-- <h3 class="text-xl font-semibold text-white" style="font-family: 'Caveat Brush', cursive;">
-                                Cara <span class="cart-text-accent">Pembayaran</span>
-                            </h3>
-
-                            <!-- Payment Method Groups -->
-                            <div class="space-y-4">
-                                @if(!empty($this->getPaymentMethodsByGroup()))
-                                    @foreach($this->getPaymentMethodsByGroup() as $groupName => $methods)
-                                        <div class="space-y-3">
-                                            <h4 class="text-lg font-medium text-white capitalize">
-                                                {{ $this->getGroupDisplayName($groupName) }}
-                                            </h4>
-                                            
-                                            <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-                                                @foreach($methods as $method)
-                                                    <div class="p-4 border border-gray-600 rounded-lg bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
-                                                         wire:click="selectPaymentMethod('{{ $method['id'] }}')">
-                                                        <div class="flex items-center space-x-3">
-                                                            <flux:icon name="{{ $method['icon'] }}" class="h-6 w-6 text-pink-400" />
-                                                            <div class="flex-1">
-                                                                <div class="font-medium text-white">{{ $method['name'] }}</div>
-                                                                <div class="text-sm text-gray-400">{{ $method['description'] }}</div>
-                                                            </div>
-                                                            @if(in_array($method['id'], $form['payment_method_whitelist'] ?? []))
-                                                                <flux:icon.check-circle class="h-5 w-5 text-green-400" />
-                                                            @endif
-                                                        </div>
-                                                    </div>
+                            @if (! empty($this->getPaymentMethodsByGroup()))
+                                @php
+                                    $groupedMethods = $this->getPaymentMethodsByGroup();
+                                    $selectedGroup = $this->selectedPaymentGroup ?? (array_key_first($groupedMethods) ?? null);
+                                    $methods = $selectedGroup ? ($groupedMethods[$selectedGroup] ?? []) : [];
+                                    $whitelist = $this->data['payment_method_whitelist'] ?? [];
+                                @endphp
+                                <div class="relative overflow-hidden rounded-[32px] border border-white/10 bg-white/10 p-6 backdrop-blur-xl shadow-[0_25px_70px_rgba(15,3,37,0.4)]">
+                                    <div class="absolute -top-12 -right-14 h-32 w-32 rounded-full bg-gradient-to-br from-pink-400/25 via-rose-400/20 to-purple-400/30 blur-3xl"></div>
+                                    <div class="relative">
+                                        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-5">
+                                            <div>
+                                                <h3 class="text-xl font-semibold text-white">Pilih Kaedah Pembayaran</h3>
+                                                <p class="text-sm text-white/70">Tukar tab untuk lihat pilihan lain.</p>
+                                            </div>
+                                            <div class="flex flex-wrap gap-2">
+                                                @foreach (array_keys($groupedMethods) as $group)
+                                                    @php
+                                                        $isActive = $selectedGroup === $group;
+                                                        $label = $this->getGroupDisplayName($group);
+                                                    @endphp
+                                                    <button type="button" wire:click="selectPaymentGroup('{{ $group }}')" class="rounded-full border border-white/15 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] transition @if($isActive) bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 text-white shadow-[0_12px_30px_rgba(236,72,153,0.45)] @else bg-white/5 text-white/70 hover:text-white @endif">
+                                                        {{ $label }}
+                                                    </button>
                                                 @endforeach
                                             </div>
                                         </div>
-                                    @endforeach
-                                @else
-                                    <!-- Fallback payment options -->
-                                    {{-- <div class="space-y-3">
-                                        <h4 class="text-lg font-medium text-white">Online Banking</h4>
-                                        <div class="p-4 border border-gray-600 rounded-lg bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
-                                             wire:click="selectPaymentMethod('fpx_b2c')">
-                                            <div class="flex items-center space-x-3">
-                                                <flux:icon name="building-office" class="h-6 w-6 text-pink-400" />
-                                                <div class="flex-1">
-                                                    <div class="font-medium text-white">FPX Online Banking</div>
-                                                    <div class="text-sm text-gray-400">Bayar dengan Internet Banking Malaysia</div>
+
+                                        <div class="mt-6 grid gap-4 sm:grid-cols-2">
+                                            @forelse ($methods as $method)
+                                                @php
+                                                    $emoji = match ($method['group']) {
+                                                        'banking' => '🏦',
+                                                        'card' => '💳',
+                                                        'ewallet' => '📱',
+                                                        'qr' => '🧾',
+                                                        'bnpl' => '🕒',
+                                                        default => '✨',
+                                                    };
+                                                    $isSelected = in_array($method['id'], $whitelist, true);
+                                                @endphp
+                                                <button type="button" wire:click="selectPaymentMethod('{{ $method['id'] }}')" class="flex h-full flex-col items-start gap-3 rounded-2xl border border-white/15 bg-white/5 p-4 text-left text-sm text-white/80 transition @if($isSelected) ring-2 ring-offset-2 ring-offset-[#0f0218] ring-pink-400 shadow-[0_18px_40px_rgba(236,72,153,0.35)] @else hover:bg-white/10 @endif">
+                                                    <div class="flex items-center gap-3">
+                                                        <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-lg">{{ $emoji }}</span>
+                                                        <div>
+                                                            <div class="font-semibold text-white">{{ $method['name'] }}</div>
+                                                            <div class="text-xs text-white/60">{{ $method['description'] ?? 'Bayaran pantas & terjamin' }}</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-1 text-[0.65rem] uppercase tracking-[0.28em] text-white/55">
+                                                        {{ strtoupper($method['group']) }}
+                                                        @if($isSelected)
+                                                            <span class="text-pink-200">• Terpilih</span>
+                                                        @endif
+                                                    </div>
+                                                </button>
+                                            @empty
+                                                <div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-sm text-white/70">
+                                                    Tiada kaedah pembayaran tersedia buat masa ini. Hubungi kami untuk bantuan segera.
                                                 </div>
-                                            </div>
+                                            @endforelse
                                         </div>
                                     </div>
-
-                                    <div class="space-y-3">
-                                        <h4 class="text-lg font-medium text-white">Kad Kredit/Debit</h4>
-                                        <div class="p-4 border border-gray-600 rounded-lg bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
-                                             wire:click="selectPaymentMethod('visa')">
-                                            <div class="flex items-center space-x-3">
-                                                <flux:icon name="credit-card" class="h-6 w-6 text-pink-400" />
-                                                <div class="flex-1">
-                                                    <div class="font-medium text-white">Kad Kredit/Debit</div>
-                                                    <div class="text-sm text-gray-400">Visa, Mastercard</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="space-y-3">
-                                        <h4 class="text-lg font-medium text-white">E-Wallet</h4>
-                                        <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-                                            <div class="p-4 border border-gray-600 rounded-lg bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
-                                                 wire:click="selectPaymentMethod('tng_ewallet')">
-                                                <div class="flex items-center space-x-3">
-                                                    <flux:icon name="wallet" class="h-6 w-6 text-pink-400" />
-                                                    <div class="flex-1">
-                                                        <div class="font-medium text-white">Touch 'n Go eWallet</div>
-                                                        <div class="text-sm text-gray-400">Bayar dengan TnG eWallet</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="p-4 border border-gray-600 rounded-lg bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
-                                                 wire:click="selectPaymentMethod('grabpay')">
-                                                <div class="flex items-center space-x-3">
-                                                    <flux:icon name="wallet" class="h-6 w-6 text-pink-400" />
-                                                    <div class="flex-1">
-                                                        <div class="font-medium text-white">GrabPay</div>
-                                                        <div class="text-sm text-gray-400">Bayar dengan GrabPay</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div> 
-                                @endif
-                            </div>  --}}
+                                </div>
+                            @endif
                         </div>
 
-                        <!-- Delivery Methods -->
-                        {{-- <div class="cart-card p-6 space-y-4">
-                            <h3 class="text-xl font-semibold text-white" style="font-family: 'Caveat Brush', cursive;">
-                                Cara <span class="cart-text-accent">Penghantaran</span>
-                            </h3>
+                        <!-- Order Summary Sidebar -->
+                        <aside class="mt-10 space-y-6 lg:mt-0">
+                            <div class="cart-summary-card sticky top-6 p-6 sm:p-8">
+                                <div class="absolute -top-20 right-0 h-48 w-48 rounded-full bg-gradient-to-br from-pink-400/30 via-purple-400/20 to-orange-300/30 blur-3xl"></div>
+                                <div class="relative space-y-6">
+                                    <div class="space-y-3">
+                                        <span class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.32em] text-white/70">
+                                            Langkah Bayaran
+                                        </span>
+                                        <h3 class="font-display text-3xl text-white">Ringkasan Pesanan</h3>
+                                        <p class="text-sm leading-relaxed text-white/70">Semua harga dalam Ringgit Malaysia (RM). Semak jumlah sebelum lengkapkan bayaran.</p>
+                                    </div>
 
-                            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-                                <div class="p-4 border border-gray-600 rounded-lg bg-white/5">
-                                    <flux:radio wire:model="form.delivery_method" value="standard" checked>
-                                        <div class="ml-3">
-                                            <div class="font-medium text-white">RM5 - Penghantaran Standard</div>
-                                            <div class="text-sm text-gray-400">3-5 hari bekerja</div>
+                                    @if (! empty($cartItems))
+                                        <ul class="space-y-3 text-sm text-white/80">
+                                            @foreach ($cartItems as $item)
+                                                <li class="flex items-start justify-between gap-3 rounded-2xl border border-white/15 bg-white/10 px-4 py-3">
+                                                    <div>
+                                                        <div class="font-semibold text-white">{{ $item['name'] }}</div>
+                                                        <div class="text-xs uppercase tracking-[0.28em] text-white/50">Qty {{ $item['quantity'] }}</div>
+                                                    </div>
+                                                    <span class="text-white">
+                                                        {{ \Akaunting\Money\Money::MYR($item['price'])->format() }}
+                                                    </span>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    @else
+                                        <div class="rounded-2xl border border-white/15 bg-white/10 p-4 text-sm text-white/70">
+                                            Troli kosong. Sila kembali ke halaman produk untuk menambah item.
                                         </div>
-                                    </flux:radio>
-                                </div>
+                                    @endif
 
-                                <div class="p-4 border border-gray-600 rounded-lg bg-white/5">
-                                    <flux:radio wire:model="form.delivery_method" value="fast">
-                                        <div class="ml-3">
-                                            <div class="font-medium text-white">RM15 - Penghantaran Pantas</div>
-                                            <div class="text-sm text-gray-400">1-2 hari bekerja</div>
+                                    <div class="space-y-3 text-sm text-white/80">
+                                        <div class="flex items-center justify-between">
+                                            <span>Subtotal</span>
+                                            <span class="font-medium text-white">{{ $this->getSubtotal()->format() }}</span>
                                         </div>
-                                    </flux:radio>
-                                </div>
+                                        <div class="flex items-center justify-between">
+                                            <span>Penghantaran</span>
+                                            <span class="font-medium text-white">{{ $this->getShippingMoney()->format() }}</span>
+                                        </div>
+                                        <hr class="border-white/15">
+                                        <div class="flex items-center justify-between text-lg font-bold">
+                                            <span>Jumlah Perlu Dibayar</span>
+                                            <span class="bg-gradient-to-r from-pink-400 via-rose-500 to-purple-500 bg-clip-text text-transparent">{{ $this->getTotal()->format() }}</span>
+                                        </div>
+                                    </div>
 
-                                <div class="p-4 border border-gray-600 rounded-lg bg-white/5">
-                                    <flux:radio wire:model="form.delivery_method" value="express">
-                                        <div class="ml-3">
-                                            <div class="font-medium text-white">RM49 - Penghantaran Ekspres</div>
-                                            <div class="text-sm text-gray-400">Hari yang sama</div>
+                                    <flux:button type="submit" variant="primary" class="cart-button-primary flex w-full items-center justify-center gap-2 px-6 py-4 text-lg font-semibold" wire:loading.attr="disabled">
+                                        <div wire:loading.remove class="flex items-center justify-center gap-2">
+                                            <flux:icon.credit-card class="h-5 w-5" />
+                                            Bayar Sekarang
                                         </div>
-                                    </flux:radio>
-                                </div>
-                            </div>
-                        </div> --}}
-{{-- 
-                        <!-- Voucher Code -->
-                        <div class="cart-card p-6">
-                            <flux:field>
-                                <flux:label>Kod Voucher atau Promosi</flux:label>
-                                <div class="flex max-w-md items-center gap-4">
-                                    <flux:input wire:model="form.voucher_code" placeholder="Masukkan kod voucher" class="flex-1" />
-                                    <flux:button type="button" wire:click="applyVoucher" variant="primary">
-                                        Guna
+                                        <div wire:loading class="flex items-center justify-center gap-3">
+                                            <svg class="h-5 w-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            Memproses...
+                                        </div>
                                     </flux:button>
-                                </div>
-                            </flux:field>
-                        </div> --}}
-                    </div>
 
-                    <!-- Order Summary Sidebar -->
-                    <div class="w-full lg:w-96 xl:w-[28rem] mt-0">
-                        <div class="cart-summary-card p-6 sticky top-6">
-                            <h3 class="text-2xl font-bold mb-6" style="font-family: 'Caveat Brush', cursive;">
-                                Ringkasan <span class="cart-text-accent">Pesanan</span>
-                            </h3>
-
-                            <div class="space-y-4 mb-6">
-                                <div class="flex justify-between">
-                                    <span class="cart-text-muted">Subtotal</span>
-                                    <span class="font-semibold">{{ $this->getSubtotal()->format() }}</span>
-                                </div>
-
-                                {{-- <div class="flex justify-between text-green-400">
-                                    <span>Diskaun</span>
-                                    <span class="font-semibold">-{{ $this->formatPrice($this->getSavings()) }}</span>
-                                </div> --}}
-
-                                <div class="flex justify-between">
-                                    <span class="cart-text-muted">Penghantaran</span>
-                                    <span class="font-semibold">{{ $this->getShippingMoney()->format() }}</span>
-                                </div>
-
-                                {{-- <div class="flex justify-between">
-                                    <span class="cart-text-muted">Cukai (10.5%)</span>
-                                    <span class="font-semibold">{{ $this->formatPrice($this->getTax()) }}</span>
-                                </div> --}}
-
-                                <hr class="border-white/20">
-
-                                <div class="flex justify-between text-xl font-bold">
-                                    <span>Jumlah</span>
-                                    <span class="cart-text-accent">{{ $this->getTotal()->format() }}</span>
+                                    <div class="mt-4 rounded-2xl border border-white/15 bg-white/5 p-4 text-xs text-white/70">
+                                        Pastikan maklumat alamat tepat. Jika perlu ubah selepas pembayaran, hubungi kami segera melalui WhatsApp: <span class="text-pink-200 font-medium">+60 11-1234 5678</span>.
+                                    </div>
                                 </div>
                             </div>
 
-                            <flux:button type="submit" variant="primary" class="w-full cart-button-primary mb-4 px-6 py-4 text-lg" wire:loading.attr="disabled">
-                                <div wire:loading.remove class="flex items-center justify-center">
-                                    <flux:icon.credit-card class="h-5 w-5 mr-2" />
-                                    Bayar Sekarang
+                            <div class="rounded-[32px] border border-white/10 bg-white/5 p-6 backdrop-blur-xl text-sm text-white/75">
+                                <div class="flex items-center gap-3">
+                                    <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-lg">✅</span>
+                                    <div>Sokongan selepas jualan tersedia 7 hari seminggu. Kami bantu sehingga buku selamat di tangan anda.</div>
                                 </div>
-                                <div wire:loading class="flex items-center justify-center">
-                                    <svg class="animate-spin h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                    Memproses...
+                                <div class="mt-6 flex items-center justify-center rounded-2xl border border-white/10 bg-white/5 p-4">
+                                    <img src="{{ asset('storage/images/fpx.png') }}" alt="Payment methods" class="h-10 object-contain" />
                                 </div>
-                            </flux:button>
-                        </div>
-
-                        <div class="bg-white">
-                            <img src="{{ asset('storage/images/fpx.png') }}" alt="payment-method" class="mx-auto mt-10">
-                        </div>
-                    </div>
+                            </div>
+                        </aside>
+                    </form>
                 </div>
-            </form>
-        </div>
-    </section>
-    <div class="container">
-        <x-footer />
-    </div>
+            </div>
+        </section>
 
+        <div class="container pb-12">
+            <x-footer />
+        </div>
+    </div>
 </div>

@@ -22,7 +22,7 @@ class BookSeeder extends Seeder
             [
                 'name' => 'Macam Ni Rupanya Cara Nak Bercinta, Mudahnya Lahai!',
                 'slug' => 'cara-bercinta',
-                'description' => 'Panduan ajaib yang membongkar rahsia bercinta — praktikal, menggelikan, dan penuh kejutan hati.',
+                'description' => 'Panduan ajaib yang membongkar rahsia bercinta — praktikal, menyeronokkan dan penuh kejutan hati.',
                 'price' => 5000,
                 'is_featured' => true,
                 'category_id' => $bookCategory->id,

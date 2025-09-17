@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Product;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
+use MasyukAI\Cart\Facades\Cart as CartFacade;
 
 #[Layout('components.layouts.home')]
 class Home extends Component
@@ -24,6 +25,7 @@ class Home extends Component
         return view('livewire.home', [
             'featuredProduct' => $featuredProduct,
             'products' => $products,
+            'cartQuantity' => CartFacade::getTotalQuantity(),
         ]);
     }
 }

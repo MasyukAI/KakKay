@@ -39,7 +39,10 @@ class Cart extends Component
                 return [
                     'id' => (string) $item->id,
                     'name' => (string) $item->name,
-                    'price' => (string) $item->getPrice(), // Return Money object for formatting
+                    'price' => $item->getRawPrice(),
+                    'price_formatted' => $item->getPrice()->format(),
+                    'subtotal' => $item->getRawSubtotal(),
+                    'subtotal_formatted' => $item->getSubtotal()->format(),
                     'quantity' => (int) $item->quantity,
                     'slug' => $item->attributes->get('slug', 'cara-bercinta'),
                 ];

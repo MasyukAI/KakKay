@@ -126,8 +126,8 @@ html, body {
 }
 
 .object-cover {
-          border-radius: 10px;
-    border: white 2px solid; /* Add a white border */
+          /* border-radius: 10px;
+    border: white 2px solid; */
 }
 
 .logo {
@@ -244,61 +244,36 @@ html, body {
 }
 
 .cart-item-card {
-    scroll-snap-align:start;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 95, 162, 0.08));
-    border: 1px solid rgba(255, 95, 162, 0.3);
-    border-radius: var(--radius);
-    padding: 1.5rem;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
+    scroll-snap-align: start;
+    border-radius: calc(var(--radius) * 1.6);
+    border: 1px solid rgba(255, 95, 162, 0.45);
+    background:
+        radial-gradient(140% 120% at 0% 0%, rgba(255, 255, 255, 0.16) 0%, transparent 55%),
+        linear-gradient(135deg, rgba(255, 95, 162, 0.15), rgba(106, 0, 244, 0.12));
+    box-shadow:
+        0 24px 65px rgba(12, 5, 24, 0.38),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    padding: clamp(1.4rem, 2vw, 1.8rem);
     overflow: hidden;
+    transition:
+        transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(14px);
 }
 
 .cart-item-card::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--pink), var(--magenta), var(--ruby));
-    opacity: 0.8;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(130% 130% at 85% 0%, rgba(236, 72, 153, 0.22) 0%, transparent 60%);
+    opacity: 0.35;
+    transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .cart-item-card::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
-}
-
-.cart-item-card:hover::after {
-    opacity: 1;
-}
-
-.cart-item-card:hover {
-    transform: translateY(-4px) scale(1.01);
-    border-color: rgba(255, 95, 162, 0.6);
-    /* box-shadow: 
-        0 12px 40px 0 rgba(255, 95, 162, 0.2), 
-        0 6px 20px 0 rgba(0, 0, 0, 0.35),
-        0 0 0 1px rgba(255,255,255,0.1); */
-}
-
-.cart-summary-card {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(106, 0, 244, 0.1));
-    border: 1px solid rgba(255, 95, 162, 0.4);
-    border-radius: calc(var(--radius) * 1.2);
-    overflow: hidden;
-}
-
-.cart-summary-card::before {
     content: '';
     position: absolute;
     top: 0;
@@ -307,21 +282,71 @@ html, body {
     height: 3px;
     background: linear-gradient(90deg, var(--purple), var(--pink), var(--magenta), var(--ruby));
     opacity: 0.9;
+    pointer-events: none;
 }
 
-.cart-summary-card::after {
-    display: none;
+.cart-item-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(255, 95, 162, 0.65);
+    box-shadow:
+        0 34px 90px rgba(12, 5, 24, 0.5),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.cart-item-card:hover::before {
+    opacity: 0.6;
+}
+
+.cart-summary-card {
+    position: relative;
+    border-radius: calc(var(--radius) * 1.6);
+    border: 1px solid rgba(255, 95, 162, 0.45);
+    background:
+        radial-gradient(140% 120% at 0% 0%, rgba(255, 255, 255, 0.16) 0%, transparent 55%),
+        linear-gradient(135deg, rgba(255, 95, 162, 0.15), rgba(106, 0, 244, 0.12));
+    box-shadow:
+        0 28px 70px rgba(12, 5, 24, 0.45),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+    transition:
+        transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(18px);
 }
 
 .cart-summary-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(120% 120% at 80% 0%, rgba(236, 72, 153, 0.25) 0%, transparent 60%);
+    opacity: 0.45;
+    transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cart-summary-card::after {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, var(--purple), var(--pink), var(--magenta));
+    background: linear-gradient(90deg, var(--purple), var(--pink), var(--magenta), var(--ruby));
     opacity: 0.9;
+    pointer-events: none;
+}
+
+.cart-summary-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(255, 95, 162, 0.65);
+    box-shadow:
+        0 38px 100px rgba(12, 5, 24, 0.55),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+.cart-summary-card:hover::before {
+    opacity: 0.65;
 }
 
 .cart-text-muted {

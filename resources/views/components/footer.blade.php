@@ -52,18 +52,22 @@
       <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1);">
         <div style="text-align: center; max-width: 800px; margin: 0 auto;">
           <h4 style="color: #ffe9f5; font-size: 1.1rem; margin-bottom: 1rem; font-weight: 600;">Dasar & Polisi</h4>
-          <div class="flex flex-col sm:flex-row flex-wrap gap-4 justify-center items-center text-sm">
-    <div class="flex gap-2 items-center">
+          <div class="flex flex-wrap justify-center items-center gap-2 text-sm">
   <a href="/privacy-policy" class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 hover:-translate-y-0.5 no-underline">Dasar Privasi</a>
-        <span class="text-pink-100/30">•</span>
+  <span class="text-pink-100/30">•</span>
   <a href="/refund-policy" class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 hover:-translate-y-0.5 no-underline">Dasar Pemulangan</a>
-    </div>
-    <div class="flex gap-2 items-center">
+
+  <!-- hide this dot on mobile, show on sm+ -->
+  <span class="text-pink-100/30 hidden sm:inline">•</span>
+
+  <!-- force line break only on mobile -->
+  <span class="basis-full sm:hidden"></span>
+
   <a href="/shipping-policy" class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 hover:-translate-y-0.5 no-underline">Dasar Penghantaran</a>
-        <span class="text-pink-100/30">•</span>
+  <span class="text-pink-100/30">•</span>
   <a href="/terms-of-service" class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 hover:-translate-y-0.5 no-underline">Terma & Syarat</a>
-    </div>
 </div>
+
         </div>
         
         <!-- Contact Info Footer -->
