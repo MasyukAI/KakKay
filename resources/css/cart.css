@@ -151,7 +151,7 @@ html, body {
 }
 
 .brand h1 {
-    font: 900 clamp(1.0rem, 2vw + .4rem, 1.4rem) Montserrat, system-ui, sans-serif;
+    font: 800 clamp(1.0rem, 2vw + .4rem, 1.4rem) Montserrat, system-ui, sans-serif;
     letter-spacing: .3px;
     margin: 0;
     color: white;
