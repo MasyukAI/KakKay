@@ -159,7 +159,7 @@ class extends Component {
         </div>
     </main>
 
-        <div class="container pb-12">
+        <div class="container">
             <x-footer />
         </div>
     </main>
