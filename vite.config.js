@@ -12,6 +12,7 @@ export default defineConfig({
                 'resources/css/cart.css',
                 'resources/css/policy.css',
                 'resources/css/home.css',
+                'resources/css/pages.css',
                 'resources/js/app.js'
             ],
             refresh: true,

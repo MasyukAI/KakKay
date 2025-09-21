@@ -1,5 +1,6 @@
 <div class="relative min-h-screen overflow-hidden bg-[#0f0218] text-white">
-    <div class="pointer-events-none absolute -top-48 -left-32 h-[520px] w-[520px] rounded-full bg-gradient-to-br from-pink-500/40 via-purple-500/25 to-rose-500/35 blur-3xl"></div>
+    <div class="pointer-events-none absolute -top-48 -left-40 h-[520px] w-[520px] rounded-full bg-gradient-to-br from-pink-500/35 via-purple-500/25 to-rose-500/40 blur-3xl"></div>
+
     <div class="pointer-events-none absolute top-1/4 -right-36 h-[540px] w-[540px] rounded-full bg-gradient-to-br from-fuchsia-500/25 via-rose-500/25 to-orange-400/35 blur-3xl"></div>
     <div class="pointer-events-none absolute -bottom-64 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-gradient-to-br from-purple-600/30 via-indigo-500/20 to-pink-400/30 blur-3xl"></div>
 
@@ -195,8 +196,8 @@
                                     <div class="relative overflow-hidden rounded-[22px]">
                                         <img src="{{ asset('storage/images/cover/' . $product->slug . '.png') }}" alt="{{ $product->name }}" class="w-full rounded-[22px] border border-white/20 object-cover shadow-[0_20px_60px_rgba(17,0,34,0.45)]">
                                         <div class="absolute inset-0 bg-gradient-to-t from-[#0f0218]/80 via-transparent to-transparent opacity-0 transition group-hover:opacity-100"></div>
-                                        <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between text-xs uppercase tracking-[0.28em] text-white/80">
-                                            <span>Buku Kak Kay</span>
+                                        <div class="absolute bottom-4 left-4 right-4 flex justify-end text-xs uppercase tracking-[0.28em] text-white/80">
+                                            {{-- <span>Buku Kak Kay</span> --}}
                                             <span>{{ \Akaunting\Money\Money::MYR($product->price)->format() }}</span>
                                         </div>
                                     </div>
@@ -209,21 +210,16 @@
                                         </div>
                                     </div>
                                 </a>
-                                <button type="button"
-                                    wire:click.prevent="addToCart({{ $product->id }})"
-                                    wire:loading.attr="disabled"
-                                    wire:target="addToCart({{ $product->id }})"
-                                    class="cart-button-primary mt-5 flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 px-6 py-3 text-sm font-semibold text-white shadow-[0_22px_52px_rgba(236,72,153,0.45)] ring-1 ring-white/20 transition-all duration-300 ease-out hover:shadow-[0_28px_64px_rgba(236,72,153,0.6)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f0218] disabled:opacity-50 disabled:cursor-not-allowed">
-                                    <span wire:loading wire:target="addToCart({{ $product->id }})" class="flex items-center gap-2">
-                                        <svg class="h-4 w-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
-                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                            <path class="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>
-                                        <span>Menambah...</span>
+                                <button type="button" wire:click="addToCart({{ $product->id }})" wire:loading.attr="disabled" wire:target="addToCart({{ $product->id }})" class="group mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 px-6 py-3 text-sm font-semibold text-white shadow-[0_22px_52px_rgba(236,72,153,0.45)] ring-1 ring-white/20 transition-all duration-300 ease-out hover:scale-[1.02] hover:shadow-[0_28px_64px_rgba(236,72,153,0.6)] hover:ring-2 hover:ring-pink-300/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f0218] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100">
+                                    <span wire:loading.remove wire:target="addToCart({{ $product->id }})" class="flex items-center gap-2 transition-all duration-200">
+                                        <flux:icon.shopping-cart class="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
+                                        <span class="tracking-wide">Tambah</span>
                                     </span>
-                                    <span wire:loading.remove wire:target="addToCart({{ $product->id }})" class="flex items-center gap-2">
-                                        <flux:icon.shopping-cart class="h-4 w-4" />
-                                        <span>Tambah</span>
+                                    <span wire:loading wire:target="addToCart({{ $product->id }})" class="flex items-center justify-center gap-2">
+                                        <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 714 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
                                     </span>
                                 </button>
                             </div>

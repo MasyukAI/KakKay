@@ -9,7 +9,7 @@
         <main class="space-y-24 pb-24 sm:space-y-32">
             <!-- HERO -->
             <section class="relative">
-                <div class="mx-auto flex max-w-7xl flex-col gap-16 px-6 pt-12 sm:px-8 lg:grid lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+                <div class="mx-auto flex max-w-7xl flex-col gap-16 px-6 pt-12 sm:px-8 lg:grid lg:grid-cols-[1.3fr_0.7fr] lg:items-center">
                     <div class="order-2 space-y-8 lg:order-1">
                         <span class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-5 py-2 text-xs font-semibold uppercase tracking-[0.32em] text-white/70">Memperkasakan Wanita Zaman Moden</span>
                         <h1 style="font-family:'Caveat Brush'" 

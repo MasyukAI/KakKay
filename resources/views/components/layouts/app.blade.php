@@ -12,8 +12,10 @@
       @filamentStyles
     </head>
     <body class="h-full bg-[#1a0d1a] bg-[image:var(--grad-hero)] text-white font-serif leading-[1.5] antialiased">
-        {{ $slot }}
-        @livewire('notifications')
+        <div id="app-shell" class="min-h-full">
+            {{ $slot }}
+            @livewire('notifications')
+        </div>
         @filamentScripts
     </body>
 </html>

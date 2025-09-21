@@ -2,27 +2,25 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
-use App\Models\District;
 use Akaunting\Money\Money;
-use Filament\Schemas\Schema;
+use App\Models\District;
 use App\Services\CheckoutService;
-use Livewire\Attributes\Computed;
-use Illuminate\Support\Facades\Log;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
-use Filament\Schemas\Components\Grid;
-use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Contracts\HasSchemas;
-use MasyukAI\Cart\Facades\Cart as CartFacade;
-use Filament\Forms\Concerns\InteractsWithForms;
-use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
+use Filament\Schemas\Contracts\HasSchemas;
+use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Log;
+use Livewire\Attributes\Computed;
+use Livewire\Component;
+use MasyukAI\Cart\Facades\Cart as CartFacade;
+use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
 class Checkout extends Component implements HasSchemas
 {
- 
     use InteractsWithSchemas;
 
     public ?array $data = [];
@@ -92,8 +90,7 @@ class Checkout extends Component implements HasSchemas
         return $schema
             ->components([
                 Section::make('Maklumat Penghantaran')
-                    ->description('Masukkan maklumat untuk penghantaran')
-                    ->icon('heroicon-o-truck')
+                    // ->icon('heroicon-o-truck')
                     ->schema([
                         Grid::make(2)
                             ->schema([
@@ -184,7 +181,7 @@ class Checkout extends Component implements HasSchemas
                                     ->disabled(fn (callable $get) => ! $get('state'))
                                     ->extraAttributes(['class' => 'checkout-sm']),
 
-                                    TextInput::make('postal_code')
+                                TextInput::make('postal_code')
                                     ->required()
                                     ->integer()
                                     ->label('Poskod')
@@ -208,37 +205,68 @@ class Checkout extends Component implements HasSchemas
                             ->maxLength(255)
                             ->columnSpanFull()
                             ->extraAttributes(['class' => 'checkout-sm']),
+                        Grid::make()
+                            ->columns(2)
+                            ->extraAttributes(['class' => 'checkout-benefits'])
+                            ->schema([
+                                Placeholder::make('secure_payment')
+                                    ->label('Pembayaran Dilindungi')
+                                    ->content('Transaksi disulitkan sepenuhnya bersama penyedia pembayaran bertauliah kami.')
+                                    ->extraAttributes(['class' => 'checkout-benefit'])
+                                    ->columnSpan(1),
+                                Placeholder::make('tracked_delivery')
+                                    ->label('Penghantaran Dipantau')
+                                    ->content('Status pesanan diutus melalui email serta SMS sebaik penghantaran dibuat.')
+                                    ->extraAttributes(['class' => 'checkout-benefit'])
+                                    ->columnSpan(1),
+                            ])
+                            ->columnSpanFull(),
                     ]),
 
-                // Section::make('Cara Penghantaran')
-                //     ->description('Pilih cara penghantaran yang sesuai')
-                //     ->icon('heroicon-o-truck')
-                //     ->schema([
-                //         Select::make('delivery_method')
-                //             ->label('Kaedah Penghantaran')
-                //             ->required()
-                //             ->default('standard')
-                //             ->options([
-                //                 'standard' => 'RM5 - Penghantaran Standard (3-5 hari bekerja)',
-                //                 'fast' => 'RM15 - Penghantaran Pantas (1-2 hari bekerja)',
-                //                 'express' => 'RM49 - Penghantaran Ekspres (Hari yang sama)',
-                //             ])
-                //             ->live()
-                //             ->helperText('Kos penghantaran akan dikira secara automatik'),
-                //     ]),
+                Section::make('Kaedah Pembayaran')
+                    ->schema([
+                        Grid::make(2)
+                            ->schema([
+                                Select::make('payment_group')
+                                    ->label('Kategori Pembayaran')
+                                    ->options(fn () => $this->getPaymentGroupOptions())
+                                    ->required()
+                                    ->live()
+                                    ->extraAttributes(['class' => 'checkout-select'])
+                                    ->afterStateHydrated(function (?string $state, callable $set): void {
+                                        $defaultGroup = $state ?? $this->selectedPaymentGroup ?? $this->determineDefaultGroup();
+                                        if ($defaultGroup) {
+                                            $set('payment_group', $defaultGroup);
+                                            $this->selectPaymentGroup($defaultGroup);
+                                        }
+                                    })
+                                    ->afterStateUpdated(function (?string $state, callable $set): void {
+                                        $this->selectPaymentGroup($state);
 
-                // Section::make('Kod Promosi')
-                //     ->description('Masukkan kod voucher atau promosi (jika ada)')
-                //     ->icon('heroicon-o-ticket')
-                //     ->schema([
-                //         TextInput::make('voucher_code')
-                //             ->label('Kod Voucher')
-                //             ->placeholder('Masukkan kod voucher')
-                //             ->maxLength(50)
-                //             ->extraAttributes(['class' => 'checkout-sm']),
-                //     ])
-                //     ->collapsible()
-                //     ->collapsed(),
+                                        $defaultMethod = $this->determineDefaultMethod($state);
+                                        $set('payment_method', $defaultMethod);
+
+                                        if ($defaultMethod) {
+                                            $this->selectPaymentMethod($defaultMethod);
+                                        }
+                                    }),
+                                Select::make('payment_method')
+                                    ->label('Kaedah Pembayaran')
+                                    ->options(fn (callable $get) => $this->getPaymentMethodOptions($get('payment_group')))
+                                    ->required()
+                                    ->searchable()
+                                    ->live()
+                                    ->extraAttributes(['class' => 'checkout-select'])
+                                    ->afterStateHydrated(function (?string $state): void {
+                                        if ($state) {
+                                            $this->selectPaymentMethod($state);
+                                        }
+                                    })
+                                    ->afterStateUpdated(function (?string $state): void {
+                                        $this->selectPaymentMethod($state);
+                                    }),
+                            ]),
+                    ]),
             ])
             ->statePath('data');
     }
@@ -288,6 +316,24 @@ class Checkout extends Component implements HasSchemas
         try {
             $checkoutService = app(CheckoutService::class);
             $this->availablePaymentMethods = $checkoutService->getAvailablePaymentMethods();
+
+            $grouped = $this->getPaymentMethodsByGroup();
+
+            if (! empty($grouped)) {
+                $defaultGroup = $this->data['payment_group']
+                    ?? $this->selectedPaymentGroup
+                    ?? array_key_first($grouped);
+
+                $this->selectPaymentGroup($defaultGroup);
+
+                $defaultMethod = $this->data['payment_method']
+                    ?? $this->determineDefaultMethod($defaultGroup);
+
+                if ($defaultMethod) {
+                    $this->data['payment_method'] = $defaultMethod;
+                    $this->selectPaymentMethod($defaultMethod);
+                }
+            }
         } catch (\Exception $e) {
             Log::error('Failed to load payment methods: '.$e->getMessage());
             // Use fallback payment methods
@@ -310,11 +356,18 @@ class Checkout extends Component implements HasSchemas
         }
     }
 
-    public function selectPaymentGroup(string $group): void
+    public function selectPaymentGroup(?string $group): void
     {
-        $this->selectedPaymentGroup = $group;
+        $group = $group ?: $this->determineDefaultGroup();
+        $this->selectedPaymentGroup = $group ?? '';
+        $this->data['payment_group'] = $group;
 
-        // Set payment method whitelist based on selected group
+        if (! $group) {
+            $this->data['payment_method_whitelist'] = [];
+
+            return;
+        }
+
         $groupMethods = collect($this->availablePaymentMethods)
             ->where('group', $group)
             ->pluck('id')
@@ -323,8 +376,15 @@ class Checkout extends Component implements HasSchemas
         $this->data['payment_method_whitelist'] = $groupMethods;
     }
 
-    public function selectPaymentMethod(string $methodId): void
+    public function selectPaymentMethod(?string $methodId): void
     {
+        if (empty($methodId)) {
+            $this->data['payment_method_whitelist'] = [];
+
+            return;
+        }
+
+        $this->data['payment_method'] = $methodId;
         $this->data['payment_method_whitelist'] = [$methodId];
     }
 
@@ -381,6 +441,47 @@ class Checkout extends Component implements HasSchemas
         }
 
         return $grouped;
+    }
+
+    protected function getPaymentGroupOptions(): array
+    {
+        return collect($this->getPaymentMethodsByGroup())
+            ->mapWithKeys(fn ($methods, $group) => [
+                $group => $this->getGroupDisplayName($group),
+            ])
+            ->toArray();
+    }
+
+    protected function getPaymentMethodOptions(?string $group): array
+    {
+        $group = $group ?: $this->determineDefaultGroup();
+
+        if (! $group) {
+            return [];
+        }
+
+        return collect($this->getPaymentMethodsByGroup()[$group] ?? [])
+            ->mapWithKeys(fn ($method) => [
+                $method['id'] => $method['name'],
+            ])->toArray();
+    }
+
+    protected function determineDefaultGroup(): ?string
+    {
+        return array_key_first($this->getPaymentMethodsByGroup()) ?: null;
+    }
+
+    protected function determineDefaultMethod(?string $group): ?string
+    {
+        $group = $group ?: $this->determineDefaultGroup();
+
+        if (! $group) {
+            return null;
+        }
+
+        $methods = $this->getPaymentMethodsByGroup()[$group] ?? [];
+
+        return $methods[0]['id'] ?? null;
     }
 
     public function getGroupDisplayName(string $group): string
@@ -485,7 +586,6 @@ class Checkout extends Component implements HasSchemas
     {
         return view('livewire.checkout', [
             'cartQuantity' => CartFacade::getTotalQuantity(),
-        ])
-            ->layout('components.layouts.app');
+        ])->layout('components.layouts.app');
     }
 }
