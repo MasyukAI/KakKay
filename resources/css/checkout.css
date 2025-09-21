@@ -1,9 +1,4 @@
 /* Checkout form styling - Clean and Beautiful */
-.filament-checkout-form .fi-dropdown-list-item.fi-select-input-option,
-.iti__dropdown-content {
-    color: #000;
-}
-
 .checkout-page {
     min-height: 100vh;
 }
@@ -260,8 +255,8 @@
 
 .checkout-container .checkout-select .fi-select-option,
 .checkout-container .checkout-select [role="option"] {
-    /* color: #1a1a1a !important;
-    padding: 0.75rem 1rem !important;
+    color: #1a1a1a !important;
+    /* padding: 0.75rem 1rem !important;
     font-weight: 500 !important;
     transition: all 0.2s ease !important; */
 }
@@ -368,4 +363,9 @@
         padding: 0.9rem 1rem !important;
         font-size: 0.95rem !important;
     }
+}
+
+.filament-checkout-form .fi-dropdown-list-item.fi-select-input-option,
+.iti__dropdown-content {
+    color: #000;
 }

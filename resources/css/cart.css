@@ -44,7 +44,6 @@
     --grad-ring: conic-gradient(from 0deg, var(--pink), var(--magenta), var(--ruby), var(--purple), var(--pink));
 }
 
-
 @keyframes pulse-border {
   0%, 100% { border-color: rgba(255,95,162,0.3); box-shadow: 0 0 20px rgba(255,95,162,0.1); }
   50% { border-color: rgba(255,95,162,0.6); box-shadow: 0 0 30px rgba(255,95,162,0.3); }
@@ -54,8 +53,6 @@
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
 }
-
-
 
 /* Ensure full coverage on all screen sizes */
 
@@ -86,7 +83,6 @@ html, body {
       padding-left: 2vw;
       padding-right: 2vw;
     }
-
 
 /* Cart specific styles */
 .cart-container {
@@ -179,11 +175,6 @@ html, body {
     position: relative;
     isolation: isolate;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    flex-direction: row !important;
-    gap: 0.25rem !important;
     overflow: hidden;
 }
 
@@ -206,11 +197,6 @@ html, body {
     opacity: 1;
 }
 
-.cart-button-primary > * {
-    display: inline-flex !important;
-    align-items: center !important;
-}
-
 .cart-button-primary::after {
     content: "";
     position: absolute;
@@ -219,12 +205,6 @@ html, body {
     background: radial-gradient(60% 60% at 50% 0%, rgba(255,255,255,.35), transparent);
     mix-blend-mode: screen;
     pointer-events: none;
-}
-
-.cart-button-primary:hover {
-    transform: translateY(-3px) scale(1.05);
-    /* box-shadow: 0 15px 35px rgba(255,105,180,0.4), 0 5px 15px rgba(0,0,0,0.3); */
-    filter: brightness(1.1);
 }
 
 .cart-button-ghost {
@@ -562,94 +542,6 @@ html, body {
     }
 }
 
-/* Fix button layout to display icon and text side by side */
-button {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    flex-direction: row !important;
-}
-
-button svg {
-    flex-shrink: 0 !important;
-}
-
-/* Ensure all buttons with cart-button-primary class display horizontally */
-.cart-button-primary svg,
-.cart-button-primary .flux-icon {
-    margin-right: 0.25rem !important;
-    vertical-align: middle !important;
-}
-
-/* Progress Steps Enhancement - targeting actual classes used */
-li.text-pink-400 {
-    background: linear-gradient(135deg, rgba(255, 95, 162, 0.3), rgba(224, 17, 95, 0.2)) !important;
-    border: 2px solid rgba(255, 95, 162, 0.6) !important;
-    border-radius: 12px !important;
-    padding: 12px 16px !important;
-    color: #ffffff !important;
-    font-weight: 700 !important;
-    box-shadow: 0 4px 15px rgba(255, 95, 162, 0.3) !important;
-    margin: 0 8px !important;
-}
-
-li.text-gray-400 {
-    color: rgba(255, 255, 255, 0.5) !important;
-    background: rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
-    border-radius: 12px !important;
-    padding: 12px 16px !important;
-    margin: 0 8px !important;
-}
-
-/* Quantity Button Improvements - make them much clearer */
-.bg-white\/10 {
-    background: linear-gradient(135deg, rgba(255, 95, 162, 0.2), rgba(106, 0, 244, 0.15)) !important;
-    border: 2px solid rgba(255, 95, 162, 0.4) !important;
-    border-radius: 8px !important;
-    transition: all 0.3s ease !important;
-    color: #ffffff !important;
-    font-weight: 600 !important;
-    box-shadow: 0 2px 8px rgba(255, 95, 162, 0.2) !important;
-}
-
-.bg-white\/10:hover,
-.hover\:bg-white\/20:hover {
-    background: linear-gradient(135deg, rgba(255, 95, 162, 0.4), rgba(106, 0, 244, 0.3)) !important;
-    border-color: rgba(255, 95, 162, 0.8) !important;
-    transform: translateY(-2px) scale(1.05) !important;
-    box-shadow: 0 4px 15px rgba(255, 95, 162, 0.4) !important;
-}
-
-/* Delete Button Enhancement - make it much more prominent */
-.hover\:bg-red-500\/30 {
-    background: linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(220, 38, 38, 0.2)) !important;
-    border: 2px solid rgba(239, 68, 68, 0.5) !important;
-    border-radius: 8px !important;
-    color: #fca5a5 !important;
-    font-weight: 600 !important;
-    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3) !important;
-    transition: all 0.3s ease !important;
-}
-
-.hover\:bg-red-500\/30:hover {
-    background: linear-gradient(135deg, rgba(239, 68, 68, 0.4), rgba(220, 38, 38, 0.35)) !important;
-    border-color: rgba(239, 68, 68, 0.8) !important;
-    color: #ffffff !important;
-    transform: translateY(-2px) scale(1.05) !important;
-    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.5) !important;
-}
-
-/* Quantity display background - make it more vibrant */
-.bg-white\/15 {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 95, 162, 0.1)) !important;
-    border: 2px solid rgba(255, 255, 255, 0.4) !important;
-    border-radius: 8px !important;
-    color: #ffffff !important;
-    font-weight: 700 !important;
-    box-shadow: 0 2px 8px rgba(255, 95, 162, 0.15) !important;
-}
-
 /* Utility classes */
 .cart-text-accent {
     color: var(--pink);
@@ -657,14 +549,6 @@ li.text-gray-400 {
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-}
-
-.line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
 }
 
 footer{ padding:28px 0 30px; color:#f7dff0; opacity:.9; font-size:.95rem; }

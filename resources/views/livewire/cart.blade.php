@@ -48,7 +48,7 @@
                             <h1 class="mt-6 font-display text-4xl leading-tight sm:text-5xl">Troli awak masih sunyi 💫</h1>
                             <p class="mt-4 text-base leading-relaxed text-white/80 sm:text-lg">Belum terlambat nak cari buku manja. Pilih satu yang buat hati senyum, cuba ritual malam ini, dan tengok macam mana vibe rumah terus hangat.</p>
                             <div class="mt-8 flex flex-wrap justify-center gap-4">
-                                <flux:button variant="primary" href="{{ route('home') }}" class="cart-button-primary px-8 py-4 text-lg">
+                                <flux:button variant="primary" href="{{ route('home') }}" class="cart-button-primary flex items-center justify-center gap-2 px-8 py-4 text-lg">
                                     <flux:icon.sparkles class="h-5 w-5" />
                                     Jom pilih buku fun
                                 </flux:button>
@@ -96,15 +96,15 @@
                                                             wire:click="decrementQuantity('{{ $item['id'] }}')"
                                                             wire:loading.attr="disabled"
                                                             wire:target="decrementQuantity('{{ $item['id'] }}')"
-                                                            class="cursor-pointer flex h-11 w-11 items-center justify-center rounded-xl border border-white/15 bg-white/10 transition hover:bg-white/20 disabled:opacity-50">
-                                                            <flux:icon.minus class="h-4 w-4" wire:loading.remove wire:target="decrementQuantity('{{ $item['id'] }}')"/>
+                                                            class="group flex h-11 w-11 items-center justify-center rounded-xl border-2 border-pink-400/40 bg-gradient-to-br from-pink-500/20 via-rose-500/15 to-purple-500/20 text-white shadow-[0_2px_12px_rgba(236,72,153,0.25)] transition duration-300 hover:-translate-y-0.5 hover:scale-105 hover:border-pink-300/70 hover:from-pink-500/40 hover:via-rose-500/30 hover:to-purple-500/35 hover:text-white hover:shadow-[0_6px_20px_rgba(236,72,153,0.45)] disabled:cursor-not-allowed disabled:opacity-50">
+                                                            <flux:icon.minus class="h-4 w-4 text-white transition-colors duration-300 group-hover:text-white" wire:loading.remove wire:target="decrementQuantity('{{ $item['id'] }}')"/>
                                                             <svg wire:loading wire:target="decrementQuantity('{{ $item['id'] }}')" class="h-4 w-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
                                                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                                                 <path class="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                                             </svg>
                                                         </flux:button>
 
-                                                        <span class="min-w-[3rem] rounded-xl border border-white/15 bg-white/15 px-4 py-2 text-center text-lg font-semibold text-white">
+                                                        <span class="min-w-[3rem] rounded-xl border-2 border-white/40 bg-gradient-to-br from-white/25 via-pink-500/10 to-white/10 px-4 py-2 text-center text-lg font-semibold text-white shadow-[0_2px_10px_rgba(236,72,153,0.2)]">
                                                             {{ $item['quantity'] }}
                                                         </span>
 
@@ -112,8 +112,8 @@
                                                             wire:click="incrementQuantity('{{ $item['id'] }}')"
                                                             wire:loading.attr="disabled"
                                                             wire:target="incrementQuantity('{{ $item['id'] }}')"
-                                                            class="cursor-pointer flex h-11 w-11 items-center justify-center rounded-xl border border-white/15 bg-white/10 transition hover:bg-white/20 disabled:opacity-50">
-                                                            <flux:icon.plus class="h-4 w-4" wire:loading.remove wire:target="incrementQuantity('{{ $item['id'] }}')"/>
+                                                            class="group flex h-11 w-11 items-center justify-center rounded-xl border-2 border-pink-400/40 bg-gradient-to-br from-pink-500/20 via-rose-500/15 to-purple-500/20 text-white shadow-[0_2px_12px_rgba(236,72,153,0.25)] transition duration-300 hover:-translate-y-0.5 hover:scale-105 hover:border-pink-300/70 hover:from-pink-500/40 hover:via-rose-500/30 hover:to-purple-500/35 hover:text-white hover:shadow-[0_6px_20px_rgba(236,72,153,0.45)] disabled:cursor-not-allowed disabled:opacity-50">
+                                                            <flux:icon.plus class="h-4 w-4 text-white transition-colors duration-300 group-hover:text-white" wire:loading.remove wire:target="incrementQuantity('{{ $item['id'] }}')"/>
                                                             <svg wire:loading wire:target="incrementQuantity('{{ $item['id'] }}')" class="h-4 w-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
                                                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                                                 <path class="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -128,8 +128,8 @@
 
                                                     <flux:button variant="subtle" color="red"
                                                         wire:click="removeItem('{{ $item['id'] }}')"
-                                                        class="cursor-pointer rounded-xl border border-red-400/60 px-5 py-2.5 font-semibold text-red-300 transition duration-200 hover:bg-red-500/30 hover:text-white">
-                                                        <flux:icon.trash class="h-5 w-5" />
+                                                        class="group rounded-xl border-2 border-red-400/60 bg-gradient-to-br from-red-500/20 via-rose-500/15 to-orange-500/20 px-5 py-2.5 font-semibold text-red-200 shadow-[0_2px_12px_rgba(248,113,113,0.25)] transition duration-300 hover:-translate-y-0.5 hover:scale-105 hover:border-red-300/70 hover:from-red-500/40 hover:via-rose-500/30 hover:to-orange-500/35 hover:text-white hover:shadow-[0_6px_20px_rgba(248,113,113,0.45)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/60">
+                                                        <flux:icon.trash class="h-5 w-5 text-white transition-colors duration-300 group-hover:text-white" />
                                                         {{-- <span class="ml-2 hidden text-sm sm:inline">Buang</span> --}}
                                                     </flux:button>
                                                 </div>
@@ -140,15 +140,15 @@
                             </div>
 
                             <aside class="mt-10 lg:mt-0">
-                                <div class="cart-summary-card sticky p-6 sm:p-8">
-                                    <div class="absolute -top-20 right-0 h-48 w-48 rounded-full bg-gradient-to-br from-pink-400/30 via-purple-400/20 to-orange-300/30 blur-3xl"></div>
+                                <div class="cart-summary-card sticky p-6 sm:p-6.5">
+                                    {{-- <div class="absolute -top-20 right-0 h-48 w-48 rounded-full bg-gradient-to-br from-pink-400/30 via-purple-400/20 to-orange-300/30 blur-3xl"></div> --}}
                                     <div class="relative space-y-6">
                                         <div>
-                                            <span class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.32em] text-white/70">
+                                            {{-- <span class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.32em] text-white/70">
                                                 Langkah seterusnya
-                                            </span>
-                                            <h3 class="mt-4 font-display text-3xl text-white">Ringkasan pesanan</h3>
-                                            <p class="mt-2 text-sm leading-relaxed text-white/70">Semak jumlah dan klik terus untuk secure ritual pilihan awak. Penghantaran disusun rapi — tinggal tunggu stok sampai.</p>
+                                            </span> --}}
+                                            <h3 class="font-display text-3xl text-white">Ringkasan Pesanan</h3>
+                                            {{-- <p class="mt-2 text-sm leading-relaxed text-white/70">Semak jumlah dan klik terus untuk secure ritual pilihan awak. Penghantaran disusun rapi — tinggal tunggu stok sampai.</p> --}}
                                         </div>
 
                                         <div class="space-y-4 text-sm text-white/80">
@@ -157,7 +157,7 @@
                                                 <span class="font-semibold text-white">{{ $this->getSubtotal()->format() }}</span>
                                             </div>
                                             <div class="flex justify-between">
-                                                <span>Penghantaran standard</span>
+                                                <span>Penghantaran</span>
                                                 <span class="font-semibold text-white">{{ $this->getShipping()->format() }}</span>
                                             </div>
                                             <hr class="border-white/20">
@@ -202,8 +202,8 @@
                                         </div>
                                     </div>
                                     <div class="mt-5 space-y-3">
-                                        <h4 class="text-xl font-semibold text-white">{{ $product->name }}</h4>
-                                        <p class="line-clamp-3 text-sm text-white/70">{{ $product->description }}</p>
+                                        {{-- <h4 class="text-xl font-semibold text-white">{{ $product->name }}</h4> --}}
+                                        {{-- <p class="line-clamp-3 text-sm text-white/70">{{ $product->description }}</p> --}}
                                         <div class="inline-flex items-center gap-2 text-sm font-semibold text-pink-200">
                                             Selak detail
                                             <flux:icon.arrow-right class="h-4 w-4" />

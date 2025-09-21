@@ -127,6 +127,7 @@ class Checkout extends Component implements HasSchemas
                                     ->extraAttributes(['class' => 'checkout-sm']),
 
                                 PhoneInput::make('phone')
+                                    ->defaultCountry('MY')
                                     ->label('Nombor Telefon')
                                     ->required()
                                     ->placeholder('Nombor telefon anda')
