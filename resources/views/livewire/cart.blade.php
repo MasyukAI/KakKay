@@ -62,8 +62,8 @@
             @else
                 <section>
                     <div class="mx-auto max-w-7xl px-6 sm:px-8">
-                        <div class="lg:grid lg:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[minmax(0,1fr)_420px] lg:gap-12">
-                            <div class="space-y-6">
+                        <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[minmax(0,1fr)_400px]">
+                            <div class="min-w-0 space-y-6">
                                 @foreach($cartItems as $item)
                                     <div wire:key="cart-item-{{ $item['id'] }}" class="cart-item-card relative overflow-hidden rounded-[32px] border border-white/15 bg-white/5 p-6 shadow-[0_25px_70px_rgba(12,5,24,0.4)] sm:p-7">
                                         <div class="flex flex-col gap-6 sm:flex-row">
@@ -86,9 +86,9 @@
                                                         </a>
                                                         <span class="text-sm font-semibold text-white/80">Seunit {{ $item['price_formatted'] ?? \Akaunting\Money\Money::MYR($item['price'])->format() }}</span>
                                                     </div>
-                                                    <p class="text-sm leading-relaxed text-white/70">
+                                                    {{-- <p class="text-sm leading-relaxed text-white/70">
                                                         Modul Kak Kay ni siap dengan skrip mesra dan ritual harian. Selak satu bab, terus boleh praktik malam ini.
-                                                    </p>
+                                                    </p> --}}
                                                 </div>
                                                 <div class="flex flex-wrap items-center justify-between gap-4">
                                                     <div class="flex items-center gap-3">
@@ -122,7 +122,7 @@
                                                     </div>
 
                                                     <div class="flex flex-col text-right">
-                                                        <span class="text-xs uppercase tracking-[0.28em] text-white/60">Jumlah kecil</span>
+                                                        <span class="text-xs uppercase tracking-[0.28em] text-white/60">Jumlah</span>
                                                         <span class="text-lg font-semibold text-white">{{ $item['subtotal_formatted'] ?? \Akaunting\Money\Money::MYR($item['subtotal'])->format() }}</span>
                                                     </div>
 
@@ -139,7 +139,7 @@
                                 @endforeach
                             </div>
 
-                            <aside class="mt-10 lg:mt-0">
+                            <aside class="mt-10 lg:mt-0 lg:w-[360px] xl:w-[400px]">
                                 <div class="cart-summary-card sticky p-6 sm:p-6.5">
                                     {{-- <div class="absolute -top-20 right-0 h-48 w-48 rounded-full bg-gradient-to-br from-pink-400/30 via-purple-400/20 to-orange-300/30 blur-3xl"></div> --}}
                                     <div class="relative space-y-6">
@@ -202,8 +202,8 @@
                                         </div>
                                     </div>
                                     <div class="mt-5 space-y-3">
-                                        {{-- <h4 class="text-xl font-semibold text-white">{{ $product->name }}</h4> --}}
-                                        {{-- <p class="line-clamp-3 text-sm text-white/70">{{ $product->description }}</p> --}}
+                                        <h4 class="text-xl font-semibold text-white">{{ $product->name }}</h4>
+                                        <p class="line-clamp-3 text-sm text-white/70">{{ $product->description }}</p>
                                         <div class="inline-flex items-center gap-2 text-sm font-semibold text-pink-200">
                                             Selak detail
                                             <flux:icon.arrow-right class="h-4 w-4" />
