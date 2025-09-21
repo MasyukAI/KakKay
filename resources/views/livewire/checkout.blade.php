@@ -12,7 +12,7 @@
         <section class="pt-20">
             <div class="mx-auto max-w-7xl px-6 sm:px-8">
                 <div class="relative mx-auto max-w-3xl">
-                    <div class="absolute left-6 right-6 top-6 hidden h-px bg-white/15 sm:block"></div>
+                    <div class="absolute left-6 right-6 top-6 block h-px bg-white/15"></div>
                     <ol class="relative flex items-center justify-between gap-6 text-xs font-semibold uppercase tracking-[0.28em] text-white/60">
                         <li class="flex flex-col items-center gap-3">
                             <a href="{{ route('cart') }}" class="group flex h-12 w-12 items-center justify-center rounded-full border border-white/25 bg-white/10 text-pink-200 shadow-[0_10px_35px_rgba(236,72,153,0.28)] transition hover:border-white/50 hover:text-white">
@@ -46,28 +46,26 @@
 
                         <!-- Order Summary Sidebar -->
                         <aside class="mt-10 space-y-6 lg:mt-0">
-                            <div class="cart-summary-card sticky p-6 sm:p-8">
+                            <div class="cart-summary-card sticky p-6 sm:p-6.5">
                                 <div class="absolute -top-20 right-0 h-48 w-48 rounded-full bg-gradient-to-br from-pink-400/30 via-purple-400/20 to-orange-300/30 blur-3xl"></div>
                                 <div class="relative space-y-6">
                                     <div class="space-y-3">
-                                        <span class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.32em] text-white/70">
+                                        {{-- <span class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.32em] text-white/70">
                                             Langkah Bayaran
-                                        </span>
+                                        </span> --}}
                                         <h3 class="font-display text-3xl text-white">Ringkasan Pesanan</h3>
-                                        <p class="text-sm leading-relaxed text-white/70">Semua harga dalam Ringgit Malaysia (RM). Semak jumlah sebelum lengkapkan bayaran.</p>
+                                        {{-- <p class="text-sm leading-relaxed text-white/70">Semua harga dalam Ringgit Malaysia (RM). Semak jumlah sebelum lengkapkan bayaran.</p> --}}
                                     </div>
 
                                     @if (! empty($cartItems))
                                         <ul class="space-y-3 text-sm text-white/80">
                                             @foreach ($cartItems as $item)
-                                                <li class="flex items-start justify-between gap-3 rounded-2xl border border-white/15 bg-white/10 px-4 py-3">
-                                                    <div>
+                                                <li class="flex flex-col gap-1 rounded-2xl border border-white/15 bg-white/10 px-4 py-3">
+                                                    <div class="flex items-start justify-between gap-3">
                                                         <div class="font-semibold text-white">{{ $item['name'] }}</div>
-                                                        <div class="text-xs uppercase tracking-[0.28em] text-white/50">Qty {{ $item['quantity'] }}</div>
+                                                        <span class="text-white">{{ \Akaunting\Money\Money::MYR($item['price'])->format() }}</span>
                                                     </div>
-                                                    <span class="text-white">
-                                                        {{ \Akaunting\Money\Money::MYR($item['price'])->format() }}
-                                                    </span>
+                                                    <div class="w-full text-xs uppercase tracking-[0.28em] text-white/50 text-right">Qty {{ $item['quantity'] }}</div>
                                                 </li>
                                             @endforeach
                                         </ul>
@@ -79,7 +77,7 @@
 
                                     <div class="space-y-3 text-sm text-white/80">
                                         <div class="flex items-center justify-between">
-                                            <span>Subtotal</span>
+                                            <span>Jumlah Harga</span>
                                             <span class="font-medium text-white">{{ $this->getSubtotal()->format() }}</span>
                                         </div>
                                         <div class="flex items-center justify-between">
@@ -88,7 +86,7 @@
                                         </div>
                                         <hr class="border-white/15">
                                         <div class="flex items-center justify-between text-lg font-bold">
-                                            <span>Jumlah Perlu Dibayar</span>
+                                            <span>Jumlah</span>
                                             <span class="bg-gradient-to-r from-pink-400 via-rose-500 to-purple-500 bg-clip-text text-transparent">{{ $this->getTotal()->format() }}</span>
                                         </div>
                                     </div>
@@ -107,9 +105,9 @@
                                         </div>
                                     </flux:button>
 
-                                    <div class="mt-4 rounded-2xl border border-white/15 bg-white/5 p-4 text-xs text-white/70">
+                                    {{-- <div class="mt-4 rounded-2xl border border-white/15 bg-white/5 p-4 text-xs text-white/70">
                                         Pastikan maklumat alamat tepat. Jika perlu ubah selepas pembayaran, hubungi kami segera melalui WhatsApp: <span class="text-pink-200 font-medium">+60 11-1234 5678</span>.
-                                    </div>
+                                    </div> --}}
                                 </div>
                             </div>
 

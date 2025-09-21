@@ -188,10 +188,13 @@
 
 /* Input field styling - clean and readable with better padding */
 .checkout-container .fi-input,
+.checkout-container .fi-select-input,
 .checkout-container .checkout-sm input,
 .checkout-container .checkout-sm textarea,
 .checkout-container .checkout-select button,
 .checkout-container .checkout-select span {
+    background-color:#ffffff;
+    color:#000000;
     /* background: transparent !important;
     border: none !important;
     box-shadow: none !important;
@@ -203,6 +206,26 @@
     width: 100% !important;
     outline: none !important;
     border-radius: 8px !important; */
+}
+
+.checkout-container .fi-dropdown-list {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+
+.checkout-container .fi-select-input:disabled,
+.checkout-container .fi-select-input,
+.checkout-container .fi-select-input-value-label {
+    color: #000000 !important;
+}
+
+.checkout-container .fi-select-input {
+    @media (prefers-color-scheme: dark) {
+      &:disabled {
+        -webkit-text-fill-color: black;
+      }
+    }
 }
 
 .checkout-container .fi-input::placeholder,

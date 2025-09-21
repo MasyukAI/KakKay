@@ -16,7 +16,7 @@
             <section class="pt-20">
                 <div class="mx-auto max-w-7xl px-6 sm:px-8">
                     <div class="relative mx-auto max-w-3xl">
-                        <div class="absolute left-6 right-6 top-6 hidden h-px bg-white/15 sm:block"></div>
+                        <div class="absolute left-6 right-6 top-6 block h-px bg-white/15"></div>
                         <ol class="relative flex items-center justify-between gap-6 text-xs font-semibold uppercase tracking-[0.28em] text-white/60">
                             <li class="flex flex-col items-center gap-3">
                                 <div class="flex h-12 w-12 items-center justify-center rounded-full border border-white/40 bg-gradient-to-br from-pink-500 via-rose-500 to-purple-500 text-white shadow-[0_16px_45px_rgba(236,72,153,0.45)]">
@@ -68,24 +68,25 @@
                                     <div wire:key="cart-item-{{ $item['id'] }}" class="cart-item-card relative overflow-hidden rounded-[32px] border border-white/15 bg-white/5 p-6 shadow-[0_25px_70px_rgba(12,5,24,0.4)] sm:p-7">
                                         <div class="flex flex-col gap-6 sm:flex-row">
                                             <div class="relative w-full sm:w-36 sm:flex-shrink-0">
-                                                <div class="absolute -inset-5 rounded-[36px] bg-gradient-to-br from-yellow-300/40 via-amber-400/30 to-pink-400/20 opacity-80 blur-2xl"></div>
-                                                <div class="relative rounded-[28px] p-[3px] bg-gradient-to-br from-yellow-400 via-amber-400 to-pink-400 shadow-[0_0_32px_4px_rgba(255,215,0,0.18)]">
-                                                    <div class="relative rounded-[25px] bg-[#14021f]/60 p-[3px] shadow-[0_8px_32px_rgba(255,215,0,0.10)]">
-                                                        <div class="overflow-hidden rounded-[22px] border-2 border-yellow-300/80 bg-[#14021f]/40 shadow-[0_12px_45px_rgba(255,215,0,0.10)]">
-                                                            <img src="{{ asset('storage/images/cover/' . $item['slug'] . '.png') }}" alt="{{ $item['name'] }}" class="block h-full w-full object-cover">
-                                                        </div>
-                                                    </div>
-                                                    <div class="pointer-events-none absolute inset-0 rounded-[28px] ring-2 ring-yellow-200/30 ring-offset-2 ring-offset-yellow-100/10"></div>
+                                                <div class="rounded-[20px] border border-white/20 bg-[#14021f]/60 shadow-md">
+                                                    <img src="{{ asset('storage/images/cover/' . $item['slug'] . '.png') }}" alt="{{ $item['name'] }}" class="block h-full w-full object-cover rounded-[18px]">
                                                 </div>
                                             </div>
                                             <div class="relative flex flex-1 flex-col justify-between gap-6">
                                                 <div class="space-y-4">
                                                     <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                                                        <a href="/{{ $item['slug'] }}" target="_blank" rel="noopener" class="text-xl font-semibold text-white transition hover:text-pink-200">
-                                                            {{ $item['name'] }}
-                                                        </a>
-                                                        <span class="text-sm font-semibold text-white/80">Seunit {{ $item['price_formatted'] ?? \Akaunting\Money\Money::MYR($item['price'])->format() }}</span>
+                                                        <div class="flex flex-col flex-1">
+                                                            <a href="/{{ $item['slug'] }}" target="_blank" rel="noopener" class="text-xl font-semibold text-white transition hover:text-pink-200">
+                                                                {{ $item['name'] }}
+                                                            </a>
+                                                            
+                                                        </div>
+                                                        <span class="text-sm font-semibold text-white/80 ml-auto text-right block">{{ $item['price'] }}</span>
                                                     </div>
+                                                    <div>
+                                                                <div class="text-sm text-white/80">by Kak Kay</div>
+                                                                <div class="text-xs text-green-400">In Stock</div>
+                                                            </div>
                                                     {{-- <p class="text-sm leading-relaxed text-white/70">
                                                         Modul Kak Kay ni siap dengan skrip mesra dan ritual harian. Selak satu bab, terus boleh praktik malam ini.
                                                     </p> --}}
@@ -120,12 +121,6 @@
                                                             </svg>
                                                         </flux:button>
                                                     </div>
-
-                                                    <div class="flex flex-col text-right">
-                                                        <span class="text-xs uppercase tracking-[0.28em] text-white/60">Jumlah</span>
-                                                        <span class="text-lg font-semibold text-white">{{ $item['subtotal_formatted'] ?? \Akaunting\Money\Money::MYR($item['subtotal'])->format() }}</span>
-                                                    </div>
-
                                                     <flux:button variant="subtle" color="red"
                                                         wire:click="removeItem('{{ $item['id'] }}')"
                                                         class="group rounded-xl border-2 border-red-400/60 bg-gradient-to-br from-red-500/20 via-rose-500/15 to-orange-500/20 px-5 py-2.5 font-semibold text-red-200 shadow-[0_2px_12px_rgba(248,113,113,0.25)] transition duration-300 hover:-translate-y-0.5 hover:scale-105 hover:border-red-300/70 hover:from-red-500/40 hover:via-rose-500/30 hover:to-orange-500/35 hover:text-white hover:shadow-[0_6px_20px_rgba(248,113,113,0.45)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/60">
@@ -133,9 +128,16 @@
                                                         {{-- <span class="ml-2 hidden text-sm sm:inline">Buang</span> --}}
                                                     </flux:button>
                                                 </div>
+                                        
                                             </div>
                                         </div>
+                                        <hr class="my-6 border-white/15">
+                                        <div class="text-right">
+                                            <span class="text-xs uppercase">Jumlah</span>
+                                            <span class="text-sm font-semibold text-white block">{{ $item['subtotal_formatted'] ?? \Akaunting\Money\Money::MYR($item['subtotal'])->format() }}</span>
+                                        </div>
                                     </div>
+                                    {{-- Removed extra divider between cards --}}
                                 @endforeach
                             </div>
 
@@ -153,7 +155,7 @@
 
                                         <div class="space-y-4 text-sm text-white/80">
                                             <div class="flex justify-between">
-                                                <span>Subtotal</span>
+                                                <span>Jumlah Harga</span>
                                                 <span class="font-semibold text-white">{{ $this->getSubtotal()->format() }}</span>
                                             </div>
                                             <div class="flex justify-between">
@@ -167,7 +169,10 @@
                                             </div>
                                         </div>
 
-                                        <flux:button variant="primary" href="{{ route('checkout') }}"
+                                        <flux:button
+                                            x-ref="checkoutBtn"
+                                            variant="primary"
+                                            href="{{ route('checkout') }}"
                                             class="cart-button-primary flex w-full items-center justify-center gap-2 px-6 py-4 text-lg font-semibold">
                                             <flux:icon.credit-card class="h-5 w-5" />
                                             Terus ke bayaran
@@ -186,12 +191,12 @@
             <section id="recommended" class="mt-8 pb-20">
                 <div class="mx-auto max-w-7xl px-6 sm:px-8">
                     <div class="mx-auto max-w-3xl text-center">
-                        <h3 class="font-display text-3xl text-white sm:text-4xl">Yang lain ni orang beli juga</h3>
-                        <p class="mt-3 text-lg leading-relaxed text-white/80">Tambah satu lagi judul untuk lebih lengkap. Semua ni antara pilihan feveret geng KKDI.</p>
+                        <h3 class="font-display text-3xl text-white sm:text-4xl">Orang lain beli ni juga</h3>
+                        <p class="mt-3 text-lg leading-relaxed text-white/80">Tambah satu lagi judul untuk lebih lengkap. Semua ni antara pilihan feveret geng Kak Kay.</p>
                     </div>
-                    <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    <div class="mt-10 flex flex-wrap justify-center gap-6">
                         @foreach($suggestedProducts as $product)
-                            <div wire:key="suggested-product-{{ $product->id }}" class="group relative flex h-full flex-col overflow-hidden rounded-[30px] border border-white/15 bg-white/5 p-5 text-left text-white/80 shadow-[0_25px_70px_rgba(12,5,24,0.4)] transition duration-300 hover:-translate-y-2 hover:shadow-[0_35px_90px_rgba(236,72,153,0.3)]">
+                            <div wire:key="suggested-product-{{ $product->id }}" class="group relative flex h-full flex-col overflow-hidden rounded-[30px] border border-white/15 bg-white/5 p-5 text-left text-white/80 shadow-[0_25px_70px_rgba(12,5,24,0.4)] transition duration-300 hover:-translate-y-2 hover:shadow-[0_35px_90px_rgba(236,72,153,0.3)]" style="min-width:280px;max-width:340px;flex:1 1 320px;">
                                 <a href="/{{ $product->slug }}" class="block">
                                     <div class="relative overflow-hidden rounded-[22px]">
                                         <img src="{{ asset('storage/images/cover/' . $product->slug . '.png') }}" alt="{{ $product->name }}" class="w-full rounded-[22px] border border-white/20 object-cover shadow-[0_20px_60px_rgba(17,0,34,0.45)]">
@@ -229,8 +234,56 @@
             </section>
         @endif
 
-        <div class="container">
-            <x-footer />
+
+        <div x-data="{ showFooterBtn: false }"
+             x-init="
+                const btn = $refs.checkoutBtn;
+                const handler = () => {
+                    if (!btn) return;
+                    const rect = btn.getBoundingClientRect();
+                    showFooterBtn = rect.bottom > window.innerHeight || rect.top < 0;
+                };
+                window.addEventListener('scroll', handler);
+                window.addEventListener('resize', handler);
+                handler();
+             "
+             class="relative">
+                <div class="container">
+                    <x-footer />
+                </div>
+                <div
+                    x-data="{
+                        showFooter: false,
+                        isMobile: window.innerWidth < 640,
+                        update() {
+                            this.isMobile = window.innerWidth < 640;
+                        }
+                    }"
+                    x-init="
+                        const mainBtn = $refs.checkoutBtn;
+                        const observer = new IntersectionObserver(([entry]) => {
+                            showFooter = !entry.isIntersecting && isMobile;
+                        }, { threshold: 0.1 });
+                        observer.observe(mainBtn);
+                        window.addEventListener('resize', () => {
+                            update();
+                            // Re-evaluate visibility if mainBtn is not in view
+                            if (mainBtn) {
+                                const rect = mainBtn.getBoundingClientRect();
+                                const inView = rect.top >= 0 && rect.bottom <= (window.innerHeight || document.documentElement.clientHeight);
+                                showFooter = !inView && isMobile;
+                            }
+                        });
+                    "
+                    class="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-[#0f0218] via-[#0f0218]/90 to-transparent px-4 py-3 flex justify-center shadow-2xl"
+                    x-show="showFooter"
+                    style="display: none;"
+                >
+                    <flux:button variant="primary" href="{{ route('checkout') }}" class="cart-button-primary flex items-center justify-center gap-2 px-8 py-4 text-lg font-semibold w-full max-w-md">
+                        <flux:icon.credit-card class="h-5 w-5" />
+                        Terus ke bayaran
+                    </flux:button>
+                </div>
         </div>
 
         <div style="background: rgba(0,0,0,0.25); border-top: 1px solid rgba(255,255,255,0.1); padding: 0.6rem 1rem; font-size: 0.8rem; color: rgba(255,255,255,0.7); text-align: center; margin-top: 1rem;">

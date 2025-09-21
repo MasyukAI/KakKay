@@ -33,7 +33,7 @@
                         </div>
                         <div class="grid gap-4 sm:grid-cols-3">
                             @php($heroStats = [
-                                ['label' => 'Sesi Bimbingan Peribadi', 'value' => '1K+'],
+                                ['label' => 'Sesi One to One', 'value' => '1K+'],
                                 ['label' => 'Acara Berkumpulan', 'value' => '300+'],
                                 ['label' => 'Ujian Karakter KKDI', 'value' => '250K+'],
                             ])
@@ -61,7 +61,7 @@
                                     <div class="flex items-center gap-3">
                                         <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-lg">💬</span>
                                         <div>
-                                            <div class="font-semibold text-white">“Biar usaha kita kecil, tapi hati kita besar.”</div>
+                                            <div class="font-semibold text-white sm:w-8/12">“Biar usaha kita kecil, tapi hati kita besar.”</div>
                                             <div class="text-xs text-white/60">– Kak Kay</div>
                                         </div>
                                     </div>
@@ -165,7 +165,7 @@
                                style="transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); transform: translateY(0px) scale(1); filter: brightness(1);" onmouseover="this.style.transform='translateY(-3px) scale(1.05)'; this.style.boxShadow='0 15px 35px rgba(255,105,180,0.4), 0 5px 15px rgba(0,0,0,0.3)'; this.style.filter='brightness(1.1)';" onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow=''; this.style.filter='brightness(1)';"
                             >
                                 <flux:icon.arrow-right class="h-5 w-5" />
-                                Nak usha detail
+                                Jom usha detail
                             </a>
                         </div>
                         <div class="grid gap-4 text-sm text-white/75 sm:grid-cols-2">
@@ -204,7 +204,7 @@
                                     <h3 class="text-xl font-semibold text-white">{{ $product->name }}</h3>
                                     <p class="line-clamp-3 text-sm text-white/70">{{ $product->description }}</p>
                                     <div class="inline-flex items-center gap-2 text-sm font-semibold text-pink-200">
-                                        Selak sekarang
+                                        Selak detail
                                         <flux:icon.arrow-right class="h-4 w-4" />
                                     </div>
                                 </div>

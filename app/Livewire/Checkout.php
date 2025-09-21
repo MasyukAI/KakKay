@@ -97,13 +97,13 @@ class Checkout extends Component implements HasSchemas
                                 TextInput::make('name')
                                     ->label('Nama Penuh')
                                     ->required()
-                                    ->placeholder('Nama penuh anda')
+                                    ->placeholder('Nama penuh awak')
                                     ->maxLength(255)
                                     ->extraAttributes(['class' => 'checkout-sm']),
 
                                 TextInput::make('company_name')
-                                    ->label('Nama Syarikat (Opsional)')
-                                    ->placeholder('Nama syarikat')
+                                    ->label('Nama Syarikat')
+                                    ->placeholder('Nama syarikat (jika berkenaan)')
                                     ->maxLength(255)
                                     ->extraAttributes(['class' => 'checkout-sm']),
 
@@ -128,18 +128,19 @@ class Checkout extends Component implements HasSchemas
 
                                 PhoneInput::make('phone')
                                     ->defaultCountry('MY')
+                                    ->initialCountry('MY')
                                     ->label('Nombor Telefon')
                                     ->required()
-                                    ->placeholder('Nombor telefon anda')
+                                    ->placeholder('Nombor telefon awak')
                                     ->extraAttributes(['class' => 'checkout-sm']),
 
                                 Select::make('country')
                                     ->label('Negara')
                                     ->options(['Malaysia' => 'Malaysia'])
                                     ->default('Malaysia')
-                                    ->disabled()
                                     ->columnStart(1)
-                                    ->required(),
+                                    ->required()
+                                    ->disabled(),
 
                                 Select::make('state')
                                     ->label('Negeri')
