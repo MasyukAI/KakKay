@@ -122,7 +122,7 @@ class Checkout extends Component implements HasSchemas
                                     ->live()
                                     ->required()
                                     ->same('email')
-                                    ->placeholder('Sila masukkan semula alamat email anda')
+                                    ->placeholder('Sila masukkan semula alamat email')
                                     ->maxLength(255)
                                     ->extraAttributes(['class' => 'checkout-sm']),
 
@@ -131,7 +131,7 @@ class Checkout extends Component implements HasSchemas
                                     ->initialCountry('MY')
                                     ->label('Nombor Telefon')
                                     ->required()
-                                    ->placeholder('Nombor telefon awak')
+                                    ->placeholder('Nombor telefon')
                                     ->extraAttributes(['class' => 'checkout-sm']),
 
                                 Select::make('country')
@@ -148,6 +148,7 @@ class Checkout extends Component implements HasSchemas
                                     ->required()
                                     ->searchable()
                                     ->placeholder('Pilih negeri')
+                                    ->searchPrompt('Taip untuk mencari negeri')
                                     ->live()
                                     ->afterStateUpdated(function ($state, callable $set) {
                                         $set('district', null);
@@ -156,6 +157,7 @@ class Checkout extends Component implements HasSchemas
 
                                 Select::make('district')
                                     ->label('Daerah')
+                                    ->searchPrompt('Taip untuk mencari daerah')
                                     ->options(function (callable $get) {
                                         $stateId = $get('state');
                                         if (! $stateId) {
@@ -188,7 +190,8 @@ class Checkout extends Component implements HasSchemas
                                     ->integer()
                                     ->label('Poskod')
                                     ->placeholder('Contoh: 40000')
-                                    ->maxLength(10)
+                                    ->length(5)
+                                    ->mask('99999')
                                     ->extraAttributes(['class' => 'checkout-sm']),
 
                             ]),
@@ -202,27 +205,11 @@ class Checkout extends Component implements HasSchemas
                             ->extraAttributes(['class' => 'checkout-sm']),
 
                         TextInput::make('address2')
-                            ->label('Alamat Baris 2 (Opsional)')
+                            ->label('Alamat Baris 2')
                             ->placeholder('Taman, kawasan, dll')
                             ->maxLength(255)
                             ->columnSpanFull()
                             ->extraAttributes(['class' => 'checkout-sm']),
-                        Grid::make()
-                            ->columns(2)
-                            ->extraAttributes(['class' => 'checkout-benefits'])
-                            ->schema([
-                                Placeholder::make('secure_payment')
-                                    ->label('Pembayaran Dilindungi')
-                                    ->content('Transaksi disulitkan sepenuhnya bersama penyedia pembayaran bertauliah kami.')
-                                    ->extraAttributes(['class' => 'checkout-benefit'])
-                                    ->columnSpan(1),
-                                Placeholder::make('tracked_delivery')
-                                    ->label('Penghantaran Dipantau')
-                                    ->content('Status pesanan diutus melalui email serta SMS sebaik penghantaran dibuat.')
-                                    ->extraAttributes(['class' => 'checkout-benefit'])
-                                    ->columnSpan(1),
-                            ])
-                            ->columnSpanFull(),
                     ]),
 
                 Section::make('Kaedah Pembayaran')

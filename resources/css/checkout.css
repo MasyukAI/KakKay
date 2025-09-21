@@ -215,8 +215,11 @@
 
 
 .checkout-container .fi-select-input:disabled,
+.checkout-container .fi-input.iti__tel-input,
 .checkout-container .fi-select-input,
 .checkout-container .fi-select-input-value-label {
+    border-radius: var(--radius-lg);
+    background: #fff;
     color: #000000 !important;
 }
 
@@ -225,6 +228,16 @@
       &:disabled {
         -webkit-text-fill-color: black;
       }
+    }
+}
+
+.fi-select-input {
+    & .fi-disabled {
+        & .fi-select-input-placeholder {
+            @media (prefers-color-scheme: dark) {
+                color: var(--gray-800);
+            }
+        }
     }
 }
 

@@ -92,9 +92,11 @@
                                     </div>
 
                                     <flux:button type="submit" variant="primary" class="cart-button-primary flex w-full items-center justify-center gap-2 px-6 py-4 text-lg font-semibold" wire:loading.attr="disabled">
-                                        <div wire:loading.remove class="flex items-center justify-center gap-2">
-                                            <flux:icon.credit-card class="h-5 w-5" />
-                                            Bayar Sekarang
+                                        <div wire:loading.remove class="flex flex-row items-center justify-center gap-2 min-w-0">
+                                            <span class="flex flex-row items-center gap-2 min-w-0">
+                                                <flux:icon.credit-card class="h-5 w-5 flex-shrink-0" />
+                                                <span class="truncate">Bayar Sekarang</span>
+                                            </span>
                                         </div>
                                         <div wire:loading class="flex items-center justify-center gap-3">
                                             <svg class="h-5 w-5 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -112,12 +114,12 @@
                             </div>
 
                             <div class="rounded-[32px] border border-white/10 bg-white/5 p-6 backdrop-blur-xl text-sm text-white/75">
-                                <div class="flex items-center gap-3">
+                                {{-- <div class="flex items-center gap-3">
                                     <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-lg">✅</span>
                                     <div>Sokongan selepas jualan tersedia 7 hari seminggu. Kami bantu sehingga buku selamat di tangan anda.</div>
-                                </div>
+                                </div> --}}
                                 <div class="mt-6 flex items-center justify-center rounded-2xl border border-white/10 bg-white/5 p-4">
-                                    <img src="{{ asset('storage/images/fpx.png') }}" alt="Payment methods" class="h-10 object-contain" />
+                                    <img src="{{ asset('storage/images/fpx.png') }}" alt="Payment methods" class="h-10 object-contain " />
                                 </div>
                             </div>
                         </aside>
