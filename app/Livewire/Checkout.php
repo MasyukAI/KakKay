@@ -98,7 +98,7 @@ class Checkout extends Component implements HasSchemas
                                 TextInput::make('name')
                                     ->label('Nama Penuh')
                                     ->required()
-                                    ->placeholder('Nama penuh awak')
+                                    ->placeholder('Nama penuh')
                                     ->maxLength(255)
                                     ->extraAttributes(['class' => 'checkout-sm']),
 
