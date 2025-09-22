@@ -132,9 +132,9 @@
                                             </div>
                                         </div>
                                         <hr class="my-6 border-white/15">
-                                        <div class="text-right">
+                                        <div class="flex items-center justify-end gap-2">
                                             <span class="text-xs uppercase">Jumlah</span>
-                                            <span class="text-sm font-semibold text-white block">{{ $item['subtotal_formatted'] ?? \Akaunting\Money\Money::MYR($item['subtotal'])->format() }}</span>
+                                            <span class="text-sm font-semibold text-white">{{ $item['subtotal_formatted'] ?? \Akaunting\Money\Money::MYR($item['subtotal'])->format() }}</span>
                                         </div>
                                     </div>
                                     {{-- Removed extra divider between cards --}}

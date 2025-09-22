@@ -110,7 +110,7 @@ class Checkout extends Component implements HasSchemas
                                 TextInput::make('email')
                                     ->label('Alamat Email')
                                     ->email()
-                                    ->live()
+                                    ->live(onBlur: true)
                                     ->required()
                                     ->placeholder('nama@email.com')
                                     ->maxLength(255)
@@ -119,7 +119,7 @@ class Checkout extends Component implements HasSchemas
                                 TextInput::make('email_confirmation')
                                     ->label('Sahkan Alamat Email')
                                     ->email()
-                                    ->live()
+                                    ->live(onBlur: true)
                                     ->required()
                                     ->same('email')
                                     ->placeholder('Sila masukkan semula alamat email')
@@ -212,50 +212,50 @@ class Checkout extends Component implements HasSchemas
                             ->extraAttributes(['class' => 'checkout-sm']),
                     ]),
 
-                Section::make('Kaedah Pembayaran')
-                    ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                Select::make('payment_group')
-                                    ->label('Kategori Pembayaran')
-                                    ->options(fn () => $this->getPaymentGroupOptions())
-                                    ->required()
-                                    ->live()
-                                    ->extraAttributes(['class' => 'checkout-select'])
-                                    ->afterStateHydrated(function (?string $state, callable $set): void {
-                                        $defaultGroup = $state ?? $this->selectedPaymentGroup ?? $this->determineDefaultGroup();
-                                        if ($defaultGroup) {
-                                            $set('payment_group', $defaultGroup);
-                                            $this->selectPaymentGroup($defaultGroup);
-                                        }
-                                    })
-                                    ->afterStateUpdated(function (?string $state, callable $set): void {
-                                        $this->selectPaymentGroup($state);
+                // Section::make('Kaedah Pembayaran')
+                //     ->schema([
+                //         Grid::make(2)
+                //             ->schema([
+                //                 Select::make('payment_group')
+                //                     ->label('Kategori Pembayaran')
+                //                     ->options(fn () => $this->getPaymentGroupOptions())
+                //                     ->required()
+                //                     ->live()
+                //                     ->extraAttributes(['class' => 'checkout-select'])
+                //                     ->afterStateHydrated(function (?string $state, callable $set): void {
+                //                         $defaultGroup = $state ?? $this->selectedPaymentGroup ?? $this->determineDefaultGroup();
+                //                         if ($defaultGroup) {
+                //                             $set('payment_group', $defaultGroup);
+                //                             $this->selectPaymentGroup($defaultGroup);
+                //                         }
+                //                     })
+                //                     ->afterStateUpdated(function (?string $state, callable $set): void {
+                //                         $this->selectPaymentGroup($state);
 
-                                        $defaultMethod = $this->determineDefaultMethod($state);
-                                        $set('payment_method', $defaultMethod);
+                //                         $defaultMethod = $this->determineDefaultMethod($state);
+                //                         $set('payment_method', $defaultMethod);
 
-                                        if ($defaultMethod) {
-                                            $this->selectPaymentMethod($defaultMethod);
-                                        }
-                                    }),
-                                Select::make('payment_method')
-                                    ->label('Kaedah Pembayaran')
-                                    ->options(fn (callable $get) => $this->getPaymentMethodOptions($get('payment_group')))
-                                    ->required()
-                                    ->searchable()
-                                    ->live()
-                                    ->extraAttributes(['class' => 'checkout-select'])
-                                    ->afterStateHydrated(function (?string $state): void {
-                                        if ($state) {
-                                            $this->selectPaymentMethod($state);
-                                        }
-                                    })
-                                    ->afterStateUpdated(function (?string $state): void {
-                                        $this->selectPaymentMethod($state);
-                                    }),
-                            ]),
-                    ]),
+                //                         if ($defaultMethod) {
+                //                             $this->selectPaymentMethod($defaultMethod);
+                //                         }
+                //                     }),
+                //                 Select::make('payment_method')
+                //                     ->label('Kaedah Pembayaran')
+                //                     ->options(fn (callable $get) => $this->getPaymentMethodOptions($get('payment_group')))
+                //                     ->required()
+                //                     ->searchable()
+                //                     ->live()
+                //                     ->extraAttributes(['class' => 'checkout-select'])
+                //                     ->afterStateHydrated(function (?string $state): void {
+                //                         if ($state) {
+                //                             $this->selectPaymentMethod($state);
+                //                         }
+                //                     })
+                //                     ->afterStateUpdated(function (?string $state): void {
+                //                         $this->selectPaymentMethod($state);
+                //                     }),
+                //             ]),
+                //     ]),
             ])
             ->statePath('data');
     }

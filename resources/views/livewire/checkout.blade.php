@@ -103,7 +103,6 @@
                                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                             </svg>
-                                            Memproses...
                                         </div>
                                     </flux:button>
 
@@ -134,3 +133,33 @@
     </div>
 </div>
 </div>
+
+<!-- Add this script to your checkout.blade.php -->
+// Place this in your checkout.blade.php, after the form
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const originalScrollIntoView = Element.prototype.scrollIntoView;
+
+    Element.prototype.scrollIntoView = function(options) {
+        // Only override if options is an object (modern browsers)
+        if (typeof options === 'object' && options !== null) {
+            // Force left to current scroll, but allow vertical scroll
+            const rect = this.getBoundingClientRect();
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            window.scrollTo({
+                top: rect.top + scrollTop - 100, // adjust offset for header if needed
+                left: window.pageXOffset || document.documentElement.scrollLeft,
+                behavior: options.behavior || 'smooth'
+            });
+        } else {
+            // fallback to default
+            originalScrollIntoView.call(this, options);
+        }
+    };
+
+    // Restore original on page unload
+    window.addEventListener('beforeunload', function() {
+        Element.prototype.scrollIntoView = originalScrollIntoView;
+    });
+});
+</script>
