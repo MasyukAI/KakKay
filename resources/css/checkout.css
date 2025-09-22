@@ -1,7 +1,7 @@
 /* Checkout form styling - Clean and Beautiful */
-.checkout-page {
+/* .checkout-page {
     min-height: 100vh;
-}
+} */
 
 /* Remove excessive outer styling - keep it clean */
 .checkout-container .fi-sc {
@@ -444,4 +444,47 @@
             box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
         }
     }
+}
+
+/* Fix hover border clipping */
+.cart-summary-card {
+    /* Ensure proper border rendering during transforms */
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    /* Add small margin to prevent border clipping */
+    margin-top: 3px;
+}
+
+.cart-summary-card:hover {
+    /* Prevent border clipping during hover transforms */
+    transform: translateY(-3px) translateZ(0);
+}
+
+/* Add padding to parent container to accommodate the margin */
+.checkout-container aside {
+    padding-top: 3px;
+}
+
+.checkout-container .fi-section {
+    /* ...existing styles... */
+    /* Add small margin to prevent border clipping */
+    margin-top: 6px;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+.checkout-container .fi-section:hover {
+    /* Reduce transform to prevent clipping */
+    transform: translateY(-3px) translateZ(0); /* Reduced from -6px to -4px */
+}
+
+/* Add padding to form container to accommodate the margins */
+.checkout-container form {
+    padding-top: 3px;
+}
+
+/* Global scroll offset for anchor and scrollIntoView jumps (e.g. for validation errors) */
+[id] {
+    scroll-margin-top: 100px;
+    scroll-margin-left: 32px;
 }

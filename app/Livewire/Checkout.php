@@ -8,6 +8,7 @@ use App\Services\CheckoutService;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
@@ -489,7 +490,17 @@ class Checkout extends Component implements HasSchemas
 
     public function processCheckout()
     {
-        $formData = $this->form->getState();
+        try {
+            $formData = $this->form->getState();
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Form validation failed - show notification
+            Notification::make()
+                ->title('Validation Error')
+                ->body('Sila lengkapkan semua maklumat yang diperlukan dengan betul.')
+                ->danger()
+                ->send();
+            throw $e;
+        }
 
         try {
             $checkoutService = app(CheckoutService::class);

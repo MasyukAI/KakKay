@@ -1,5 +1,4 @@
-<div class="checkout-page">
-<div class="checkout-container relative min-h-screen overflow-hidden bg-[#0f0218] text-white">
+<div class="checkout-container relative overflow-hidden min-h-screen bg-[#0f0218] text-white">
     <div class="pointer-events-none absolute -top-48 -left-40 h-[520px] w-[520px] rounded-full bg-gradient-to-br from-pink-500/35 via-purple-500/25 to-rose-500/40 blur-3xl"></div>
     <div class="pointer-events-none absolute top-1/2 -right-32 h-[520px] w-[520px] -translate-y-1/2 rounded-full bg-gradient-to-br from-fuchsia-500/25 via-rose-500/25 to-orange-400/35 blur-3xl"></div>
     <div class="pointer-events-none absolute -bottom-60 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-gradient-to-br from-purple-600/30 via-indigo-500/20 to-pink-400/30 blur-3xl"></div>
@@ -37,7 +36,7 @@
             </div>
         </section>
 
-        <section class="mt-16 pb-24">
+        <section id="form" class="mt-14 pb-24">
             <div class="mx-auto max-w-7xl px-6 sm:px-8">
                 <form wire:submit="processCheckout" class="relative grid gap-10 lg:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[minmax(0,1fr)_400px]">
                         <div class="min-w-0">
@@ -131,5 +130,4 @@
             <x-footer />
         </div>
     </div>
-</div>
 </div>

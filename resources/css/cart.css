@@ -225,6 +225,7 @@ html, body {
 }
 
 .cart-item-card {
+    margin-top: 3px;
     position: relative;
     scroll-snap-align: start;
     border-radius: calc(var(--radius) * 1.6);

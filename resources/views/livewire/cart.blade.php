@@ -13,7 +13,7 @@
         </x-brand-header>
 
         <main class="space-y-12 pb-24 sm:space-y-16">
-            <section class="pt-20">
+            <section class="pt-19.5">
                 <div class="mx-auto max-w-7xl px-6 sm:px-8">
                     <div class="relative mx-auto max-w-3xl">
                         <div class="absolute left-6 right-6 top-6 block h-px bg-white/15"></div>
