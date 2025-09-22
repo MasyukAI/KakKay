@@ -17,5 +17,33 @@
             @livewire('notifications')
         </div>
         @filamentScripts
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const originalScrollIntoView = Element.prototype.scrollIntoView;
+
+                Element.prototype.scrollIntoView = function(options) {
+                    // Only override if options is an object (modern browsers)
+                    if (typeof options === 'object' && options !== null) {
+                        // Force left to current scroll, but allow vertical scroll
+                        const rect = this.getBoundingClientRect();
+                        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                        window.scrollTo({
+                            top: rect.top + scrollTop - 100, // adjust offset for header if needed
+                            left: window.pageXOffset || document.documentElement.scrollLeft,
+                            behavior: options.behavior || 'smooth'
+                        });
+                    } else {
+                        // fallback to default
+                        originalScrollIntoView.call(this, options);
+                    }
+                };
+
+                // Restore original on page unload
+                window.addEventListener('beforeunload', function() {
+                    Element.prototype.scrollIntoView = originalScrollIntoView;
+                });
+            });
+        </script>
     </body>
 </html>

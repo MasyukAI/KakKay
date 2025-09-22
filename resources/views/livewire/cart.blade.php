@@ -44,17 +44,17 @@
                 <section class="pt-10">
                     <div class="mx-auto max-w-5xl px-6 sm:px-8">
                         <div class="rounded-[34px] border border-white/10 bg-white/5 px-6 py-12 text-center backdrop-blur-xl shadow-[0_35px_110px_rgba(15,3,37,0.45)] sm:px-12">
-                            <span class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-5 py-2 text-xs font-semibold uppercase tracking-[0.32em] text-white/70">Ritual cinta paling chill</span>
+                            <span class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-5 py-2 text-xs font-semibold uppercase tracking-[0.32em] text-white/70">Zon cinta paling chill</span>
                             <h1 class="mt-6 font-display text-4xl leading-tight sm:text-5xl">Troli awak masih sunyi 💫</h1>
-                            <p class="mt-4 text-base leading-relaxed text-white/80 sm:text-lg">Belum terlambat nak cari buku manja. Pilih satu yang buat hati senyum, cuba ritual malam ini, dan tengok macam mana vibe rumah terus hangat.</p>
+                            <p class="mt-4 text-base leading-relaxed text-white/80 sm:text-lg">Belum terlambat nak cari buku manja. Pilih satu yang buat hati senyum, cuba aktiviti malam ini, dan tengok macam mana vibe rumah terus hangat.</p>
                             <div class="mt-8 flex flex-wrap justify-center gap-4">
                                 <flux:button variant="primary" href="{{ route('home') }}" class="cart-button-primary flex items-center justify-center gap-2 px-8 py-4 text-lg">
                                     <flux:icon.sparkles class="h-5 w-5" />
-                                    Jom pilih buku fun
+                                    Jom pilih buku
                                 </flux:button>
-                                <a href="#recommended" class="rounded-full border border-white/25 px-8 py-3 text-sm font-semibold uppercase tracking-[0.28em] text-white/70 transition hover:border-white/60 hover:text-white">
+                                {{-- <a href="#recommended" class="rounded-full border border-white/25 px-8 py-3 text-sm font-semibold uppercase tracking-[0.28em] text-white/70 transition hover:border-white/60 hover:text-white">
                                     Lihat cadangan Kak Kay
-                                </a>
+                                </a> --}}
                             </div>
                         </div>
                     </div>

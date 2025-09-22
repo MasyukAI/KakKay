@@ -1,7 +1,7 @@
-<div class="relative min-h-screen overflow-hidden bg-[#0f0218] text-white">
+<div class="relative min-h-screen bg-[#0f0218] text-white">
     <div class="pointer-events-none absolute -top-48 -left-32 h-[520px] w-[520px] rounded-full bg-gradient-to-br from-pink-500/40 via-purple-500/25 to-rose-500/35 blur-3xl"></div>
     <div class="pointer-events-none absolute top-1/4 -right-36 h-[540px] w-[540px] rounded-full bg-gradient-to-br from-fuchsia-500/25 via-rose-500/25 to-orange-400/35 blur-3xl"></div>
-    <div class="pointer-events-none absolute -bottom-64 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-gradient-to-br from-purple-600/30 via-indigo-500/20 to-pink-400/30 blur-3xl"></div>
+    <div class="pointer-events-none absolute bottom-0 left-1/2 h-[320px] w-[520px] -translate-x-1/2 rounded-full bg-gradient-to-br from-purple-600/30 via-indigo-500/20 to-pink-400/30 blur-3xl"></div>
 
     <div class="relative z-10">
         <x-brand-header :cart-quantity="$cartQuantity ?? null" />
@@ -19,7 +19,7 @@
                         <p class="max-w-2xl text-lg leading-relaxed text-white/85 sm:text-xl">
                             Kau tahu tak, wanita ni bukan sekadar pelengkap je… tapi dia boleh jadi punca perubahan. Suara dia mampu bergema, langkah dia boleh bukak jalan. Dalam yakin tu ada kekuatan, dalam lembut tu ada keberanian. Dan setiap wanita sebenarnya layak berdiri bangga, bina dunia dengan jiwa dia sendiri.</p>
                         <div class="flex flex-wrap items-center gap-4">
-                            <a href="/{{ $featuredProduct->slug }}" class="btn primary cart-button-primary flex items-center gap-3 rounded-full px-7 py-3 text-base font-semibold"
+                            <a href="/#featured" class="btn primary cart-button-primary flex items-center gap-3 rounded-full px-7 py-3 text-base font-semibold"
                                 style="transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); transform: translateY(0px) scale(1); filter: brightness(1);" onmouseover="this.style.transform='translateY(-3px) scale(1.05)'; this.style.boxShadow='0 15px 35px rgba(255,105,180,0.4), 0 5px 15px rgba(0,0,0,0.3)'; this.style.filter='brightness(1.1)';" onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow=''; this.style.filter='brightness(1)';"
                             >
                                 <span>Buku Panas Dari Oven</span>
@@ -131,7 +131,7 @@
             </section>
 
             <!-- FEATURED BOOK -->
-            <section id="featured">
+            <section id="featured" class="scroll-mt-10">
                 <div class="mx-auto flex max-w-6xl flex-col gap-12 px-6 sm:px-8 lg:flex-row lg:items-center">
                     <div class="relative flex-1">
                         <div class="absolute -inset-8 rounded-[40px] bg-gradient-to-br from-pink-400/35 via-rose-500/25 to-purple-500/35 blur-3xl"></div>
@@ -183,7 +183,7 @@
             </section>
 
             <!-- LIBRARY -->
-            <section id="library" class="scroll-mt-40">
+            <section id="library" class="scroll-mt-10">
                 <div class="mx-auto max-w-7xl px-6 sm:px-8">
                     <div class="mx-auto max-w-3xl text-center">
                         <h2 class="font-display text-3xl text-white sm:text-4xl">Rak cinta Kak Kay</h2>

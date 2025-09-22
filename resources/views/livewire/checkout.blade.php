@@ -37,7 +37,7 @@
             </div>
         </section>
 
-        <section class="pt-16 pb-24">
+        <section class="mt-16 pb-24">
             <div class="mx-auto max-w-7xl px-6 sm:px-8">
                 <form wire:submit="processCheckout" class="relative grid gap-10 lg:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[minmax(0,1fr)_400px]">
                         <div class="min-w-0">
@@ -133,33 +133,3 @@
     </div>
 </div>
 </div>
-
-<!-- Add this script to your checkout.blade.php -->
-// Place this in your checkout.blade.php, after the form
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const originalScrollIntoView = Element.prototype.scrollIntoView;
-
-    Element.prototype.scrollIntoView = function(options) {
-        // Only override if options is an object (modern browsers)
-        if (typeof options === 'object' && options !== null) {
-            // Force left to current scroll, but allow vertical scroll
-            const rect = this.getBoundingClientRect();
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            window.scrollTo({
-                top: rect.top + scrollTop - 100, // adjust offset for header if needed
-                left: window.pageXOffset || document.documentElement.scrollLeft,
-                behavior: options.behavior || 'smooth'
-            });
-        } else {
-            // fallback to default
-            originalScrollIntoView.call(this, options);
-        }
-    };
-
-    // Restore original on page unload
-    window.addEventListener('beforeunload', function() {
-        Element.prototype.scrollIntoView = originalScrollIntoView;
-    });
-});
-</script>

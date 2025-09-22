@@ -42,6 +42,7 @@
     --grad-card: linear-gradient(135deg, rgba(255,95,162,.12), rgba(224,17,95,.20));
     --grad-button: linear-gradient(135deg, var(--purple), var(--ruby));
     --grad-ring: conic-gradient(from 0deg, var(--pink), var(--magenta), var(--ruby), var(--purple), var(--pink));
+    --tw-ring-color: yellow;
 }
 
 @keyframes pulse-border {
