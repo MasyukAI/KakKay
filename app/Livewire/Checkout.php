@@ -490,17 +490,7 @@ class Checkout extends Component implements HasSchemas
 
     public function processCheckout()
     {
-        try {
-            $formData = $this->form->getState();
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            // Form validation failed - show notification
-            Notification::make()
-                ->title('Validation Error')
-                ->body('Sila lengkapkan semua maklumat yang diperlukan dengan betul.')
-                ->danger()
-                ->send();
-            throw $e;
-        }
+        $formData = $this->form->getState();
 
         try {
             $checkoutService = app(CheckoutService::class);
