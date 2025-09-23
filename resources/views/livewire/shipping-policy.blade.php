@@ -20,7 +20,7 @@ class extends Component {
 
     <main class="pb-24">
         <div class="mx-auto max-w-7xl space-y-24 px-6 sm:px-8">
-        <x-policy-hero eyebrow="Dasar Penghantaran" chip="Kemaskini 2025" title="Penghantaran & Pengembalian Kak Kay" subtitle="Kami pastikan setiap buku, modul, dan hadiah digital sampai dengan selamat — terus ke pintu rumah anda.">
+        <x-policy-hero eyebrow="Dasar Penghantaran" chip="Kemaskini 2025" title="Pantas, Terjamin, Sampai Tujuan" subtitle="Kami pastikan setiap buku, modul, dan hadiah digital sampai dengan selamat — terus ke pintu rumah anda.">
             <div class="policy-highlight-card">
                 <span class="text-xl">🚚</span>
                 <div>
@@ -32,14 +32,14 @@ class extends Component {
                 <span class="text-xl">📦</span>
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-[0.32em] text-white/70">Pembungkusan</p>
-                    <p class="text-white/85 text-sm">Setiap buku dibalut kalis air</p>
+                    <p class="text-white/85 text-sm">Setiap buku dibalut kemas</p>
                 </div>
             </div>
             <div class="policy-highlight-card">
                 <span class="text-xl">💬</span>
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-[0.32em] text-white/70">Sokongan</p>
-                    <p class="text-white/85 text-sm">WhatsApp dalam 24 jam</p>
+                    <p class="text-white/85 text-sm">Email dalam 24 jam</p>
                 </div>
             </div>
         </x-policy-hero>
@@ -80,7 +80,7 @@ class extends Component {
                     <span class="policy-chip">Penghantaran Seluruh Malaysia</span>
                 </div>
                 <p class="text-base leading-relaxed text-white/80">
-                    Pesanan diproses dalam 24 jam bekerja. Buku dibungkus kalis air dan dihantar menggunakan rakan logistik yang dipercayai untuk melindungi kandungan daripada kerosakan.
+                    Pesanan diproses dalam 24 jam bekerja. Buku dibungkus kemas dan dihantar menggunakan rakan logistik yang dipercayai untuk melindungi kandungan daripada kerosakan.
                 </p>
                 <div class="grid gap-4 md:grid-cols-2">
                     <div class="policy-mini-card">
@@ -109,38 +109,20 @@ class extends Component {
                 </div>
                 <ol class="list-decimal space-y-3 pl-5 text-base leading-relaxed text-white/75">
                     <li><strong>Pengesahan Pesanan:</strong> Pesanan diproses dalam masa 24 jam selepas pembayaran disahkan.</li>
-                    <li><strong>Pembungkusan Premium:</strong> Setiap buku dibalut menggunakan bahan kalis air dan penyerap hentakan.</li>
+                    <li><strong>Pembungkusan Premium:</strong> Setiap buku dibalut menggunakan bahan kemas dan penyerap hentakan.</li>
                     <li><strong>Nombor Penjejakan:</strong> Kami hantar nombor tracking melalui e-mel atau WhatsApp selepas parcel diposkan.</li>
                     <li><strong>Penghantaran:</strong> Penghantaran dilakukan pada hari bekerja (Isnin - Jumaat, kecuali cuti umum).</li>
                 </ol>
             </div>
 
-            <div class="policy-card space-y-6">
+            <div class="policy-card space-y-4">
                 <div class="flex flex-wrap items-center justify-between gap-4">
-                    <h2 class="font-display text-3xl text-white">🔁 Pengembalian &amp; Pertukaran</h2>
-                    <span class="policy-chip">Kami Jaga Kepuasan Anda</span>
+                    <h2 class="font-display text-3xl text-white">ℹ️ Pemulangan &amp; Pertukaran</h2>
+                    <span class="policy-chip">Rujuk Dasar Pemulangan</span>
                 </div>
                 <p class="text-base leading-relaxed text-white/80">
-                    Jika parcel anda tiba dalam keadaan rosak atau cacat, hubungi kami segera. Kami akan bantu dengan penggantian baharu atau pengembalian bergantung kepada situasi.
+                    Untuk garis panduan lengkap mengenai pemulangan, pertukaran, dan tindakan ketika parcel rosak, sila rujuk <a href="/refund-policy" class="text-pink-200 underline">Dasar Pemulangan</a>. Kami himpunkan semua langkah, syarat, dan borang sokongan di sana supaya prosesnya kekal jelas dan mudah.
                 </p>
-                <div class="grid gap-4 md:grid-cols-2">
-                    <div class="policy-mini-card">
-                        <h3 class="text-white font-semibold">📝 Syarat Pengembalian</h3>
-                        <ul class="space-y-1 text-sm text-white/75">
-                            <li>Permohonan dibuat dalam 3 hari bekerja selepas penerimaan</li>
-                            <li>Sertakan foto/video sebagai bukti kerosakan</li>
-                            <li>Item perlu berada dalam keadaan asal</li>
-                        </ul>
-                    </div>
-                    <div class="policy-mini-card">
-                        <h3 class="text-white font-semibold">📦 Cara Memohon</h3>
-                        <ol class="list-decimal space-y-1 pl-5 text-sm text-white/75">
-                            <li>Hubungi kami melalui WhatsApp @kakkay.official</li>
-                            <li>Sertakan nombor pesanan dan bukti kerosakan</li>
-                            <li>Kami sediakan label penghantaran balikan jika diperlukan</li>
-                        </ol>
-                    </div>
-                </div>
             </div>
         </section>
         </div>

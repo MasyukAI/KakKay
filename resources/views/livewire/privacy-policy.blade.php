@@ -44,89 +44,102 @@ class extends Component {
             </div>
         </x-policy-hero>
 
-        <section class="space-y-10">
-            <div class="policy-card space-y-4">
-                <h2 class="font-display text-3xl text-white">Maklumat Yang Kami Kumpul</h2>
-                <div class="grid gap-4 md:grid-cols-2">
-                    <div class="policy-mini-card">
-                        <h3 class="text-white font-semibold">Maklumat Peribadi</h3>
-                        <ul class="space-y-1 text-sm text-white/75">
-                            <li>Nama penuh</li>
-                            <li>Alamat e-mel & nombor telefon</li>
-                            <li>Alamat penghantaran & pengebilan</li>
-                            <li>Maklumat pembayaran (diproses secara selamat)</li>
-                        </ul>
-                    </div>
-                    <div class="policy-mini-card">
-                        <h3 class="text-white font-semibold">Maklumat Automatik</h3>
-                        <ul class="space-y-1 text-sm text-white/75">
-                            <li>Alamat IP & jenis pelayar</li>
-                            <li>Peranti yang digunakan</li>
-                            <li>Halaman yang dilawati & tempoh lawatan</li>
-                            <li>Cookies untuk memperibadikan pengalaman</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
 
-            <div class="policy-card space-y-4">
-                <h2 class="font-display text-3xl text-white">Bagaimana Kami Menggunakan Data Anda</h2>
-                <ul class="space-y-2 text-sm text-white/80">
-                    <li>Memproses dan menghantar pesanan yang anda buat.</li>
-                    <li>Menghantar produk digital (pautan muat turun) dan fizikal.</li>
-                    <li>Berhubung mengenai pesanan, sokongan dan jaminan.</li>
-                    <li>Menyampaikan kemas kini produk dan promosi (jika anda bersetuju).</li>
-                    <li>Menambah baik laman web dan pengalaman pembelian.</li>
-                    <li>Mematuhi kewajipan undang-undang yang berkenaan.</li>
-                </ul>
-            </div>
 
-            <div class="policy-card space-y-4">
-                <h2 class="font-display text-3xl text-white">Perkongsian Maklumat</h2>
-                <p class="text-base leading-relaxed text-white/80">Kami <strong>tidak</strong> menjual atau menyewa data anda. Maklumat hanya dikongsi apabila diperlukan bersama:</p>
-                <ul class="space-y-2 text-sm text-white/80">
-                    <li><strong>Penyedia Perkhidmatan:</strong> Rakan logistik, gateway pembayaran dan pembekal sistem.</li>
-                    <li><strong>Keperluan Undang-undang:</strong> Apabila diwajibkan oleh undang-undang atau untuk melindungi hak kami.</li>
-                    <li><strong>Kebenaran Anda:</strong> Hanya dengan kebenaran eksplisit anda.</li>
-                </ul>
-            </div>
+<section class="space-y-10">
+    <div class="policy-card space-y-4">
+        <p class="text-sm uppercase tracking-[0.28em] text-white/60">Berkuat kuasa: 3 September 2025</p>
+        <p class="text-base leading-relaxed text-white/80">
+            Dasar privasi ini menerangkan bagaimana Kak Kay mengumpul, menggunakan, dan melindungi maklumat peribadi anda semasa anda melawat laman web atau membeli produk kami.
+        </p>
+    </div>
 
-            <div class="policy-card space-y-4">
-                <h2 class="font-display text-3xl text-white">Keselamatan Data</h2>
-                <p class="text-base leading-relaxed text-white/80">Kami melabur dalam teknologi dan prosedur keselamatan untuk menjaga maklumat anda.</p>
-                <ul class="space-y-2 text-sm text-white/80">
-                    <li>Transaksi dilindungi oleh <strong>enkripsi SSL</strong>.</li>
-                    <li>Akses data staf kami adalah terhad & dikawal.</li>
-                    <li>Sistem kami sentiasa dikemas kini dan dipantau.</li>
-                    <li>Pengesanan awal untuk aktiviti mencurigakan.</li>
-                </ul>
-            </div>
+    <div class="policy-card space-y-4">
+        <h2 class="font-display text-3xl text-white">1. Maklumat Yang Kami Kumpul</h2>
+        <div class="space-y-4 text-base leading-relaxed text-white/80">
+            <ul class="list-disc list-inside space-y-2 text-sm text-white/80">
+                <li>Maklumat peribadi seperti nama, e-mel, nombor telefon, dan alamat penghantaran.</li>
+                <li>Butiran pembayaran yang diproses dengan selamat melalui gerbang pembayaran pihak ketiga.</li>
+                <li>Data automatik seperti alamat IP, jenis pelayar, peranti digunakan, dan halaman yang dilawati.</li>
+                <li>Data pilihan yang diberikan secara sukarela seperti testimoni atau maklum balas.</li>
+            </ul>
+        </div>
+    </div>
 
-            <div class="policy-card space-y-4">
-                <h2 class="font-display text-3xl text-white">Hak Anda</h2>
-                <p class="text-base leading-relaxed text-white/80">Anda sentiasa mengawal maklumat peribadi anda. Hubungi kami untuk:</p>
-                <ul class="space-y-2 text-sm text-white/80">
-                    <li>Mengakses data peribadi yang kami simpan.</li>
-                    <li>Memperbetulkan maklumat yang tidak tepat.</li>
-                    <li>Meminta data dipadam (selagi tidak bertentangan dengan undang-undang).</li>
-                    <li>Menarik diri daripada komunikasi pemasaran.</li>
-                    <li>Memfailkan aduan dengan pihak berkuasa perlindungan data.</li>
-                </ul>
-            </div>
+    <div class="policy-card space-y-4">
+        <h2 class="font-display text-3xl text-white">2. Bagaimana Kami Menggunakan Maklumat Anda</h2>
+        <div class="text-base leading-relaxed text-white/80">
+            <ul class="list-disc list-inside space-y-2 text-sm text-white/80">
+                <li>Memproses pesanan, penghantaran, dan akses kepada kandungan digital.</li>
+                <li>Menyediakan sokongan pelanggan dan menjawab pertanyaan.</li>
+                <li>Membina pengalaman yang diperibadikan dan menambah baik laman.</li>
+                <li>Menghantar makluman produk atau promosi apabila anda memberikan kebenaran.</li>
+                <li>Mematuhi keperluan undang-undang serta pencegahan penipuan.</li>
+            </ul>
+        </div>
+    </div>
 
-            <div class="policy-card space-y-6">
-                <div class="flex flex-wrap items-center justify-between gap-4">
-                    <h2 class="font-display text-3xl text-white">Cookies & Analitik</h2>
-                    <span class="policy-chip">Pilihan Anda</span>
-                </div>
-                <p class="text-base leading-relaxed text-white/80">Cookies membantu kami menjejak prestasi laman dan menyesuaikan kandungan. Anda boleh menyahaktifkan cookies melalui tetapan pelayar, tetapi beberapa fungsi mungkin terhad.</p>
-            </div>
+    <div class="policy-card space-y-4">
+        <h2 class="font-display text-3xl text-white">3. Perkongsian Maklumat</h2>
+        <div class="space-y-4 text-base leading-relaxed text-white/80">
+            <ul class="list-disc list-inside space-y-2 text-sm text-white/80">
+                <li>Kami tidak menjual atau menyewa data pelanggan.</li>
+                <li>Data hanya dikongsi dengan penyedia perkhidmatan yang membantu pembayaran, penghantaran, atau sokongan teknologi.</li>
+                <li>Kami akan mendedahkan maklumat apabila diwajibkan oleh undang-undang atau untuk melindungi hak kami.</li>
+                <li>Perkongsian tambahan hanya berlaku dengan kebenaran anda.</li>
+            </ul>
+        </div>
+    </div>
 
-            <div class="policy-card space-y-4">
-                <h2 class="font-display text-3xl text-white">Kemas Kini Dasar</h2>
-                <p class="text-base leading-relaxed text-white/80">Kami mungkin mengemas kini dasar privasi dari semasa ke semasa. Sebarang perubahan akan diumumkan di laman ini dengan tarikh "Berkuat kuasa" yang baharu.</p>
-            </div>
-        </section>
+    <div class="policy-card space-y-4">
+        <h2 class="font-display text-3xl text-white">4. Keselamatan Data</h2>
+        <div class="space-y-4 text-base leading-relaxed text-white/80">
+            <ul class="list-disc list-inside space-y-2 text-sm text-white/80">
+                <li>Semua transaksi disalurkan melalui sambungan SSL yang disulitkan.</li>
+                <li>Akses dalaman dihadkan kepada kakitangan yang memerlukan maklumat tersebut.</li>
+                <li>Sistem kami dipantau dan dikemas kini secara berkala untuk mencegah pencerobohan.</li>
+                <li>Kami membuat sandaran data dan semakan keselamatan secara berkala.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="policy-card space-y-4">
+        <h2 class="font-display text-3xl text-white">5. Hak Anda</h2>
+        <div class="space-y-4 text-base leading-relaxed text-white/80">
+            <ul class="list-disc list-inside space-y-2 text-sm text-white/80">
+                <li>Meminta salinan maklumat peribadi yang kami simpan.</li>
+                <li>Memperbetulkan data yang tidak tepat atau lapuk.</li>
+                <li>Memohon pemadaman maklumat tertentu selagi tidak bercanggah dengan undang-undang.</li>
+                <li>Menarik diri daripada komunikasi pemasaran pada bila-bila masa.</li>
+                <li>Memfailkan aduan dengan pihak berkuasa perlindungan data jika perlu.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="policy-card space-y-4">
+        <h2 class="font-display text-3xl text-white">6. Cookies &amp; Pilihan Anda</h2>
+        <div class="space-y-4 text-base leading-relaxed text-white/80">
+            <ul class="list-disc list-inside space-y-2 text-sm text-white/80">
+                <li>Cookies membantu kami mengingati pilihan anda dan menilai prestasi laman.</li>
+                <li>Anda boleh menolak atau memadam cookies melalui tetapan pelayar.</li>
+                <li>Menonaktifkan cookies mungkin menghadkan sebahagian fungsi laman.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="policy-card space-y-4">
+        <h2 class="font-display text-3xl text-white">7. Kemas Kini Dasar &amp; Sokongan</h2>
+        <div class="space-y-4 text-base leading-relaxed text-white/80">
+            <ul class="list-disc list-inside space-y-2 text-sm text-white/80">
+                <li>Kami akan mengemas kini dasar ini apabila diperlukan dan memaklumkannya di laman ini.</li>
+                {{-- <li>Untuk pertanyaan privasi, hubungi <a href="mailto:support@kakkay.com" class="text-pink-200 underline">support@kakkay.com</a> atau WhatsApp <a href="https://wa.me/60138846594" class="text-pink-200 underline">+60 13-884 6594</a>.</li>
+                <li>Kami berusaha membalas setiap pertanyaan dalam tempoh 24 jam bekerja.</li> --}}
+            </ul>
+        </div>
+    </div>
+</section>
+
+
         </div>
     </main>
 
