@@ -11,36 +11,42 @@ return new class extends Migration
         $tablePrefix = config('chip.database.table_prefix', 'chip_');
 
         Schema::create($tablePrefix.'payments', function (Blueprint $table) use ($tablePrefix) {
-            $table->id();
-            $table->uuid('chip_id')->unique();
-            $table->uuid('purchase_chip_id');
-            $table->string('payment_type');
+            // Core API fields - Payment object structure from CHIP API
+            $table->uuid('id')->primary();
+            $table->uuid('purchase_id'); // Reference to purchases table
+
+            // Payment type and direction
+            $table->enum('payment_type', ['purchase', 'refund', 'payout'])->default('purchase');
             $table->boolean('is_outgoing')->default(false);
-            $table->integer('amount_cents');
-            $table->integer('net_amount_cents');
-            $table->integer('fee_amount_cents');
-            $table->integer('pending_amount_cents')->default(0);
-            $table->integer('pending_unfreeze_on')->nullable();
+
+            // Amount fields - exactly as per API (integers for cents)
+            $table->integer('amount'); // Amount in smallest currency unit
             $table->string('currency', 3)->default('MYR');
-            $table->string('description')->nullable();
-            $table->json('client_details');
-            $table->json('transaction_data')->nullable();
-            $table->boolean('is_test')->default(false);
-            $table->string('reference')->nullable();
-            $table->string('reference_generated')->nullable();
-            $table->json('metadata')->nullable();
-            $table->timestamp('chip_created_at');
-            $table->timestamp('chip_updated_at');
-            $table->timestamp('chip_paid_at')->nullable();
-            $table->timestamp('chip_remote_paid_at')->nullable();
+            $table->integer('net_amount'); // Net amount after fees
+            $table->integer('fee_amount'); // Processing fees
+            $table->integer('pending_amount')->default(0); // Pending amount
+            $table->integer('pending_unfreeze_on')->nullable(); // Unix timestamp
+
+            // Payment details
+            $table->text('description')->nullable();
+            $table->integer('paid_on')->nullable(); // Unix timestamp
+            $table->integer('remote_paid_on')->nullable(); // Unix timestamp
+
+            // API timestamps (Unix timestamps as integers)
+            $table->integer('created_on'); // When payment was created
+            $table->integer('updated_on'); // When payment was last updated
+
+            // Laravel timestamps for internal use
             $table->timestamps();
 
-            $table->index(['purchase_chip_id', 'is_test']);
-            $table->index(['payment_type', 'is_test']);
-            $table->index('chip_created_at');
+            // Indexes for optimal query performance
+            $table->index(['purchase_id', 'payment_type']);
+            $table->index(['created_on', 'payment_type']);
+            $table->index('paid_on');
 
-            $table->foreign('purchase_chip_id')
-                ->references('chip_id')
+            // Foreign key constraint
+            $table->foreign('purchase_id')
+                ->references('id')
                 ->on($tablePrefix.'purchases')
                 ->onDelete('cascade');
         });

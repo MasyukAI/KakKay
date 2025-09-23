@@ -9,34 +9,34 @@ use Carbon\Carbon;
 class Purchase
 {
     public function __construct(
-        public readonly string $id,
+        public readonly string $id, // UUID as string
         public readonly string $type,
-        public readonly int $created_on,
-        public readonly int $updated_on,
+        public readonly int $created_on, // Unix timestamp from API
+        public readonly int $updated_on, // Unix timestamp from API
         public readonly ClientDetails $client,
         public readonly PurchaseDetails $purchase,
-        public readonly string $brand_id,
+        public readonly string $brand_id, // UUID as string
         public readonly ?Payment $payment,
         public readonly IssuerDetails $issuer_details,
         public readonly TransactionData $transaction_data,
         public readonly string $status,
         public readonly array $status_history,
-        public readonly ?int $viewed_on,
-        public readonly string $company_id,
+        public readonly ?int $viewed_on, // Unix timestamp or null
+        public readonly string $company_id, // UUID as string
         public readonly bool $is_test,
-        public readonly ?string $user_id,
-        public readonly ?string $billing_template_id,
-        public readonly ?string $client_id,
+        public readonly ?string $user_id, // UUID as string or null
+        public readonly ?string $billing_template_id, // UUID as string or null
+        public readonly ?string $client_id, // UUID as string or null
         public readonly bool $send_receipt,
         public readonly bool $is_recurring_token,
-        public readonly ?string $recurring_token,
+        public readonly ?string $recurring_token, // UUID as string or null
         public readonly bool $skip_capture,
         public readonly bool $force_recurring,
         public readonly string $reference_generated,
         public readonly ?string $reference,
         public readonly ?string $notes,
-        public readonly ?string $issued,
-        public readonly ?int $due,
+        public readonly ?string $issued, // ISO 8601 date string
+        public readonly ?int $due, // Unix timestamp or null
         public readonly string $refund_availability,
         public readonly int $refundable_amount,
         public readonly ?CurrencyConversion $currency_conversion,

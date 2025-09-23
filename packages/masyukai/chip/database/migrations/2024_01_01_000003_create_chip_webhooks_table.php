@@ -10,34 +10,41 @@ return new class extends Migration
     {
         $tablePrefix = config('chip.database.table_prefix', 'chip_');
 
-        Schema::create($tablePrefix . 'webhooks', function (Blueprint $table) {
-            $table->id();
-            $table->string('webhook_id')->nullable();
+        Schema::create($tablePrefix.'webhooks', function (Blueprint $table) {
+            // Core API fields - Webhook object structure from CHIP API
+            $table->uuid('id')->primary();
             $table->string('type')->default('webhook');
-            $table->string('title')->nullable();
-            $table->boolean('all_events')->default(false);
-            $table->text('public_key')->nullable();
-            $table->json('events')->nullable();
-            $table->string('callback')->nullable();
-            $table->string('event_type');
-            $table->string('event')->nullable();
-            $table->json('data')->nullable();
-            $table->string('timestamp')->nullable();
-            $table->json('payload');
-            $table->json('headers');
-            $table->string('signature');
+            $table->integer('created_on'); // Unix timestamp as per API
+            $table->integer('updated_on'); // Unix timestamp as per API
+
+            // Webhook configuration - as per CHIP API
+            $table->string('title', 100); // Arbitrary title of webhook
+            $table->json('events'); // List of events to trigger webhook
+            $table->string('callback', 500); // Callback URL
+            $table->boolean('all_events')->default(false); // Trigger on all events
+            $table->text('public_key')->nullable(); // PEM-encoded RSA public key
+
+            // Event processing fields - for handling incoming webhooks
+            $table->string('event_type')->nullable(); // Which event triggered webhook
+            $table->json('payload')->nullable(); // Full webhook payload
+            $table->json('headers')->nullable(); // Request headers
+            $table->string('signature')->nullable(); // Webhook signature
+
+            // Processing status
             $table->boolean('verified')->default(false);
             $table->boolean('processed')->default(false);
             $table->timestamp('processed_at')->nullable();
             $table->text('processing_error')->nullable();
             $table->integer('processing_attempts')->default(0);
-            $table->integer('chip_created_on')->nullable();
-            $table->integer('chip_updated_on')->nullable();
+
+            // Laravel timestamps for internal use
             $table->timestamps();
 
+            // Indexes for optimal query performance
             $table->index(['event_type', 'processed']);
             $table->index(['verified', 'processed']);
-            $table->index('created_at');
+            $table->index('created_on');
+            $table->index('callback');
         });
     }
 
@@ -45,6 +52,6 @@ return new class extends Migration
     {
         $tablePrefix = config('chip.database.table_prefix', 'chip_');
 
-        Schema::dropIfExists($tablePrefix . 'webhooks');
+        Schema::dropIfExists($tablePrefix.'webhooks');
     }
 };

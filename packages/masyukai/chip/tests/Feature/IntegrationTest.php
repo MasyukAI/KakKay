@@ -276,7 +276,14 @@ describe('End-to-End Webhook Processing', function () {
 describe('Database Persistence Integration', function () {
     it('stores webhook data in database', function () {
         $webhookData = [
-            'webhook_id' => 'webhook_123',
+            'id' => '550e8400-e29b-41d4-a716-446655440000', // UUID
+            'title' => 'Test Webhook',
+            'events' => json_encode(['purchase.paid']),
+            'callback' => 'https://example.com/webhook',
+            'all_events' => false,
+            'public_key' => 'test_key',
+            'created_on' => time(),
+            'updated_on' => time(),
             'event_type' => 'purchase.paid',
             'payload' => json_encode(['test' => 'data']),
             'headers' => json_encode(['X-Signature' => 'test']),
@@ -293,22 +300,34 @@ describe('Database Persistence Integration', function () {
 
     it('stores purchase data in database', function () {
         $purchaseData = [
-            'chip_id' => 'purchase_123',
-            'amount_cents' => 10000,
-            'currency' => 'MYR',
-            'reference' => 'ORDER_001',
+            'id' => '550e8400-e29b-41d4-a716-446655440001', // UUID
+            'type' => 'purchase',
+            'created_on' => time(),
+            'updated_on' => time(),
+            'client' => json_encode(['email' => 'test@example.com']),
+            'purchase' => json_encode(['total' => 10000, 'currency' => 'MYR']),
+            'brand_id' => '550e8400-e29b-41d4-a716-446655440002',
+            'company_id' => '550e8400-e29b-41d4-a716-446655440003',
+            'issuer_details' => json_encode(['legal_name' => 'Test Company']),
+            'transaction_data' => json_encode(['payment_method' => 'card']),
+            'status_history' => json_encode([]),
             'status' => 'created',
-            'client_details' => json_encode(['email' => 'test@example.com']),
-            'purchase_details' => json_encode(['total' => 10000, 'currency' => 'MYR']),
-            'brand_id' => 'test_brand_id',
-            'chip_created_at' => now(),
-            'chip_updated_at' => now(),
-            'metadata' => json_encode(['order_id' => '456']),
+            'send_receipt' => false,
+            'is_test' => true,
+            'is_recurring_token' => false,
+            'skip_capture' => false,
+            'force_recurring' => false,
+            'reference_generated' => 'REF123',
+            'refund_availability' => 'all',
+            'refundable_amount' => 0,
+            'platform' => 'api',
+            'product' => 'purchases',
+            'marked_as_paid' => false,
         ];
 
         DB::table('chip_purchases')->insert($purchaseData);
 
         $tablePrefix = config('chip.database.table_prefix', 'chip_');
-        expect(DB::table($tablePrefix.'purchases')->where('chip_id', 'purchase_123')->exists())->toBeTrue();
+        expect(DB::table($tablePrefix.'purchases')->where('id', '550e8400-e29b-41d4-a716-446655440001')->exists())->toBeTrue();
     });
 });

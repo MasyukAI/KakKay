@@ -10,61 +10,106 @@ return new class extends Migration
     {
         $tablePrefix = config('chip.database.table_prefix', 'chip_');
 
-        Schema::create($tablePrefix . 'purchases', function (Blueprint $table) {
-            $table->id();
-            $table->uuid('chip_id')->unique();
+        Schema::create($tablePrefix.'purchases', function (Blueprint $table) {
+            // Core API fields - exact match with CHIP API
+            $table->uuid('id')->primary();
             $table->string('type')->default('purchase');
-            $table->string('status');
-            $table->json('client_details');
-            $table->json('purchase_details');
-            $table->string('brand_id');
-            $table->json('payment_details')->nullable();
-            $table->json('issuer_details')->nullable();
-            $table->json('transaction_data')->nullable();
-            $table->json('status_history')->nullable();
+            $table->integer('created_on'); // Unix timestamp as per API
+            $table->integer('updated_on'); // Unix timestamp as per API
+
+            // Client details - stored as JSON per API structure
+            $table->json('client'); // Full client object from API
+
+            // Purchase details - stored as JSON per API structure
+            $table->json('purchase'); // Full purchase object from API
+
+            // Core identifiers - all UUIDs as per API
+            $table->uuid('brand_id');
+            $table->uuid('company_id')->nullable();
+            $table->uuid('user_id')->nullable();
+            $table->uuid('billing_template_id')->nullable();
+            $table->uuid('client_id')->nullable();
+
+            // Payment details - stored as JSON when present
+            $table->json('payment')->nullable(); // Full payment object from API
+
+            // Additional API objects
+            $table->json('issuer_details'); // Company/brand details
+            $table->json('transaction_data'); // Payment method specific data
+            $table->json('status_history'); // Status change tracking
+
+            // Status and workflow
+            $table->enum('status', [
+                'created', 'sent', 'viewed', 'error', 'cancelled', 'overdue',
+                'expired', 'blocked', 'hold', 'released', 'pending_release',
+                'pending_capture', 'preauthorized', 'paid', 'pending_execute',
+                'pending_charge', 'cleared', 'settled', 'chargeback',
+                'pending_refund', 'refunded',
+            ])->default('created');
+
+            // Timestamps
             $table->integer('viewed_on')->nullable();
-            $table->string('company_id')->nullable();
-            $table->string('user_id')->nullable();
-            $table->string('billing_template_id')->nullable();
-            $table->string('client_id')->nullable();
+
+            // Configuration flags
             $table->boolean('send_receipt')->default(false);
-            $table->string('checkout_url')->nullable();
-            $table->string('invoice_url')->nullable();
-            $table->string('direct_post_url')->nullable();
-            $table->string('reference')->nullable();
-            $table->string('reference_generated')->nullable();
-            $table->text('notes')->nullable();
-            $table->string('issued')->nullable();
-            $table->integer('due')->nullable();
-            $table->string('refund_availability')->default('all');
-            $table->integer('refundable_amount')->default(0);
-            $table->json('currency_conversion')->nullable();
-            $table->json('payment_method_whitelist')->nullable();
-            $table->string('success_redirect')->nullable();
-            $table->string('failure_redirect')->nullable();
-            $table->string('cancel_redirect')->nullable();
-            $table->string('success_callback')->nullable();
-            $table->string('creator_agent')->nullable();
-            $table->string('platform')->default('api');
-            $table->string('product')->default('purchases');
-            $table->string('created_from_ip')->nullable();
-            $table->boolean('marked_as_paid')->default(false);
-            $table->string('order_id')->nullable();
             $table->boolean('is_test')->default(false);
             $table->boolean('is_recurring_token')->default(false);
-            $table->string('recurring_token')->nullable();
+            $table->uuid('recurring_token')->nullable();
             $table->boolean('skip_capture')->default(false);
             $table->boolean('force_recurring')->default(false);
-            $table->integer('amount_cents');
-            $table->string('currency', 3)->default('MYR');
-            $table->json('metadata')->nullable();
-            $table->timestamp('chip_created_at');
-            $table->timestamp('chip_updated_at');
+
+            // Invoice and reference fields
+            $table->string('reference', 128)->nullable();
+            $table->string('reference_generated')->nullable();
+            $table->text('notes')->nullable();
+            $table->string('issued')->nullable(); // ISO 8601 date format
+            $table->integer('due')->nullable(); // Unix timestamp
+
+            // Refund information
+            $table->enum('refund_availability', [
+                'all', 'full_only', 'partial_only', 'pis_all', 'pis_partial', 'none',
+            ])->default('all');
+            $table->integer('refundable_amount')->default(0);
+
+            // Currency conversion data
+            $table->json('currency_conversion')->nullable();
+
+            // Payment methods and restrictions
+            $table->json('payment_method_whitelist')->nullable();
+
+            // URLs and redirects
+            $table->string('success_redirect', 500)->nullable();
+            $table->string('failure_redirect', 500)->nullable();
+            $table->string('cancel_redirect', 500)->nullable();
+            $table->string('success_callback', 500)->nullable();
+            $table->string('invoice_url', 500)->nullable();
+            $table->string('checkout_url', 500)->nullable();
+            $table->string('direct_post_url', 500)->nullable();
+
+            // Platform and creation details
+            $table->string('creator_agent', 32)->nullable();
+            $table->enum('platform', ['web', 'api', 'ios', 'android', 'macos', 'windows'])
+                ->default('api');
+            $table->enum('product', [
+                'purchases', 'billing_invoices', 'billing_subscriptions',
+                'billing_subscriptions_invoice',
+            ])->default('purchases');
+            $table->string('created_from_ip')->nullable();
+
+            // Additional flags
+            $table->boolean('marked_as_paid')->default(false);
+            $table->string('order_id')->nullable();
+
+            // Laravel timestamps for internal use
             $table->timestamps();
 
+            // Indexes for optimal query performance
             $table->index(['status', 'is_test']);
             $table->index(['brand_id', 'is_test']);
-            $table->index('chip_created_at');
+            $table->index(['company_id', 'is_test']);
+            $table->index('created_on');
+            $table->index('viewed_on');
+            $table->index('due');
         });
     }
 
@@ -72,6 +117,6 @@ return new class extends Migration
     {
         $tablePrefix = config('chip.database.table_prefix', 'chip_');
 
-        Schema::dropIfExists($tablePrefix . 'purchases');
+        Schema::dropIfExists($tablePrefix.'purchases');
     }
 };
