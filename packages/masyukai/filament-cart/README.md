@@ -1,4 +1,4 @@
-# Filament Cart Plugin
+# Filament Cart
 
 A comprehensive Filament admin interface for managing shopping carts created by the MasyukAI Cart package.
 
@@ -16,7 +16,7 @@ A comprehensive Filament admin interface for managing shopping carts created by 
 You can install the package via composer:
 
 ```bash
-composer require masyukai/filament-cart-plugin
+composer require masyukai/filament-cart
 ```
 
 The plugin will automatically register itself with Laravel's package discovery.
@@ -34,7 +34,7 @@ namespace App\Providers\Filament;
 
 use Filament\Panel;
 use Filament\PanelProvider;
-use MasyukAI\FilamentCartPlugin\FilamentCartPlugin;
+use MasyukAI\FilamentCart\FilamentCart;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -43,7 +43,7 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             // ... other configuration
             ->plugins([
-                FilamentCartPlugin::make(),
+                FilamentCart::make(),
             ]);
     }
 }

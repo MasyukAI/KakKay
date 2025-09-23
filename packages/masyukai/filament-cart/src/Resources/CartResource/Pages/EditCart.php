@@ -1,11 +1,11 @@
 <?php
 
-namespace MasyukAI\FilamentCartPlugin\Resources\CartResource\Pages;
+namespace MasyukAI\FilamentCart\Resources\CartResource\Pages;
 
-use MasyukAI\FilamentCartPlugin\Resources\CartResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Icons\Heroicon;
+use MasyukAI\FilamentCart\Resources\CartResource;
 
 class EditCart extends EditRecord
 {
@@ -16,7 +16,7 @@ class EditCart extends EditRecord
         return [
             Actions\ViewAction::make()
                 ->icon(Heroicon::OutlinedEye),
-            
+
             Actions\DeleteAction::make()
                 ->icon(Heroicon::OutlinedTrash),
 
@@ -30,10 +30,10 @@ class EditCart extends EditRecord
                         'items' => [],
                         'conditions' => [],
                     ]);
-                    
+
                     $this->redirect($this->getResource()::getUrl('index'));
                 })
-                ->visible(fn () => !$this->record->isEmpty()),
+                ->visible(fn () => ! $this->record->isEmpty()),
         ];
     }
 

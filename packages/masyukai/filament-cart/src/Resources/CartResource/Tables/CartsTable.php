@@ -1,14 +1,14 @@
 <?php
 
-namespace MasyukAI\FilamentCartPlugin\Resources\CartResource\Tables;
+namespace MasyukAI\FilamentCart\Resources\CartResource\Tables;
 
-use Filament\Support\Icons\Heroicon;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -40,6 +40,7 @@ class CartsTable
                         'quote' => 'success',
                         default => 'primary',
                     })
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
 
                 TextColumn::make('items_count')
@@ -56,8 +57,7 @@ class CartsTable
                 TextColumn::make('formatted_subtotal')
                     ->label('Subtotal')
                     ->alignEnd()
-                    ->sortable(query: fn (Builder $query, string $direction): Builder => 
-                        $query->orderByRaw('JSON_EXTRACT(items, "$[*].price") ' . $direction)
+                    ->sortable(query: fn (Builder $query, string $direction): Builder => $query->orderByRaw('JSON_EXTRACT(items, "$[*].price") '.$direction)
                     ),
 
                 // IconColumn::make('isEmpty')
@@ -67,7 +67,7 @@ class CartsTable
                 //     ->falseIcon(Heroicon::OutlinedCheckCircle)
                 //     ->trueColor('danger')
                 //     ->falseColor('success'),
-                    // ->tooltip(fn ($record): string => $record->isEmpty() ? 'Empty Cart' : 'Has Items'),
+                // ->tooltip(fn ($record): string => $record->isEmpty() ? 'Empty Cart' : 'Has Items'),
 
                 TextColumn::make('created_at')
                     ->label('Created')
@@ -102,14 +102,13 @@ class CartsTable
 
                 Filter::make('created_today')
                     ->label('Created Today')
-                    ->query(fn (Builder $query): Builder => 
-                        $query->whereDate('created_at', today())
+                    ->query(fn (Builder $query): Builder => $query->whereDate('created_at', today())
                     ),
             ])
             ->recordActions([
                 ViewAction::make()
                     ->icon(Heroicon::OutlinedEye),
-                
+
                 EditAction::make()
                     ->icon(Heroicon::OutlinedPencil),
 
@@ -125,19 +124,19 @@ class CartsTable
                                 'conditions' => [],
                             ]);
                         }),
-                        // ->visible(fn ($record) => !$record->isEmpty()),
+                    // ->visible(fn ($record) => !$record->isEmpty()),
 
                     Action::make('view_items')
                         ->label('View Items')
                         ->icon(Heroicon::OutlinedListBullet)
                         ->url(fn ($record) => route('filament.admin.resources.carts.view', $record)),
-                        // ->visible(fn ($record) => !$record->isEmpty()),
+                    // ->visible(fn ($record) => !$record->isEmpty()),
 
                     DeleteAction::make()
                         ->icon(Heroicon::OutlinedXMark),
                 ])
-                ->icon(Heroicon::OutlinedEllipsisVertical)
-                ->tooltip('More actions'),
+                    ->icon(Heroicon::OutlinedEllipsisVertical)
+                    ->tooltip('More actions'),
             ])
             ->toolbarActions([
                 BulkAction::make('clear_selected')

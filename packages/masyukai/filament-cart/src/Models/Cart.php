@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\FilamentCartPlugin\Models;
+namespace MasyukAI\FilamentCart\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,9 +15,9 @@ class Cart extends Model
     /**
      * Create a new factory instance for the model.
      */
-    protected static function newFactory(): \MasyukAI\FilamentCartPlugin\Database\Factories\CartFactory
+    protected static function newFactory(): \MasyukAI\FilamentCart\Database\Factories\CartFactory
     {
-        return \MasyukAI\FilamentCartPlugin\Database\Factories\CartFactory::new();
+        return \MasyukAI\FilamentCart\Database\Factories\CartFactory::new();
     }
 
     /**

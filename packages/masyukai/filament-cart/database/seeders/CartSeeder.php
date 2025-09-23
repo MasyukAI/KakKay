@@ -1,9 +1,9 @@
 <?php
 
-namespace MasyukAI\FilamentCartPlugin\Database\Seeders;
+namespace MasyukAI\FilamentCart\Database\Seeders;
 
-use MasyukAI\FilamentCartPlugin\Models\Cart;
 use Illuminate\Database\Seeder;
+use MasyukAI\FilamentCart\Models\Cart;
 
 class CartSeeder extends Seeder
 {

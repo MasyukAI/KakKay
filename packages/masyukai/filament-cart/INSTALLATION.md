@@ -7,7 +7,7 @@ This guide shows how to install and use the Filament Cart Plugin as a standalone
 ### Step 1: Install via Composer
 
 ```bash
-composer require masyukai/filament-cart-plugin
+composer require masyukai/filament-cart
 ```
 
 ### Step 2: Register the Plugin
@@ -21,7 +21,7 @@ namespace App\Providers\Filament;
 
 use Filament\Panel;
 use Filament\PanelProvider;
-use MasyukAI\FilamentCartPlugin\FilamentCartPlugin;
+use MasyukAI\FilamentCart\FilamentCart;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -33,7 +33,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             // ... other configuration
             ->plugins([
-                FilamentCartPlugin::make(),
+                FilamentCart::make(),
                 // ... other plugins
             ]);
     }
@@ -92,10 +92,10 @@ Once installed, the plugin will automatically:
 You can publish the configuration file:
 
 ```bash
-php artisan vendor:publish --tag="filament-cart-plugin-config"
+php artisan vendor:publish --tag="filament-cart-config"
 ```
 
-Then customize the settings in `config/filament-cart-plugin.php`:
+Then customize the settings in `config/filament-cart.php`:
 
 ```php
 return [
@@ -126,7 +126,7 @@ To test cart functionality with sample data:
 
 ```php
 // Create test carts
-use MasyukAI\FilamentCartPlugin\Models\Cart;
+use MasyukAI\FilamentCart\Models\Cart;
 
 Cart::factory()->count(10)->create();
 Cart::factory()->instance('wishlist')->count(3)->create();

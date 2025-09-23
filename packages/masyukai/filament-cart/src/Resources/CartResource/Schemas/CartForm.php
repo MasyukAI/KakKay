@@ -1,15 +1,15 @@
 <?php
 
-namespace MasyukAI\FilamentCartPlugin\Resources\CartResource\Schemas;
+namespace MasyukAI\FilamentCart\Resources\CartResource\Schemas;
 
-use Filament\Schemas\Components\Fieldset;
-use Filament\Schemas\Components\Grid;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Repeater;
-use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Fieldset;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
 class CartForm
@@ -95,8 +95,7 @@ class CartForm
                             ->collapsible()
                             ->cloneable()
                             ->reorderable()
-                            ->itemLabel(fn (array $state): ?string => 
-                                $state['name'] ?? 'New Item'
+                            ->itemLabel(fn (array $state): ?string => $state['name'] ?? 'New Item'
                             )
                             ->columnSpanFull(),
                     ])
@@ -136,8 +135,7 @@ class CartForm
                             ])
                             ->collapsible()
                             ->cloneable()
-                            ->itemLabel(fn (array $state): ?string => 
-                                $state['name'] ?? 'New Condition'
+                            ->itemLabel(fn (array $state): ?string => $state['name'] ?? 'New Condition'
                             )
                             ->columnSpanFull(),
                     ])

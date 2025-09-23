@@ -1,9 +1,9 @@
 <?php
 
-namespace MasyukAI\FilamentCartPlugin\Resources\CartResource\Pages;
+namespace MasyukAI\FilamentCart\Resources\CartResource\Pages;
 
-use MasyukAI\FilamentCartPlugin\Resources\CartResource;
 use Filament\Resources\Pages\CreateRecord;
+use MasyukAI\FilamentCart\Resources\CartResource;
 
 class CreateCart extends CreateRecord
 {

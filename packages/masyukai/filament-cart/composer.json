@@ -1,5 +1,5 @@
 {
-    "name": "masyukai/filament-cart-plugin",
+    "name": "masyukai/filament-cart",
     "description": "A comprehensive Filament admin interface for managing shopping carts created by the MasyukAI Cart package",
     "license": "MIT",
     "keywords": [
@@ -33,18 +33,20 @@
     },
     "autoload": {
         "psr-4": {
-            "MasyukAI\\FilamentCartPlugin\\": "src/"
+            "MasyukAI\\FilamentCart\\": "src/",
+            "MasyukAI\\FilamentCart\\Database\\Factories\\": "database/factories/",
+            "MasyukAI\\FilamentCart\\Database\\Seeders\\": "database/seeders/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "MasyukAI\\FilamentCartPlugin\\Tests\\": "tests/"
+            "MasyukAI\\FilamentCart\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "MasyukAI\\FilamentCartPlugin\\FilamentCartServiceProvider"
+                "MasyukAI\\FilamentCart\\FilamentCartServiceProvider"
             ]
         }
     },

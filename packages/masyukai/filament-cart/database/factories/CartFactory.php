@@ -1,12 +1,12 @@
 <?php
 
-namespace MasyukAI\FilamentCartPlugin\Database\Factories;
+namespace MasyukAI\FilamentCart\Database\Factories;
 
-use MasyukAI\FilamentCartPlugin\Models\Cart;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use MasyukAI\FilamentCart\Models\Cart;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\MasyukAI\FilamentCartPlugin\Models\Cart>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\MasyukAI\FilamentCart\Models\Cart>
  */
 class CartFactory extends Factory
 {
@@ -18,7 +18,7 @@ class CartFactory extends Factory
     public function definition(): array
     {
         return [
-            'identifier' => 'cart_' . $this->faker->uuid(),
+            'identifier' => 'cart_'.$this->faker->uuid(),
             'instance' => $this->faker->randomElement(['default', 'wishlist', 'comparison', 'quote']),
             'items' => $this->generateRandomItems(),
             'conditions' => $this->generateRandomConditions(),
@@ -81,14 +81,14 @@ class CartFactory extends Factory
     /**
      * Generate random cart items.
      */
-    private function generateRandomItems(int $count = null, float $minPrice = 10, float $maxPrice = 500): array
+    private function generateRandomItems(?int $count = null, float $minPrice = 10, float $maxPrice = 500): array
     {
         $count = $count ?? $this->faker->numberBetween(1, 5);
         $items = [];
 
         for ($i = 0; $i < $count; $i++) {
             $items[] = [
-                'id' => 'product_' . $this->faker->numberBetween(1, 1000),
+                'id' => 'product_'.$this->faker->numberBetween(1, 1000),
                 'name' => $this->faker->words(3, true),
                 'price' => $this->faker->randomFloat(2, $minPrice, $maxPrice),
                 'quantity' => $this->faker->numberBetween(1, 5),

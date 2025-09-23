@@ -1,11 +1,11 @@
 <?php
 
-namespace MasyukAI\FilamentCartPlugin\Resources\CartResource\Pages;
+namespace MasyukAI\FilamentCart\Resources\CartResource\Pages;
 
-use MasyukAI\FilamentCartPlugin\Resources\CartResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Icons\Heroicon;
+use MasyukAI\FilamentCart\Resources\CartResource;
 
 class ListCarts extends ListRecords
 {

@@ -1,20 +1,20 @@
 <?php
 
-namespace MasyukAI\FilamentCartPlugin\Resources;
+namespace MasyukAI\FilamentCart\Resources;
 
-use MasyukAI\FilamentCartPlugin\Resources\CartResource\Pages\CreateCart;
-use MasyukAI\FilamentCartPlugin\Resources\CartResource\Pages\EditCart;
-use MasyukAI\FilamentCartPlugin\Resources\CartResource\Pages\ListCarts;
-use MasyukAI\FilamentCartPlugin\Resources\CartResource\Pages\ViewCart;
-use MasyukAI\FilamentCartPlugin\Resources\CartResource\Schemas\CartForm;
-use MasyukAI\FilamentCartPlugin\Resources\CartResource\Schemas\CartInfolist;
-use MasyukAI\FilamentCartPlugin\Resources\CartResource\Tables\CartsTable;
-use MasyukAI\FilamentCartPlugin\Models\Cart;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use MasyukAI\FilamentCart\Models\Cart;
+use MasyukAI\FilamentCart\Resources\CartResource\Pages\CreateCart;
+use MasyukAI\FilamentCart\Resources\CartResource\Pages\EditCart;
+use MasyukAI\FilamentCart\Resources\CartResource\Pages\ListCarts;
+use MasyukAI\FilamentCart\Resources\CartResource\Pages\ViewCart;
+use MasyukAI\FilamentCart\Resources\CartResource\Schemas\CartForm;
+use MasyukAI\FilamentCart\Resources\CartResource\Schemas\CartInfolist;
+use MasyukAI\FilamentCart\Resources\CartResource\Tables\CartsTable;
 use UnitEnum;
 
 class CartResource extends Resource

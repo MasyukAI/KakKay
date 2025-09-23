@@ -1,11 +1,11 @@
 <?php
 
-namespace MasyukAI\FilamentCartPlugin\Resources\CartResource\Pages;
+namespace MasyukAI\FilamentCart\Resources\CartResource\Pages;
 
-use MasyukAI\FilamentCartPlugin\Resources\CartResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Support\Icons\Heroicon;
+use MasyukAI\FilamentCart\Resources\CartResource;
 
 class ViewCart extends ViewRecord
 {
@@ -29,10 +29,10 @@ class ViewCart extends ViewRecord
                         'items' => [],
                         'conditions' => [],
                     ]);
-                    
+
                     $this->redirect($this->getResource()::getUrl('view', ['record' => $this->record]));
                 })
-                ->visible(fn () => !$this->record->isEmpty()),
+                ->visible(fn () => ! $this->record->isEmpty()),
 
             Actions\Action::make('export_cart')
                 ->label('Export Cart')
@@ -40,8 +40,8 @@ class ViewCart extends ViewRecord
                 ->color('info')
                 ->action(function () {
                     return response()->download(
-                        storage_path('app/temp/cart_' . $this->record->identifier . '.json'),
-                        'cart_' . $this->record->identifier . '.json',
+                        storage_path('app/temp/cart_'.$this->record->identifier.'.json'),
+                        'cart_'.$this->record->identifier.'.json',
                         ['Content-Type' => 'application/json']
                     );
                 })
@@ -56,12 +56,12 @@ class ViewCart extends ViewRecord
                         'exported_at' => now()->toISOString(),
                     ];
 
-                    if (!file_exists(storage_path('app/temp'))) {
+                    if (! file_exists(storage_path('app/temp'))) {
                         mkdir(storage_path('app/temp'), 0755, true);
                     }
 
                     file_put_contents(
-                        storage_path('app/temp/cart_' . $this->record->identifier . '.json'),
+                        storage_path('app/temp/cart_'.$this->record->identifier.'.json'),
                         json_encode($cartData, JSON_PRETTY_PRINT)
                     );
                 }),
@@ -73,7 +73,7 @@ class ViewCart extends ViewRecord
 
     public function getTitle(): string
     {
-        return 'Cart: ' . $this->record->identifier;
+        return 'Cart: '.$this->record->identifier;
     }
 
     public function getSubheading(): ?string
@@ -84,9 +84,9 @@ class ViewCart extends ViewRecord
 
         $itemCount = $this->record->items_count;
         $totalQty = $this->record->total_quantity;
-        
-        return "{$itemCount} " . str('item')->plural($itemCount) . 
-               " ({$totalQty} " . str('unit')->plural($totalQty) . ") • " .
+
+        return "{$itemCount} ".str('item')->plural($itemCount).
+               " ({$totalQty} ".str('unit')->plural($totalQty).') • '.
                $this->record->formatted_subtotal;
     }
 }

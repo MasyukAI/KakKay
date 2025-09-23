@@ -1,11 +1,11 @@
 <?php
 
-namespace MasyukAI\FilamentCartPlugin\Widgets;
+namespace MasyukAI\FilamentCart\Widgets;
 
-use MasyukAI\FilamentCartPlugin\Models\Cart;
+use Filament\Support\Icons\Heroicon;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use Filament\Support\Icons\Heroicon;
+use MasyukAI\FilamentCart\Models\Cart;
 
 class CartStatsWidget extends BaseWidget
 {
@@ -27,7 +27,7 @@ class CartStatsWidget extends BaseWidget
                 ->descriptionIcon(Heroicon::OutlinedShoppingBag)
                 ->color('info'),
 
-            Stat::make('Cart Value', '$' . number_format($this->getTotalCartValue(), 2))
+            Stat::make('Cart Value', '$'.number_format($this->getTotalCartValue(), 2))
                 ->description('Total potential revenue')
                 ->descriptionIcon(Heroicon::OutlinedCurrencyDollar)
                 ->color('warning'),

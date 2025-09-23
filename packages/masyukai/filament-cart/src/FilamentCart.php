@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\FilamentCartPlugin;
+namespace MasyukAI\FilamentCart;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
-use MasyukAI\FilamentCartPlugin\Resources\CartResource;
-use MasyukAI\FilamentCartPlugin\Widgets\CartStatsWidget;
+use MasyukAI\FilamentCart\Resources\CartResource;
+use MasyukAI\FilamentCart\Widgets\CartStatsWidget;
 
-class FilamentCartPlugin implements Plugin
+class FilamentCart implements Plugin
 {
     public function getId(): string
     {
-        return 'masyukai-filament-cart-plugin';
+        return 'masyukai-filament-cart';
     }
 
     public function register(Panel $panel): void
