@@ -18,7 +18,7 @@ class StockService
         int $quantity,
         string $reason = 'restock',
         ?string $note = null,
-        ?int $userId = null
+        ?string $userId = null
     ): StockTransaction {
         return $this->createTransaction(
             product: $product,
@@ -38,7 +38,7 @@ class StockService
         int $quantity,
         string $reason = 'adjustment',
         ?string $note = null,
-        ?int $userId = null
+        ?string $userId = null
     ): StockTransaction {
         return $this->createTransaction(
             product: $product,
@@ -76,7 +76,7 @@ class StockService
         int $quantity,
         ?OrderItem $orderItem = null,
         ?string $note = null,
-        ?int $userId = null
+        ?string $userId = null
     ): StockTransaction {
         return $this->createTransaction(
             product: $product,
@@ -97,7 +97,7 @@ class StockService
         int $currentStock,
         int $actualStock,
         ?string $note = null,
-        ?int $userId = null
+        ?string $userId = null
     ): ?StockTransaction {
         $difference = $actualStock - $currentStock;
 
@@ -173,8 +173,8 @@ class StockService
         string $type,
         string $reason,
         ?string $note = null,
-        ?int $userId = null,
-        ?int $orderItemId = null
+        ?string $userId = null,
+        ?string $orderItemId = null
     ): StockTransaction {
         return DB::transaction(function () use (
             $product,

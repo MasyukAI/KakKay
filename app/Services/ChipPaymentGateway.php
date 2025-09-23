@@ -212,7 +212,7 @@ class ChipPaymentGateway implements PaymentGatewayInterface
             'street_address' => $customerData['address'] ?? '',
             'country' => $customerData['country'] ?? 'MY',
             'city' => $customerData['city'] ?? '',
-            'zip_code' => $customerData['zip'] ?? $customerData['postal_code'] ?? '',
+            'zip_code' => (string) ($customerData['zip'] ?? $customerData['postal_code'] ?? ''),
             'state' => $customerData['state'] ?? '',
             'registration_number' => $customerData['registration_number'] ?? '',
             'tax_number' => $customerData['tax_number'] ?? '',
@@ -223,7 +223,7 @@ class ChipPaymentGateway implements PaymentGatewayInterface
             'shipping_street_address' => $customerData['shipping_address'] ?? $customerData['address'] ?? '',
             'shipping_country' => $customerData['shipping_country'] ?? $customerData['country'] ?? 'MY',
             'shipping_city' => $customerData['shipping_city'] ?? $customerData['city'] ?? '',
-            'shipping_zip_code' => $customerData['shipping_zip'] ?? $customerData['zip'] ?? $customerData['postal_code'] ?? '',
+            'shipping_zip_code' => (string) ($customerData['shipping_zip'] ?? $customerData['zip'] ?? $customerData['postal_code'] ?? ''),
             'shipping_state' => $customerData['shipping_state'] ?? $customerData['state'] ?? '',
         ]);
     }

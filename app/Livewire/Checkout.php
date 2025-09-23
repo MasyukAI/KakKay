@@ -5,10 +5,8 @@ namespace App\Livewire;
 use Akaunting\Money\Money;
 use App\Models\District;
 use App\Services\CheckoutService;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
@@ -22,6 +20,27 @@ use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
 class Checkout extends Component implements HasSchemas
 {
+    /**
+     * Malaysian states corresponding to District model state_ids.
+     */
+    private static array $states = [
+        '1' => 'Johor',
+        '2' => 'Kedah',
+        '3' => 'Kelantan',
+        '4' => 'Melaka',
+        '5' => 'Negeri Sembilan',
+        '6' => 'Pahang',
+        '7' => 'Pulau Pinang',
+        '8' => 'Perak',
+        '9' => 'Perlis',
+        '10' => 'Selangor',
+        '11' => 'Terengganu',
+        '12' => 'Sabah',
+        '13' => 'Sarawak',
+        '14' => 'Wilayah Persekutuan Kuala Lumpur',
+        '15' => 'Wilayah Persekutuan Labuan',
+        '16' => 'Wilayah Persekutuan Putrajaya',
+    ];
     use InteractsWithSchemas;
 
     public ?array $data = [];
@@ -39,6 +58,14 @@ class Checkout extends Component implements HasSchemas
         try {
             // Clear any old session data if cart has changed
             $cartItems = CartFacade::getItems();
+
+            // Check if cart is empty and redirect
+            if ($cartItems->isEmpty()) {
+                $this->redirect(route('cart'));
+
+                return;
+            }
+
             $currentCartHash = md5(serialize($cartItems->toArray()));
             $sessionCartHash = session('cart_hash');
 
@@ -68,25 +95,7 @@ class Checkout extends Component implements HasSchemas
 
     public function form(Schema $schema): Schema
     {
-        // Hardcoded Malaysian states that correspond to District model state_ids
-        $states = [
-            '1' => 'Johor',
-            '2' => 'Kedah',
-            '3' => 'Kelantan',
-            '4' => 'Melaka',
-            '5' => 'Negeri Sembilan',
-            '6' => 'Pahang',
-            '7' => 'Pulau Pinang',
-            '8' => 'Perak',
-            '9' => 'Perlis',
-            '10' => 'Selangor',
-            '11' => 'Terengganu',
-            '12' => 'Sabah',
-            '13' => 'Sarawak',
-            '14' => 'Wilayah Persekutuan Kuala Lumpur',
-            '15' => 'Wilayah Persekutuan Labuan',
-            '16' => 'Wilayah Persekutuan Putrajaya',
-        ];
+        $states = self::$states;
 
         return $schema
             ->components([
@@ -141,7 +150,8 @@ class Checkout extends Component implements HasSchemas
                                     ->default('Malaysia')
                                     ->columnStart(1)
                                     ->required()
-                                    ->disabled(),
+                                    ->disabled()
+                                    ->dehydrated(), // Include disabled field in form data
 
                                 Select::make('state')
                                     ->label('Negeri')
@@ -268,14 +278,10 @@ class Checkout extends Component implements HasSchemas
             $cartContents = CartFacade::getItems();
 
             if ($cartContents->isEmpty()) {
-                // In testing, don't redirect, just set empty cart
-                if (app()->environment('testing')) {
-                    $this->cartItems = [];
+                $this->cartItems = [];
+                $this->redirect(route('cart'));
 
-                    return;
-                }
-
-                return $this->redirect(route('cart'));
+                return;
             }
 
             $this->cartItems = $cartContents->map(function ($item) {
@@ -289,15 +295,8 @@ class Checkout extends Component implements HasSchemas
             })->values()->toArray();
         } catch (\Exception $e) {
             Log::error('Checkout loading error: '.$e->getMessage());
-
-            // In testing, don't redirect, just set empty cart
-            if (app()->environment('testing')) {
-                $this->cartItems = [];
-
-                return;
-            }
-
-            return $this->redirect(route('cart'));
+            $this->cartItems = [];
+            $this->redirect(route('cart'));
         }
     }
 
@@ -306,27 +305,10 @@ class Checkout extends Component implements HasSchemas
         try {
             $checkoutService = app(CheckoutService::class);
             $this->availablePaymentMethods = $checkoutService->getAvailablePaymentMethods();
-
-            $grouped = $this->getPaymentMethodsByGroup();
-
-            if (! empty($grouped)) {
-                $defaultGroup = $this->data['payment_group']
-                    ?? $this->selectedPaymentGroup
-                    ?? array_key_first($grouped);
-
-                $this->selectPaymentGroup($defaultGroup);
-
-                $defaultMethod = $this->data['payment_method']
-                    ?? $this->determineDefaultMethod($defaultGroup);
-
-                if ($defaultMethod) {
-                    $this->data['payment_method'] = $defaultMethod;
-                    $this->selectPaymentMethod($defaultMethod);
-                }
-            }
+            // No need to set default payment methods - let CHIP gateway handle selection
         } catch (\Exception $e) {
             Log::error('Failed to load payment methods: '.$e->getMessage());
-            // Use fallback payment methods
+            // Use fallback payment methods for reference (not used in checkout)
             $this->availablePaymentMethods = [
                 [
                     'id' => 'fpx_b2c',
@@ -524,12 +506,12 @@ class Checkout extends Component implements HasSchemas
             $customerData = [
                 'name' => $formData['name'],
                 'email' => $formData['email'],
-                'phone' => $this->selectedCountryCode.$formData['phone'],
+                'phone' => $formData['phone'], // PhoneInput component already includes country code
                 'country' => $formData['country'],
-                'city' => $this->getCityName($formData['city'] ?? null),
-                'district' => $this->getDistrictName($formData['district'] ?? null),
+                'city' => $formData['city'] ?? '',
+                'district' => $this->getDistrictNameFromId($formData['district'] ?? null),
                 'address' => $formData['address'],
-                'state' => $this->getStateName($formData['state'] ?? null),
+                'state' => $this->getStateNameFromId($formData['state'] ?? null),
                 'zip' => $formData['postal_code'] ?? '',
                 'company_name' => $formData['company_name'] ?? '',
                 'vat_number' => $formData['vat_number'] ?? '',
@@ -542,8 +524,8 @@ class Checkout extends Component implements HasSchemas
                 // Add bank account information (required by CHIP API)
                 'bank_account' => 'default',
                 'bank_code' => 'default',
-                // Use empty array instead of null for payment_method_whitelist
-                'payment_method_whitelist' => $this->data['payment_method_whitelist'] ?? [],
+                // Use empty array to let CHIP gateway handle payment method selection
+                'payment_method_whitelist' => [],
             ];
 
             // Create payment using the configured gateway
@@ -569,6 +551,28 @@ class Checkout extends Component implements HasSchemas
             ]);
 
             session()->flash('error', 'Terjadi ralat semasa memproses pesanan. Sila cuba lagi.');
+        }
+    }
+
+    protected function getStateNameFromId(?string $stateId): string
+    {
+        return self::$states[$stateId] ?? '';
+    }
+
+    protected function getDistrictNameFromId(?string $districtId): string
+    {
+        if (! $districtId) {
+            return '';
+        }
+
+        try {
+            $district = District::find($districtId);
+
+            return $district ? $district->name : '';
+        } catch (\Exception $e) {
+            Log::warning('Failed to get district name', ['district_id' => $districtId, 'error' => $e->getMessage()]);
+
+            return '';
         }
     }
 

@@ -2,25 +2,28 @@
 
 namespace App\Livewire\Checkout;
 
-use Livewire\Component;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Payment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Livewire\Component;
 
 class OrderSummaryStep extends Component
 {
     public array $checkoutData;
+
     public ?Order $order = null;
+
     public bool $orderProcessed = false;
+
     public string $orderNumber = '';
 
     public function mount(array $checkoutData = []): void
     {
         $this->checkoutData = $checkoutData;
-        
-        if (!$this->orderProcessed && !empty($checkoutData)) {
+
+        if (! $this->orderProcessed && ! empty($checkoutData)) {
             $this->processOrder();
         }
     }
@@ -47,8 +50,7 @@ class OrderSummaryStep extends Component
                     'order_id' => $this->order->id,
                     'product_id' => $item['id'],
                     'quantity' => $item['quantity'],
-                    'price' => $item['price'],
-                    'total' => $item['price'] * $item['quantity'],
+                    'unit_price' => $item['price'], // Use unit_price as per migration
                 ]);
             }
 
@@ -60,7 +62,7 @@ class OrderSummaryStep extends Component
                 'status' => 'pending',
             ]);
 
-            $this->orderNumber = 'ORD-' . str_pad($this->order->id, 6, '0', STR_PAD_LEFT);
+            $this->orderNumber = 'ORD-'.str_pad($this->order->id, 6, '0', STR_PAD_LEFT);
             $this->orderProcessed = true;
 
             DB::commit();
@@ -87,7 +89,12 @@ class OrderSummaryStep extends Component
 
     public function getSubtotal(): int
     {
-        return $this->checkoutData['cart']['subtotal'] ?? 0;
+        $subtotal = 0;
+        foreach ($this->checkoutData['cart']['items'] ?? [] as $item) {
+            $subtotal += ($item['price'] ?? 0) * ($item['quantity'] ?? 1);
+        }
+
+        return $subtotal;
     }
 
     public function getSavings(): int
@@ -98,7 +105,8 @@ class OrderSummaryStep extends Component
     public function getDeliveryFee(): int
     {
         $method = $this->checkoutData['payment']['delivery_method'] ?? 'standard';
-        return match($method) {
+
+        return match ($method) {
             'express' => 4900, // RM49
             'fast' => 1500,    // RM15
             'pickup' => 0,     // Free pickup
@@ -110,36 +118,36 @@ class OrderSummaryStep extends Component
     public function getPaymentFee(): int
     {
         $method = $this->checkoutData['payment']['payment_method'] ?? 'credit-card';
-        return match($method) {
-            'pay-on-delivery' => 1500,
+
+        return match ($method) {
+            'pay-on-delivery' => 300, // RM3 fee for COD
             default => 0
         };
     }
 
     public function getTax(): int
     {
-        // No tax is applied
-        return 0;
+        return (int) ($this->getSubtotal() * 0.1); // 10% tax
     }
 
     public function getTotal(): int
     {
-        return $this->getSubtotal() 
-            - $this->getSavings() 
-            + $this->getDeliveryFee() 
-            + $this->getPaymentFee() 
+        return $this->getSubtotal()
+            + $this->getDeliveryFee()
+            + $this->getPaymentFee()
             + $this->getTax();
     }
 
     public function formatPrice(int $cents): string
     {
-        return 'RM ' . number_format($cents / 100, 2);
+        return 'RM '.number_format($cents / 100, 2);
     }
 
     public function getDeliveryMethodName(): string
     {
         $method = $this->checkoutData['payment']['delivery_method'] ?? 'standard';
-        return match($method) {
+
+        return match ($method) {
             'express' => 'Express Delivery (Same Day)',
             'fast' => 'Fast Delivery (Next Day)',
             'pickup' => 'Store Pickup',
@@ -151,7 +159,8 @@ class OrderSummaryStep extends Component
     public function getPaymentMethodName(): string
     {
         $method = $this->checkoutData['payment']['payment_method'] ?? 'credit-card';
-        return match($method) {
+
+        return match ($method) {
             'credit-card' => 'Credit Card',
             'pay-on-delivery' => 'Payment on Delivery',
             'paypal' => 'PayPal',
