@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MasyukAI\Cart\Storage;
 
 use Illuminate\Database\ConnectionInterface as Database;
+use Illuminate\Support\Str;
 use MasyukAI\Cart\Exceptions\CartConflictException;
 
 readonly class DatabaseStorage implements StorageInterface
@@ -325,6 +326,7 @@ readonly class DatabaseStorage implements StorageInterface
                 }
             } else {
                 $insertData = array_merge($data, [
+                    'id' => Str::uuid(),
                     'identifier' => $identifier,
                     'instance' => $instance,
                     'version' => 1,

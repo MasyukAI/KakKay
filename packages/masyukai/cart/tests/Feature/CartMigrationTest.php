@@ -37,8 +37,10 @@ beforeEach(function () {
     $this->cartMigration = new CartMigrationService;
 
     // Create a test user with email property for identifier
-    $this->user = new class {
+    $this->user = new class
+    {
         public $id = 1;
+
         public $email = 'testuser@example.com';
 
         public function getAuthIdentifier()
@@ -56,7 +58,7 @@ it('can migrate guest cart to user cart', function () {
     $connection = app('db')->connection();
     $connection->getSchemaBuilder()->dropIfExists('carts');
     $connection->getSchemaBuilder()->create('carts', function ($table) {
-        $table->id();
+        $table->uuid('id')->primary();
         $table->string('identifier')->index();
         $table->string('instance')->default('default')->index();
         $table->longText('items')->nullable();

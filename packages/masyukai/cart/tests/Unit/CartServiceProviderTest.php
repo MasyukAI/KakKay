@@ -195,7 +195,7 @@ it('integration: publishes config, migrations, and views', function () {
     $provider->configurePackage($package);
 
     expect($package->name)->toBe('cart');
-    expect($package->commands)->toHaveCount(3);  // Now 3 commands
+    expect($package->commands)->toHaveCount(2);  // ClearAbandonedCartsCommand and CartMetricsCommand
     expect(true)->toBeTrue(); // Package was configured successfully
 });
 

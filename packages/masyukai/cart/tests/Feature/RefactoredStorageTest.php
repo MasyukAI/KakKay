@@ -13,7 +13,7 @@ beforeEach(function () {
     // Create test table with new structure (separate from the main migration)
     if (! Schema::hasTable('carts_refactor_test')) {
         Schema::create('carts_refactor_test', function ($table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('identifier')->index()->comment('auth()->id() for authenticated users, session()->id() for guests');
             $table->string('instance')->default('default')->index()->comment('Cart instance name for multiple carts per identifier');
             $table->longText('items')->nullable()->comment('Serialized cart items');

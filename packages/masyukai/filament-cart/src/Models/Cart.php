@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace MasyukAI\FilamentCart\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Cart extends Model
 {
+    use HasUlids;
     use HasFactory;
 
     /**

@@ -15,7 +15,7 @@ abstract class TestCase extends BaseTestCase
         // Create carts table for testing if it doesn't exist
         if (! Schema::hasTable('carts')) {
             Schema::create('carts', function (Blueprint $table) {
-                $table->id();
+                $table->uuid('id')->primary();
                 $table->string('identifier')->index();
                 $table->string('instance')->default('default')->index();
                 $table->json('items')->nullable();

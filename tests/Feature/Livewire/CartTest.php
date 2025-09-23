@@ -10,13 +10,6 @@ use MasyukAI\Cart\Facades\Cart as CartFacade;
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    // Force configure cart transformer before any cart operations
-    app()->singleton('cart.transformer', function () {
-        return new \MasyukAI\Cart\PriceTransformers\IntegerPriceTransformer;
-    });
-
-    config(['cart.display.transformer' => \MasyukAI\Cart\PriceTransformers\IntegerPriceTransformer::class]);
-
     // Clear cart before each test and reset instance
     CartFacade::clear();
 
@@ -36,7 +29,7 @@ it('can render', function () {
 
     $component = Livewire::test(Cart::class);
 
-    $component->assertSee('Troli Masih Kosong'); // Cart should be empty initially
+    $component->assertSee('Troli awak masih sunyi'); // Cart should be empty initially
 });
 
 it('can add product to cart', function () {

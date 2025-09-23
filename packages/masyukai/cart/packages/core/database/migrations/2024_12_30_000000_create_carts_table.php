@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create(config('cart.database.table', 'carts'), function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('identifier')->index();
             $table->string('instance')->default('default')->index();
             $table->json('items')->nullable();

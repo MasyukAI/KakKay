@@ -91,9 +91,12 @@ abstract class TestCase extends Orchestra
 
     protected function setUpDatabase(): void
     {
+        // Drop the table if it exists and create it fresh
+        Schema::dropIfExists('carts');
+
         // Create the table directly using Schema
         Schema::create('carts', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('identifier')->index();
             $table->string('instance')->default('default')->index();
             $table->json('items')->nullable();

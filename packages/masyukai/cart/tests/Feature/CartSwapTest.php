@@ -20,7 +20,7 @@ beforeEach(function () {
     $connection = app('db')->connection();
     $connection->getSchemaBuilder()->dropIfExists('carts_swap_test');
     $connection->getSchemaBuilder()->create('carts_swap_test', function ($table) {
-        $table->id();
+        $table->uuid('id')->primary();
         $table->string('identifier')->index();
         $table->string('instance')->default('default')->index();
         $table->longText('items')->nullable();
@@ -195,7 +195,7 @@ it('returns false when swapping non-existent cart', function () {
     $connection = app('db')->connection();
     $connection->getSchemaBuilder()->dropIfExists('carts_swap_test_3');
     $connection->getSchemaBuilder()->create('carts_swap_test_3', function ($table) {
-        $table->id();
+        $table->uuid('id')->primary();
         $table->string('identifier')->index();
         $table->string('instance')->default('default')->index();
         $table->longText('items')->nullable();
