@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('shipments', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('order_id')->constrained()->onDelete('cascade');
+            $table->uuid('id')->primary();
+            $table->uuid('order_id');
             $table->string('carrier')->nullable();          // e.g., J&T, PosLaju, DHL
             $table->string('service')->nullable();          // e.g., Express, Economy
             $table->string('tracking_number')->nullable()->unique();
@@ -22,6 +22,8 @@ return new class extends Migration
             $table->timestamp('delivered_at')->nullable();
             $table->text('note')->nullable();
             $table->timestamps();
+
+            $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
 
             $table->index(['order_id', 'status']);
         });

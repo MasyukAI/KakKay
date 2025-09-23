@@ -12,16 +12,21 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('stock_transactions', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('product_id')->constrained()->onDelete('cascade');
-            $table->foreignId('order_item_id')->nullable()->constrained()->onDelete('set null');
-            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null'); // Admin who made the change
+            $table->uuid('id')->primary();
+            $table->uuid('product_id');
+            $table->uuid('order_item_id')->nullable();
+            $table->uuid('user_id')->nullable(); // Admin who made the change
             $table->integer('quantity');
             $table->enum('type', ['in', 'out']);
             $table->string('reason')->nullable(); // sale, return, adjustment, restock, damaged, initial, etc.
             $table->string('note')->nullable();
             $table->timestamp('transaction_date')->useCurrent();
             $table->timestamps();
+
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
+            $table->foreign('order_item_id')->references('id')->on('order_items')->onDelete('set null');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
+            
             $table->index(['product_id', 'type']);
             $table->index(['user_id', 'reason']);
         });

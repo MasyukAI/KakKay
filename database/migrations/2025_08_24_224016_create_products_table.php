@@ -12,11 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('products', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('name');
             $table->string('slug')->nullable()->unique();
             $table->string('description')->nullable();
-            $table->foreignId('category_id')->constrained()->onDelete('cascade');
+            $table->uuid('category_id');
             $table->integer('price')->default(0);
 
             // Shipping and physical properties
@@ -30,6 +30,8 @@ return new class extends Migration
             $table->boolean('is_featured')->default(false);
             $table->boolean('is_active')->default(false);
             $table->timestamps();
+
+            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
         });
     }
 

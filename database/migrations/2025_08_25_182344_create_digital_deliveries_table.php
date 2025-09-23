@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('digital_deliveries', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('order_id')->constrained()->onDelete('cascade');
-            $table->foreignId('order_item_id')->nullable()->constrained()->onDelete('cascade'); // per-item control
+            $table->uuid('id')->primary();
+            $table->uuid('order_id');
+            $table->uuid('order_item_id')->nullable(); // per-item control
             $table->string('asset_path');                // storage path (private disk) or key
             $table->string('delivery_token')->unique();  // used in signed routes
             $table->unsignedInteger('max_downloads')->default(5);
@@ -22,6 +22,9 @@ return new class extends Migration
             $table->timestamp('expires_at')->nullable(); // optional expiry
             $table->enum('status', ['pending', 'available', 'expired', 'revoked'])->default('available');
             $table->timestamps();
+
+            $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
+            $table->foreign('order_item_id')->references('id')->on('order_items')->onDelete('cascade');
 
             $table->index(['order_id', 'status']);
         });

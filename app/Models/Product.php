@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,7 +11,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Product extends Model implements HasMedia
 {
-    use HasFactory, InteractsWithMedia;
+    use HasFactory, HasUuids, InteractsWithMedia;
 
     protected $casts = [
         'is_active' => 'boolean',
@@ -65,10 +66,6 @@ class Product extends Model implements HasMedia
     //     return $this->price / 100;
     // }
 
-    public function images()
-    {
-        return $this->hasMany(ProductImage::class);
-    }
 
     public function primaryImage()
     {

@@ -12,11 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('download_events', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('digital_delivery_id')->constrained()->onDelete('cascade');
+            $table->uuid('id')->primary();
+            $table->uuid('digital_delivery_id');
             $table->ipAddress('ip')->nullable();
             $table->string('user_agent')->nullable();
             $table->timestamps();
+
+            $table->foreign('digital_delivery_id')->references('id')->on('digital_deliveries')->onDelete('cascade');
         });
     }
 

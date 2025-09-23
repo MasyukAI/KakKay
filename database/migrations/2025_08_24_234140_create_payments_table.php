@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('payments', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('order_id')->constrained()->onDelete('cascade');
+            $table->uuid('id')->primary();
+            $table->uuid('order_id');
 
             // Gateway transaction identifiers
             $table->string('gateway_transaction_id')->nullable(); // Gateway's transaction ID
@@ -35,6 +35,8 @@ return new class extends Migration
             $table->text('note')->nullable();
             $table->string('reference')->nullable(); // Internal reference
             $table->timestamps();
+
+            $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
 
             // Indexes for performance
             $table->index(['order_id', 'status']);

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('discounts', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('code')->unique();
             $table->enum('type', ['percent','fixed']); // percent = basis points (e.g. 1500 = 15%), fixed = cents
             $table->integer('value'); // see type note above
@@ -27,11 +27,15 @@ return new class extends Migration
 
         // Which discounts applied to which orders (with resolved applied amount)
         Schema::create('order_discounts', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('order_id')->constrained()->onDelete('cascade');
-            $table->foreignId('discount_id')->constrained()->onDelete('restrict');
+            $table->uuid('id')->primary();
+            $table->uuid('order_id');
+            $table->uuid('discount_id');
             $table->integer('amount_applied')->default(0); // cents actually deducted
             $table->timestamps();
+
+            $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
+            $table->foreign('discount_id')->references('id')->on('discounts')->onDelete('restrict');
+            
             $table->unique(['order_id','discount_id']);
         });
     }
