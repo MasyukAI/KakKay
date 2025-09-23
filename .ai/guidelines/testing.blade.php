@@ -14,6 +14,7 @@ All tests **must** use Pest (v4) and adhere to its conventions. Use the `context
 - Use descriptive test names (e.g., `testUserCanRegisterForDiscounts`, not `testDiscount`).
 - Reuse existing test helpers, fixtures, or utilities before creating new ones.
 - Reference `context7` documentation to align tests with best practices.
+- The test should prove the code is working as intended not the other way around.
 
 ## Test Enforcement
 - Every codebase change **must** include a corresponding Pest unit or feature test.
