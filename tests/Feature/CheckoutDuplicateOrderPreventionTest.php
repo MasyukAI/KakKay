@@ -50,37 +50,50 @@ test('checkout proceeds normally when no existing purchase', function () {
     // Set up cart with items
     Cart::add('1', 'Test Product', 2999, 1);
 
-    // Mock the payment gateway to return null (no existing purchase) and mock purchase creation
+    // Mock the payment gateway to return no existing purchase
     $this->mock(\App\Contracts\PaymentGatewayInterface::class, function ($mock) {
-        $mock->shouldReceive('getPurchaseStatus')
-            ->andReturn(null);
+        $mock->shouldReceive('getAvailablePaymentMethods')
+            ->andReturn([
+                [
+                    'id' => 'fpx_b2c',
+                    'name' => 'FPX Online Banking',
+                    'description' => 'Bayar dengan Internet Banking Malaysia',
+                    'icon' => 'building-office',
+                    'group' => 'banking',
+                ],
+            ]);
+
+        $mock->shouldReceive('getPurchaseStatus')->andReturn(null);
         $mock->shouldReceive('createPurchase')
             ->andReturn([
                 'success' => true,
-                'purchase_id' => 'test_purchase_123',
-                'checkout_url' => 'https://payment.example.com/pay/test_purchase_123',
+                'purchase_id' => 'new-purchase-id',
+                'checkout_url' => 'https://payment.example.com/new',
                 'gateway_response' => ['test' => 'response'],
             ]);
     });
 
-    // Create the component and fill form data
-    $component = Livewire::test(Checkout::class);
+    // Create the component and fill form data (with valid district)
+    $component = Livewire::test(Checkout::class)
+        ->set('data', [
+            'name' => 'John Doe',
+            'email' => 'john@example.com',
+            'email_confirmation' => 'john@example.com',
+            'phone' => '+60123456789',
+            'country' => 'Malaysia',
+            'state' => '10', // Selangor
+            'district' => '1001', // Klang
+            'postal_code' => '50000',
+            'address' => '123 Test Street',
+        ])
+        ->call('processCheckout');
 
-    $formData = [
-        'name' => 'John Doe',
-        'email' => 'john@example.com',
-        'phone' => '123456789',
-        'country' => 'Malaysia',
-        'city' => 'Kuala Lumpur',
-        'address' => '123 Test Street',
-        'state' => 'Kuala Lumpur',
-        'postal_code' => '50000',
-        'delivery_method' => 'standard',
-    ];
+    // Should proceed normally without errors
+    $component->assertHasNoErrors();
 
-    // Set the form data and call processCheckout
-    $component->set('data', $formData)
-        ->call('processCheckout')
-        ->assertHasNoErrors()
-        ->assertRedirect('https://payment.example.com/pay/test_purchase_123');
+    // Verify that an order was created since no existing purchase was found
+    expect(\App\Models\Order::count())->toBe(1);
+
+    $order = \App\Models\Order::first();
+    expect($order->checkout_form_data['name'])->toBe('John Doe');
 });

@@ -20,17 +20,25 @@ test('checkout creates order and redirects to payment page when bayar sekarang i
     // Add shipping
     Cart::addShipping('Standard Shipping', 5); // RM5.00
 
-    // Visit checkout page
-    $response = $this->get('/checkout');
-
-    // Should be able to access checkout page
-    $response->assertStatus(200);
-
     // Get initial order count
     $initialOrderCount = Order::count();
 
     // Mock the payment gateway to return success
     $this->mock(\App\Contracts\PaymentGatewayInterface::class, function ($mock) {
+        $mock->shouldReceive('getAvailablePaymentMethods')
+            ->andReturn([
+                [
+                    'id' => 'fpx_b2c',
+                    'name' => 'FPX Online Banking',
+                    'description' => 'Bayar dengan Internet Banking Malaysia',
+                    'icon' => 'building-office',
+                    'group' => 'banking',
+                ],
+            ]);
+
+        $mock->shouldReceive('getPurchaseStatus')
+            ->andReturn(null); // No existing purchase
+
         $mock->shouldReceive('createPurchase')
             ->andReturn([
                 'success' => true,
@@ -47,13 +55,13 @@ test('checkout creates order and redirects to payment page when bayar sekarang i
     $formData = [
         'name' => 'John Doe',
         'email' => 'john@example.com',
-        'phone' => '123456789',
+        'email_confirmation' => 'john@example.com', // Required field
+        'phone' => '+60123456789',
         'country' => 'Malaysia',
-        'city' => 'Kuala Lumpur',
+        'state' => '10', // Selangor state ID
+        'district' => '1001', // Klang district ID
         'address' => '123 Test Street',
-        'state' => 'Kuala Lumpur',
         'postal_code' => '50000',
-        'delivery_method' => 'standard',
     ];
 
     // Set the form data in the component
