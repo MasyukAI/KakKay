@@ -16,11 +16,11 @@ class Address extends Model
         'addressable_id',
         'name',
         'company',
-        'line1',
-        'line2',
+        'street1',
+        'street2',
         'city',
         'state',
-        'postal_code',
+        'postcode',
         'country',
         'phone',
         'type',
@@ -69,8 +69,8 @@ class Address extends Model
     public function getFormattedAttribute(): string
     {
         $parts = array_filter([
-            $this->line1,
-            $this->line2,
+            $this->street1,
+            $this->street2,
             $this->city,
             $this->state,
             $this->postal_code,
@@ -100,11 +100,11 @@ class Address extends Model
     public static function createOrUpdateFor($addressable, array $data, ?string $type = 'billing'): self
     {
         $query = $addressable->addresses();
-        
+
         if ($type !== null) {
             $query = $query->where('type', $type);
         }
-        
+
         $address = $query->first();
 
         if ($address) {
@@ -113,11 +113,11 @@ class Address extends Model
             $addressData = array_merge($data, [
                 'is_primary' => $addressable->addresses()->count() === 0,
             ]);
-            
+
             if ($type !== null) {
                 $addressData['type'] = $type;
             }
-            
+
             $address = $addressable->addresses()->create($addressData);
         }
 

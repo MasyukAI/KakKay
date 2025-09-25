@@ -42,7 +42,7 @@ test('checkout prevents duplicate orders when purchase already exists', function
 
     // Set the form data and call processCheckout
     $component->set('data', $formData)
-        ->call('processCheckout')
+        ->call('submitCheckout')
         ->assertHasErrors(); // Should have validation errors about duplicate order
 });
 
@@ -81,12 +81,12 @@ test('checkout proceeds normally when no existing purchase', function () {
             'email_confirmation' => 'john@example.com',
             'phone' => '+60123456789',
             'country' => 'Malaysia',
-            'state' => '10', // Selangor
-            'district' => '1001', // Klang
-            'postal_code' => '50000',
-            'address' => '123 Test Street',
+            'state' => 'Selangor',
+            'district' => 'Klang',
+            'postcode' => '50000',
+            'street1' => '123 Test Street',
         ])
-        ->call('processCheckout');
+        ->call('submitCheckout');
 
     // Should proceed normally without errors
     $component->assertHasNoErrors();

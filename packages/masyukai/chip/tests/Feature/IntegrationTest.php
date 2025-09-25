@@ -120,7 +120,7 @@ R1rBR7x4H2mZ6w2zT3vQ8qM1z0S2Fw
             'email' => $this->faker->email,
             'phone' => '+60'.$this->faker->numerify('#########'),
             'address' => [
-                'line1' => $this->faker->streetAddress,
+                'street1' => $this->faker->streetAddress,
                 'city' => $this->faker->city,
                 'state' => $this->faker->state,
                 'country' => 'MY',

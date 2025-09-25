@@ -136,7 +136,7 @@ describe('Client DataObject', function () {
             'email' => 'john@example.com',
             'phone' => '+60123456789',
             'address' => [
-                'line1' => '123 Main Street',
+                'street1' => '123 Main Street',
                 'city' => 'Kuala Lumpur',
                 'state' => 'Selangor',
                 'country' => 'MY',
@@ -154,7 +154,7 @@ describe('Client DataObject', function () {
         expect($client->email)->toBe('john@example.com');
         expect($client->phone)->toBe('+60123456789');
         expect($client->address)->toBe([
-            'line1' => '123 Main Street',
+            'street1' => '123 Main Street',
             'city' => 'Kuala Lumpur',
             'state' => 'Selangor',
             'country' => 'MY',

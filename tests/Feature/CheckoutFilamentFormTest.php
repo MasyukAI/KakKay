@@ -11,15 +11,15 @@ test('checkout component class exists', function () {
 
 test('checkout component implements required interfaces', function () {
     $reflection = new ReflectionClass(Checkout::class);
-    
+
     expect($reflection->implementsInterface(\Filament\Schemas\Contracts\HasSchemas::class))->toBeTrue();
 });
 
 test('checkout component has required methods', function () {
-    $checkout = new Checkout();
-    
+    $checkout = new Checkout;
+
     expect(method_exists($checkout, 'form'))->toBeTrue();
-    expect(method_exists($checkout, 'processCheckout'))->toBeTrue();
+    expect(method_exists($checkout, 'submitCheckout'))->toBeTrue();
     expect(method_exists($checkout, 'getSubtotal'))->toBeTrue();
     expect(method_exists($checkout, 'getTotal'))->toBeTrue();
 });
@@ -27,9 +27,9 @@ test('checkout component has required methods', function () {
 test('checkout route works', function () {
     // Install world data for the test
     $this->artisan('world:install')->assertSuccessful();
-    
+
     $response = $this->get('/checkout');
-    
+
     // Should either show checkout page or redirect to cart (when no items)
     expect($response->status())->toBeIn([200, 302]);
 });

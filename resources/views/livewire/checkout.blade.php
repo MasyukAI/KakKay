@@ -40,7 +40,7 @@
 
         <section id="form" class="mt-14 pb-24">
             <div class="mx-auto max-w-7xl px-6 sm:px-8">
-                <form wire:submit="processCheckout" class="relative grid gap-10 lg:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[minmax(0,1fr)_400px]">
+                <form wire:submit="submitCheckout" class="relative grid gap-10 lg:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[minmax(0,1fr)_400px]">
                         <div class="min-w-0">
                             {{ $this->form }}
                         </div>

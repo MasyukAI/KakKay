@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\CodeGeneratorService;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -114,7 +115,7 @@ class Order extends Model
      */
     public static function generateOrderNumber(): string
     {
-        return 'ORDER-'.now()->format('Ymd').'-'.strtoupper(uniqid());
+        return CodeGeneratorService::generateOrderCode();
     }
 
     /**

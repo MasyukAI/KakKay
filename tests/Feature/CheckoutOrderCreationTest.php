@@ -58,17 +58,17 @@ test('checkout creates order and redirects to payment page when bayar sekarang i
         'email_confirmation' => 'john@example.com', // Required field
         'phone' => '+60123456789',
         'country' => 'Malaysia',
-        'state' => '10', // Selangor state ID
-        'district' => '1001', // Klang district ID
-        'address' => '123 Test Street',
-        'postal_code' => '50000',
+        'state' => 'Selangor',
+        'district' => 'Klang',
+        'street1' => '123 Test Street',
+        'postcode' => '50000',
     ];
 
     // Set the form data in the component
     $component->set('data', $formData);
 
-    // Call processCheckout and expect redirect
-    $component->call('processCheckout')
+    // Call submitCheckout and expect redirect
+    $component->call('submitCheckout')
         ->assertRedirect('https://payment.example.com/pay/test_purchase_123');
 
     // Verify that a new order was created
@@ -124,7 +124,7 @@ test('checkout validates required form fields', function () {
     $component = Livewire::test(Checkout::class)
         ->set('data', []); // Empty form data
 
-    $component->call('processCheckout');
+    $component->call('submitCheckout');
 
     // The component should not redirect when validation fails
     // We can't easily test Filament validation errors in this setup
@@ -153,7 +153,7 @@ test('checkout handles payment gateway errors gracefully', function () {
         'city' => 'Kuala Lumpur',
         'address' => '123 Test Street',
         'state' => 'Kuala Lumpur',
-        'postal_code' => '50000',
+        'postcode' => '50000',
         'delivery_method' => 'standard',
     ];
 
@@ -164,7 +164,7 @@ test('checkout handles payment gateway errors gracefully', function () {
     $component = Livewire::test(Checkout::class)
         ->set('data', $checkoutData);
 
-    $component->call('processCheckout');
+    $component->call('submitCheckout');
 
     // The component should not redirect when payment fails
     // and no order should be created due to transaction rollback

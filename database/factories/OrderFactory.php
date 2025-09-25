@@ -23,13 +23,13 @@ class OrderFactory extends Factory
             'user_id' => User::factory(),
             'address_id' => null,
             'cart_items' => [], // Legacy field - will be replaced by OrderItems
-            'delivery_method' => $this->faker->randomElement(['standard', 'express', 'pickup']),
+            'delivery_method' => fake()->randomElement(['standard', 'express', 'pickup']),
             'checkout_form_data' => [
-                'billing_address' => $this->faker->address,
-                'phone' => $this->faker->phoneNumber,
+                'billing_address' => fake()->address,
+                'phone' => fake()->phoneNumber,
             ],
-            'status' => $this->faker->randomElement(['pending', 'processing', 'shipped', 'delivered', 'cancelled']),
-            'total' => $this->faker->numberBetween(1000, 50000), // Total in cents
+            'status' => fake()->randomElement(['pending', 'processing', 'shipped', 'delivered', 'cancelled']),
+            'total' => fake()->numberBetween(1000, 50000), // Total in cents
         ];
     }
 
