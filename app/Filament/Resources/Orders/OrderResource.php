@@ -15,14 +15,13 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class OrderResource extends Resource
 {
     protected static ?string $model = Order::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
-
-    protected static ?string $recordTitleAttribute = 'order_number';
 
     public static function form(Schema $schema): Schema
     {
@@ -36,13 +35,20 @@ class OrderResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return OrdersTable::configure($table);
+        $table = OrdersTable::configure($table);
+
+        return $table;
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->with(['user', 'address']);
     }
 
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\OrderItemsRelationManager::class,
         ];
     }
 

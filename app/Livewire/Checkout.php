@@ -3,9 +3,7 @@
 namespace App\Livewire;
 
 use Akaunting\Money\Money;
-use App\Data\DistrictData;
 use App\Data\StateData;
-use App\Models\District;
 use App\Services\CheckoutService;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -141,51 +139,13 @@ class Checkout extends Component implements HasSchemas
                                     ->searchable()
                                     ->placeholder('Pilih negeri')
                                     ->searchPrompt('Taip untuk mencari negeri')
-                                    ->live()
-                                    ->afterStateUpdated(function ($state, callable $set) {
-                                        $set('district', null);
-                                        $set('city', null);
-                                    })
                                     ->extraAttributes(['class' => 'checkout-sm']),
 
-                                Select::make('district')
-                                    ->label('Daerah')
-                                    ->searchPrompt('Taip untuk mencari daerah')
-                                    ->options(function (callable $get) {
-                                        $state = $get('state');
-                                        if (! $state) {
-                                            return [];
-                                        }
-
-                                        return DistrictData::getByStateOptions($state);
-                                    })
+                                TextInput::make('city')
+                                    ->label('Bandar')
                                     ->required()
-                                    ->searchable()
-                                    ->placeholder('Pilih daerah')
-                                    ->disabled(fn (callable $get) => ! $get('state'))
-                                    ->live()
-                                    ->afterStateUpdated(function ($district, callable $set) {
-                                        $set('city', null);
-                                    })
-                                    ->extraAttributes(['class' => 'checkout-sm']),
-
-                                Select::make('city')
-                                    ->label('Mukim, Bandar, Pekan')
-                                    ->searchPrompt('Taip untuk mencari mukim, bandar, pekan')
-                                    ->options(function (callable $get) {
-                                        $district = $get('district');
-                                        if (! $district) {
-                                            return [];
-                                        }
-
-                                        // Support single or multiple districts
-                                        $districts = is_array($district) ? $district : [$district];
-                                        return \App\Data\SubdistrictData::getByDistrictsOptions($districts);
-                                    })
-                                    ->required(fn (callable $get) => ! empty($get('district')))
-                                    ->searchable()
-                                    ->placeholder('Pilih mukim, bandar, pekan')
-                                    ->disabled(fn (callable $get) => ! $get('district'))
+                                    ->placeholder('Contoh: Kuala Lumpur, Subang Jaya, Johor Bahru')
+                                    ->maxLength(255)
                                     ->extraAttributes(['class' => 'checkout-sm']),
 
                                 TextInput::make('postcode')
@@ -501,7 +461,7 @@ class Checkout extends Component implements HasSchemas
                 'company' => $formData['company'] ?? '',
                 'street1' => $formData['street1'],
                 'street2' => $formData['street2'] ?? '',
-                'city' => $formData['district'] ?? '', // Using district as city (now district is the name directly)
+                'city' => $formData['city'] ?? '', // Using city field (Mukim, Bandar, Pekan)
                 'state' => $formData['state'],
                 'country' => $formData['country'],
                 'postcode' => $formData['postcode'],
@@ -511,7 +471,6 @@ class Checkout extends Component implements HasSchemas
                 'email' => $formData['email'],
 
                 // CHIP API specific fields
-                'district' => $formData['district'] ?? '', // District name directly
                 'address' => $formData['street1'].($formData['street2'] ? ', '.$formData['street2'] : ''), // Combined address for CHIP
                 'zip' => $formData['postcode'],
 

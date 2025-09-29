@@ -24,6 +24,10 @@
                 "postgresql://postgres:@localhost/kakkay"
             ],
             "type": "stdio"
+        },
+        "chrome-devtools": {
+            "command": "npx",
+            "args": ["chrome-devtools-mcp@latest"]
         }
     }
 }

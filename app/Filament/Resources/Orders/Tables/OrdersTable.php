@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Orders\Tables;
 
+use Akaunting\Money\Money;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -25,8 +26,25 @@ class OrdersTable
                     ->searchable(),
                 TextColumn::make('status')
                     ->searchable(),
+                TextColumn::make('items_count')
+                    ->label('Items Count')
+                    ->formatStateUsing(function ($record) {
+                        // Try to count from orderItems relationship first
+                        if ($record->orderItems && $record->orderItems->isNotEmpty()) {
+                            return $record->orderItems->sum('quantity');
+                        }
+                        // Fallback to cart_items JSON data
+                        elseif (! empty($record->cart_items)) {
+                            return collect($record->cart_items)->sum('quantity');
+                        }
+
+                        return 0;
+                    })
+                    ->alignCenter()
+                    ->sortable(false),
                 TextColumn::make('total')
                     ->numeric()
+                    ->formatStateUsing(fn ($state) => Money::MYR($state))
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
