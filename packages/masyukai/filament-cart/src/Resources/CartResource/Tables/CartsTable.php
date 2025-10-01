@@ -2,6 +2,7 @@
 
 namespace MasyukAI\FilamentCart\Resources\CartResource\Tables;
 
+use Akaunting\Money\Money;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkAction;
@@ -16,6 +17,8 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
+use MasyukAI\Cart\Facades\Cart;
 
 class CartsTable
 {
@@ -45,7 +48,7 @@ class CartsTable
 
                 TextColumn::make('items_count')
                     ->label('Items')
-                    ->alignCenter()
+                    // ->alignCenter()
                     ->sortable()
                     ->icon(Heroicon::OutlinedShoppingBag),
 
@@ -54,11 +57,23 @@ class CartsTable
                     ->alignCenter()
                     ->sortable(),
 
-                TextColumn::make('formatted_subtotal')
+                TextColumn::make('subtotal')
                     ->label('Subtotal')
-                    ->alignEnd()
+                    // ->alignEnd()
+                    ->formatStateUsing(fn ($state) => Money::MYR($state))
                     ->sortable(query: fn (Builder $query, string $direction): Builder => $query->orderByRaw('JSON_EXTRACT(items, "$[*].price") '.$direction)
                     ),
+
+                TextColumn::make('total')
+                    ->label('Total')
+                    ->alignEnd()
+                    ->formatStateUsing(fn ($state) => Money::MYR($state))
+                    ->sortable(),
+
+                TextColumn::make('version')
+                    ->label('Version')
+                    ->alignCenter()
+                    ->sortable(),
 
                 // IconColumn::make('isEmpty')
                 //     ->label('Status')
@@ -119,9 +134,21 @@ class CartsTable
                         ->color('danger')
                         ->requiresConfirmation()
                         ->action(function ($record) {
+                            // Clear cart items and conditions manually without deleting the cart record
+                            // This allows admins to manually add items/conditions after clearing
+
+                            // Delete normalized cart_items records
+                            DB::table('cart_items')->where('cart_id', $record->id)->delete();
+
+                            // Delete normalized cart_conditions records
+                            DB::table('cart_conditions')->where('cart_id', $record->id)->delete();
+
+                            // Clear cart data and increment version
                             $record->update([
                                 'items' => [],
                                 'conditions' => [],
+                                'metadata' => [],
+                                'version' => $record->version + 1,
                             ]);
                         }),
                     // ->visible(fn ($record) => !$record->isEmpty()),
@@ -145,22 +172,32 @@ class CartsTable
                     ->color('danger')
                     ->requiresConfirmation()
                     ->action(function (Collection $records) {
+                        $cartIds = $records->pluck('id')->toArray();
+                        DB::table('cart_items')->whereIn('cart_id', $cartIds)->delete();
+                        DB::table('cart_conditions')->whereIn('cart_id', $cartIds)->delete();
                         $records->each(function ($record) {
                             $record->update([
                                 'items' => [],
                                 'conditions' => [],
+                                'metadata' => [],
+                                'version' => $record->version + 1,
                             ]);
                         });
                     }),
 
-                // BulkAction::make('delete_empty')
-                //     ->label('Delete Empty Carts')
-                //     ->icon(Heroicon::OutlinedXMark)
-                //     ->color('danger')
-                //     ->requiresConfirmation()
-                //     ->action(function (Collection $records) {
-                //         $records->filter(fn ($record) => $record->isEmpty())->each->delete();
-                //     }),
+                BulkAction::make('delete_selected')
+                    ->label('Delete Selected Carts')
+                    ->icon(Heroicon::OutlinedXMark)
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->action(function (Collection $records) {
+                        $cartIds = $records->pluck('id')->toArray();
+                        // Delete normalized cart_items and cart_conditions for selected carts
+                        DB::table('cart_items')->whereIn('cart_id', $cartIds)->delete();
+                        DB::table('cart_conditions')->whereIn('cart_id', $cartIds)->delete();
+                        // Delete the carts themselves
+                        $records->each->delete();
+                    }),
             ])
             ->defaultSort('updated_at', 'desc')
             ->poll('30s')

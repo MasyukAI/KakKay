@@ -96,9 +96,11 @@ describe('Comprehensive Serialization and Persistence Coverage', function () {
             expect($array['price'])->toBe(100.00); // Raw price, not calculated
             expect($array['quantity'])->toBe(2);
 
-            // Verify calculated values are included
-            expect(array_key_exists('subtotal', $array))->toBeTrue();
-            expect(is_numeric($array['subtotal']) ? $array['subtotal'] : (is_object($array['subtotal']) && method_exists($array['subtotal'], 'getAmount') ? $array['subtotal']->getAmount() : $array['subtotal']))->toBeNumeric(); // Should be calculated subtotal
+            // Verify calculated values are NOT included in toArray() (they should be computed on-demand)
+            expect(array_key_exists('subtotal', $array))->toBeFalse();
+
+            // But subtotal can still be accessed via getSubtotal() method
+            expect($item->getSubtotal()->getAmount())->toBeNumeric();
 
             // Verify nested data is serialized
             expect($array['attributes'])->toBeArray();
@@ -148,9 +150,11 @@ describe('Comprehensive Serialization and Persistence Coverage', function () {
             // Price field should store raw price, not calculated price
             expect($array['price'])->toBe(100.00); // Raw price
 
-            // But subtotal should be calculated (for display purposes)
-            expect(array_key_exists('subtotal', $array))->toBeTrue();
-            expect($array['subtotal'])->not->toBe(200.00); // Should include conditions
+            // Subtotal should NOT be in toArray() since it's calculated on-demand
+            expect(array_key_exists('subtotal', $array))->toBeFalse();
+
+            // But subtotal can still be computed via getSubtotal() method
+            expect($item->getSubtotal()->getAmount())->toBeNumeric();
         });
     });
 
@@ -359,9 +363,7 @@ describe('Comprehensive Serialization and Persistence Coverage', function () {
             expect($contentFormatted['items'])->toHaveCount(3);
         });
 
-        it('stores raw values in item arrays regardless of formatting', function () {
-            // CartMoney::enableFormatting(); (removed)
-
+        it('stores raw values in item arrays for persistence', function () {
             $item = $this->cart->get('item-1');
             $array = $item->toArray();
 
@@ -369,9 +371,11 @@ describe('Comprehensive Serialization and Persistence Coverage', function () {
             expect($array['price'])->toBe(100.00);
             expect($array['price'])->toBeFloat();
 
-            // But calculated values like subtotal may be formatted
-            expect(array_key_exists('subtotal', $array))->toBeTrue();
-            expect((string) $array['subtotal'])->toBeString(); // When formatting is enabled
+            // Calculated values like subtotal should NOT be in toArray() to avoid storing redundant data
+            expect(array_key_exists('subtotal', $array))->toBeFalse();
+
+            // But getSubtotal() method still provides calculated value on-demand
+            expect($item->getSubtotal()->getAmount())->toBeFloat();
         });
     });
 

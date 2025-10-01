@@ -10,14 +10,22 @@ use MasyukAI\Cart\Models\CartItem;
 trait CalculatesTotals
 {
     /**
-     * Get cart subtotal with conditions applied
+     * Get cart subtotal with item-level conditions and subtotal-targeted cart conditions applied
      */
     protected function getSubtotal(): Money
     {
         $totalAmount = $this->getItems()->sum(fn (CartItem $item) => $item->getRawSubtotal());
+
+        // Apply cart-level conditions targeting 'subtotal'
+        $cartConditions = $this->getConditions() ?? collect();
+        $subtotalConditions = $cartConditions->byTarget('subtotal');
+        $finalAmount = $subtotalConditions->reduce(function ($amount, $condition) {
+            return $condition->apply($amount);
+        }, $totalAmount);
+
         $currency = config('cart.money.default_currency', 'USD');
 
-        return Money::{$currency}($totalAmount);
+        return Money::{$currency}($finalAmount);
     }
 
     /**
@@ -36,12 +44,13 @@ trait CalculatesTotals
      */
     protected function getTotal(): Money
     {
-        // Start with subtotal (items with their conditions)
-        $subtotalAmount = $this->getItems()->sum(fn (CartItem $item) => $item->getRawSubtotal());
+        // Start with subtotal (which already has 'subtotal' conditions applied)
+        $subtotalAmount = $this->getRawSubtotal();
 
-        // Apply cart-level conditions
+        // Apply cart-level conditions targeting 'total'
         $cartConditions = $this->getConditions() ?? collect();
-        $finalAmount = $cartConditions->reduce(function ($amount, $condition) {
+        $totalConditions = $cartConditions->byTarget('total');
+        $finalAmount = $totalConditions->reduce(function ($amount, $condition) {
             return $condition->apply($amount);
         }, $subtotalAmount);
 
@@ -51,7 +60,7 @@ trait CalculatesTotals
     }
 
     /**
-     * Get cart subtotal (with item-level conditions applied) - returns Money object for chaining
+     * Get cart subtotal (with item-level and subtotal-targeted conditions applied) - returns Money object for chaining
      */
     public function subtotal(): Money
     {
@@ -67,7 +76,7 @@ trait CalculatesTotals
     }
 
     /**
-     * Get cart total with all conditions applied (item + cart-level) - returns Money object for chaining
+     * Get cart total with all conditions applied (item + subtotal + total-level) - returns Money object for chaining
      */
     public function total(): Money
     {
@@ -115,7 +124,7 @@ trait CalculatesTotals
     }
 
     /**
-     * Get raw total as float (for internal use like events and backward compatibility)
+     * Get raw total as float (for internal use in events and storage serialization)
      */
     public function getRawTotal(): float
     {
@@ -123,7 +132,7 @@ trait CalculatesTotals
     }
 
     /**
-     * Get raw subtotal as float (for internal use like events and backward compatibility)
+     * Get raw subtotal as float (for internal use in events and storage serialization)
      */
     public function getRawSubtotal(): float
     {

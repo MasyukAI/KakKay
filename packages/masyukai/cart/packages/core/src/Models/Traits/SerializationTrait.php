@@ -8,15 +8,18 @@ trait SerializationTrait
 {
     /**
      * Convert to array
+     *
+     * Note: Subtotal is intentionally NOT included here because it's a calculated value
+     * that should be computed on-the-fly, not stored in the database.
+     * Use getSubtotal() method to get the calculated subtotal when needed.
      */
     public function toArray(): array
     {
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'price' => $this->rawPrice,
+            'price' => $this->price,
             'quantity' => $this->quantity,
-            'subtotal' => method_exists($this, 'getSubtotal') ? $this->getSubtotal() : ($this->rawPrice * $this->quantity),
             'attributes' => $this->attributes->toArray(),
             'conditions' => $this->conditions->toArray(),
             'associated_model' => $this->getAssociatedModelArray(),
@@ -48,7 +51,7 @@ trait SerializationTrait
             '%s (ID: %s, Price: %.2f, Quantity: %d)',
             $this->name,
             $this->id,
-            $this->rawPrice,
+            $this->price,
             $this->quantity
         );
     }

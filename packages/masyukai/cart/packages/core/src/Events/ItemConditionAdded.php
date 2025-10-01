@@ -11,75 +11,44 @@ use MasyukAI\Cart\Cart;
 use MasyukAI\Cart\Conditions\CartCondition;
 
 /**
- * Event dispatched when a condition is added to a cart
+ * Event dispatched when a condition is added to a specific cart item
  *
  * This event is fired whenever a new condition (discount, tax, fee, etc.)
- * is added to the cart. Useful for tracking promotional usage, analytics,
- * and triggering related business logic.
- *
- * @example
- * ```php
- * Event::listen(ConditionAdded::class, function (ConditionAdded $event) {
- *     // Track promotional code usage
- *     if ($event->condition->getType() === 'discount') {
- *         Analytics::track('promo_code_applied', [
- *             'code' => $event->condition->getName(),
- *             'value' => $event->condition->getValue(),
- *             'cart_total' => $event->cart->getRawTotal()
- *         ]);
- *     }
- *
- *     // Send notification for high-value discounts
- *     if ($event->condition->isDiscount() &&
- *         abs($event->condition->getCalculatedValue($event->cart->getRawSubtotal())) > 100) {
- *         Notification::send(User::admins(), new HighValueDiscountApplied($event));
- *     }
- * });
- * ```
+ * is added to a specific item in the cart. Useful for tracking item-level
+ * promotions, analytics, and triggering related business logic.
  *
  * @since 2.0.0
  */
-final class ConditionAdded
+final class ItemConditionAdded
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
-     * Create a new condition added event
+     * Create a new item condition added event
      *
-     * @param  CartCondition  $condition  The condition that was added
-     * @param  Cart  $cart  The cart instance the condition was added to
-     * @param  string|null  $target  Optional target context (item ID for item conditions)
+     * @param  CartCondition  $condition  The condition that was added to the item
+     * @param  Cart  $cart  The cart instance containing the item
+     * @param  string  $itemId  The ID of the item the condition was added to
      */
     public function __construct(
         public readonly CartCondition $condition,
         public readonly Cart $cart,
-        public readonly ?string $target = null
+        public readonly string $itemId,
     ) {
         //
     }
 
     /**
-     * Get the condition's calculated impact on the cart
+     * Get the condition's calculated impact on the item
      *
      * @return float The monetary impact of the condition (positive for charges, negative for discounts)
      */
     public function getConditionImpact(): float
     {
-        $baseValue = $this->target
-            ? $this->cart->get($this->target)?->getRawSubtotal() ?? 0
-            : $this->cart->getRawSubtotal();
+        $item = $this->cart->get($this->itemId);
+        $baseValue = $item?->getRawSubtotal() ?? 0;
 
         return $this->condition->getCalculatedValue($baseValue);
-    }
-
-    /**
-     * Check if this is an item-level condition
-     *
-     * @return bool True if applied to a specific item, false if cart-level
-     */
-    public function isItemCondition(): bool
-    {
-        return $this->target !== null;
     }
 
     /**
@@ -89,12 +58,20 @@ final class ConditionAdded
      */
     public function toArray(): array
     {
+        $item = $this->cart->get($this->itemId);
+
         return [
             'condition' => [
                 'name' => $this->condition->getName(),
                 'type' => $this->condition->getType(),
                 'value' => $this->condition->getValue(),
                 'target' => $this->condition->getTarget(),
+            ],
+            'item' => [
+                'id' => $this->itemId,
+                'name' => $item?->name,
+                'quantity' => $item?->quantity,
+                'subtotal' => $item?->getRawSubtotal(),
             ],
             'cart' => [
                 'instance' => $this->cart->instance(),
@@ -104,7 +81,6 @@ final class ConditionAdded
                 'total' => $this->cart->getRawTotal(),
             ],
             'impact' => $this->getConditionImpact(),
-            'target_item' => $this->target,
             'timestamp' => now()->toISOString(),
         ];
     }

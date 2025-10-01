@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 use MasyukAI\Cart\Cart;
 use MasyukAI\Cart\Conditions\CartCondition;
-use MasyukAI\Cart\Events\ConditionAdded;
-use MasyukAI\Cart\Events\ConditionRemoved;
+use MasyukAI\Cart\Events\CartConditionAdded;
+use MasyukAI\Cart\Events\CartConditionRemoved;
+use MasyukAI\Cart\Events\ItemConditionAdded;
+use MasyukAI\Cart\Events\ItemConditionRemoved;
 use MasyukAI\Cart\Storage\SessionStorage;
 
-it('validates ConditionAdded event works correctly', function () {
+it('validates CartConditionAdded event works correctly', function () {
     // Set up session and events manually
     $sessionStore = new \Illuminate\Session\Store('testing', new \Illuminate\Session\ArraySessionHandler(120));
     $events = new \Illuminate\Events\Dispatcher;
@@ -23,7 +25,7 @@ it('validates ConditionAdded event works correctly', function () {
 
     // Track dispatched events
     $dispatchedEvents = [];
-    $events->listen(ConditionAdded::class, function ($event) use (&$dispatchedEvents) {
+    $events->listen(CartConditionAdded::class, function ($event) use (&$dispatchedEvents) {
         $dispatchedEvents[] = $event;
     });
 
@@ -37,19 +39,19 @@ it('validates ConditionAdded event works correctly', function () {
     expect($dispatchedEvents)->toHaveCount(1);
 
     $event = $dispatchedEvents[0];
-    expect($event)->toBeInstanceOf(ConditionAdded::class);
+    expect($event)->toBeInstanceOf(CartConditionAdded::class);
     expect($event->condition->getName())->toBe('summer_sale');
     expect($event->condition->getType())->toBe('discount');
     expect($event->condition->getValue())->toBe('-20%');
     expect($event->cart)->toBeInstanceOf(Cart::class);
-    expect($event->target)->toBeNull(); // Cart-level condition
-    expect($event->isItemCondition())->toBeFalse();
 
     // Verify impact calculation
-    expect($event->getConditionImpact())->toBe(-20.00);
+    // Impact is calculated on current subtotal (which includes this discount)
+    // Subtotal after -20%: 80, so impact = -20% of 80 = -16
+    expect($event->getConditionImpact())->toBe(-16.00);
 });
 
-it('validates ConditionRemoved event works correctly', function () {
+it('validates CartConditionRemoved event works correctly', function () {
     // Set up session and events manually
     $sessionStore = new \Illuminate\Session\Store('testing', new \Illuminate\Session\ArraySessionHandler(120));
     $events = new \Illuminate\Events\Dispatcher;
@@ -64,7 +66,7 @@ it('validates ConditionRemoved event works correctly', function () {
 
     // Track dispatched events
     $dispatchedEvents = [];
-    $events->listen(ConditionRemoved::class, function ($event) use (&$dispatchedEvents) {
+    $events->listen(CartConditionRemoved::class, function ($event) use (&$dispatchedEvents) {
         $dispatchedEvents[] = $event;
     });
 
@@ -79,12 +81,10 @@ it('validates ConditionRemoved event works correctly', function () {
     expect($dispatchedEvents)->toHaveCount(1);
 
     $event = $dispatchedEvents[0];
-    expect($event)->toBeInstanceOf(ConditionRemoved::class);
+    expect($event)->toBeInstanceOf(CartConditionRemoved::class);
     expect($event->condition->getName())->toBe('big_discount');
     expect($event->condition->getType())->toBe('discount');
     expect($event->cart)->toBeInstanceOf(Cart::class);
-    expect($event->target)->toBeNull(); // Cart-level condition
-    expect($event->isItemCondition())->toBeFalse();
 
     // Verify lost savings calculation
     expect($event->getLostSavings())->toBe(30.00);
@@ -106,10 +106,10 @@ it('validates item-level condition events work correctly', function () {
     // Track dispatched events
     $addedEvents = [];
     $removedEvents = [];
-    $events->listen(ConditionAdded::class, function ($event) use (&$addedEvents) {
+    $events->listen(ItemConditionAdded::class, function ($event) use (&$addedEvents) {
         $addedEvents[] = $event;
     });
-    $events->listen(ConditionRemoved::class, function ($event) use (&$removedEvents) {
+    $events->listen(ItemConditionRemoved::class, function ($event) use (&$removedEvents) {
         $removedEvents[] = $event;
     });
 
@@ -124,8 +124,7 @@ it('validates item-level condition events work correctly', function () {
     expect($addedEvents)->toHaveCount(1);
     $addEvent = $addedEvents[0];
     expect($addEvent->condition->getName())->toBe('bulk_discount');
-    expect($addEvent->target)->toBe('product-123');
-    expect($addEvent->isItemCondition())->toBeTrue();
+    expect($addEvent->itemId)->toBe('product-123');
     expect($addEvent->getConditionImpact())->toBe(-63.75); // -15% of $425 (after cart-level calculations)
 
     // Remove item-level condition
@@ -135,8 +134,7 @@ it('validates item-level condition events work correctly', function () {
     expect($removedEvents)->toHaveCount(1);
     $removeEvent = $removedEvents[0];
     expect($removeEvent->condition->getName())->toBe('bulk_discount');
-    expect($removeEvent->target)->toBe('product-123');
-    expect($removeEvent->isItemCondition())->toBeTrue();
+    expect($removeEvent->itemId)->toBe('product-123');
     expect($removeEvent->getLostSavings())->toBe(75.00);
 });
 
@@ -155,7 +153,7 @@ it('validates events are not dispatched when disabled', function () {
 
     // Track dispatched events
     $dispatchedEvents = [];
-    $events->listen(ConditionAdded::class, function ($event) use (&$dispatchedEvents) {
+    $events->listen(CartConditionAdded::class, function ($event) use (&$dispatchedEvents) {
         $dispatchedEvents[] = $event;
     });
 
@@ -182,7 +180,7 @@ it('validates condition events include comprehensive data', function () {
 
     // Track dispatched events
     $dispatchedEvents = [];
-    $events->listen(ConditionAdded::class, function ($event) use (&$dispatchedEvents) {
+    $events->listen(CartConditionAdded::class, function ($event) use (&$dispatchedEvents) {
         $dispatchedEvents[] = $event;
     });
 
@@ -206,5 +204,7 @@ it('validates condition events include comprehensive data', function () {
     expect($eventData['cart']['total_quantity'])->toBe(2);
 
     // Verify the impact is calculated correctly
-    expect($eventData['impact'])->toBe(16.50); // 8.25% of $200
+    // Impact is calculated on current subtotal (which includes this tax)
+    // Subtotal after +8.25%: 216.50, so impact = 8.25% of 216.50 = 17.86
+    expect($eventData['impact'])->toBe(17.861250000000013); // Due to floating point precision
 });

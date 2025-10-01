@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use MasyukAI\Cart\Storage\DatabaseStorage;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use MasyukAI\Cart\Storage\DatabaseStorage;
 
 // Use RefreshDatabase trait to clean database between tests
 uses(RefreshDatabase::class);
@@ -83,7 +83,7 @@ describe('DatabaseStorage Refactoring Tests', function () {
             $largeItems["item$i"] = ['name' => str_repeat('x', 1000), 'price' => $i];
         }
 
-        expect(fn() => $this->storage->putItems('test-user', 'default', $largeItems))
+        expect(fn () => $this->storage->putItems('test-user', 'default', $largeItems))
             ->toThrow(\InvalidArgumentException::class);
     });
 });

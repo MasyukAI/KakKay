@@ -13,14 +13,14 @@ trait MoneyTrait
      */
     public function getRawPrice(): float|int
     {
-        $price = $this->rawPrice;
+        $price = $this->price;
         foreach ($this->conditions as $condition) {
             $price = $condition->apply($price);
         }
         $result = max(0, $price);
 
         // Preserve original input type behavior - if original was float, keep as float
-        if (is_float($this->rawPrice) || $result != (int) $result) {
+        if (is_float($this->price) || $result != (int) $result) {
             return (float) $result;
         }
 
@@ -33,7 +33,7 @@ trait MoneyTrait
     public function getRawPriceWithoutConditions(): float|int
     {
         // Return the same type as the original input
-        return $this->rawPrice;
+        return $this->price;
     }
 
     /**
@@ -56,10 +56,10 @@ trait MoneyTrait
      */
     public function getRawSubtotalWithoutConditions(): float|int
     {
-        $result = $this->rawPrice * $this->quantity;
+        $result = $this->price * $this->quantity;
 
         // If any part is float or result has decimals, return float
-        if (is_float($this->rawPrice) || is_float($this->quantity) || $result != (int) $result) {
+        if (is_float($this->price) || is_float($this->quantity) || $result != (int) $result) {
             return (float) $result;
         }
 
@@ -107,7 +107,7 @@ trait MoneyTrait
     {
         $currency = config('cart.money.default_currency', 'USD');
 
-        return Money::{$currency}($this->rawPrice);
+        return Money::{$currency}($this->price);
     }
 
     /**

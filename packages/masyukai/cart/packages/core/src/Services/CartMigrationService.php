@@ -6,7 +6,6 @@ namespace MasyukAI\Cart\Services;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
-use MasyukAI\Cart\Collections\CartCollection;
 use MasyukAI\Cart\Events\CartMerged;
 use MasyukAI\Cart\Facades\Cart;
 
@@ -69,7 +68,7 @@ class CartMigrationService
      * - Migrates from identifier 'abc123' to identifier '42'
      * - For the 'default' cart instance
      */
-    public function migrateGuestCartToUser(string|int $userId, string $instance = 'default', string $sessionId): bool
+    public function migrateGuestCartToUser(string|int $userId, string $instance, string $sessionId): bool
     {
         $guestIdentifier = $sessionId;
         $userIdentifier = (string) $userId;
@@ -111,6 +110,7 @@ class CartMigrationService
                 mergeStrategy: $this->config['merge_strategy'] ?? 'add_quantities',
                 hadConflicts: false
             ));
+
             return true;
         }
 
@@ -133,14 +133,12 @@ class CartMigrationService
             $storage->putConditions($userIdentifier, $instance, $mergedConditions);
         }
 
-
         // ...existing code...
         $storage->forget($guestIdentifier, $instance);
 
         // Get Cart instances for the event
         $cartManager = Cart::getFacadeRoot();
         $targetCartInstance = $cartManager->getCartInstance($instance);
-
 
         // ...existing code...
         event(new CartMerged(
@@ -157,7 +155,7 @@ class CartMigrationService
     /**
      * Migrate guest cart to user cart when user logs in (user object version).
      */
-    public function migrateGuestCartForUser(mixed $user, string $instance = 'default', string $sessionId): object
+    public function migrateGuestCartForUser(mixed $user, string $instance, string $sessionId): object
     {
         $success = $this->migrateGuestCartToUser($user->id, $instance, $sessionId);
 

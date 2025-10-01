@@ -24,7 +24,7 @@ it('demonstrates comprehensive real-world cart usage scenarios', function () {
     expect(Cart::getItems())->toHaveCount(0);
     expect(Cart::getTotalQuantity())->toBe(0);
     expect(Cart::subtotal()->getAmount())->toBe(0);
-    expect(Cart::total()->getAmount())->toBe(0);
+    expect(Cart::total()->getAmount())->toBe(0.0);
 
     // === SCENARIO 2: ADDING PRODUCTS TO CART ===
 

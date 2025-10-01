@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\Payment;
+use App\Services\CheckoutService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
@@ -14,7 +15,8 @@ use MasyukAI\Chip\Services\WebhookService;
 class ChipWebhookController extends Controller
 {
     public function __construct(
-        protected WebhookService $webhookService
+        protected WebhookService $webhookService,
+        protected CheckoutService $checkoutService
     ) {
         //
     }
@@ -83,12 +85,38 @@ class ChipWebhookController extends Controller
     protected function handlePurchasePaid(array $purchaseData): void
     {
         $purchaseId = $purchaseData['id'];
-        $reference = $purchaseData['reference'] ?? null;
 
         Log::info('Processing purchase paid webhook', [
             'purchase_id' => $purchaseId,
-            'reference' => $reference,
+            'amount' => $purchaseData['amount'] ?? null,
         ]);
+
+        // Try to create order from cart payment intent first
+        $order = $this->checkoutService->handlePaymentSuccess($purchaseId, $purchaseData);
+
+        if ($order) {
+            Log::info('Order created successfully from cart payment intent', [
+                'order_id' => $order->id,
+                'purchase_id' => $purchaseId,
+            ]);
+
+            // Dispatch payment success event
+            event(new PurchasePaid($order->payments()->first(), $purchaseData));
+
+            return;
+        }
+
+        // Fallback: Try to find existing payment record (for backward compatibility)
+        $this->handleExistingPaymentRecord($purchaseData);
+    }
+
+    /**
+     * Handle existing payment record update (backward compatibility)
+     */
+    protected function handleExistingPaymentRecord(array $purchaseData): void
+    {
+        $purchaseId = $purchaseData['id'];
+        $reference = $purchaseData['reference'] ?? null;
 
         // Find payment by gateway payment ID
         $payment = Payment::where('gateway_payment_id', $purchaseId)->first();
@@ -116,33 +144,16 @@ class ChipWebhookController extends Controller
                 'status' => 'processing', // Order is paid and being processed
             ]);
 
-            // Add status history
-            $payment->order->statusHistories()->create([
-                'from_status' => 'pending',
-                'to_status' => 'processing',
-                'actor_type' => 'gateway',
-                'meta' => [
-                    'gateway' => 'chip',
-                    'purchase_id' => $purchaseId,
-                    'payment_id' => $payment->id,
-                ],
-                'note' => 'Payment completed via CHIP webhook',
-                'changed_at' => now(),
-            ]);
-
-            // Dispatch event
-            if (class_exists(PurchasePaid::class)) {
-                $purchase = \Masyukai\Chip\DataObjects\Purchase::fromArray($purchaseData);
-                event(new PurchasePaid($purchase));
-            }
-
-            Log::info('Payment and order updated successfully', [
-                'order_id' => $payment->order->id,
+            Log::info('Payment updated successfully', [
                 'payment_id' => $payment->id,
+                'order_id' => $payment->order->id,
                 'purchase_id' => $purchaseId,
             ]);
+
+            // Dispatch payment success event
+            event(new PurchasePaid($payment, $purchaseData));
         } else {
-            Log::warning('Payment not found for paid purchase', [
+            Log::warning('Payment or order not found for completed purchase', [
                 'purchase_id' => $purchaseId,
                 'reference' => $reference,
             ]);

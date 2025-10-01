@@ -14,7 +14,7 @@ trait AttributeTrait
         return new static(
             $this->id,
             $this->name,
-            $this->rawPrice,
+            $this->price,
             $this->quantity,
             $attributes,
             $this->conditions->toArray(),
@@ -73,7 +73,7 @@ trait AttributeTrait
         return new static(
             $this->id,
             $name,
-            $this->rawPrice,
+            $this->price,
             $this->quantity,
             $this->attributes->toArray(),
             $this->conditions->toArray(),

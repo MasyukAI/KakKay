@@ -6,7 +6,10 @@ namespace MasyukAI\FilamentCart;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
+use MasyukAI\FilamentCart\Resources\CartConditionResource;
+use MasyukAI\FilamentCart\Resources\CartItemResource;
 use MasyukAI\FilamentCart\Resources\CartResource;
+use MasyukAI\FilamentCart\Resources\ConditionResource;
 use MasyukAI\FilamentCart\Widgets\CartStatsWidget;
 
 class FilamentCart implements Plugin
@@ -21,6 +24,9 @@ class FilamentCart implements Plugin
         $panel
             ->resources([
                 CartResource::class,
+                CartItemResource::class,
+                CartConditionResource::class,
+                ConditionResource::class,
             ])
             ->widgets([
                 CartStatsWidget::class,

@@ -11,7 +11,7 @@ it('can access cart facade properly', function () {
     // Test basic cart operations
     expect(Cart::isEmpty())->toBeTrue();
     expect(Cart::count())->toBe(0);
-    expect(Cart::total()->getAmount())->toBe(0);
+    expect(Cart::total()->getAmount())->toBe(0.0);
 
     // Add an item to the cart
     $item = Cart::add('test-product', 'Test Product', 10.99, 2);

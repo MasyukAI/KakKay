@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace MasyukAI\Cart;
 
 use Illuminate\Contracts\Events\Dispatcher;
-use MasyukAI\Cart\Events\CartCreated;
 use MasyukAI\Cart\Storage\StorageInterface;
 use MasyukAI\Cart\Traits\CalculatesTotals;
 use MasyukAI\Cart\Traits\ManagesConditions;
@@ -34,8 +33,6 @@ class Cart
         private string $instanceName = 'default',
         private bool $eventsEnabled = true
     ) {
-        if ($this->eventsEnabled && $this->events) {
-            $this->events->dispatch(new CartCreated($this));
-        }
+        // Cart is now created when first item is added, not during instantiation
     }
 }

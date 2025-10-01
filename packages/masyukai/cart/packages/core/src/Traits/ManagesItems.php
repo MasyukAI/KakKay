@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MasyukAI\Cart\Traits;
 
 use MasyukAI\Cart\Collections\CartCollection;
+use MasyukAI\Cart\Events\CartCreated;
 use MasyukAI\Cart\Events\ItemAdded;
 use MasyukAI\Cart\Events\ItemRemoved;
 use MasyukAI\Cart\Events\ItemUpdated;
@@ -57,6 +58,7 @@ trait ManagesItems
 
         // Check if item already exists in cart
         $cartItems = $this->getItems();
+        $isFirstItem = $cartItems->isEmpty();
 
         if ($cartItems->has($id)) {
             // Update existing item quantity
@@ -68,6 +70,12 @@ trait ManagesItems
         $cartItems->put($id, $item);
         $this->save($cartItems);
 
+        // Dispatch CartCreated event only when adding the first item to an empty cart
+        if ($isFirstItem && $this->eventsEnabled && $this->events) {
+            $this->events->dispatch(new CartCreated($this));
+        }
+
+        // Dispatch ItemAdded event
         if ($this->eventsEnabled && $this->events) {
             $this->events->dispatch(new ItemAdded($item, $this));
         }

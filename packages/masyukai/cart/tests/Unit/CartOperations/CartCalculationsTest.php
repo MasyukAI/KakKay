@@ -85,7 +85,7 @@ describe('Cart calculations and information', function () {
         expect($this->cart->isEmpty())->toBeTrue();
         expect($this->cart->getTotalQuantity())->toBe(0);
         expect($this->cart->subtotal()->getAmount())->toBe(0);
-        expect($this->cart->total()->getAmount())->toBe(0);
+        expect($this->cart->total()->getAmount())->toBe(0.0);
     });
 
     it('provides correct cart state after operations', function () {

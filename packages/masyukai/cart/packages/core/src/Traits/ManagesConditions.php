@@ -6,8 +6,10 @@ namespace MasyukAI\Cart\Traits;
 
 use MasyukAI\Cart\Collections\CartConditionCollection;
 use MasyukAI\Cart\Conditions\CartCondition;
-use MasyukAI\Cart\Events\ConditionAdded;
-use MasyukAI\Cart\Events\ConditionRemoved;
+use MasyukAI\Cart\Events\CartConditionAdded;
+use MasyukAI\Cart\Events\CartConditionRemoved;
+use MasyukAI\Cart\Events\ItemConditionAdded;
+use MasyukAI\Cart\Events\ItemConditionRemoved;
 use MasyukAI\Cart\Exceptions\InvalidCartConditionException;
 
 trait ManagesConditions
@@ -22,9 +24,9 @@ trait ManagesConditions
         $conditionsArray = $conditions->toArray();
         $this->storage->putConditions($this->getIdentifier(), $this->instance(), $conditionsArray);
 
-        // Dispatch condition added event
+        // Dispatch cart-level condition added event
         if ($this->eventsEnabled && $this->events) {
-            $this->events->dispatch(new ConditionAdded($condition, $this));
+            $this->events->dispatch(new CartConditionAdded($condition, $this));
         }
     }
 
@@ -95,9 +97,9 @@ trait ManagesConditions
         $conditionsArray = $conditions->toArray();
         $this->storage->putConditions($this->getIdentifier(), $this->instance(), $conditionsArray);
 
-        // Dispatch condition removed event
+        // Dispatch cart-level condition removed event
         if ($this->eventsEnabled && $this->events && $removedCondition) {
-            $this->events->dispatch(new ConditionRemoved($removedCondition, $this));
+            $this->events->dispatch(new CartConditionRemoved($removedCondition, $this));
         }
 
         return true;
@@ -159,9 +161,9 @@ trait ManagesConditions
         $cartItems->put($itemId, $item);
         $this->save($cartItems);
 
-        // Dispatch condition added event for item-level condition
+        // Dispatch item-level condition added event
         if ($this->eventsEnabled && $this->events) {
-            $this->events->dispatch(new ConditionAdded($condition, $this, $itemId));
+            $this->events->dispatch(new ItemConditionAdded($condition, $this, $itemId));
         }
 
         return true;
@@ -192,9 +194,9 @@ trait ManagesConditions
         $cartItems->put($itemId, $item);
         $this->save($cartItems);
 
-        // Dispatch condition removed event for item-level condition
+        // Dispatch item-level condition removed event
         if ($this->eventsEnabled && $this->events && $removedCondition) {
-            $this->events->dispatch(new ConditionRemoved($removedCondition, $this, $itemId));
+            $this->events->dispatch(new ItemConditionRemoved($removedCondition, $this, $itemId));
         }
 
         return true;
@@ -236,8 +238,9 @@ trait ManagesConditions
 
     /**
      * Add a simple fee condition (shopping-cart style)
+     * Fees are applied to the total (after discounts and taxes)
      */
-    public function addFee(string $name, string $value, string $target = 'subtotal'): static
+    public function addFee(string $name, string $value, string $target = 'total'): static
     {
         $condition = new CartCondition($name, 'fee', $target, $value);
         $this->addCondition($condition);
@@ -258,6 +261,7 @@ trait ManagesConditions
 
     /**
      * Add a shipping condition (shopping-cart style)
+     * Shipping is applied to the total (after discounts and taxes)
      *
      * @param  string  $name  The name of the shipping condition
      * @param  string|float  $value  The value of the shipping fee (e.g. '15.00', '+15', etc.)
@@ -280,11 +284,11 @@ trait ManagesConditions
         // Remove any existing shipping conditions first
         $this->removeShipping();
 
-        // Create and add the condition
+        // Create and add the condition - shipping is applied to total
         $condition = new CartCondition(
             name: $name,
             type: 'shipping',
-            target: 'subtotal',
+            target: 'total',
             value: $value,
             attributes: $shippingAttributes
         );

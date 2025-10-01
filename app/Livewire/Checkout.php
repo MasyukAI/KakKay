@@ -32,6 +32,13 @@ class Checkout extends Component implements HasSchemas
 
     public string $selectedPaymentGroup = 'card';
 
+    // Cart-Intent validation properties
+    public bool $cartChangedSinceIntent = false;
+
+    public ?array $activePaymentIntent = null;
+
+    public bool $showCartChangeWarning = false;
+
     public function mount(): void
     {
         try {
@@ -47,6 +54,17 @@ class Checkout extends Component implements HasSchemas
 
             $currentCartHash = md5(serialize($cartItems->toArray()));
             $sessionCartHash = session('cart_hash');
+
+            // Check for cart changes and active payment intents
+            $checkoutService = app(CheckoutService::class);
+            $cartStatus = $checkoutService->getCartChangeStatus();
+
+            $this->activePaymentIntent = $cartStatus['intent'];
+            $this->cartChangedSinceIntent = $cartStatus['cart_changed'];
+            $this->showCartChangeWarning = $cartStatus['cart_changed'] && $cartStatus['has_active_intent'];
+
+            // Store current cart hash in session
+            session(['cart_hash' => $currentCartHash]);
 
             if ($sessionCartHash && $sessionCartHash !== $currentCartHash) {
                 // Cart has changed, clear old purchase session
@@ -429,31 +447,6 @@ class Checkout extends Component implements HasSchemas
         try {
             $checkoutService = app(CheckoutService::class);
 
-            // Check for duplicate orders using session-based tracking
-            $existingPurchaseForSession = $checkoutService->getPurchaseStatus(session()->getId());
-            if ($existingPurchaseForSession) {
-                $this->addError('data.email', 'Pesanan telah wujud untuk keranjang ini. Sila lengkapkan pembayaran atau muat semula halaman.');
-
-                return;
-            }
-
-            // Check if there's already a pending order for this cart
-            $existingPurchaseId = session('chip_purchase_id');
-            if ($existingPurchaseId) {
-                // Check if the existing purchase is still valid and pending
-                $existingPurchase = $checkoutService->getPurchaseStatus($existingPurchaseId);
-
-                if ($existingPurchase && in_array($existingPurchase['status'], ['pending', 'created'])) {
-                    // Redirect to existing payment instead of creating new one
-                    return $this->redirect($existingPurchase['checkout_url']);
-                }
-
-                // If purchase expired or failed, clear session and continue with new order
-                session()->forget(['chip_purchase_id', 'checkout_data']);
-            }
-
-            $checkoutService = app(CheckoutService::class);
-
             // Prepare customer data aligned with addresses table columns
             $customerData = [
                 // Core address fields (matching addresses table)
@@ -487,15 +480,20 @@ class Checkout extends Component implements HasSchemas
                 'payment_method_whitelist' => [],
             ];
 
-            // Create payment using the configured gateway
-            $result = $checkoutService->processCheckout($customerData, $this->cartItems);
+            // Process checkout using cart metadata-based payment intents
+            $result = $checkoutService->processCheckout($customerData);
 
             if ($result['success']) {
-                // Store purchase info in session
+                // Store purchase info in session for backward compatibility
                 session([
                     'chip_purchase_id' => $result['purchase_id'],
                     'checkout_data' => $formData,
                 ]);
+
+                // Show appropriate message if intent was reused
+                if ($result['reused_intent'] ?? false) {
+                    session()->flash('info', 'Menggunakan pembayaran yang telah dibuat sebelumnya.');
+                }
 
                 // Redirect to CHIP checkout
                 return $this->redirect($result['checkout_url']);
@@ -517,6 +515,8 @@ class Checkout extends Component implements HasSchemas
     {
         return view('livewire.checkout', [
             'cartQuantity' => CartFacade::getTotalQuantity(),
+            'showCartChangeWarning' => $this->showCartChangeWarning,
+            'activePaymentIntent' => $this->activePaymentIntent,
         ])->layout('components.layouts.app');
     }
 }

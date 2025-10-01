@@ -19,6 +19,7 @@ class Cart extends Component
 
     public function mount(): void
     {
+        $this->ensureShippingCondition();
         $this->loadCartItems();
         $this->loadSuggestedProducts();
     }
@@ -26,8 +27,24 @@ class Cart extends Component
     #[On('product-added-to-cart')]
     public function refreshCart(): void
     {
+        $this->ensureShippingCondition();
         $this->loadCartItems();
         $this->loadSuggestedProducts();
+    }
+
+    protected function ensureShippingCondition(): void
+    {
+        // Only add shipping if cart is not empty
+        if (! CartFacade::isEmpty()) {
+            // Check if shipping condition already exists
+            if (! CartFacade::getCondition('shipping')) {
+                CartFacade::addShipping(
+                    name: 'shipping',
+                    value: 990, // RM9.90 in cents
+                    method: 'standard'
+                );
+            }
+        }
     }
 
     public function loadCartItems(): void
@@ -40,7 +57,6 @@ class Cart extends Component
                     'id' => (string) $item->id,
                     'name' => (string) $item->name,
                     'price' => $item->getPrice()->format(),
-                    'subtotal' => $item->getRawSubtotal(),
                     'subtotal_formatted' => $item->getSubtotal()->format(),
                     'quantity' => (int) $item->quantity,
                     'slug' => $item->attributes->get('slug', 'cara-bercinta'),
@@ -73,6 +89,12 @@ class Cart extends Component
 
         // Use absolute quantity update by passing as array
         CartFacade::update($itemId, ['quantity' => ['value' => $quantity]]);
+
+        // If cart is now empty, delete the cart from storage (this also removes conditions)
+        if (CartFacade::isEmpty()) {
+            CartFacade::clear();
+        }
+
         $this->loadCartItems();
         $this->dispatch('product-added-to-cart');
     }
@@ -109,6 +131,12 @@ class Cart extends Component
             }
 
             CartFacade::update($itemId, ['quantity' => ['value' => $newQuantity]]);
+
+            // If cart is now empty, delete the cart from storage (this also removes conditions)
+            if (CartFacade::isEmpty()) {
+                CartFacade::clear();
+            }
+
             $this->loadCartItems();
             $this->dispatch('product-added-to-cart');
             Notification::make()
@@ -126,6 +154,12 @@ class Cart extends Component
         $item = CartFacade::get($itemId);
         $itemName = $item ? $item->name : 'Item';
         CartFacade::remove($itemId);
+
+        // If cart is now empty, delete the cart from storage (this also removes conditions)
+        if (CartFacade::isEmpty()) {
+            CartFacade::clear();
+        }
+
         $this->loadCartItems();
         $this->loadSuggestedProducts();
         $this->dispatch('product-added-to-cart'); // Refresh cart counter
@@ -175,6 +209,7 @@ class Cart extends Component
             ]
         );
 
+        $this->ensureShippingCondition();
         $this->loadCartItems();
         $this->loadSuggestedProducts();
 
@@ -201,17 +236,22 @@ class Cart extends Component
 
     public function getShipping(): \Akaunting\Money\Money
     {
+        $shippingCondition = CartFacade::getShipping();
+
+        if ($shippingCondition) {
+            $currency = config('cart.money.default_currency', 'MYR');
+
+            return \Akaunting\Money\Money::{$currency}((int) $shippingCondition->getValue());
+        }
+
         $currency = config('cart.money.default_currency', 'MYR');
 
-        return \Akaunting\Money\Money::{$currency}(990); // RM9.90 as Money object
+        return \Akaunting\Money\Money::{$currency}(0);
     }
 
     public function getTotal(): \Akaunting\Money\Money
     {
-        $subtotal = $this->getSubtotal();
-        $shipping = $this->getShipping();
-
-        return $subtotal->add($shipping);
+        return CartFacade::total(); // Cart total already includes all conditions (including shipping)
     }
 
     public function render()

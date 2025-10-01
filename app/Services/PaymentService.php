@@ -5,6 +5,9 @@ namespace App\Services;
 use App\Contracts\PaymentGatewayInterface;
 use App\Models\Payment;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use MasyukAI\Cart\Cart;
 use Psr\Log\LoggerInterface;
 
 class PaymentService
@@ -195,5 +198,172 @@ class PaymentService
     public function isPaymentFailed(Payment $payment): bool
     {
         return in_array($payment->status, ['failed', 'cancelled', 'expired']);
+    }
+
+    // ==========================================
+    // Cart Payment Intent Methods
+    // ==========================================
+
+    /**
+     * Get the current version of the cart from database
+     */
+    private function getCartVersion(Cart $cart): int
+    {
+        return DB::table('carts')
+            ->where('identifier', $cart->getIdentifier())
+            ->where('instance', $cart->instance())
+            ->value('version') ?? 1;
+    }
+
+    /**
+     * Create a payment intent and store it in cart metadata
+     */
+    public function createPaymentIntent(Cart $cart, array $customerData): array
+    {
+        $cartTotal = $cart->total()->getAmount(); // Use amount (cents) for consistency
+        $cartItems = $cart->getItems()->toArray();
+        $cartVersion = $this->getCartVersion($cart) + 1; // Add +1 to account for metadata update
+
+        // Create payment with gateway
+        $result = $this->gateway->createPurchase($customerData, $cartItems);
+
+        if ($result['success']) {
+            // Store intent in cart metadata
+            $cart->setMetadata('payment_intent', [
+                'purchase_id' => $result['purchase_id'],
+                'amount' => $cartTotal,
+                'cart_version' => $cartVersion,
+                'cart_snapshot' => $cartItems,
+                'customer_data' => $customerData,
+                'created_at' => now()->toISOString(),
+                'expires_at' => now()->addMinutes(30)->toISOString(),
+                'status' => 'created',
+                'checkout_url' => $result['checkout_url'],
+            ]);
+
+            Log::info('Payment intent created and stored in cart', [
+                'purchase_id' => $result['purchase_id'],
+                'cart_total' => $cartTotal,
+                'cart_version' => $cartVersion,
+            ]);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Validate if cart payment intent is still valid
+     */
+    public function validateCartPaymentIntent(Cart $cart): array
+    {
+        $intent = $cart->getMetadata('payment_intent');
+        if (! $intent) {
+            return [
+                'is_valid' => false,
+                'reason' => 'no_intent',
+                'cart_changed' => false,
+                'expired' => false,
+            ];
+        }
+
+        $currentVersion = $this->getCartVersion($cart);
+        $currentTotal = $cart->total()->getAmount(); // Use amount (cents) for consistency
+        $expired = now()->isAfter(\Carbon\Carbon::parse($intent['expires_at']));
+
+        return [
+            'is_valid' => $intent['cart_version'] === $currentVersion &&
+                         $intent['amount'] == $currentTotal &&
+                         ! $expired &&
+                         $intent['status'] === 'created',
+            'cart_changed' => $intent['cart_version'] !== $currentVersion,
+            'amount_changed' => $intent['amount'] != $currentTotal,
+            'expired' => $expired,
+            'status' => $intent['status'] ?? 'unknown',
+            'intent' => $intent,
+        ];
+    }
+
+    /**
+     * Clear payment intent from cart metadata
+     */
+    public function clearPaymentIntent(Cart $cart): void
+    {
+        $intent = $cart->getMetadata('payment_intent');
+        if ($intent) {
+            Log::info('Clearing payment intent from cart', [
+                'purchase_id' => $intent['purchase_id'] ?? 'unknown',
+            ]);
+        }
+
+        $cart->removeMetadata('payment_intent');
+    }
+
+    /**
+     * Update payment intent status
+     */
+    public function updatePaymentIntentStatus(Cart $cart, string $status, array $additionalData = []): void
+    {
+        $intent = $cart->getMetadata('payment_intent');
+        if (! $intent) {
+            return;
+        }
+
+        $updatedIntent = array_merge($intent, [
+            'status' => $status,
+            'updated_at' => now()->toISOString(),
+        ], $additionalData);
+
+        $cart->setMetadata('payment_intent', $updatedIntent);
+
+        Log::info('Payment intent status updated', [
+            'purchase_id' => $intent['purchase_id'],
+            'status' => $status,
+        ]);
+    }
+
+    /**
+     * Validate payment webhook data against cart intent
+     */
+    public function validatePaymentWebhook(array $paymentIntent, array $webhookData): bool
+    {
+        // Validate purchase ID matches
+        if ($paymentIntent['purchase_id'] !== $webhookData['purchase_id']) {
+            Log::error('Webhook purchase ID mismatch', [
+                'intent_purchase_id' => $paymentIntent['purchase_id'],
+                'webhook_purchase_id' => $webhookData['purchase_id'],
+            ]);
+
+            return false;
+        }
+
+        // Validate payment amount matches cart total
+        if ($paymentIntent['amount'] != $webhookData['amount']) {
+            Log::error('Webhook amount mismatch', [
+                'intent_amount' => $paymentIntent['amount'],
+                'webhook_amount' => $webhookData['amount'],
+            ]);
+
+            return false;
+        }
+
+        // Validate payment intent is in correct status
+        if ($paymentIntent['status'] !== 'created') {
+            Log::error('Payment intent not in created status', [
+                'purchase_id' => $paymentIntent['purchase_id'],
+                'status' => $paymentIntent['status'],
+            ]);
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Get payment intent expiry time in minutes
+     */
+    public function getPaymentIntentExpiryMinutes(): int
+    {
+        return 30; // Default 30 minutes
     }
 }

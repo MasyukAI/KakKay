@@ -3,75 +3,60 @@
 namespace App\Services;
 
 use App\Models\Address;
+use App\Models\Order;
+use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use MasyukAI\Cart\Facades\Cart;
+use MasyukAI\Cart\Cart;
+use MasyukAI\Cart\Facades\Cart as CartFacade;
 
 class CheckoutService
 {
-    protected ShippingService $shippingService;
-
-    protected OrderService $orderService;
-
-    protected PaymentService $paymentService;
-
     public function __construct(
-        ?PaymentMethodService $paymentMethodService = null,
-        ?ShippingService $shippingService = null,
-        ?OrderService $orderService = null,
-        ?PaymentService $paymentService = null
-    ) {
-        $this->shippingService = $shippingService ?? new ShippingService;
-        $this->orderService = $orderService ?? new OrderService($this->shippingService);
-        $this->paymentService = $paymentService ?? app(PaymentService::class);
-    }
+        protected PaymentService $paymentService,
+        protected OrderService $orderService
+    ) {}
 
     /**
-     * Process the complete checkout flow: create order and process payment
+     * Process checkout with cart metadata-based payment intents
      */
-    public function processCheckout(array $customerData, array $cartItems): array
+    public function processCheckout(array $customerData): array
     {
         try {
-            return DB::transaction(function () use ($customerData, $cartItems) {
-                // Create or find user record (guest or registered)
-                $user = $this->createOrFindUser($customerData);
+            $cart = CartFacade::getCurrentCart();
 
-                // Create address record
-                $address = $this->createAddress($user, $customerData);
+            // Validate cart has items
+            if ($cart->isEmpty()) {
+                return [
+                    'success' => false,
+                    'error' => 'Cart is empty',
+                ];
+            }
 
-                // Create order record using OrderService
-                $order = $this->orderService->createOrder($user, $address, $customerData, $cartItems);
+            // Check for existing valid payment intent
+            $validation = $this->paymentService->validateCartPaymentIntent($cart);
 
-                // Add reference to customer data
-                $customerDataWithReference = array_merge($customerData, [
-                    'reference' => $order->order_number, // Use order number as reference
-                ]);
-
-                // Process payment with the gateway
-                $gatewayResult = $this->paymentService->processPayment($customerDataWithReference, $cartItems);
-
-                // Create payment record with optimized code generation
-                $payment = $this->paymentService->createPaymentWithRetry([
-                    'order_id' => $order->id,
-                    'amount' => $this->calculateCartTotal($cartItems),
-                    'status' => 'pending',
-                    'method' => 'chip', // Could be dynamic in the future
-                    'currency' => 'MYR',
-                    'gateway_payment_id' => $gatewayResult['purchase_id'],
-                    'gateway_response' => $gatewayResult['gateway_response'],
-                ]);
-
+            if ($validation['is_valid']) {
+                // Reuse existing valid payment intent
                 return [
                     'success' => true,
-                    'order' => $order,
-                    'payment' => $payment,
-                    'purchase_id' => $gatewayResult['purchase_id'],
-                    'checkout_url' => $gatewayResult['checkout_url'],
+                    'purchase_id' => $validation['intent']['purchase_id'],
+                    'checkout_url' => $validation['intent']['checkout_url'],
+                    'reused_intent' => true,
                 ];
-            });
+            }
+
+            // Clear invalid/expired payment intent
+            if (! $validation['is_valid'] && isset($validation['intent'])) {
+                $this->paymentService->clearPaymentIntent($cart);
+            }
+
+            // Create new payment intent
+            return $this->paymentService->createPaymentIntent($cart, $customerData);
+
         } catch (\Exception $e) {
-            Log::error('Payment creation failed', [
+            Log::error('Enhanced checkout failed', [
                 'error' => $e->getMessage(),
                 'customer_data' => $customerData,
             ]);
@@ -84,21 +69,140 @@ class CheckoutService
     }
 
     /**
-     * Create or find user record (guest or registered)
+     * Handle successful payment webhook and create order
+     */
+    public function handlePaymentSuccess(string $purchaseId, array $webhookData): ?Order
+    {
+        try {
+            // Find cart with this payment intent
+            $cart = $this->findCartByPurchaseId($purchaseId);
+            if (! $cart) {
+                Log::error('Cart not found for successful payment', [
+                    'purchase_id' => $purchaseId,
+                ]);
+
+                return null;
+            }
+
+            $paymentIntent = $cart->getMetadata('payment_intent');
+            if (! $paymentIntent) {
+                Log::error('Payment intent not found in cart metadata', [
+                    'purchase_id' => $purchaseId,
+                ]);
+
+                return null;
+            }
+
+            // Validate webhook data against payment intent
+            if (! $this->paymentService->validatePaymentWebhook($paymentIntent, $webhookData)) {
+                return null;
+            }
+
+            return DB::transaction(function () use ($cart, $paymentIntent, $webhookData, $purchaseId) {
+                // Create order from cart snapshot
+                $order = $this->createOrderFromCartSnapshot(
+                    $paymentIntent['cart_snapshot'],
+                    $paymentIntent['customer_data']
+                );
+
+                // Create payment record
+                $payment = $this->createPaymentRecord($order, $paymentIntent, $webhookData);
+
+                // Update payment intent status
+                $this->paymentService->updatePaymentIntentStatus($cart, 'completed', [
+                    'order_id' => $order->id,
+                    'payment_id' => $payment->id,
+                    'completed_at' => now()->toISOString(),
+                ]);
+
+                // Clear cart after successful order creation
+                $cart->clear();
+
+                Log::info('Order created successfully from cart payment intent', [
+                    'order_id' => $order->id,
+                    'purchase_id' => $purchaseId,
+                    'amount' => $paymentIntent['amount'],
+                ]);
+
+                return $order;
+            });
+
+        } catch (\Exception $e) {
+            Log::error('Failed to handle payment success', [
+                'purchase_id' => $purchaseId,
+                'error' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
+    }
+
+    /**
+     * Create order from cart snapshot stored in payment intent
+     */
+    protected function createOrderFromCartSnapshot(array $cartSnapshot, array $customerData): Order
+    {
+        // Create or find user
+        $user = $this->createOrFindUser($customerData);
+
+        // Create address record
+        $address = $this->createAddress($user, $customerData);
+
+        // Create order using OrderService with cart snapshot
+        return $this->orderService->createOrder($user, $address, $customerData, $cartSnapshot);
+    }
+
+    /**
+     * Create payment record for completed order
+     */
+    protected function createPaymentRecord(Order $order, array $paymentIntent, array $webhookData): Payment
+    {
+        return Payment::create([
+            'order_id' => $order->id,
+            'amount' => $paymentIntent['amount'],
+            'status' => 'completed',
+            'method' => 'chip',
+            'currency' => 'MYR',
+            'gateway_payment_id' => $paymentIntent['purchase_id'],
+            'gateway_response' => $webhookData,
+            'completed_at' => now(),
+        ]);
+    }
+
+    /**
+     * Find cart by purchase ID - temporary implementation
+     * TODO: Implement proper cart lookup by iterating through user's carts
+     */
+    protected function findCartByPurchaseId(string $purchaseId): ?Cart
+    {
+        // For now, we'll use session-based approach since we don't have
+        // direct database access to search cart metadata
+        // In a production scenario, you'd want to implement a proper lookup
+
+        // Try current session cart first
+        $cart = CartFacade::getCurrentCart();
+        $intent = $cart->getMetadata('payment_intent');
+
+        if ($intent && $intent['purchase_id'] === $purchaseId) {
+            return $cart;
+        }
+
+        return null;
+    }
+
+    /**
+     * Create or find user record
      */
     protected function createOrFindUser(array $customerData): User
     {
-        // First try to find existing user by email
         $user = User::where('email', $customerData['email'])->first();
 
         if (! $user) {
-            // Create new guest user
             $user = User::create([
                 'name' => $customerData['name'] ?? null,
                 'email' => $customerData['email'],
                 'phone' => $customerData['phone'] ?? null,
                 'is_guest' => true,
-                'password' => null, // Guest users don't have passwords
             ]);
         }
 
@@ -111,120 +215,33 @@ class CheckoutService
     protected function createAddress(User $user, array $customerData): Address
     {
         return Address::create([
-            'addressable_type' => User::class,
-            'addressable_id' => $user->id,
-            'name' => $customerData['name'] ?? '',
-            'company' => $customerData['company'] ?? null,
-            'street1' => $customerData['street1'] ?? '',
-            'street2' => $customerData['street2'] ?? null,
+            'user_id' => $user->id,
+            'name' => $customerData['name'],
+            'company' => $customerData['company'] ?? '',
+            'street1' => $customerData['street1'],
+            'street2' => $customerData['street2'] ?? '',
             'city' => $customerData['city'] ?? '',
-            'state' => $customerData['state'] ?? '',
-            'postcode' => $customerData['postcode'] ?? '',
-            'country' => $customerData['country'] ?? 'Malaysia',
-            'phone' => $customerData['phone'] ?? null,
-            'type' => $customerData['address_type'] ?? 'shipping',
-            'is_primary' => true,
+            'state' => $customerData['state'],
+            'country' => $customerData['country'],
+            'postcode' => $customerData['postcode'],
+            'phone' => $customerData['phone'],
         ]);
     }
 
     /**
-     * Get available shipping methods
+     * Get cart change validation for UI display
      */
-    public function getAvailableShippingMethods(): array
+    public function getCartChangeStatus(): array
     {
-        return $this->shippingService->getAvailableShippingMethods();
-    }
+        $cart = CartFacade::getCurrentCart();
+        $validation = $this->paymentService->validateCartPaymentIntent($cart);
 
-    /**
-     * Get cart subtotal using built-in cart calculations
-     */
-    public function getCartSubtotal(): int
-    {
-        return (int) Cart::getRawSubtotal();
-    }
-
-    /**
-     * Get cart total using built-in cart calculations
-     */
-    public function getCartTotal(): int
-    {
-        return (int) Cart::getRawTotal();
-    }
-
-    /**
-     * Get cart savings using built-in cart calculations
-     */
-    public function getCartSavings(): int
-    {
-        $subtotalWithoutConditions = (int) Cart::getRawSubtotalWithoutConditions();
-        $subtotalWithConditions = (int) Cart::getRawSubtotal();
-
-        return max(0, $subtotalWithoutConditions - $subtotalWithConditions);
-    }
-
-    /**
-     * Get shipping cost (from cart conditions or calculated)
-     */
-    public function getShippingCost(string $method = 'standard'): int
-    {
-        $shippingValue = Cart::getShippingValue();
-        if ($shippingValue !== null) {
-            return (int) ($shippingValue * 100); // Convert to cents
-        }
-
-        return $this->shippingService->calculateShipping($method);
-    }
-
-    /**
-     * Get cart summary with all calculations
-     */
-    public function getCartSummary(): array
-    {
         return [
-            'items_count' => Cart::count(),
-            'total_quantity' => Cart::getTotalQuantity(),
-            'subtotal' => $this->getCartSubtotal(),
-            'total' => $this->getCartTotal(),
-            'savings' => $this->getCartSavings(),
-            'shipping_cost' => $this->getShippingCost(),
-            'has_conditions' => Cart::getConditions()->isNotEmpty(),
-            'shipping_method' => Cart::getShippingMethod(),
+            'has_active_intent' => isset($validation['intent']),
+            'cart_changed' => $validation['cart_changed'] ?? false,
+            'amount_changed' => $validation['amount_changed'] ?? false,
+            'expired' => $validation['expired'] ?? false,
+            'intent' => $validation['intent'] ?? null,
         ];
-    }
-
-    /**
-     * Calculate total amount from cart using built-in cart calculations
-     */
-    protected function calculateCartTotal(array $cartItems): int
-    {
-        // Use cart's built-in total calculation which includes all conditions
-        $cartTotal = (int) Cart::getRawTotal();
-
-        // If cart total is available and valid, use it
-        if ($cartTotal > 0) {
-            return $cartTotal;
-        }
-
-        // Fallback to manual calculation only if cart total is not available
-        $itemsTotal = collect($cartItems)->sum(fn ($item) => $item['price'] * $item['quantity']);
-
-        // Add shipping cost if available
-        $shippingValue = Cart::getShippingValue();
-        if ($shippingValue !== null) {
-            // Convert shipping from dollars to cents
-            $shippingInCents = (int) ($shippingValue * 100);
-
-            return $itemsTotal + $shippingInCents;
-        }
-
-        return $itemsTotal;
-    }
-
-    /**
-     * Get purchase status from payment gateway
-     */
-    public function getPurchaseStatus(string $purchaseId): ?array
-    {
-        return $this->paymentService->getPurchaseStatus($purchaseId);
     }
 }

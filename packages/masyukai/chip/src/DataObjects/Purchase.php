@@ -145,7 +145,9 @@ class Purchase
         );
     }
 
-    // Compatibility properties for tests and easier access
+    /**
+     * Magic property accessor for convenient access to nested properties
+     */
     public function __get($name)
     {
         return match ($name) {

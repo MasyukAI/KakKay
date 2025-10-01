@@ -28,7 +28,7 @@ trait ValidationTrait
         if (strlen($this->name) > $maxStringLength) {
             throw new InvalidCartItemException("Cart item name cannot exceed {$maxStringLength} characters");
         }
-        if ($this->rawPrice < 0) {
+        if ($this->price < 0) {
             throw new InvalidCartItemException('Cart item price cannot be negative');
         }
         if ($this->quantity < 1) {

@@ -69,8 +69,9 @@ readonly class DatabaseStorage implements StorageInterface
         $this->validateDataSize($items, 'items');
         $this->validateDataSize($conditions, 'conditions');
 
+        // Items should always have data when using putBoth, but conditions might be empty
         $itemsJson = $this->encodeData($items, 'items');
-        $conditionsJson = $this->encodeData($conditions, 'conditions');
+        $conditionsJson = empty($conditions) ? null : $this->encodeData($conditions, 'conditions');
 
         $this->performCasUpdate($identifier, $instance, [
             'items' => $itemsJson,
@@ -151,7 +152,8 @@ readonly class DatabaseStorage implements StorageInterface
             $metadata[$key] = $value;
             $this->validateDataSize($metadata, 'metadata');
 
-            $metadataJson = $this->encodeData($metadata, 'metadata');
+            // Convert empty metadata to null
+            $metadataJson = empty($metadata) ? null : $this->encodeData($metadata, 'metadata');
 
             $this->performCasUpdate($identifier, $instance, [
                 'metadata' => $metadataJson,
@@ -257,7 +259,9 @@ readonly class DatabaseStorage implements StorageInterface
     private function updateJsonColumn(string $identifier, string $instance, string $column, array $data, string $operationName): void
     {
         $this->validateDataSize($data, $column);
-        $jsonData = $this->encodeData($data, $column);
+
+        // Convert empty arrays to null for better database efficiency
+        $jsonData = empty($data) ? null : $this->encodeData($data, $column);
 
         $this->performCasUpdate($identifier, $instance, [
             $column => $jsonData,

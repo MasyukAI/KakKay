@@ -67,4 +67,81 @@ return [
         'bulk' => 'Bulk Order',
         'subscription' => 'Subscription',
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Normalized Models
+    |--------------------------------------------------------------------------
+    |
+    | Enable normalized cart items and conditions for better search/filter
+    | performance. When enabled, cart operations will be automatically
+    | synchronized to readonly normalized models via event listeners.
+    |
+    */
+    'enable_normalized_models' => true,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Event Synchronization
+    |--------------------------------------------------------------------------
+    |
+    | Configure how cart events are synchronized to normalized models.
+    |
+    */
+    'synchronization' => [
+        /*
+        | Queue synchronization for better performance
+        | Note: Requires queue configuration in your Laravel app
+        */
+        'queue_sync' => false,
+
+        /*
+        | Queue connection to use for synchronization jobs
+        */
+        'queue_connection' => 'default',
+
+        /*
+        | Queue name for synchronization jobs
+        */
+        'queue_name' => 'cart-sync',
+
+        /*
+        | Retry failed synchronization jobs
+        */
+        'retry_failed_jobs' => true,
+
+        /*
+        | Maximum retry attempts for failed synchronization
+        */
+        'max_retry_attempts' => 3,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Resource Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configure the Filament resources for normalized models.
+    |
+    */
+    'resources' => [
+        /*
+        | Enable cart items resource
+        */
+        'enable_cart_items' => true,
+
+        /*
+        | Enable cart conditions resource
+        */
+        'enable_cart_conditions' => true,
+
+        /*
+        | Navigation sort order for resources
+        */
+        'navigation_sort' => [
+            'carts' => 30,
+            'cart_items' => 31,
+            'cart_conditions' => 32,
+        ],
+    ],
 ];

@@ -11,77 +11,46 @@ use MasyukAI\Cart\Cart;
 use MasyukAI\Cart\Conditions\CartCondition;
 
 /**
- * Event dispatched when a condition is removed from a cart
+ * Event dispatched when a condition is removed from a specific cart item
  *
  * This event is fired whenever a condition (discount, tax, fee, etc.)
- * is removed from the cart. Useful for tracking promotional code removals,
- * analytics, and triggering related business logic.
- *
- * @example
- * ```php
- * Event::listen(ConditionRemoved::class, function (ConditionRemoved $event) {
- *     // Track promotional code removal
- *     if ($event->condition->getType() === 'discount') {
- *         Analytics::track('promo_code_removed', [
- *             'code' => $event->condition->getName(),
- *             'reason' => $event->reason ?? 'user_action',
- *             'savings_lost' => abs($event->getConditionImpact()),
- *             'cart_total' => $event->cart->getRawTotal()
- *         ]);
- *     }
- *
- *     // Log high-value condition removals
- *     if (abs($event->getConditionImpact()) > 50) {
- *         Log::info('High-value condition removed', $event->toArray());
- *     }
- * });
- * ```
+ * is removed from a specific item in the cart. Useful for tracking item-level
+ * promotion removals, analytics, and triggering related business logic.
  *
  * @since 2.0.0
  */
-final class ConditionRemoved
+final class ItemConditionRemoved
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
-     * Create a new condition removed event
+     * Create a new item condition removed event
      *
-     * @param  CartCondition  $condition  The condition that was removed
-     * @param  Cart  $cart  The cart instance the condition was removed from
-     * @param  string|null  $target  Optional target context (item ID for item conditions)
+     * @param  CartCondition  $condition  The condition that was removed from the item
+     * @param  Cart  $cart  The cart instance containing the item
+     * @param  string  $itemId  The ID of the item the condition was removed from
      * @param  string|null  $reason  Optional reason for removal ('expired', 'user_action', 'system', etc.)
      */
     public function __construct(
         public readonly CartCondition $condition,
         public readonly Cart $cart,
-        public readonly ?string $target = null,
+        public readonly string $itemId,
         public readonly ?string $reason = null
     ) {
         //
     }
 
     /**
-     * Get the condition's former impact on the cart
+     * Get the condition's former impact on the item
      *
      * @return float The monetary impact the condition had (positive for charges, negative for discounts)
      */
     public function getConditionImpact(): float
     {
-        $baseValue = $this->target
-            ? $this->cart->get($this->target)?->getRawSubtotal() ?? 0
-            : $this->cart->getRawSubtotal();
+        $item = $this->cart->get($this->itemId);
+        $baseValue = $item?->getRawSubtotal() ?? 0;
 
         return $this->condition->getCalculatedValue($baseValue);
-    }
-
-    /**
-     * Check if this was an item-level condition
-     *
-     * @return bool True if applied to a specific item, false if cart-level
-     */
-    public function isItemCondition(): bool
-    {
-        return $this->target !== null;
     }
 
     /**
@@ -101,12 +70,20 @@ final class ConditionRemoved
      */
     public function toArray(): array
     {
+        $item = $this->cart->get($this->itemId);
+
         return [
             'condition' => [
                 'name' => $this->condition->getName(),
                 'type' => $this->condition->getType(),
                 'value' => $this->condition->getValue(),
                 'target' => $this->condition->getTarget(),
+            ],
+            'item' => [
+                'id' => $this->itemId,
+                'name' => $item?->name,
+                'quantity' => $item?->quantity,
+                'subtotal' => $item?->getRawSubtotal(),
             ],
             'cart' => [
                 'instance' => $this->cart->instance(),
@@ -117,7 +94,6 @@ final class ConditionRemoved
             ],
             'impact' => $this->getConditionImpact(),
             'lost_savings' => $this->getLostSavings(),
-            'target_item' => $this->target,
             'reason' => $this->reason,
             'timestamp' => now()->toISOString(),
         ];

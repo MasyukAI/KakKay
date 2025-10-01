@@ -2,6 +2,7 @@
 
 namespace MasyukAI\FilamentCart\Widgets;
 
+use Akaunting\Money\Money;
 use Filament\Support\Icons\Heroicon;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -27,7 +28,7 @@ class CartStatsWidget extends BaseWidget
                 ->descriptionIcon(Heroicon::OutlinedShoppingBag)
                 ->color('info'),
 
-            Stat::make('Cart Value', '$'.number_format($this->getTotalCartValue(), 2))
+            Stat::make('Cart Value', Money::MYR($this->getTotalCartValue()))
                 ->description('Total potential revenue')
                 ->descriptionIcon(Heroicon::OutlinedCurrencyDollar)
                 ->color('warning'),

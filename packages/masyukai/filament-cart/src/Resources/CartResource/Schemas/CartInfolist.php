@@ -107,45 +107,6 @@ class CartInfolist
                 //                    ->collapsible()
                 //                    ->visible(fn ($record): bool => !$record->isEmpty()),
 
-                Section::make('Cart Conditions')
-                    ->schema([
-                        RepeatableEntry::make('conditions')
-                            ->label('')
-                            ->schema([
-                                //                                Grid::make(4)
-                                //                                    ->schema([
-                                TextEntry::make('name')
-                                    ->label('Name')
-                                    ->weight('semibold'),
-
-                                TextEntry::make('type')
-                                    ->label('Type')
-                                    ->badge()
-                                    ->color(fn (string $state): string => match ($state) {
-                                        'discount' => 'success',
-                                        'tax' => 'warning',
-                                        'shipping' => 'info',
-                                        'fee' => 'danger',
-                                        default => 'gray',
-                                    }),
-
-                                TextEntry::make('value')
-                                    ->label('Value')
-                                    ->icon(Heroicon::OutlinedCurrencyDollar),
-
-                                TextEntry::make('description')
-                                    ->label('Description')
-                                    ->limit(50),
-                                //                                    ]),
-                            ])
-                            ->contained(false)
-                            ->visible(fn ($record): bool => is_array($record->conditions) && ! empty($record->conditions)
-                            ),
-                    ])
-                    ->collapsible()
-                    ->visible(fn ($record): bool => is_array($record->conditions) && ! empty($record->conditions)
-                    ),
-
                 Section::make('Metadata')
                     ->schema([
                         KeyValueEntry::make('metadata')

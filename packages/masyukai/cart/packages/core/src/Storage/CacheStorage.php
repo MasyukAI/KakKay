@@ -11,7 +11,9 @@ readonly class CacheStorage implements StorageInterface
     public function __construct(
         private Cache $cache,
         private string $keyPrefix = 'cart',
-        private int $ttl = 86400 // 24 hours
+        private int $ttl = 86400, // 24 hours
+        private bool $useLocking = false, // Enable for multi-server setups with shared cache
+        private int $lockTimeout = 5 // Lock timeout in seconds
     ) {
         //
     }
@@ -101,7 +103,11 @@ readonly class CacheStorage implements StorageInterface
      */
     public function putItems(string $identifier, string $instance, array $items): void
     {
-        $this->cache->put($this->getItemsKey($identifier, $instance), $items, $this->ttl);
+        if ($this->useLocking && method_exists($this->cache, 'lock')) {
+            $this->putItemsWithLock($identifier, $instance, $items);
+        } else {
+            $this->putItemsSimple($identifier, $instance, $items);
+        }
     }
 
     /**
@@ -109,7 +115,11 @@ readonly class CacheStorage implements StorageInterface
      */
     public function putConditions(string $identifier, string $instance, array $conditions): void
     {
-        $this->cache->put($this->getConditionsKey($identifier, $instance), $conditions, $this->ttl);
+        if ($this->useLocking && method_exists($this->cache, 'lock')) {
+            $this->putConditionsWithLock($identifier, $instance, $conditions);
+        } else {
+            $this->putConditionsSimple($identifier, $instance, $conditions);
+        }
     }
 
     /**
@@ -127,7 +137,12 @@ readonly class CacheStorage implements StorageInterface
     public function putMetadata(string $identifier, string $instance, string $key, mixed $value): void
     {
         $metadataKey = $this->getMetadataKey($identifier, $instance, $key);
-        $this->cache->put($metadataKey, $value, $this->ttl);
+
+        if ($this->useLocking && method_exists($this->cache, 'lock')) {
+            $this->putMetadataWithLock($metadataKey, $value);
+        } else {
+            $this->cache->put($metadataKey, $value, $this->ttl);
+        }
     }
 
     /**
@@ -138,6 +153,60 @@ readonly class CacheStorage implements StorageInterface
         $metadataKey = $this->getMetadataKey($identifier, $instance, $key);
 
         return $this->cache->get($metadataKey);
+    }
+
+    /**
+     * Store items with locking to prevent concurrent modification
+     */
+    private function putItemsWithLock(string $identifier, string $instance, array $items): void
+    {
+        $key = $this->getItemsKey($identifier, $instance);
+        $lock = $this->cache->lock("lock.{$key}", $this->lockTimeout);
+
+        $lock->block($this->lockTimeout, function () use ($key, $items) {
+            $this->cache->put($key, $items, $this->ttl);
+        });
+    }
+
+    /**
+     * Store items without locking (simple/fast mode)
+     */
+    private function putItemsSimple(string $identifier, string $instance, array $items): void
+    {
+        $this->cache->put($this->getItemsKey($identifier, $instance), $items, $this->ttl);
+    }
+
+    /**
+     * Store conditions with locking to prevent concurrent modification
+     */
+    private function putConditionsWithLock(string $identifier, string $instance, array $conditions): void
+    {
+        $key = $this->getConditionsKey($identifier, $instance);
+        $lock = $this->cache->lock("lock.{$key}", $this->lockTimeout);
+
+        $lock->block($this->lockTimeout, function () use ($key, $conditions) {
+            $this->cache->put($key, $conditions, $this->ttl);
+        });
+    }
+
+    /**
+     * Store conditions without locking (simple/fast mode)
+     */
+    private function putConditionsSimple(string $identifier, string $instance, array $conditions): void
+    {
+        $this->cache->put($this->getConditionsKey($identifier, $instance), $conditions, $this->ttl);
+    }
+
+    /**
+     * Store metadata with locking to prevent concurrent modification
+     */
+    private function putMetadataWithLock(string $metadataKey, mixed $value): void
+    {
+        $lock = $this->cache->lock("lock.{$metadataKey}", $this->lockTimeout);
+
+        $lock->block($this->lockTimeout, function () use ($metadataKey, $value) {
+            $this->cache->put($metadataKey, $value, $this->ttl);
+        });
     }
 
     /**

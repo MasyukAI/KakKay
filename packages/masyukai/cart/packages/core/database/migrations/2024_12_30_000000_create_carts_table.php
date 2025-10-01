@@ -15,10 +15,10 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('identifier')->index();
             $table->string('instance')->default('default')->index();
-            $table->json('items')->nullable();
-            $table->json('conditions')->nullable();
-            $table->json('metadata')->nullable();
-            $table->bigInteger('version')->default(1)->index();
+            $table->jsonb('items')->nullable();
+            $table->jsonb('conditions')->nullable();
+            $table->jsonb('metadata')->nullable();
+            $table->integer('version')->default(1)->index();
             $table->timestamps();
 
             $table->unique(['identifier', 'instance']);

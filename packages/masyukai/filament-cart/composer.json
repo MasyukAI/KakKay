@@ -18,6 +18,12 @@
             "email": "info@masyukai.com"
         }
     ],
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../cart"
+        }
+    ],
     "require": {
         "php": "^8.2",
         "filament/filament": "^4.0",

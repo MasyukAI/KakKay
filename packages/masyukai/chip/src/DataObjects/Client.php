@@ -35,7 +35,7 @@ class Client
         public readonly ?string $brand_name,
         public readonly ?string $registration_number,
         public readonly ?string $tax_number,
-        // Additional properties for test compatibility
+        // Private properties for API response handling
         private readonly ?array $address_data = null,
         private readonly ?string $identity_type = null,
         private readonly ?string $identity_number = null,
@@ -76,7 +76,9 @@ class Client
         );
     }
 
-    // Compatibility properties for tests
+    /**
+     * Magic property accessor for convenient camelCase access to snake_case properties
+     */
     public function __get($name)
     {
         return match ($name) {

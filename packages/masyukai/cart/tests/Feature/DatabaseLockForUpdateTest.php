@@ -19,12 +19,12 @@ beforeEach(function () {
     if (DB::getSchemaBuilder()->hasTable('carts')) {
         DB::table('carts')->truncate();
     }
-    
+
     // Ensure fresh session for each test
     session()->regenerate();
     session()->flush();
     session()->start();
-    
+
     // Clear cart facades after session setup
     Cart::clear();
 });

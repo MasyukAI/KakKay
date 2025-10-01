@@ -72,7 +72,7 @@ describe('Cart Item Management Operations', function () {
         expect($this->cart->isEmpty())->toBeTrue();
         expect($this->cart->getItems())->toHaveCount(0);
         expect($this->cart->getTotalQuantity())->toBe(0);
-        expect($this->cart->total()->getAmount())->toBe(0);
+        expect($this->cart->total()->getAmount())->toBe(0.0);
     });
 
     it('handles non-existent item operations gracefully', function () {

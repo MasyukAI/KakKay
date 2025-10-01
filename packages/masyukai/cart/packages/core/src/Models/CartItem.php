@@ -26,7 +26,7 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
 
     public Collection $attributes;
 
-    private float|int $rawPrice;
+    public float|int $price;
 
     public function __construct(
         string|int $id,
@@ -44,7 +44,7 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
         $this->conditions = $this->normalizeConditions($conditions);
 
         // Store raw price as-is (no transformation)
-        $this->rawPrice = is_string($price) ? $this->sanitizeStringPrice($price) : $price;
+        $this->price = is_string($price) ? $this->sanitizeStringPrice($price) : $price;
 
         $this->validateCartItem();
     }
@@ -70,26 +70,6 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
     }
 
     /**
-     * Magic getter for properties - returns raw values for backward compatibility
-     */
-    public function __get(string $name): mixed
-    {
-        if ($name === 'price') {
-            return $this->rawPrice;
-        }
-
-        throw new \InvalidArgumentException("Property '{$name}' does not exist on CartItem");
-    }
-
-    /**
-     * Magic isset to support collection operations like pluck
-     */
-    public function __isset(string $name): bool
-    {
-        return $name === 'price';
-    }
-
-    /**
      * Set item quantity
      */
     public function setQuantity(int $quantity): static
@@ -101,7 +81,7 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
         return new static(
             $this->id,
             $this->name,
-            $this->rawPrice,
+            $this->price,
             $quantity,
             $this->attributes->toArray(),
             $this->conditions->toArray(),
@@ -125,7 +105,7 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
         return new static(
             $attributes['id'] ?? $this->id,
             $attributes['name'] ?? $this->name,
-            $attributes['price'] ?? $this->rawPrice,
+            $attributes['price'] ?? $this->price,
             $attributes['quantity'] ?? $this->quantity,
             $attributes['attributes'] ?? $this->attributes->toArray(),
             $attributes['conditions'] ?? $this->conditions->toArray(),

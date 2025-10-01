@@ -17,17 +17,14 @@ use MasyukAI\Chip\Http\Requests\WebhookRequest;
 
 class WebhookService
 {
-    public function verifySignature($payloadOrRequest, ?string $signature = null, ?string $publicKey = null): bool
+    /**
+     * Verify webhook signature using Request object
+     */
+    public function verifySignature(Request $request, ?string $publicKey = null): bool
     {
-        // Handle both method signatures for backward compatibility
-        if ($payloadOrRequest instanceof \Illuminate\Http\Request) {
-            $request = $payloadOrRequest;
-            $payload = $request->getContent();
-            $signature = $signature ?? $request->header('X-Signature');
-            $publicKey = $publicKey ?? $this->getPublicKey();
-        } else {
-            $payload = $payloadOrRequest;
-        }
+        $payload = $request->getContent();
+        $signature = $request->header('X-Signature');
+        $publicKey = $publicKey ?? $this->getPublicKey();
 
         if (! config('chip.webhooks.verify_signature')) {
             return true;

@@ -1,15 +1,39 @@
-# Filament Cart
+# Filament Cart Plugin
 
-A comprehensive Filament admin interface for managing shopping carts created by the MasyukAI Cart package.
+A powerful Filament plugin for managing shopping carts with **normalized cart items and conditions** for enhanced performance, search capabilities, and analytics.
 
-## Features
+## ✨ Features
 
-- 🛒 **Complete CRUD Operations**: Create, view, edit, and delete carts through an intuitive Filament interface
-- 📊 **Dashboard Widget**: Real-time cart statistics showing total carts, active carts, items count, and total value
-- 🔄 **Live Updates**: Automatic polling every 30 seconds to show current cart status
-- 🎯 **Advanced Filtering**: Filter by cart types, status, creation date with comprehensive search
-- 📱 **Responsive Design**: Works seamlessly on desktop and mobile devices
-- 🎨 **Rich UI Components**: Professional interface with status indicators, badges, and color coding
+### 🛒 **Core Cart Management**
+- Complete CRUD operations for shopping carts
+- Support for multiple cart instances (default, wishlist, comparison, etc.)
+- Real-time cart updates with polling
+- Comprehensive cart metadata management
+
+### ⚡ **Performance-Optimized Normalized Models**
+- **Normalized CartItem model** - Individual cart items as separate database records
+- **Normalized CartCondition model** - Discounts, taxes, fees as searchable records
+- **Event-driven synchronization** - Automatic sync with cart package operations
+- **Enhanced search & filtering** - Fast queries on normalized data structures
+
+### 🎯 **Advanced Filtering & Search**
+- Search items by name, price range, quantity
+- Filter conditions by type (discount, tax, fee, shipping)
+- Instance-based filtering (default, wishlist, bulk orders)
+- Cart-level vs item-level condition filtering
+- Real-time performance without JSON parsing overhead
+
+### 📊 **Analytics & Insights**
+- Comprehensive cart analytics through normalized data
+- Track promotional code usage patterns
+- Monitor cart abandonment with detailed item tracking
+- Performance metrics for cart operations
+
+### 🔄 **Event-Driven Architecture**
+- Automatic synchronization via cart package events
+- Queue-based processing for scalability
+- Robust error handling and retry mechanisms
+- Maintains data consistency across all operations
 
 ## Installation
 

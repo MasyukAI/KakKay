@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace MasyukAI\Cart\Traits;
 
+use MasyukAI\Cart\Events\MetadataAdded;
+use MasyukAI\Cart\Events\MetadataRemoved;
+
 trait ManagesMetadata
 {
     /**
@@ -12,6 +15,10 @@ trait ManagesMetadata
     public function setMetadata(string $key, mixed $value): static
     {
         $this->storage->putMetadata($this->getIdentifier(), $this->instance(), $key, $value);
+
+        if ($this->eventsEnabled && $this->events) {
+            $this->events->dispatch(new MetadataAdded($key, $value, $this));
+        }
 
         return $this;
     }
@@ -38,6 +45,10 @@ trait ManagesMetadata
     public function removeMetadata(string $key): static
     {
         $this->storage->putMetadata($this->getIdentifier(), $this->instance(), $key, null);
+
+        if ($this->eventsEnabled && $this->events) {
+            $this->events->dispatch(new MetadataRemoved($key, $this));
+        }
 
         return $this;
     }

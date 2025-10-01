@@ -56,7 +56,7 @@ describe('Cart instantiation', function () {
         expect($this->cart)->toBeInstanceOf(Cart::class);
         expect($this->cart->instance())->toBe('bulletproof_test');
         expect($this->cart->getTotalQuantity())->toBe(0);
-        expect($this->cart->total()->getAmount())->toBe(0);
+        expect($this->cart->total()->getAmount())->toBe(0.0);
         expect($this->cart->subtotal()->getAmount())->toBe(0);
         expect($this->cart->isEmpty())->toBeTrue();
         expect($this->cart->count())->toBe(0);
@@ -396,7 +396,7 @@ describe('Cart operations and management', function () {
         expect($cart->isEmpty())->toBeTrue();
         expect($cart->getItems())->toHaveCount(0);
         expect($cart->getTotalQuantity())->toBe(0);
-        expect($cart->total()->getAmount())->toBe(0);
+        expect($cart->total()->getAmount())->toBe(0.0);
 
         // Verify clear was successful
         expect($cart->isEmpty())->toBeTrue();
@@ -481,15 +481,15 @@ describe('Cart conditions', function () {
 
     it('calculates totals correctly with multiple condition types', function () {
         $discount = new CartCondition('discount', 'discount', 'subtotal', '-10%'); // -20
-        $tax = new CartCondition('tax', 'tax', 'subtotal', '+15%'); // +27 (on discounted amount)
-        $shipping = new CartCondition('shipping', 'charge', 'subtotal', '+9.99');
+        $tax = new CartCondition('tax', 'tax', 'total', '+15%'); // Applied to subtotal result
+        $shipping = new CartCondition('shipping', 'charge', 'total', '+9.99'); // Applied to total
 
         $this->cart->addCondition($discount);
         $this->cart->addCondition($tax);
         $this->cart->addCondition($shipping);
 
-        // 200 - 20 = 180, then +15% = 207, then +9.99 = 216.99
-        expect($this->cart->subtotal()->getAmount())->toBe(200.00);
+        // 200 - 10% = 180 (subtotal), then (180 + 15%) + 9.99 = 216.99 (total)
+        expect($this->cart->subtotal()->getAmount())->toBe(180.00);
         expect($this->cart->total()->getAmount())->toBe(216.99);
     });
 
@@ -577,7 +577,7 @@ describe('Cart information and calculations', function () {
         expect($this->cart->isEmpty())->toBeTrue();
         expect($this->cart->getTotalQuantity())->toBe(0);
         expect($this->cart->subtotal()->getAmount())->toBe(0);
-        expect($this->cart->total()->getAmount())->toBe(0);
+        expect($this->cart->total()->getAmount())->toBe(0.0);
     });
 
     it('provides correct cart state after operations', function () {
@@ -951,7 +951,7 @@ describe('Convenience condition methods', function () {
         expect($condition)->toBeInstanceOf(CartCondition::class);
         expect($condition->getType())->toBe('fee');
         expect($condition->getValue())->toBe('10.00');
-        expect($condition->getTarget())->toBe('subtotal');
+        expect($condition->getTarget())->toBe('total'); // Fees are now applied to total by default
     });
 
     it('can add tax using addTax method', function () {

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace MasyukAI\Cart\Listeners;
 
 use Illuminate\Auth\Events\Login;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Cache;
 use MasyukAI\Cart\Services\CartMigrationService;
 

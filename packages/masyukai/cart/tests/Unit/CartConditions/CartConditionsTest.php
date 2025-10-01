@@ -78,15 +78,15 @@ describe('Cart Global Conditions Management', function () {
 
     it('calculates totals correctly with multiple condition types', function () {
         $discount = new CartCondition('discount', 'discount', 'subtotal', '-10%'); // -20
-        $tax = new CartCondition('tax', 'tax', 'subtotal', '+15%'); // +27 (on discounted amount)
-        $shipping = new CartCondition('shipping', 'charge', 'subtotal', '+9.99');
+        $tax = new CartCondition('tax', 'tax', 'total', '+15%'); // Applied to subtotal result
+        $shipping = new CartCondition('shipping', 'charge', 'total', '+9.99'); // Applied to total
 
         $this->cart->addCondition($discount);
         $this->cart->addCondition($tax);
         $this->cart->addCondition($shipping);
 
-        // 200 - 20 = 180, then +15% = 207, then +9.99 = 216.99
-        expect($this->cart->subtotal()->getAmount())->toBe(200.00);
+        // 200 - 10% = 180 (subtotal), then (180 + 15%) + 9.99 = 216.99 (total)
+        expect($this->cart->subtotal()->getAmount())->toBe(180.00);
         expect($this->cart->total()->getAmount())->toBe(216.99);
     });
 });

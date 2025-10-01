@@ -62,8 +62,8 @@ trait ManagesDynamicConditions
         $this->initializeDynamicConditions();
 
         foreach ($this->dynamicConditions as $condition) {
-            if ($condition->getTarget() === 'total') {
-                // Cart-level condition
+            if (in_array($condition->getTarget(), ['total', 'subtotal'])) {
+                // Cart-level condition (both 'total' and 'subtotal' targets)
                 if ($condition->shouldApply($this)) {
                     if (! $this->getConditions()->has($condition->getName())) {
                         // Create a static version for application (without rules to avoid recursion)

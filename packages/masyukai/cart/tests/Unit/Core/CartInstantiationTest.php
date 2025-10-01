@@ -42,7 +42,7 @@ describe('Cart Core Instantiation', function () {
         expect($this->cart)->toBeInstanceOf(Cart::class);
         expect($this->cart->instance())->toBe('instantiation_test');
         expect($this->cart->getTotalQuantity())->toBe(0);
-        expect($this->cart->total()->getAmount())->toBe(0);
+        expect($this->cart->total()->getAmount())->toBe(0.0);
         expect($this->cart->subtotal()->getAmount())->toBe(0);
         expect($this->cart->isEmpty())->toBeTrue();
         expect($this->cart->count())->toBe(0);

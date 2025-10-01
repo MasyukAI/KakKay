@@ -59,10 +59,10 @@ describe('Cart Internal Calculations', function () {
         // product-2: 50 * 1 = 50
         // Subtotal with item conditions: 210
 
-        // Add cart-level tax
-        $cartTax = new CartCondition('tax', 'tax', 'subtotal', '+10%');
+        // Add cart-level tax - now targets 'total' to be applied after subtotal
+        $cartTax = new CartCondition('tax', 'tax', 'total', '+10%');
         $this->cart->addCondition($cartTax);
-        // 210 + 10% = 231
+        // Subtotal: 210, Total: 210 + 10% = 231
 
         expect($this->cart->getRawSubtotalWithoutConditions())->toBe(250.00);
         expect($this->cart->getRawSubtotal())->toBe(210.00);

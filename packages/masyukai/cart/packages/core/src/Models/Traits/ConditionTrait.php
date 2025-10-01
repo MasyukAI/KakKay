@@ -21,7 +21,7 @@ trait ConditionTrait
         return new static(
             $this->id,
             $this->name,
-            $this->rawPrice,
+            $this->price,
             $this->quantity,
             $this->attributes->toArray(),
             $conditions,
@@ -40,7 +40,7 @@ trait ConditionTrait
         return new static(
             $this->id,
             $this->name,
-            $this->rawPrice,
+            $this->price,
             $this->quantity,
             $this->attributes->toArray(),
             $conditions,
@@ -56,7 +56,7 @@ trait ConditionTrait
         return new static(
             $this->id,
             $this->name,
-            $this->rawPrice,
+            $this->price,
             $this->quantity,
             $this->attributes->toArray(),
             [],

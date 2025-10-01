@@ -12,6 +12,8 @@ use MasyukAI\FilamentCart\Resources\CartResource\Pages\CreateCart;
 use MasyukAI\FilamentCart\Resources\CartResource\Pages\EditCart;
 use MasyukAI\FilamentCart\Resources\CartResource\Pages\ListCarts;
 use MasyukAI\FilamentCart\Resources\CartResource\Pages\ViewCart;
+use MasyukAI\FilamentCart\Resources\CartResource\RelationManagers\ConditionsRelationManager;
+use MasyukAI\FilamentCart\Resources\CartResource\RelationManagers\ItemsRelationManager;
 use MasyukAI\FilamentCart\Resources\CartResource\Schemas\CartForm;
 use MasyukAI\FilamentCart\Resources\CartResource\Schemas\CartInfolist;
 use MasyukAI\FilamentCart\Resources\CartResource\Tables\CartsTable;
@@ -53,7 +55,8 @@ class CartResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            ItemsRelationManager::class,
+            ConditionsRelationManager::class,
         ];
     }
 
@@ -69,7 +72,7 @@ class CartResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::notEmpty()->count();
+        return static::getModel()::count();
     }
 
     public static function getNavigationBadgeColor(): string|array|null

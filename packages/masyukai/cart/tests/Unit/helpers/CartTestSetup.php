@@ -3,14 +3,15 @@
 declare(strict_types=1);
 
 use MasyukAI\Cart\Cart;
-use MasyukAI\Cart\Storage\SessionStorage;
 use MasyukAI\Cart\Storage\DatabaseStorage;
+use MasyukAI\Cart\Storage\SessionStorage;
 
 /**
  * Shared setup function for all extracted cart test files
  * Call this in beforeEach() to get access to $this->cart, $this->sessionStorage, and $this->databaseStorage
  */
-function setupCartTestEnvironment() {
+function setupCartTestEnvironment()
+{
     // Ensure events dispatcher is available
     if (! app()->bound('events')) {
         app()->singleton('events', function ($app) {

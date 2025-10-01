@@ -1,0 +1,69 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
+use MasyukAI\Cart\Events\CartCreated;
+use MasyukAI\FilamentCart\Models\Cart;
+
+uses(RefreshDatabase::class);
+
+test('empty cart does not create database record on homepage visit', function () {
+    // Visit homepage (instantiates cart but doesn't add items)
+    $this->get('/');
+
+    // Cart should not exist in database because no items were added
+    expect(Cart::query()->count())->toBe(0);
+});
+
+test('cart is created in database when item is added', function () {
+    Event::fake();
+
+    // Add item to cart (this should trigger CartCreated and sync to database)
+    \MasyukAI\Cart\Facades\Cart::add('test-product', 'Test Product', 99.99, 1);
+
+    // CartCreated should be dispatched when first item is added
+    Event::assertDispatched(CartCreated::class);
+
+    // Cart should now exist in database
+    expect(Cart::query()->count())->toBe(1);
+
+    $cart = Cart::query()->first();
+    expect($cart)->not->toBeNull();
+    expect($cart->items)->toHaveCount(1);
+});
+
+test('homepage visit does not update cart updated_at timestamp', function () {
+    // Add item to cart to create it
+    \MasyukAI\Cart\Facades\Cart::add('test-product', 'Test Product', 99.99, 1);
+
+    // Get the initial updated_at timestamp
+    $cart = Cart::query()->first();
+    $initialUpdatedAt = $cart->updated_at;
+
+    // Wait a moment to ensure timestamp would change if updated
+    sleep(2);
+
+    // Visit homepage (just instantiates cart, doesn't modify it)
+    $this->get('/');
+
+    // Verify updated_at has not changed
+    $cart->refresh();
+    expect($cart->updated_at->equalTo($initialUpdatedAt))->toBeTrue();
+});
+
+test('cart created event only fires once when first item is added', function () {
+    Event::fake();
+
+    // Add first item - CartCreated should fire
+    \MasyukAI\Cart\Facades\Cart::add('product-1', 'Product 1', 10.00, 1);
+
+    Event::assertDispatched(CartCreated::class, 1);
+
+    // Add second item - CartCreated should NOT fire again
+    \MasyukAI\Cart\Facades\Cart::add('product-2', 'Product 2', 20.00, 1);
+
+    // Still only 1 CartCreated event
+    Event::assertDispatched(CartCreated::class, 1);
+});
