@@ -140,6 +140,9 @@ return [
 
         // Enable conflict tracking
         'track_conflicts' => env('CART_TRACK_CONFLICTS', true),
+
+        // Optional log channel for metrics logs (falls back to default logging channel when undefined)
+        'log_channel' => env('CART_METRICS_LOG_CHANNEL'),
     ],
 
     /*

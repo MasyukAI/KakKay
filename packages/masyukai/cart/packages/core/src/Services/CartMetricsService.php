@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace MasyukAI\Cart\Services;
 
+use DateTimeInterface;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use InvalidArgumentException;
 use MasyukAI\Cart\Exceptions\CartConflictException;
 
 class CartMetricsService
@@ -19,18 +21,29 @@ class CartMetricsService
      */
     public function recordOperation(string $operation, array $context = []): void
     {
-        $key = self::METRICS_PREFIX.'operations:'.$operation;
-        $daily_key = $key.':'.now()->format('Y-m-d');
+        if (! $this->metricsEnabled()) {
+            return;
+        }
+
+        $operationKey = self::METRICS_PREFIX.'operations:'.$operation;
+        $totalKey = self::METRICS_PREFIX.'operations';
+        $daySuffix = now()->format('Y-m-d');
+        $dailyKey = self::METRICS_PREFIX.'operations:'.$daySuffix;
+        $operationDailyKey = $operationKey.':'.$daySuffix;
+        $dailyExpiry = now()->addDays(7);
 
         // Increment counters
-        Cache::increment($key, 1);
-        Cache::increment($daily_key, 1);
+        Cache::increment($totalKey, 1);
+        Cache::increment($operationKey, 1);
+        Cache::increment($dailyKey, 1);
+        Cache::increment($operationDailyKey, 1);
 
         // Set TTL for daily metrics
-        Cache::put($daily_key, Cache::get($daily_key, 0), now()->addDays(7));
+        $this->refreshNumericKey($dailyKey, $dailyExpiry);
+        $this->refreshNumericKey($operationDailyKey, $dailyExpiry);
 
         // Log detailed operation for debugging
-        Log::channel('cart')->info("Cart operation: {$operation}", $context);
+        $this->writeLog('info', "Cart operation: {$operation}", $context);
     }
 
     /**
@@ -38,12 +51,17 @@ class CartMetricsService
      */
     public function recordConflict(CartConflictException $exception, array $context = []): void
     {
+        if (! $this->metricsEnabled() || ! config('cart.metrics.track_conflicts', true)) {
+            return;
+        }
+
         $key = self::METRICS_PREFIX.'conflicts';
         $daily_key = $key.':'.now()->format('Y-m-d');
+        $dailyExpiry = now()->addDays(7);
 
         Cache::increment($key, 1);
         Cache::increment($daily_key, 1);
-        Cache::put($daily_key, Cache::get($daily_key, 0), now()->addDays(7));
+        $this->refreshNumericKey($daily_key, $dailyExpiry);
 
         // Track conflict details
         $conflictDetails = [
@@ -55,7 +73,7 @@ class CartMetricsService
             'context' => $context,
         ];
 
-        Log::channel('cart')->warning('Cart conflict detected', $conflictDetails);
+        $this->writeLog('warning', 'Cart conflict detected', $conflictDetails);
 
         // Track by conflict severity
         $severity = $exception->isMinorConflict() ? 'minor' : 'major';
@@ -67,6 +85,10 @@ class CartMetricsService
      */
     public function recordPerformance(string $operation, float $executionTime, array $context = []): void
     {
+        if (! $this->metricsEnabled()) {
+            return;
+        }
+
         $key = self::METRICS_PREFIX.'performance:'.$operation;
 
         // Store execution times in a sliding window
@@ -85,8 +107,10 @@ class CartMetricsService
         Cache::put($key, $times, self::METRICS_TTL);
 
         // Log slow operations
-        if ($executionTime > 1.0) { // Over 1 second
-            Log::channel('cart')->warning("Slow cart operation: {$operation}", [
+        $threshold = (float) config('cart.metrics.slow_operation_threshold', 1.0);
+
+        if ($executionTime > $threshold) {
+            $this->writeLog('warning', "Slow cart operation: {$operation}", [
                 'execution_time' => $executionTime,
                 'context' => $context,
             ]);
@@ -98,14 +122,19 @@ class CartMetricsService
      */
     public function recordAbandonment(string $identifier, string $instance, array $context = []): void
     {
+        if (! $this->metricsEnabled()) {
+            return;
+        }
+
         $key = self::METRICS_PREFIX.'abandonments';
         $daily_key = $key.':'.now()->format('Y-m-d');
+        $dailyExpiry = now()->addDays(30);
 
         Cache::increment($key, 1);
         Cache::increment($daily_key, 1);
-        Cache::put($daily_key, Cache::get($daily_key, 0), now()->addDays(30));
+        $this->refreshNumericKey($daily_key, $dailyExpiry);
 
-        Log::channel('cart')->info('Cart abandoned', [
+        $this->writeLog('info', 'Cart abandoned', [
             'identifier' => $identifier,
             'instance' => $instance,
             'context' => $context,
@@ -117,14 +146,19 @@ class CartMetricsService
      */
     public function recordConversion(string $identifier, string $instance, array $context = []): void
     {
+        if (! $this->metricsEnabled()) {
+            return;
+        }
+
         $key = self::METRICS_PREFIX.'conversions';
         $daily_key = $key.':'.now()->format('Y-m-d');
+        $dailyExpiry = now()->addDays(30);
 
         Cache::increment($key, 1);
         Cache::increment($daily_key, 1);
-        Cache::put($daily_key, Cache::get($daily_key, 0), now()->addDays(30));
+        $this->refreshNumericKey($daily_key, $dailyExpiry);
 
-        Log::channel('cart')->info('Cart converted', [
+        $this->writeLog('info', 'Cart converted', [
             'identifier' => $identifier,
             'instance' => $instance,
             'context' => $context,
@@ -256,5 +290,41 @@ class CartMetricsService
         foreach ($operations as $operation) {
             Cache::forget(self::METRICS_PREFIX.'performance:'.$operation);
         }
+    }
+
+    /**
+     * Determine if metrics are enabled.
+     */
+    private function metricsEnabled(): bool
+    {
+        return (bool) config('cart.metrics.enabled', true);
+    }
+
+    /**
+     * Refresh a numeric cache key with the provided expiration.
+     */
+    private function refreshNumericKey(string $key, DateTimeInterface $expiresAt): void
+    {
+        Cache::put($key, Cache::get($key, 0), $expiresAt);
+    }
+
+    /**
+     * Write a log entry using the configured channel when available.
+     */
+    private function writeLog(string $level, string $message, array $context = []): void
+    {
+        $channel = config('cart.metrics.log_channel');
+
+        if ($channel) {
+            try {
+                Log::channel($channel)->log($level, $message, $context);
+
+                return;
+            } catch (InvalidArgumentException) {
+                // Fall back to default logger when the channel is undefined
+            }
+        }
+
+        Log::log($level, $message, $context);
     }
 }

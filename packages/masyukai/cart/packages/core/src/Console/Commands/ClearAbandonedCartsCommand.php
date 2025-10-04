@@ -30,7 +30,8 @@ class ClearAbandonedCartsCommand extends Command
     {
         $days = (int) $this->option('days');
         $dryRun = $this->option('dry-run');
-        $batchSize = (int) $this->option('batch-size');
+        $batchSize = max(1, (int) $this->option('batch-size'));
+        $table = config('cart.database.table', 'carts');
 
         $cutoffDate = now()->subDays($days);
 
@@ -40,7 +41,7 @@ class ClearAbandonedCartsCommand extends Command
             $this->warn('DRY RUN MODE - No data will be deleted');
         }
 
-        $query = DB::table('carts')
+        $query = DB::table($table)
             ->where('updated_at', '<', $cutoffDate);
 
         $totalCount = $query->count();
@@ -68,11 +69,11 @@ class ClearAbandonedCartsCommand extends Command
         $deletedCount = 0;
 
         // Process in batches to avoid memory issues
-        $query->chunk($batchSize, function ($carts) use (&$deletedCount, $progressBar, $dryRun) {
+        $query->chunk($batchSize, function ($carts) use (&$deletedCount, $progressBar, $dryRun, $table) {
             $ids = $carts->pluck('id')->toArray();
 
             if (! $dryRun) {
-                $deleted = DB::table('carts')->whereIn('id', $ids)->delete();
+                $deleted = DB::table($table)->whereIn('id', $ids)->delete();
                 $deletedCount += $deleted;
 
                 // Record abandonment metrics
