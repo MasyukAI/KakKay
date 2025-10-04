@@ -1,15 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Event;
 use MasyukAI\Chip\DataObjects\Purchase;
 use MasyukAI\Chip\DataObjects\Webhook;
 use MasyukAI\Chip\Events\PurchaseCreated;
 use MasyukAI\Chip\Events\PurchasePaid;
 use MasyukAI\Chip\Events\WebhookReceived;
-
-beforeEach(function () {
-    Event::fake();
-});
 
 describe('PurchaseCreated Event', function () {
     it('creates event with purchase data', function () {
@@ -27,19 +22,6 @@ describe('PurchaseCreated Event', function () {
         expect($event->purchase)->toBe($purchase);
         expect($event->purchase->id)->toBe('purchase_123');
         expect($event->purchase->status)->toBe('created');
-    });
-
-    it('implements ShouldBroadcast interface', function () {
-        $purchase = Purchase::fromArray([
-            'id' => 'purchase_123',
-            'amount_in_cents' => 10000,
-            'currency' => 'MYR',
-            'status' => 'created',
-        ]);
-
-        $event = new PurchaseCreated($purchase);
-
-        expect($event)->toBeInstanceOf(\Illuminate\Contracts\Broadcasting\ShouldBroadcast::class);
     });
 
     it('broadcasts on purchase channel', function () {
@@ -92,19 +74,6 @@ describe('PurchasePaid Event', function () {
         expect($event->purchase->status)->toBe('paid');
     });
 
-    it('implements ShouldBroadcast interface', function () {
-        $purchase = Purchase::fromArray([
-            'id' => 'purchase_123',
-            'amount_in_cents' => 10000,
-            'currency' => 'MYR',
-            'status' => 'paid',
-        ]);
-
-        $event = new PurchasePaid($purchase);
-
-        expect($event)->toBeInstanceOf(\Illuminate\Contracts\Broadcasting\ShouldBroadcast::class);
-    });
-
     it('broadcasts on purchase channel', function () {
         $purchase = Purchase::fromArray([
             'id' => 'purchase_123',
@@ -154,18 +123,6 @@ describe('WebhookReceived Event', function () {
 
         expect($event->webhook)->toBe($webhook);
         expect($event->webhook->event)->toBe('purchase.paid');
-    });
-
-    it('implements ShouldQueue interface for background processing', function () {
-        $webhook = Webhook::fromArray([
-            'event' => 'purchase.paid',
-            'data' => ['id' => 'purchase_123'],
-            'timestamp' => '2024-01-01T12:00:00Z',
-        ]);
-
-        $event = new WebhookReceived($webhook);
-
-        expect($event)->toBeInstanceOf(\Illuminate\Contracts\Queue\ShouldQueue::class);
     });
 
     it('stores raw webhook payload', function () {

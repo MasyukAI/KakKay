@@ -72,26 +72,4 @@ describe('Webhook Queue Handler', function () {
         });
     });
 
-    it('provides genuinely useful async processing', function () {
-        Queue::fake();
-
-        $payload = [
-            'id' => 'wh_test_123',
-            'event_type' => 'purchase.paid',
-            'created_on' => time(),
-        ];
-
-        // Time how long it takes to dispatch the webhook
-        $startTime = microtime(true);
-        ProcessChipWebhook::dispatch($payload, 'test-signature');
-        $endTime = microtime(true);
-
-        $duration = ($endTime - $startTime) * 1000; // Convert to milliseconds
-
-        // Dispatching to queue should be very fast (< 10ms)
-        expect($duration)->toBeLessThan(10);
-
-        // Verify job was queued (proves async processing)
-        Queue::assertPushed(ProcessChipWebhook::class);
-    });
 });

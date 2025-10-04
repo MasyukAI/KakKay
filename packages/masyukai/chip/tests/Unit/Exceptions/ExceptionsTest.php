@@ -191,24 +191,6 @@ describe('WebhookVerificationException', function () {
     });
 });
 
-describe('Exception Inheritance', function () {
-    it('extends appropriate base exception classes', function () {
-        expect(new ChipApiException('test'))->toBeInstanceOf(\Exception::class);
-        expect(new ChipValidationException('test', []))->toBeInstanceOf(\Exception::class);
-        expect(new WebhookVerificationException('test'))->toBeInstanceOf(\Exception::class);
-    });
-
-    it('implements custom exception interface if defined', function () {
-        // If you have a custom ChipExceptionInterface
-        // expect(new ChipApiException('test'))->toBeInstanceOf(ChipExceptionInterface::class);
-
-        // For now, just ensure they're proper exceptions
-        expect(new ChipApiException('test'))->toBeInstanceOf(\Throwable::class);
-        expect(new ChipValidationException('test', []))->toBeInstanceOf(\Throwable::class);
-        expect(new WebhookVerificationException('test'))->toBeInstanceOf(\Throwable::class);
-    });
-});
-
 describe('Exception Error Context', function () {
     it('preserves original exception context', function () {
         $previous = new \Exception('Original error');

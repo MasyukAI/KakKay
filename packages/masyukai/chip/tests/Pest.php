@@ -1,8 +1,10 @@
 <?php
 
+use MasyukAI\Chip\Tests\Feature\FeatureTestCase;
 use MasyukAI\Chip\Tests\TestCase;
 
-uses(TestCase::class)->in(__DIR__);
+uses(FeatureTestCase::class)->in(__DIR__.'/Feature');
+uses(TestCase::class)->in(__DIR__.'/Unit', __DIR__.'/Http');
 
 function getTestPublicKey(): string
 {

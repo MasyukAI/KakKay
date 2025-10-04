@@ -1,0 +1,210 @@
+/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Feature/Console/ChipHealthCheckCommandTest.php
+ [x] `ChipHealthCheckCommand` → it checks both CHIP Collect and Send APIs by default
+ [x] `ChipHealthCheckCommand` → it checks only CHIP Collect API with --collect flag
+ [x] `ChipHealthCheckCommand` → it checks only CHIP Send API with --send flag
+ [x] `ChipHealthCheckCommand` → it returns exit code 1 when CHIP Collect API is unreachable
+ [x] `ChipHealthCheckCommand` → it returns exit code 1 when CHIP Send API is unreachable
+ [x] `ChipHealthCheckCommand` → it shows all systems operational when all checks pass
+
+/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Feature/PackageBootstrapTest.php
+ [x] `Package bootstrap` → it binds collect, send and webhook services
+ [x] `Package bootstrap` → it registers the webhook route
+ [x] `Package bootstrap` → it migrates package tables
+ [x] `Package bootstrap` → it loads configuration from chip config file
+
+/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Feature/Webhooks/WebhookProcessingTest.php
+ [x] `Webhook processing` → it dispatches purchase.created events
+ [x] `Webhook processing` → it dispatches purchase.paid events
+ [x] `Webhook processing` → it rejects requests without signatures when verification is enabled
+ [x] `Webhook processing` → it validates required payload fields
+
+/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Http/Requests/WebhookRequestTest.php
+ [x] `WebhookRequest Validation` → it validates required event field
+ [x] `WebhookRequest Validation` → it validates required data field
+ [x] `WebhookRequest Validation` → it validates event field is string
+ [x] `WebhookRequest Validation` → it validates data field is array
+ [x] `WebhookRequest Validation` → it passes validation with valid data
+ [x] `WebhookRequest Validation` → it allows optional timestamp field
+ [x] `WebhookRequest Validation` → it validates timestamp format when provided
+ [x] `WebhookRequest Authorization` → it always authorizes webhook requests
+ [x] `WebhookRequest Custom Methods` → it extracts webhook signature from headers
+ [x] `WebhookRequest Custom Methods` → it returns null when signature header is missing
+ [x] `WebhookRequest Custom Methods` → it gets webhook event type
+ [x] `WebhookRequest Custom Methods` → it gets webhook data payload
+ [x] `WebhookRequest Custom Methods` → it checks if webhook is for specific event type
+ [x] `WebhookRequest Custom Methods` → it checks if webhook is purchase related
+ [x] `WebhookRequest Custom Methods` → it extracts purchase ID from purchase events
+ [x] `WebhookRequest Custom Methods` → it returns null for purchase ID on non-purchase events
+
+/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Unit/Builders/PurchaseBuilderTest.php
+ [x] `PurchaseBuilder` → it can build a basic purchase with required fields
+ [x] `PurchaseBuilder` → it can add multiple products
+ [x] `PurchaseBuilder` → it can set customer details using customer method
+ [x] `PurchaseBuilder` → it can set billing address
+ [x] `PurchaseBuilder` → it can set shipping address
+ [x] `PurchaseBuilder` → it can set all redirect URLs at once
+ [x] `PurchaseBuilder` → it can set individual redirect URLs
+ [x] `PurchaseBuilder` → it can set webhook callback URL
+ [x] `PurchaseBuilder` → it can set reference
+ [x] `PurchaseBuilder` → it can enable send receipt
+ [x] `PurchaseBuilder` → it can enable pre-authorization
+ [x] `PurchaseBuilder` → it can force recurring
+ [x] `PurchaseBuilder` → it can set due date
+ [x] `PurchaseBuilder` → it can set notes
+ [x] `PurchaseBuilder` → it can override brand ID
+ [x] `PurchaseBuilder` → it can set client ID
+ [x] `PurchaseBuilder` → it supports method chaining for fluent API
+ [x] `PurchaseBuilder` → it can create purchase using create method
+ [x] `PurchaseBuilder` → it can create purchase using save method alias
+
+/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Unit/Clients/ChipCollectClientTest.php
+ [x] `ChipCollectClient Authentication` → it adds bearer token to requests
+ [x] `ChipCollectClient Authentication` → it sets correct content type
+ [x] `ChipCollectClient Request Methods` → it can make GET requests
+ [x] `ChipCollectClient Request Methods` → it can make POST requests
+ [x] `ChipCollectClient Request Methods` → it can make PUT requests
+ [x] `ChipCollectClient Request Methods` → it can make DELETE requests
+ [x] `ChipCollectClient Error Handling` → it throws ChipApiException on 400 error
+ [x] `ChipCollectClient Error Handling` → it throws ChipApiException on 401 error
+ [x] `ChipCollectClient Error Handling` → it throws ChipApiException on 404 error
+ [x] `ChipCollectClient Error Handling` → it includes error details in exception
+ [x] `ChipCollectClient Retry Logic` → it retries on server errors and surfaces the exception
+ [x] `ChipCollectClient Configuration` → it uses configured base URL
+
+/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Unit/Clients/ChipSendClientTest.php
+ [x] `ChipSendClient Authentication` → it adds correct headers to requests
+ [x] `ChipSendClient Authentication` → it generates valid HMAC signature
+ [x] `ChipSendClient Request Methods` → it can make GET requests
+ [x] `ChipSendClient Request Methods` → it can make POST requests with JSON body
+ [x] `ChipSendClient Error Handling` → it throws ChipValidationException with proper error details
+ [x] `ChipSendClient Error Handling` → it handles network timeouts
+ [x] `ChipSendClient URL Building` → it uses sandbox URL in test mode
+ [x] `ChipSendClient URL Building` → it uses production URL in live mode
+ [x] `ChipSendClient Timestamp Generation` → it generates current epoch timestamp
+
+/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Unit/DataObjects/BankAccountDataObjectTest.php
+ [x] `BankAccount data object` → it creates a bank account from array data
+ [x] `BankAccount data object` → it handles unverified bank account
+
+/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Unit/DataObjects/ClientDataObjectTest.php
+ [x] `Client data object` → it creates a client from array data
+ [x] `Client data object` → it handles minimal client data
+
+/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Unit/DataObjects/PaymentDataObjectTest.php
+ [x] `Payment data object` → it creates a payment from array data
+ [x] `Payment data object` → it handles null payment method
+ [x] `Payment data object` → it calculates net amount after fees
+
+/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Unit/DataObjects/PurchaseDataObjectTest.php
+ [x] `Purchase data object` → it creates a purchase from array data
+ [x] `Purchase data object` → it handles nullable fields correctly
+ [x] `Purchase data object` → it calculates amount in major currency units
+
+/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Unit/DataObjects/SendInstructionDataObjectTest.php
+ [x] `SendInstruction data object` → it creates a send instruction from array data
+ [x] `SendInstruction data object` → it handles rejected send instruction
+
+/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Unit/DataObjects/WebhookDataObjectTest.php
+ [x] `Webhook data object` → it creates a webhook from array data
+ [x] `Webhook data object` → it extracts purchase from webhook data
+ [x] `Webhook data object` → it returns null for non-purchase webhook events
+
+/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Unit/Enums/BankAccountStatusTest.php
+ [x] `BankAccountStatus Enum` → it has all 3 official CHIP bank account statuses
+ [x] `BankAccountStatus Enum` → it can be created from string value
+ [x] `BankAccountStatus Enum` → it provides human-readable labels
+ [x] `BankAccountStatus Enum` → it correctly identifies verified status
+ [x] `BankAccountStatus Enum` → it correctly identifies pending status
+ [x] `BankAccountStatus Enum` → it correctly identifies rejected status
+
+/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Unit/Enums/PurchaseStatusTest.php
+ [x] `PurchaseStatus Enum` → it has all 26 official CHIP purchase statuses
+ [x] `PurchaseStatus Enum` → it can be created from string value
+ [x] `PurchaseStatus Enum` → it provides human-readable labels
+ [x] `PurchaseStatus Enum` → it correctly identifies successful statuses
+ [x] `PurchaseStatus Enum` → it correctly identifies pending statuses
+ [x] `PurchaseStatus Enum` → it correctly identifies failed statuses
+ [x] `PurchaseStatus Enum` → it correctly identifies which purchases can be cancelled
+ [x] `PurchaseStatus Enum` → it correctly identifies which purchases can be captured
+ [x] `PurchaseStatus Enum` → it correctly identifies which purchases can be released
+ [x] `PurchaseStatus Enum` → it correctly identifies which purchases can be refunded
+ [x] `PurchaseStatus Enum` → it has all new official statuses that were previously missing
+ [x] `PurchaseStatus Enum` → it does not have fake undocumented statuses
+
+/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Unit/Enums/SendInstructionStateTest.php
+ [x] `SendInstructionState Enum` → it has all 8 official CHIP send instruction states
+ [x] `SendInstructionState Enum` → it can be created from string value
+ [x] `SendInstructionState Enum` → it provides human-readable labels
+ [x] `SendInstructionState Enum` → it correctly identifies successful states
+ [x] `SendInstructionState Enum` → it correctly identifies pending states
+ [x] `SendInstructionState Enum` → it correctly identifies failed states
+ [x] `SendInstructionState Enum` → it correctly identifies which instructions can be deleted
+
+/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Unit/Events/EventsTest.php
+ [x] `PurchaseCreated Event` → it creates event with purchase data
+ [x] `PurchaseCreated Event` → it broadcasts on purchase channel
+ [x] `PurchaseCreated Event` → it broadcasts with correct data
+ [x] `PurchasePaid Event` → it creates event with paid purchase data
+ [x] `PurchasePaid Event` → it broadcasts on purchase channel
+ [x] `PurchasePaid Event` → it includes payment timestamp in broadcast data
+ [x] `WebhookReceived Event` → it creates event with webhook data
+ [x] `WebhookReceived Event` → it stores raw webhook payload
+ [x] `WebhookReceived Event` → it can determine webhook event type
+ [x] `Event Broadcasting Configuration` → it uses correct queue for background events
+ [x] `Event Broadcasting Configuration` → it sets appropriate broadcast queue for real-time events
+ [x] `Event Data Serialization` → it serializes purchase data correctly for broadcasting
+ [x] `Event Data Serialization` → it includes event metadata in broadcast payload
+
+/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Unit/Exceptions/ExceptionsTest.php
+ [x] `ChipApiException` → it creates exception with message and status code
+ [x] `ChipApiException` → it stores error details from API response
+ [x] `ChipApiException` → it handles empty error details
+ [x] `ChipApiException` → it formats error message with details
+ [x] `ChipApiException` → it creates exception from HTTP response
+ [x] `ChipApiException` → it handles missing error message in response
+ [x] `ChipValidationException` → it creates validation exception with field errors
+ [x] `ChipValidationException` → it checks if specific field has error
+ [x] `ChipValidationException` → it gets errors for specific field
+ [x] `ChipValidationException` → it formats all validation errors as string
+ [x] `ChipValidationException` → it creates exception from Laravel validator
+ [x] `WebhookVerificationException` → it creates exception with verification failure message
+ [x] `WebhookVerificationException` → it creates exception for missing signature
+ [x] `WebhookVerificationException` → it creates exception for invalid signature format
+ [x] `WebhookVerificationException` → it creates exception for signature verification failure
+ [x] `WebhookVerificationException` → it creates exception for invalid payload
+ [x] `WebhookVerificationException` → it creates exception for missing public key
+ [x] `Exception Error Context` → it preserves original exception context
+ [x] `Exception Error Context` → it maintains error context through exception chain
+
+/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Unit/Jobs/ProcessChipWebhookTest.php
+ [x] `Webhook Queue Handler` → it dispatches webhook processing job when queue is enabled
+ [x] `Webhook Queue Handler` → it uses configured queue name
+ [x] `Webhook Queue Handler` → it has 3 retry attempts configured
+ [x] `Webhook Queue Handler` → it has 60 second timeout configured
+ [x] `Webhook Queue Handler` → it dispatches WebhookReceived event after processing
+
+/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Unit/Services/ChipCollectServiceTest.php
+ [x] `ChipCollectService Public Key` → it returns the public key as a PEM string
+ [x] `ChipCollectService Purchase Management` → it can create a purchase
+ [x] `ChipCollectService Purchase Management` → it accepts an existing client reference without client payload
+ [x] `ChipCollectService Purchase Management` → it can retrieve a purchase
+ [x] `ChipCollectService Purchase Management` → it can cancel a purchase
+ [x] `ChipCollectService Purchase Management` → it can get payment methods
+ [x] `ChipCollectService Client Management` → it can create a client
+ [x] `ChipCollectService Client Management` → it can retrieve a client
+ [x] `ChipCollectService Client Management` → it can list clients
+
+/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Unit/Services/ChipSendServiceTest.php
+ [x] `ChipSendService` → it can create a send instruction
+ [x] `ChipSendService` → it can retrieve a send instruction
+ [x] `ChipSendService` → it can create a bank account
+
+/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Unit/Services/SubscriptionServiceTest.php
+ [x] it uses the CHIP brand id from the collect service when none is provided
+ [x] it throws when no brand id can be resolved for subscription helpers
+
+/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Unit/Services/WebhookServiceTest.php
+ [x] `WebhookService` → it verifies valid webhook signatures
+ [x] `WebhookService` → it processes webhook events
+ [x] `WebhookService` → it uses configured public key when available
+

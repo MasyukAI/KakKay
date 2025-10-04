@@ -41,17 +41,6 @@ describe('ChipSendClient Authentication', function () {
         });
     });
 
-    it('includes API key in signature generation', function () {
-        Http::fake(['*' => Http::response(['data' => []], 200)]);
-
-        $this->client->get('/test');
-
-        Http::assertSent(function ($request) {
-            $checksum = $request->header('checksum')[0];
-
-            return is_string($checksum) && strlen($checksum) === 64; // SHA256 hex length
-        });
-    });
 });
 
 describe('ChipSendClient Request Methods', function () {

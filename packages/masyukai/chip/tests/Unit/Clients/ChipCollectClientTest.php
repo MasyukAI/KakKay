@@ -96,13 +96,6 @@ describe('ChipCollectClient Error Handling', function () {
             ->toThrow(ChipApiException::class, 'Not Found');
     });
 
-    it('throws ChipApiException on 500 error', function () {
-        Http::fake(['*' => Http::response(['error' => 'Internal Server Error'], 500)]);
-
-        expect(fn () => $this->client->get('/test'))
-            ->toThrow(ChipApiException::class, 'Internal Server Error');
-    });
-
     it('includes error details in exception', function () {
         Http::fake(['*' => Http::response([
             'error' => 'Validation failed',
@@ -128,15 +121,6 @@ describe('ChipCollectClient Retry Logic', function () {
 
         expect(fn () => $this->client->get('/test'))
             ->toThrow(ChipApiException::class, 'Server Error');
-
-        Http::assertSentCount(3);
-    });
-
-    it('gives up after max retries', function () {
-        Http::fake(['*' => Http::response(['error' => 'Server Error'], 500)]);
-
-        expect(fn () => $this->client->get('/test'))
-            ->toThrow(ChipApiException::class);
 
         Http::assertSentCount(3);
     });

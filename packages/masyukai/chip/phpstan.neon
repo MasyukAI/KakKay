@@ -1,0 +1,27 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - src
+    
+    # Level 0-9 (0 is most lenient, 9 is strictest)
+    level: 5
+    
+    # Ignore specific errors
+    ignoreErrors:
+        # Allow dynamic properties on test doubles
+        - '#Access to an undefined property Mockery\\#'
+        - '#Call to an undefined method Mockery\\#'
+    
+    # Check test files too (optional)
+    # paths:
+    #     - src
+    #     - tests
+    
+    # Report all errors
+    reportUnmatchedIgnoredErrors: false
+    
+    # Exclude patterns
+    excludePaths:
+        - vendor
