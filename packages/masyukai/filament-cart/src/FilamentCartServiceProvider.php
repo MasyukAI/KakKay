@@ -16,6 +16,7 @@ use MasyukAI\Cart\Events\ItemConditionAdded;
 use MasyukAI\Cart\Events\ItemConditionRemoved;
 use MasyukAI\Cart\Events\ItemRemoved;
 use MasyukAI\Cart\Events\ItemUpdated;
+use MasyukAI\FilamentCart\Listeners\ApplyGlobalConditions;
 use MasyukAI\FilamentCart\Listeners\SyncCartConditionOnAdd;
 use MasyukAI\FilamentCart\Listeners\SyncCartConditionOnRemove;
 use MasyukAI\FilamentCart\Listeners\SyncCartItemOnAdd;
@@ -82,5 +83,9 @@ class FilamentCartServiceProvider extends ServiceProvider
         Event::listen(CartCreated::class, SyncCompleteCart::class);
         Event::listen(CartUpdated::class, SyncCompleteCart::class);
         Event::listen(CartCleared::class, SyncCartOnClear::class);
+
+        // Global conditions (always registered, even if normalized models disabled)
+        Event::listen(CartCreated::class, [ApplyGlobalConditions::class, 'handleCartCreated']);
+        Event::listen(CartUpdated::class, [ApplyGlobalConditions::class, 'handleCartUpdated']);
     }
 }

@@ -38,16 +38,19 @@ return new class extends Migration
             $table->jsonb('rules')->nullable(); // Dynamic condition rules (if any)
 
             // Status
-            $table->boolean('is_active')->default(true);
+            $table->boolean('is_global')->default(false); // Added from separate migration
+            $table->boolean('is_active')->default(false);
 
             $table->timestamps();
 
             // Indexes for filtering and sorting
             $table->index(['type', 'is_active']);
             $table->index(['target', 'is_active']);
+            $table->index('is_charge');
             $table->index('is_discount');
             $table->index('is_percentage');
             $table->index('is_dynamic');
+            $table->index('is_global');
             $table->index('order');
         });
     }

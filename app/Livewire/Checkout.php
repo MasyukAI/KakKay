@@ -345,24 +345,25 @@ class Checkout extends Component implements HasSchemas
     #[Computed]
     public function getTotal(): \Akaunting\Money\Money
     {
-        $cartTotal = CartFacade::total();
-        $shipping = $this->getShippingMoney();
-
-        return $cartTotal->add($shipping);
+        return CartFacade::total(); // Cart total already includes all conditions (including shipping)
     }
 
-    public function getShippingMoney(): \Akaunting\Money\Money
+    #[Computed]
+    public function getShipping(): \Akaunting\Money\Money
     {
-        $deliveryMethod = $this->data['delivery_method'] ?? 'standard';
+        // Check if there's a shipping condition applied to the cart
+        $shippingCondition = CartFacade::getCondition('shipping');
+
+        if ($shippingCondition) {
+            $currency = config('cart.money.default_currency', 'MYR');
+
+            return \Akaunting\Money\Money::{$currency}((int) $shippingCondition->getValue());
+        }
+
+        // Return zero if no shipping condition exists
         $currency = config('cart.money.default_currency', 'MYR');
 
-        $shippingAmount = match ($deliveryMethod) {
-            'express' => 4900, // RM49 in cents
-            'fast' => 1500,    // RM15 in cents
-            default => 500,    // RM5 in cents
-        };
-
-        return \Akaunting\Money\Money::{$currency}($shippingAmount);
+        return \Akaunting\Money\Money::{$currency}(0);
     }
 
     public function applyVoucher(): void

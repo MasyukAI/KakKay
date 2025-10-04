@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
+use MasyukAI\FilamentCart\Tests\TestCase;
+
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -10,3 +14,14 @@
 | need to change it using the "pest()" function to bind a different classes or traits.
 |
 */
+
+pest()->extend(TestCase::class)->in('Feature', 'Unit');
+
+/*
+|--------------------------------------------------------------------------
+| Groups
+|--------------------------------------------------------------------------
+*/
+
+pest()->group('integration')->in('Feature');
+pest()->group('unit')->in('Unit');

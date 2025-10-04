@@ -18,8 +18,8 @@ class ConditionFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->unique()->words(3, true).'_'.$this->faker->randomNumber(3),
-            'display_name' => $this->faker->words(2, true),
+            'name' => $this->faker->unique()->word().'_'.$this->faker->word().'_'.$this->faker->randomNumber(3),
+            'display_name' => $this->faker->word().' '.$this->faker->word(),
             'description' => $this->faker->sentence(),
             'type' => $this->faker->randomElement(['discount', 'tax', 'fee', 'shipping', 'surcharge']),
             'target' => $this->faker->randomElement(['subtotal', 'total', 'item']),

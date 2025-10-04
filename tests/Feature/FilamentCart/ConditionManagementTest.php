@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Models\Product;
 use App\Models\User;
+use Livewire\Livewire;
 use MasyukAI\Cart\Facades\Cart;
 use MasyukAI\FilamentCart\Models\Condition;
 
@@ -77,6 +78,7 @@ describe('Cart Integration', function () {
         $discount = Condition::factory()->discount()->create([
             'name' => 'Test Discount '.uniqid(),
             'value' => -10,
+            'target' => 'subtotal', // Ensure target is subtotal so discount applies to cart total
         ]);
 
         $condition = $discount->createCondition();
@@ -133,21 +135,61 @@ describe('Cart Integration', function () {
 
 describe('Filament Resource Integration', function () {
     it('can access condition template list page', function () {
-        Condition::factory()->count(3)->create();
+        $conditions = Condition::factory()->count(3)->create();
 
-        $this->markTestSkipped('Filament routes not available in test environment');
+        Livewire::test(\MasyukAI\FilamentCart\Resources\ConditionResource\Pages\ListConditions::class)
+            ->assertOk()
+            ->assertCanSeeTableRecords($conditions);
     });
 
     it('can create condition template through Filament', function () {
-        $this->markTestSkipped('Filament routes not available in test environment');
+        $conditionData = Condition::factory()->discount()->make([
+            'name' => 'Test Discount',
+            'display_name' => 'Test Discount Display',
+            'value' => -10,
+            'target' => 'subtotal',
+        ]);
+
+        Livewire::test(\MasyukAI\FilamentCart\Resources\ConditionResource\Pages\CreateCondition::class)
+            ->fillForm([
+                'name' => $conditionData->name,
+                'display_name' => $conditionData->display_name,
+                'type' => $conditionData->type,
+                'value' => $conditionData->value,
+                'target' => $conditionData->target,
+                'is_active' => true,
+            ])
+            ->call('create')
+            ->assertNotified();
+
+        expect(Condition::where('name', 'Test Discount')->exists())->toBeTrue();
     });
 
     it('can edit condition template through Filament', function () {
-        $this->markTestSkipped('Filament routes not available in test environment');
+        $condition = Condition::factory()->create(['name' => 'Original Name']);
+
+        Livewire::test(\MasyukAI\FilamentCart\Resources\ConditionResource\Pages\EditCondition::class, [
+            'record' => $condition->id,
+        ])
+            ->assertOk()
+            ->fillForm(['name' => 'Updated Name'])
+            ->call('save')
+            ->assertNotified();
+
+        expect($condition->refresh()->name)->toBe('Updated Name');
     });
 
     it('validates condition template form data', function () {
-        $this->markTestSkipped('Filament routes not available in test environment');
+        Livewire::test(\MasyukAI\FilamentCart\Resources\ConditionResource\Pages\CreateCondition::class)
+            ->fillForm([
+                'name' => null, // Required field
+                'type' => 'discount',
+                'value' => -10,
+                'target' => 'subtotal',
+            ])
+            ->call('create')
+            ->assertHasFormErrors(['name' => 'required'])
+            ->assertNotNotified();
     });
 });
 

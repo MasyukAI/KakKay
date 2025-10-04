@@ -19,7 +19,6 @@ class Cart extends Component
 
     public function mount(): void
     {
-        $this->ensureShippingCondition();
         $this->loadCartItems();
         $this->loadSuggestedProducts();
     }
@@ -27,24 +26,8 @@ class Cart extends Component
     #[On('product-added-to-cart')]
     public function refreshCart(): void
     {
-        $this->ensureShippingCondition();
         $this->loadCartItems();
         $this->loadSuggestedProducts();
-    }
-
-    protected function ensureShippingCondition(): void
-    {
-        // Only add shipping if cart is not empty
-        if (! CartFacade::isEmpty()) {
-            // Check if shipping condition already exists
-            if (! CartFacade::getCondition('shipping')) {
-                CartFacade::addShipping(
-                    name: 'shipping',
-                    value: 990, // RM9.90 in cents
-                    method: 'standard'
-                );
-            }
-        }
     }
 
     public function loadCartItems(): void
@@ -209,7 +192,6 @@ class Cart extends Component
             ]
         );
 
-        $this->ensureShippingCondition();
         $this->loadCartItems();
         $this->loadSuggestedProducts();
 
@@ -236,7 +218,8 @@ class Cart extends Component
 
     public function getShipping(): \Akaunting\Money\Money
     {
-        $shippingCondition = CartFacade::getShipping();
+        // Check if there's a shipping condition applied to the cart
+        $shippingCondition = CartFacade::getCondition('shipping');
 
         if ($shippingCondition) {
             $currency = config('cart.money.default_currency', 'MYR');
@@ -244,6 +227,7 @@ class Cart extends Component
             return \Akaunting\Money\Money::{$currency}((int) $shippingCondition->getValue());
         }
 
+        // Return zero if no shipping condition exists
         $currency = config('cart.money.default_currency', 'MYR');
 
         return \Akaunting\Money\Money::{$currency}(0);

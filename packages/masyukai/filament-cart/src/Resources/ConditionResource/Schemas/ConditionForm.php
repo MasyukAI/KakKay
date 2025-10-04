@@ -101,6 +101,11 @@ class ConditionForm
                             ->default(true)
                             ->helperText('Whether this condition can be used to create new cart conditions'),
 
+                        Toggle::make('is_global')
+                            ->label('Global Condition')
+                            ->default(false)
+                            ->helperText('Automatically apply this condition to all new carts'),
+
                         KeyValue::make('rules')
                             ->label('Dynamic Rules (AND Logic)')
                             ->default(['min_items' => '1'])

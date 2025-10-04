@@ -92,14 +92,14 @@ test('checkout proceeds normally when no existing purchase', function () {
     // Should proceed normally without errors
     $component->assertHasNoErrors();
 
-    // Debug: Check if the component has any data we can inspect
-    // dump($component->get('checkoutUrl'));
-
     // Verify that an order was created since no existing purchase was found
     // Note: Order creation happens after successful payment, not during checkout submission
     // The test should check for payment intent creation instead
     expect(\App\Models\Order::count())->toBe(0); // Order is not created yet during checkout
 
     // Verify payment intent was created in cart metadata
-    // Note: This test depends on metadata storage working, which has issues in test environment
-})->skip('Metadata storage has issues in test environment');
+    $cart = \MasyukAI\Cart\Facades\Cart::getCurrentCart();
+    $paymentIntent = $cart->getMetadata('payment_intent');
+    expect($paymentIntent)->not->toBeNull();
+    expect($paymentIntent)->toBeArray();
+});

@@ -26,8 +26,12 @@
             "type": "stdio"
         },
         "chrome-devtools": {
-            "command": "npx",
-            "args": ["chrome-devtools-mcp@latest"]
-        }
+			"command": "npx",
+			"args": [
+				"chrome-devtools-mcp@latest",
+				"--headless=true",
+				"--isolated=true"
+			]
+		}
     }
 }

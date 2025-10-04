@@ -82,6 +82,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Global Conditions
+    |--------------------------------------------------------------------------
+    |
+    | Enable automatic application of global conditions to all carts.
+    | When enabled, conditions marked as "global" will be automatically
+    | applied to new carts and when items are added.
+    |
+    */
+    'enable_global_conditions' => true,
+
+    /*
+    |--------------------------------------------------------------------------
     | Event Synchronization
     |--------------------------------------------------------------------------
     |

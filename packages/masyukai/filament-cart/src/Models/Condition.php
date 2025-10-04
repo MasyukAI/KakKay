@@ -55,6 +55,7 @@ class Condition extends Model
         'attributes',
         'rules',
         'is_active',
+        'is_global',
     ];
 
     /**
@@ -69,6 +70,7 @@ class Condition extends Model
         'is_discount' => 'boolean',
         'is_percentage' => 'boolean',
         'is_active' => 'boolean',
+        'is_global' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -187,6 +189,15 @@ class Condition extends Model
     }
 
     /**
+     * Scope to filter global conditions.
+     */
+    public function scopeGlobal(Builder $query): void
+    {
+        $query->where('is_global', true)
+            ->where('is_active', true);
+    }
+
+    /**
      * Scope to filter percentage-based conditions.
      */
     public function scopePercentageBased(Builder $query): void
@@ -248,6 +259,14 @@ class Condition extends Model
     public function isDynamic(): bool
     {
         return $this->is_dynamic;
+    }
+
+    /**
+     * Check if this condition is global (auto-applied).
+     */
+    public function isGlobal(): bool
+    {
+        return $this->is_global;
     }
 
     /**

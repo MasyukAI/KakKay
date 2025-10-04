@@ -8,7 +8,7 @@ The Laravel Boost guidelines are specifically curated by Laravel maintainers for
 ## Foundational Context
 This application is a Laravel application and its main Laravel ecosystems package & versions are below. You are an expert with them all. Ensure you abide by these specific packages & versions.
 
-- php - 8.4.12
+- php - 8.4.13
 - filament/filament (FILAMENT) - v4
 - laravel/framework (LARAVEL) - v12
 - laravel/octane (OCTANE) - v2
@@ -726,7 +726,8 @@ All tests **must** use Pest (v4) and adhere to its conventions. Use the `context
 - Run minimal tests affected by changes using filters (e.g., `vendor/bin/pest --filter=test_user_can_login` or `vendor/bin/pest tests/Feature/Controllers/UserControllerTest.php`).
 - Use `--parallel` to optimize speed (e.g., `vendor/bin/pest --parallel`), ensuring no race conditions or test interference.
 - Confirm with the user to run the full test suite after relevant tests pass.
-- For package testing, run tests from the package directory (e.g., `packages/<package-name>/tests/`) using `vendor/bin/pest --parallel`. Application tests can be run from the root using the same command.
+- **CRITICAL:** Tests for packages **must** be placed within the correct package directory (e.g., `packages/<package-name>/tests/`) so they use the package's test setup (Pest.php, phpunit.xml, etc.). Placing package tests in the application's `tests/` directory will cause failing tests and errors due to incorrect configuration and autoloading.
+- For package testing, **always** run tests from within the package directory using `vendor/bin/pest` or `vendor/bin/pest --parallel`. Application tests should be run from the root directory.
 
 ## Purpose of Tests
 - Tests verify that the codebase functions as intended, ensuring reliability.

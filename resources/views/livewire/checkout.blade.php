@@ -83,7 +83,7 @@
                                         </div>
                                         <div class="flex items-center justify-between">
                                             <span>Penghantaran</span>
-                                            <span class="font-medium text-white">{{ $this->getShippingMoney()->format() }}</span>
+                                            <span class="font-medium text-white">{{ $this->getShipping()->format() }}</span>
                                         </div>
                                         <hr class="border-white/15">
                                         <div class="flex items-center justify-between text-lg font-bold">

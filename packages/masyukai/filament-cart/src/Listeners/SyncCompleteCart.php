@@ -60,7 +60,7 @@ class SyncCompleteCart
                 [
                     'items' => $cartInstance->getItems()->toArray(),
                     'conditions' => $cartInstance->getConditions()->isEmpty() ? null : $cartInstance->getConditions()->toArray(),
-                    'metadata' => null,
+                    // Don't overwrite metadata - it's managed separately via setMetadata/getMetadata
                 ]
             );
 

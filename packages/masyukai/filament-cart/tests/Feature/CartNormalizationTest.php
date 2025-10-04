@@ -7,9 +7,6 @@ use MasyukAI\Cart\Facades\Cart as CartFacade;
 use MasyukAI\FilamentCart\Models\Cart as CartModel;
 use MasyukAI\FilamentCart\Models\CartCondition;
 use MasyukAI\FilamentCart\Models\CartItem;
-use MasyukAI\FilamentCart\Tests\TestCase;
-
-uses(TestCase::class);
 
 beforeEach(function () {
     // Clear any existing cart data
