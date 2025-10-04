@@ -18,6 +18,7 @@ use MasyukAI\Chip\Services\ChipCollectService;
  * @method static \MasyukAI\Chip\DataObjects\Purchase markAsPaid(string $id)
  * @method static \MasyukAI\Chip\DataObjects\Purchase resendInvoice(string $id)
  * @method static void deleteRecurringToken(string $id)
+ * @method static \MasyukAI\Chip\Builders\PurchaseBuilder purchase()
  * @method static \MasyukAI\Chip\DataObjects\Client createClient(array $data)
  * @method static \MasyukAI\Chip\DataObjects\Client getClient(string $id)
  * @method static \MasyukAI\Chip\DataObjects\Client updateClient(string $id, array $data)

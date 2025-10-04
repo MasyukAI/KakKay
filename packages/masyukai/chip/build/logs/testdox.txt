@@ -1,3 +1,32 @@
+/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Builders/PurchaseBuilderTest.php
+ [x] `PurchaseBuilder` → it can build a basic purchase with required fields
+ [x] `PurchaseBuilder` → it can add multiple products
+ [x] `PurchaseBuilder` → it can set customer details using customer method
+ [x] `PurchaseBuilder` → it can set billing address
+ [x] `PurchaseBuilder` → it can set shipping address
+ [x] `PurchaseBuilder` → it can set all redirect URLs at once
+ [x] `PurchaseBuilder` → it can set individual redirect URLs
+ [x] `PurchaseBuilder` → it can set webhook callback URL
+ [x] `PurchaseBuilder` → it can set reference
+ [x] `PurchaseBuilder` → it can enable send receipt
+ [x] `PurchaseBuilder` → it can enable pre-authorization
+ [x] `PurchaseBuilder` → it can force recurring
+ [x] `PurchaseBuilder` → it can set due date
+ [x] `PurchaseBuilder` → it can set notes
+ [x] `PurchaseBuilder` → it can override brand ID
+ [x] `PurchaseBuilder` → it can set client ID
+ [x] `PurchaseBuilder` → it supports method chaining for fluent API
+ [x] `PurchaseBuilder` → it can create purchase using create method
+ [x] `PurchaseBuilder` → it can create purchase using save method alias
+
+/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Commands/ChipHealthCheckCommandTest.php
+ [x] `ChipHealthCheckCommand` → it checks both CHIP Collect and Send APIs by default
+ [x] `ChipHealthCheckCommand` → it checks only CHIP Collect API with --collect flag
+ [x] `ChipHealthCheckCommand` → it checks only CHIP Send API with --send flag
+ [x] `ChipHealthCheckCommand` → it returns exit code 1 when CHIP Collect API is unreachable
+ [x] `ChipHealthCheckCommand` → it returns exit code 1 when CHIP Send API is unreachable
+ [x] `ChipHealthCheckCommand` → it shows all systems operational when all checks pass
+
 /Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/DataObjects/DataObjectsTest.php
  [x] `Purchase DataObject` → it creates a purchase from array data
  [x] `Purchase DataObject` → it handles nullable fields correctly
@@ -14,6 +43,37 @@
  [x] `Webhook DataObject` → it creates a webhook from array data
  [x] `Webhook DataObject` → it extracts purchase from webhook data
  [x] `Webhook DataObject` → it returns null for non-purchase webhook events
+
+/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Enums/BankAccountStatusTest.php
+ [x] `BankAccountStatus Enum` → it has all 3 official CHIP bank account statuses
+ [x] `BankAccountStatus Enum` → it can be created from string value
+ [x] `BankAccountStatus Enum` → it provides human-readable labels
+ [x] `BankAccountStatus Enum` → it correctly identifies verified status
+ [x] `BankAccountStatus Enum` → it correctly identifies pending status
+ [x] `BankAccountStatus Enum` → it correctly identifies rejected status
+
+/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Enums/PurchaseStatusTest.php
+ [x] `PurchaseStatus Enum` → it has all 26 official CHIP purchase statuses
+ [x] `PurchaseStatus Enum` → it can be created from string value
+ [x] `PurchaseStatus Enum` → it provides human-readable labels
+ [x] `PurchaseStatus Enum` → it correctly identifies successful statuses
+ [x] `PurchaseStatus Enum` → it correctly identifies pending statuses
+ [x] `PurchaseStatus Enum` → it correctly identifies failed statuses
+ [x] `PurchaseStatus Enum` → it correctly identifies which purchases can be cancelled
+ [x] `PurchaseStatus Enum` → it correctly identifies which purchases can be captured
+ [x] `PurchaseStatus Enum` → it correctly identifies which purchases can be released
+ [x] `PurchaseStatus Enum` → it correctly identifies which purchases can be refunded
+ [x] `PurchaseStatus Enum` → it has all new official statuses that were previously missing
+ [x] `PurchaseStatus Enum` → it does not have fake undocumented statuses
+
+/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Enums/SendInstructionStateTest.php
+ [x] `SendInstructionState Enum` → it has all 8 official CHIP send instruction states
+ [x] `SendInstructionState Enum` → it can be created from string value
+ [x] `SendInstructionState Enum` → it provides human-readable labels
+ [x] `SendInstructionState Enum` → it correctly identifies successful states
+ [x] `SendInstructionState Enum` → it correctly identifies pending states
+ [x] `SendInstructionState Enum` → it correctly identifies failed states
+ [x] `SendInstructionState Enum` → it correctly identifies which instructions can be deleted
 
 /Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Events/EventsTest.php
  [x] `PurchaseCreated Event` → it creates event with purchase data
@@ -112,6 +172,14 @@
  [x] `WebhookRequest Custom Methods` → it checks if webhook is purchase related
  [x] `WebhookRequest Custom Methods` → it extracts purchase ID from purchase events
  [x] `WebhookRequest Custom Methods` → it returns null for purchase ID on non-purchase events
+
+/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Jobs/ProcessChipWebhookTest.php
+ [x] `Webhook Queue Handler` → it dispatches webhook processing job when queue is enabled
+ [x] `Webhook Queue Handler` → it uses configured queue name
+ [x] `Webhook Queue Handler` → it has 3 retry attempts configured
+ [x] `Webhook Queue Handler` → it has 60 second timeout configured
+ [x] `Webhook Queue Handler` → it dispatches WebhookReceived event after processing
+ [x] `Webhook Queue Handler` → it provides genuinely useful async processing
 
 /Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Services/ChipCollectServiceTest.php
  [x] `ChipCollectService Public Key` → it returns the public key as a PEM string

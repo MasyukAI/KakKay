@@ -133,16 +133,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Rate Limiting Configuration
+    | Logging Configuration
     |--------------------------------------------------------------------------
     |
-    | Configure rate limiting for API requests
+    | Configure request/response logging for debugging and monitoring
     |
     */
-    'rate_limiting' => [
-        'enabled' => env('CHIP_RATE_LIMITING_ENABLED', true),
-        'requests_per_minute' => env('CHIP_RATE_LIMIT_PER_MINUTE', 60),
-        'burst_limit' => env('CHIP_RATE_LIMIT_BURST', 10),
+    'logging' => [
+        'enabled' => env('CHIP_LOGGING_ENABLED', env('APP_DEBUG', false)),
+        'channel' => env('CHIP_LOGGING_CHANNEL', 'stack'),
+        'mask_sensitive_data' => env('CHIP_LOGGING_MASK_SENSITIVE', true),
+        'log_requests' => env('CHIP_LOG_REQUESTS', true),
+        'log_responses' => env('CHIP_LOG_RESPONSES', true),
+        'log_webhooks' => env('CHIP_LOG_WEBHOOKS', true),
     ],
 
     /*

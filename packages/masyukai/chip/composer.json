@@ -12,13 +12,14 @@
     ],
     "require": {
         "php": "^8.4",
-        "ext-json": "*",
         "ext-curl": "*",
-        "illuminate/support": "^12.0",
+        "ext-json": "*",
+        "guzzlehttp/guzzle": "^7.0",
         "illuminate/http": "^12.0",
-        "illuminate/validation": "^12.0",
         "illuminate/queue": "^12.0",
-        "guzzlehttp/guzzle": "^7.0"
+        "illuminate/support": "^12.0",
+        "illuminate/validation": "^12.0",
+        "spatie/laravel-package-tools": "^1.92"
     },
     "require-dev": {
         "laravel/framework": "^12.0",

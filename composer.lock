@@ -4215,7 +4215,7 @@
             "dist": {
                 "type": "path",
                 "url": "./packages/masyukai/chip",
-                "reference": "64a8e03f95a703c1644ca2013ee19fbab668ee13"
+                "reference": "867c1579b9ec1044f9e8eb30b647bafbf90c3002"
             },
             "require": {
                 "ext-curl": "*",
@@ -4225,7 +4225,8 @@
                 "illuminate/queue": "^12.0",
                 "illuminate/support": "^12.0",
                 "illuminate/validation": "^12.0",
-                "php": "^8.4"
+                "php": "^8.4",
+                "spatie/laravel-package-tools": "^1.92"
             },
             "require-dev": {
                 "laravel/framework": "^12.0",

@@ -51,6 +51,37 @@
         </style>
     </head>
     <body>
+        <h2>/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Builders/PurchaseBuilderTest.php</h2>
+        <ul>
+            <li class="success">`PurchaseBuilder` → it can build a basic purchase with required fields</li>
+            <li class="success">`PurchaseBuilder` → it can add multiple products</li>
+            <li class="success">`PurchaseBuilder` → it can set customer details using customer method</li>
+            <li class="success">`PurchaseBuilder` → it can set billing address</li>
+            <li class="success">`PurchaseBuilder` → it can set shipping address</li>
+            <li class="success">`PurchaseBuilder` → it can set all redirect URLs at once</li>
+            <li class="success">`PurchaseBuilder` → it can set individual redirect URLs</li>
+            <li class="success">`PurchaseBuilder` → it can set webhook callback URL</li>
+            <li class="success">`PurchaseBuilder` → it can set reference</li>
+            <li class="success">`PurchaseBuilder` → it can enable send receipt</li>
+            <li class="success">`PurchaseBuilder` → it can enable pre-authorization</li>
+            <li class="success">`PurchaseBuilder` → it can force recurring</li>
+            <li class="success">`PurchaseBuilder` → it can set due date</li>
+            <li class="success">`PurchaseBuilder` → it can set notes</li>
+            <li class="success">`PurchaseBuilder` → it can override brand ID</li>
+            <li class="success">`PurchaseBuilder` → it can set client ID</li>
+            <li class="success">`PurchaseBuilder` → it supports method chaining for fluent API</li>
+            <li class="success">`PurchaseBuilder` → it can create purchase using create method</li>
+            <li class="success">`PurchaseBuilder` → it can create purchase using save method alias</li>
+        </ul>
+        <h2>/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Commands/ChipHealthCheckCommandTest.php</h2>
+        <ul>
+            <li class="success">`ChipHealthCheckCommand` → it checks both CHIP Collect and Send APIs by default</li>
+            <li class="success">`ChipHealthCheckCommand` → it checks only CHIP Collect API with --collect flag</li>
+            <li class="success">`ChipHealthCheckCommand` → it checks only CHIP Send API with --send flag</li>
+            <li class="success">`ChipHealthCheckCommand` → it returns exit code 1 when CHIP Collect API is unreachable</li>
+            <li class="success">`ChipHealthCheckCommand` → it returns exit code 1 when CHIP Send API is unreachable</li>
+            <li class="success">`ChipHealthCheckCommand` → it shows all systems operational when all checks pass</li>
+        </ul>
         <h2>/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/DataObjects/DataObjectsTest.php</h2>
         <ul>
             <li class="success">`Purchase DataObject` → it creates a purchase from array data</li>
@@ -68,6 +99,40 @@
             <li class="success">`Webhook DataObject` → it creates a webhook from array data</li>
             <li class="success">`Webhook DataObject` → it extracts purchase from webhook data</li>
             <li class="success">`Webhook DataObject` → it returns null for non-purchase webhook events</li>
+        </ul>
+        <h2>/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Enums/BankAccountStatusTest.php</h2>
+        <ul>
+            <li class="success">`BankAccountStatus Enum` → it has all 3 official CHIP bank account statuses</li>
+            <li class="success">`BankAccountStatus Enum` → it can be created from string value</li>
+            <li class="success">`BankAccountStatus Enum` → it provides human-readable labels</li>
+            <li class="success">`BankAccountStatus Enum` → it correctly identifies verified status</li>
+            <li class="success">`BankAccountStatus Enum` → it correctly identifies pending status</li>
+            <li class="success">`BankAccountStatus Enum` → it correctly identifies rejected status</li>
+        </ul>
+        <h2>/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Enums/PurchaseStatusTest.php</h2>
+        <ul>
+            <li class="success">`PurchaseStatus Enum` → it has all 26 official CHIP purchase statuses</li>
+            <li class="success">`PurchaseStatus Enum` → it can be created from string value</li>
+            <li class="success">`PurchaseStatus Enum` → it provides human-readable labels</li>
+            <li class="success">`PurchaseStatus Enum` → it correctly identifies successful statuses</li>
+            <li class="success">`PurchaseStatus Enum` → it correctly identifies pending statuses</li>
+            <li class="success">`PurchaseStatus Enum` → it correctly identifies failed statuses</li>
+            <li class="success">`PurchaseStatus Enum` → it correctly identifies which purchases can be cancelled</li>
+            <li class="success">`PurchaseStatus Enum` → it correctly identifies which purchases can be captured</li>
+            <li class="success">`PurchaseStatus Enum` → it correctly identifies which purchases can be released</li>
+            <li class="success">`PurchaseStatus Enum` → it correctly identifies which purchases can be refunded</li>
+            <li class="success">`PurchaseStatus Enum` → it has all new official statuses that were previously missing</li>
+            <li class="success">`PurchaseStatus Enum` → it does not have fake undocumented statuses</li>
+        </ul>
+        <h2>/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Enums/SendInstructionStateTest.php</h2>
+        <ul>
+            <li class="success">`SendInstructionState Enum` → it has all 8 official CHIP send instruction states</li>
+            <li class="success">`SendInstructionState Enum` → it can be created from string value</li>
+            <li class="success">`SendInstructionState Enum` → it provides human-readable labels</li>
+            <li class="success">`SendInstructionState Enum` → it correctly identifies successful states</li>
+            <li class="success">`SendInstructionState Enum` → it correctly identifies pending states</li>
+            <li class="success">`SendInstructionState Enum` → it correctly identifies failed states</li>
+            <li class="success">`SendInstructionState Enum` → it correctly identifies which instructions can be deleted</li>
         </ul>
         <h2>/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Events/EventsTest.php</h2>
         <ul>
@@ -172,6 +237,15 @@
             <li class="success">`WebhookRequest Custom Methods` → it checks if webhook is purchase related</li>
             <li class="success">`WebhookRequest Custom Methods` → it extracts purchase ID from purchase events</li>
             <li class="success">`WebhookRequest Custom Methods` → it returns null for purchase ID on non-purchase events</li>
+        </ul>
+        <h2>/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Jobs/ProcessChipWebhookTest.php</h2>
+        <ul>
+            <li class="success">`Webhook Queue Handler` → it dispatches webhook processing job when queue is enabled</li>
+            <li class="success">`Webhook Queue Handler` → it uses configured queue name</li>
+            <li class="success">`Webhook Queue Handler` → it has 3 retry attempts configured</li>
+            <li class="success">`Webhook Queue Handler` → it has 60 second timeout configured</li>
+            <li class="success">`Webhook Queue Handler` → it dispatches WebhookReceived event after processing</li>
+            <li class="success">`Webhook Queue Handler` → it provides genuinely useful async processing</li>
         </ul>
         <h2>/Users/Saiffil/Herd/kakkay/packages/masyukai/chip/tests/Services/ChipCollectServiceTest.php</h2>
         <ul>

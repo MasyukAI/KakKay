@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MasyukAI\Chip\Services;
 
 use Illuminate\Support\Facades\Log;
+use MasyukAI\Chip\Builders\PurchaseBuilder;
 use MasyukAI\Chip\Clients\ChipCollectClient;
 use MasyukAI\Chip\DataObjects\Client;
 use MasyukAI\Chip\DataObjects\ClientDetails;
@@ -27,7 +28,17 @@ class ChipCollectService
     }
 
     /**
+     * Create a new purchase builder instance for fluent API
+     */
+    public function purchase(): PurchaseBuilder
+    {
+        return new PurchaseBuilder($this);
+    }
+
+    /**
      * Create a purchase
+     *
+     * @param  array  $data  Purchase data
      */
     public function createPurchase(array $data): Purchase
     {

@@ -38,13 +38,14 @@ return new class extends Migration
             $table->json('transaction_data'); // Payment method specific data
             $table->json('status_history'); // Status change tracking
 
-            // Status and workflow
+            // Status and workflow - All official CHIP purchase statuses
             $table->enum('status', [
-                'created', 'sent', 'viewed', 'error', 'cancelled', 'overdue',
-                'expired', 'blocked', 'hold', 'released', 'pending_release',
-                'pending_capture', 'preauthorized', 'paid', 'pending_execute',
-                'pending_charge', 'cleared', 'settled', 'chargeback',
-                'pending_refund', 'refunded',
+                'created', 'sent', 'viewed', 'pending_execute', 'pending_charge',
+                'hold', 'pending_capture', 'pending_release', 'preauthorized',
+                'paid', 'paid_authorized', 'recurring_successful', 'cleared', 'settled',
+                'pending_refund', 'refunded', 'error', 'blocked', 'cancelled',
+                'overdue', 'expired', 'released', 'chargeback',
+                'attempted_capture', 'attempted_refund', 'attempted_recurring',
             ])->default('created');
 
             // Timestamps

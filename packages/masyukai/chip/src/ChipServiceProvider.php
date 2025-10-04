@@ -4,41 +4,38 @@ declare(strict_types=1);
 
 namespace MasyukAI\Chip;
 
-use Illuminate\Support\ServiceProvider;
 use MasyukAI\Chip\Clients\ChipCollectClient;
 use MasyukAI\Chip\Clients\ChipSendClient;
+use MasyukAI\Chip\Commands\ChipHealthCheckCommand;
 use MasyukAI\Chip\Services\ChipCollectService;
 use MasyukAI\Chip\Services\ChipSendService;
 use MasyukAI\Chip\Services\WebhookService;
+use Spatie\LaravelPackageTools\Package;
+use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class ChipServiceProvider extends ServiceProvider
+class ChipServiceProvider extends PackageServiceProvider
 {
-    public function register(): void
+    public function configurePackage(Package $package): void
     {
-        $this->mergeConfigFrom(
-            __DIR__.'/../config/chip.php',
-            'chip'
-        );
-
-        $this->registerServices();
-        $this->registerClients();
+        $package
+            ->name('chip')
+            ->hasConfigFile()
+            ->hasMigrations([
+                'create_chip_purchases_table',
+                'create_chip_payments_table',
+                'create_chip_webhooks_table',
+                'create_chip_bank_accounts_table',
+                'create_chip_clients_table',
+                'create_chip_send_instructions_table',
+            ])
+            ->hasRoute('api')
+            ->hasCommand(ChipHealthCheckCommand::class);
     }
 
-    public function boot(): void
+    public function packageRegistered(): void
     {
-        $this->publishes([
-            __DIR__.'/../config/chip.php' => config_path('chip.php'),
-        ], 'chip-config');
-
-        $this->publishes([
-            __DIR__.'/../database/migrations' => database_path('migrations'),
-        ], 'chip-migrations');
-
-        $this->loadRoutesFrom(__DIR__.'/routes/api.php');
-
-        if ($this->app->runningInConsole()) {
-            $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
-        }
+        $this->registerServices();
+        $this->registerClients();
     }
 
     protected function registerServices(): void

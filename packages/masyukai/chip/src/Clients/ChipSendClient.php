@@ -40,39 +40,37 @@ class ChipSendClient
     }
 
     /**
-     * Make an authenticated HTTP request to CHIP Send API
+     * Make an authenticated HTTP request to CHIP Send API with retry logic
      */
     public function request(string $method, string $endpoint, array $data = []): array
     {
         $url = $this->getBaseUrl().'/'.ltrim($endpoint, '/');
-        $epoch = time();
-        $checksum = $this->generateChecksum($epoch);
 
-        if (config('chip.logging.log_requests')) {
-            Log::channel(config('chip.logging.channel'))
+        // Log request if enabled
+        if (config('chip.logging.enabled') && config('chip.logging.log_requests')) {
+            Log::channel(config('chip.logging.channel', 'stack'))
                 ->info('CHIP Send API Request', [
                     'method' => $method,
                     'url' => $url,
-                    'data' => $data,
+                    'data' => config('chip.logging.mask_sensitive_data', true) ? $this->maskSensitiveData($data) : $data,
                 ]);
         }
 
         try {
-            $response = Http::withHeaders([
-                'Authorization' => "Bearer {$this->apiKey}",
-                'epoch' => (string) $epoch,
-                'checksum' => $checksum,
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json',
-                'User-Agent' => config('chip.defaults.creator_agent', 'MasyukAI/Chip Laravel Package'),
-            ])
-                ->timeout($this->timeout)
-                ->send($method, $url, [
-                    'json' => $data,
-                ]);
+            // Implement retry logic
+            $maxRetries = $this->retryConfig['max_retries'] ?? 3;
+            $delay = $this->retryConfig['delay'] ?? 100;
 
-            if (config('chip.logging.log_responses')) {
-                Log::channel(config('chip.logging.channel'))
+            $response = retry(
+                times: $maxRetries,
+                callback: fn () => $this->makeRequest($method, $url, $data),
+                sleepMilliseconds: fn (int $attempt) => $delay * ($attempt - 1),
+                when: fn (?\Throwable $exception, ?Response $response = null) => $this->shouldRetry($exception, $response)
+            );
+
+            // Log response if enabled
+            if (config('chip.logging.enabled') && config('chip.logging.log_responses')) {
+                Log::channel(config('chip.logging.channel', 'stack'))
                     ->info('CHIP Send API Response', [
                         'status' => $response->status(),
                         'data' => $response->json(),
@@ -87,6 +85,65 @@ class ChipSendClient
         } catch (\Exception $e) {
             $this->handleException($e);
         }
+    }
+
+    /**
+     * Make the actual HTTP request with authentication
+     */
+    protected function makeRequest(string $method, string $url, array $data): Response
+    {
+        $epoch = time();
+        $checksum = $this->generateChecksum($epoch);
+
+        return Http::withHeaders([
+            'Authorization' => "Bearer {$this->apiKey}",
+            'epoch' => (string) $epoch,
+            'checksum' => $checksum,
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+            'User-Agent' => config('chip.defaults.creator_agent', 'MasyukAI/Chip Laravel Package'),
+        ])
+            ->timeout($this->timeout)
+            ->send($method, $url, [
+                'json' => $data,
+            ]);
+    }
+
+    /**
+     * Determine if the request should be retried
+     */
+    protected function shouldRetry(?\Throwable $exception, ?Response $response): bool
+    {
+        // Retry on connection errors
+        if ($exception !== null) {
+            return true;
+        }
+
+        // Retry on 5xx server errors
+        if ($response !== null) {
+            return $response->serverError() || $response->status() === 429;
+        }
+
+        return false;
+    }
+
+    /**
+     * Mask sensitive data in logs
+     */
+    protected function maskSensitiveData(array $data): array
+    {
+        $masked = $data;
+
+        // Mask common sensitive fields
+        $sensitiveFields = ['api_key', 'secret', 'password', 'token', 'card_number', 'cvv', 'account_number', 'bank_account'];
+
+        foreach ($sensitiveFields as $field) {
+            if (isset($masked[$field])) {
+                $masked[$field] = '***MASKED***';
+            }
+        }
+
+        return $masked;
     }
 
     protected function generateChecksum(int $epoch): string
@@ -109,11 +166,13 @@ class ChipSendClient
 
     protected function handleException(\Exception $e): never
     {
-        Log::channel(config('chip.logging.channel'))
-            ->error('CHIP Send API Request Failed', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
+        if (config('chip.logging.enabled')) {
+            Log::channel(config('chip.logging.channel', 'stack'))
+                ->error('CHIP Send API Request Failed', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
+        }
 
         if ($e instanceof ChipApiException || $e instanceof ChipValidationException) {
             throw $e;
