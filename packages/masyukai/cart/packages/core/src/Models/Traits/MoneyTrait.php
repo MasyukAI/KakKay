@@ -44,7 +44,7 @@ trait MoneyTrait
         $result = $this->getRawPrice() * $this->quantity;
 
         // If any part is float or result has decimals, return float
-        if (is_float($this->getRawPrice()) || is_float($this->quantity) || $result != (int) $result) {
+        if (is_float($this->getRawPrice()) || $result != (int) $result) {
             return (float) $result;
         }
 
@@ -59,7 +59,7 @@ trait MoneyTrait
         $result = $this->price * $this->quantity;
 
         // If any part is float or result has decimals, return float
-        if (is_float($this->price) || is_float($this->quantity) || $result != (int) $result) {
+        if (is_float($this->price) || $result != (int) $result) {
             return (float) $result;
         }
 

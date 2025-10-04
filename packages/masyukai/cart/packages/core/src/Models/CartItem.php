@@ -11,6 +11,9 @@ use JsonSerializable;
 use MasyukAI\Cart\Collections\CartConditionCollection;
 use MasyukAI\Cart\Conditions\CartCondition;
 
+/**
+ * @implements Arrayable<string, mixed>
+ */
 readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
 {
     use Traits\AssociatedModelTrait;
@@ -24,6 +27,7 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
 
     public CartConditionCollection $conditions;
 
+    /** @var Collection<string, mixed> */
     public Collection $attributes;
 
     public float|int $price;
@@ -34,7 +38,7 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
         float|int|string $price,
         public int $quantity,
         array $attributes = [],
-        array|Collection $conditions = [],
+        /** @var array|Collection<string, CartCondition> */ array|Collection $conditions = [],
         public string|object|null $associatedModel = null
     ) {
         // Normalize ID to string for consistent handling
@@ -54,19 +58,10 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
      */
     private function sanitizeStringPrice(string $price): float|int
     {
-        if (is_null($price)) {
-            return 0;
-        }
-
         // Only sanitize string input - no transformation
-        if (is_string($price)) {
-            $price = str_replace([',', '$', '€', '£', '¥', '₹', 'RM', ' '], '', $price);
+        $price = str_replace([',', '$', '€', '£', '¥', '₹', 'RM', ' '], '', $price);
 
-            return str_contains($price, '.') ? (float) $price : (int) $price;
-        }
-
-        // Return numeric values as-is
-        return $price;
+        return str_contains($price, '.') ? (float) $price : (int) $price;
     }
 
     /**
@@ -115,6 +110,8 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
 
     /**
      * Normalize conditions to CartConditionCollection
+     * 
+     * @param array|Collection<string, CartCondition> $conditions
      */
     private function normalizeConditions(array|Collection $conditions): CartConditionCollection
     {
@@ -134,9 +131,7 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
             }
         } elseif ($conditions instanceof Collection) {
             foreach ($conditions as $key => $condition) {
-                if ($condition instanceof CartCondition) {
-                    $collection->put($condition->getName(), $condition);
-                }
+                $collection->put($condition->getName(), $condition);
             }
         }
 

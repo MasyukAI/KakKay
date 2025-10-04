@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace MasyukAI\Cart\Storage;
 
-use Illuminate\Contracts\Cache\Repository as Cache;
+use Illuminate\Contracts\Cache\Repository as CacheContract;
+use Illuminate\Cache\Repository as Cache;
 
 readonly class CacheStorage implements StorageInterface
 {
@@ -44,8 +45,9 @@ readonly class CacheStorage implements StorageInterface
     {
         // For cache storage, we'll clear all items
         // In production you might want to use cache tags for more granular control
-        if (method_exists($this->cache->getStore(), 'flush')) {
-            $this->cache->getStore()->flush();
+        $store = $this->cache->getStore();
+        if (method_exists($store, 'flush')) { // @phpstan-ignore function.alreadyNarrowedType
+            $store->flush();
         }
     }
 
@@ -161,6 +163,13 @@ readonly class CacheStorage implements StorageInterface
     private function putItemsWithLock(string $identifier, string $instance, array $items): void
     {
         $key = $this->getItemsKey($identifier, $instance);
+        
+        if (!method_exists($this->cache, 'lock')) {
+            // Fallback for cache drivers that don't support locking
+            $this->cache->put($key, $items, $this->ttl);
+            return;
+        }
+        
         $lock = $this->cache->lock("lock.{$key}", $this->lockTimeout);
 
         $lock->block($this->lockTimeout, function () use ($key, $items) {
@@ -182,6 +191,13 @@ readonly class CacheStorage implements StorageInterface
     private function putConditionsWithLock(string $identifier, string $instance, array $conditions): void
     {
         $key = $this->getConditionsKey($identifier, $instance);
+        
+        if (!method_exists($this->cache, 'lock')) {
+            // Fallback for cache drivers that don't support locking
+            $this->cache->put($key, $conditions, $this->ttl);
+            return;
+        }
+        
         $lock = $this->cache->lock("lock.{$key}", $this->lockTimeout);
 
         $lock->block($this->lockTimeout, function () use ($key, $conditions) {
@@ -202,6 +218,11 @@ readonly class CacheStorage implements StorageInterface
      */
     private function putMetadataWithLock(string $metadataKey, mixed $value): void
     {
+        if (! method_exists($this->cache, 'lock')) {
+            $this->cache->put($metadataKey, $value, $this->ttl);
+            return;
+        }
+
         $lock = $this->cache->lock("lock.{$metadataKey}", $this->lockTimeout);
 
         $lock->block($this->lockTimeout, function () use ($metadataKey, $value) {

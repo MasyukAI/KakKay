@@ -58,7 +58,11 @@ class CartRetryService
         }
 
         // If we get here, all retry attempts failed
-        throw $lastException;
+        if ($lastException !== null) {
+            throw $lastException;
+        }
+        
+        throw new \RuntimeException('Cart operation failed after all retry attempts');
     }
 
     /**

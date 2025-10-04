@@ -119,8 +119,8 @@ return [
         // Enable automatic formatting by default (can be overridden globally)
         'formatting_enabled' => env('CART_FORMATTING_ENABLED', true),
 
-        // Price transformer class - determines storage format
-        'transformer' => env('CART_PRICE_TRANSFORMER', \MasyukAI\Cart\PriceTransformers\IntegerPriceTransformer::class),
+        // Price transformer class - determines storage format (not implemented yet)
+        // 'transformer' => env('CART_PRICE_TRANSFORMER', \MasyukAI\Cart\PriceTransformers\IntegerPriceTransformer::class),
 
         // Locale for number formatting
         'locale' => env('CART_LOCALE', 'en_MY'),
@@ -171,6 +171,9 @@ return [
 
         // Enable conflict tracking
         'track_conflicts' => env('CART_TRACK_CONFLICTS', true),
+
+        // Log channel for metrics (null = use default)
+        'log_channel' => env('CART_METRICS_LOG_CHANNEL'),
     ],
 
     /*

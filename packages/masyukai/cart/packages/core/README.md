@@ -1,0 +1,54 @@
+# MasyukAI Cart Core Package
+
+This package contains the core implementation that powers **MasyukAI Cart**. It is published as `masyukai/cart` on Packagist and intended for Laravel 12 applications seeking a feature-rich shopping cart engine.
+
+## Highlights
+
+- 📦 **Pluggable storage** – session, cache, and database drivers that implement a shared interface.
+- 🛒 **Composable cart architecture** – traits manage items, totals, metadata, and conditions.
+- 🔁 **Multi-instance by default** – support any number of cart buckets per user or session.
+- 🧮 **Accurate calculations** – Akaunting\Money integration for precise totals and rounding.
+- 📈 **Observability hooks** – metrics, conflict tracking, and per-operation performance measurements.
+
+## Documentation
+
+The full project documentation lives in the repository root under [`docs/`](../../docs/index.md). Start with:
+
+- [Getting Started](../../docs/getting-started.md)
+- [Cart Operations](../../docs/cart-operations.md)
+- [Configuration Reference](../../docs/configuration.md)
+- [Conditions & Discounts](../../docs/conditions.md)
+
+## Local Development
+
+Clone the monorepo and install dependencies:
+
+```bash
+composer install
+vendor/bin/pest
+```
+
+When editing code:
+
+- Keep strict types and typed signatures.
+- Honour `StorageInterface` when extending storage implementations.
+- Update or add tests for behavioural changes.
+- Format using `vendor/bin/pint --dirty`.
+
+## Testing
+
+Run the unit suite for the core package:
+
+```bash
+vendor/bin/pest tests/Unit
+```
+
+Use Pest filters (`--group`, `--filter`) to target specific areas.
+
+## Contributing
+
+Please review the [Laravel Cart Coding Guidelines](../../.ai/guidelines/laravel-cart.md) before submitting PRs. Contributions from the community are welcome—issues, bug reports, and feature suggestions keep the project healthy.
+
+## License
+
+MasyukAI Cart is released under the [MIT license](../../LICENSE).

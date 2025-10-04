@@ -20,9 +20,7 @@ trait ManagesItems
      */
     private function evaluateDynamicConditionsIfAvailable(): void
     {
-        if (method_exists($this, 'evaluateDynamicConditions')) {
-            $this->evaluateDynamicConditions();
-        }
+        $this->evaluateDynamicConditions();
     }
 
     /**
@@ -63,6 +61,7 @@ trait ManagesItems
         if ($cartItems->has($id)) {
             // Update existing item quantity
             $existingItem = $cartItems->get($id);
+            assert($existingItem !== null, 'Item should exist since we checked has()');
             $item = $item->setQuantity($existingItem->quantity + $quantity);
         }
 
@@ -104,6 +103,7 @@ trait ManagesItems
                 $item['associated_model'] ?? null
             );
 
+            assert($cartItem instanceof CartItem, 'add() should return CartItem when called with scalar id');
             $cartItems->put($cartItem->id, $cartItem);
         }
 
@@ -125,6 +125,7 @@ trait ManagesItems
         }
 
         $item = $cartItems->get($id);
+        assert($item !== null, 'Item should exist since we checked has()');
 
         // Handle quantity updates
         if (isset($data['quantity'])) {
@@ -184,6 +185,7 @@ trait ManagesItems
         }
 
         $item = $cartItems->get($id);
+        assert($item !== null, 'Item should exist since we checked has()');
         $cartItems->forget($id);
         $this->save($cartItems);
 

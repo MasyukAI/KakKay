@@ -100,7 +100,7 @@ class CartServiceProvider extends PackageServiceProvider
      */
     protected function registerMigrationService(): void
     {
-        $this->app->singleton(\MasyukAI\Cart\Services\CartMigrationService::class, function (\Illuminate\Contracts\Foundation\Application $app): \MasyukAI\Cart\Services\CartMigrationService {
+        $this->app->singleton(function (\Illuminate\Contracts\Foundation\Application $app): \MasyukAI\Cart\Services\CartMigrationService {
             return new \MasyukAI\Cart\Services\CartMigrationService;
         });
     }
@@ -128,17 +128,18 @@ class CartServiceProvider extends PackageServiceProvider
      */
     protected function registerEnhancedServices(): void
     {
-        $this->app->singleton(\MasyukAI\Cart\Services\CartMetricsService::class, function ($app) {
+        $this->app->singleton(function ($app): \MasyukAI\Cart\Services\CartMetricsService {
             return new \MasyukAI\Cart\Services\CartMetricsService;
         });
 
-        $this->app->singleton(\MasyukAI\Cart\Services\CartRetryService::class, function ($app) {
+        $this->app->singleton(function ($app): \MasyukAI\Cart\Services\CartRetryService {
             return new \MasyukAI\Cart\Services\CartRetryService;
         });
     }
 
     /**
      * Get the services provided by the provider.
+     * @return array<string>
      */
     public function provides(): array
     {

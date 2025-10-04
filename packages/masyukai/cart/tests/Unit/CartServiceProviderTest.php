@@ -81,7 +81,7 @@ describe('CartServiceProvider', function () {
 
     it('registers migration service correctly', function () {
         $app = mock(Application::class);
-        $app->shouldReceive('singleton')->withArgs([\MasyukAI\Cart\Services\CartMigrationService::class, Mockery::type('callable')])->once();
+        $app->shouldReceive('singleton')->withArgs([Mockery::type('callable')])->once();
 
         $provider = new CartServiceProvider($app);
 

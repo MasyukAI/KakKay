@@ -16,7 +16,7 @@ trait ManagesStorage
     {
         $items = $this->storage->getItems($this->getIdentifier(), $this->instance());
 
-        if (! $items || ! is_array($items)) {
+        if (! $items || ! is_array($items)) { // @phpstan-ignore function.alreadyNarrowedType
             return new CartCollection;
         }
 

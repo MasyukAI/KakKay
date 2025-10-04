@@ -148,6 +148,7 @@ class CartManager
 
     /**
      * Get cart metrics summary
+     * @return array<string, mixed>
      */
     public function getMetrics(): array
     {
@@ -156,6 +157,7 @@ class CartManager
 
     /**
      * Record cart conversion for analytics
+     * @param array<string, mixed> $context
      */
     public function recordConversion(array $context = []): void
     {
@@ -170,6 +172,7 @@ class CartManager
 
     /**
      * Record cart abandonment for analytics
+     * @param array<string, mixed> $context
      */
     public function recordAbandonment(array $context = []): void
     {
@@ -184,6 +187,7 @@ class CartManager
 
     /**
      * Proxy all other method calls to the current cart instance with metrics
+     * @param array<mixed> $arguments
      */
     public function __call(string $method, array $arguments): mixed
     {
@@ -229,6 +233,8 @@ class CartManager
 
     /**
      * Sanitize arguments for logging (remove sensitive data)
+     * @param array<mixed> $arguments
+     * @return array<mixed>
      */
     private function sanitizeArguments(array $arguments): array
     {
@@ -249,6 +255,8 @@ class CartManager
 
     /**
      * Sanitize array values
+     * @param array<mixed> $data
+     * @return array<mixed>
      */
     private function sanitizeArray(array $data): array
     {

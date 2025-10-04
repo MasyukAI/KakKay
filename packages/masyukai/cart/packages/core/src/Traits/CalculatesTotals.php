@@ -17,7 +17,7 @@ trait CalculatesTotals
         $totalAmount = $this->getItems()->sum(fn (CartItem $item) => $item->getRawSubtotal());
 
         // Apply cart-level conditions targeting 'subtotal'
-        $cartConditions = $this->getConditions() ?? collect();
+        $cartConditions = $this->getConditions();
         $subtotalConditions = $cartConditions->byTarget('subtotal');
         $finalAmount = $subtotalConditions->reduce(function ($amount, $condition) {
             return $condition->apply($amount);
@@ -48,7 +48,7 @@ trait CalculatesTotals
         $subtotalAmount = $this->getRawSubtotal();
 
         // Apply cart-level conditions targeting 'total'
-        $cartConditions = $this->getConditions() ?? collect();
+        $cartConditions = $this->getConditions();
         $totalConditions = $cartConditions->byTarget('total');
         $finalAmount = $totalConditions->reduce(function ($amount, $condition) {
             return $condition->apply($amount);

@@ -79,9 +79,10 @@ class ClearAbandonedCartsCommand extends Command
                 // Record abandonment metrics
                 if (app()->bound(CartMetricsService::class)) {
                     foreach ($carts as $cart) {
+                        $cartData = (array) $cart;
                         app(CartMetricsService::class)->recordAbandonment(
-                            $cart->identifier,
-                            $cart->instance,
+                            $cartData['identifier'],
+                            $cartData['instance'],
                             ['cleared_by_command' => true]
                         );
                     }

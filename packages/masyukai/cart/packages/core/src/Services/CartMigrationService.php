@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use MasyukAI\Cart\Events\CartMerged;
 use MasyukAI\Cart\Facades\Cart;
+use MasyukAI\Cart\Storage\StorageInterface;
 
 class CartMigrationService
 {
@@ -19,12 +20,12 @@ class CartMigrationService
     /**
      * Optional storage instance for testing.
      */
-    protected $storage = null;
+    protected ?StorageInterface $storage = null;
 
     /**
      * Create a new cart migration service instance.
      */
-    public function __construct(array $config = [], $storage = null)
+    public function __construct(array $config = [], ?StorageInterface $storage = null)
     {
         $this->config = $config;
         $this->storage = $storage;
@@ -62,7 +63,7 @@ class CartMigrationService
      *
      * @param  int  $userId  The user ID that will become the new cart IDENTIFIER
      * @param  string  $instance  The cart instance name (e.g., 'default', 'wishlist')
-     * @param  string|null  $oldSessionId  The guest session ID (cart IDENTIFIER) to migrate from
+     * @param  string  $sessionId  The guest session ID (cart IDENTIFIER) to migrate from
      *
      * Example: migrateGuestCartToUser(42, 'default', 'abc123')
      * - Migrates from identifier 'abc123' to identifier '42'
@@ -207,7 +208,7 @@ class CartMigrationService
     public function getCurrentIdentifier(): string
     {
         if (Auth::check()) {
-            return $this->getIdentifier(Auth::id());
+            return $this->getIdentifier((int) Auth::id());
         }
 
         return $this->getIdentifier(null, session()->getId());

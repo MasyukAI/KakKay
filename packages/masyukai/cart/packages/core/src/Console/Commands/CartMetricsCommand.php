@@ -38,7 +38,8 @@ class CartMetricsCommand extends Command
         $metrics = $metricsService->getMetricsSummary();
 
         if ($this->option('json')) {
-            $this->line(json_encode($metrics, JSON_PRETTY_PRINT));
+            $json = json_encode($metrics, JSON_PRETTY_PRINT);
+            $this->line($json !== false ? $json : 'Failed to encode metrics to JSON');
 
             return self::SUCCESS;
         }

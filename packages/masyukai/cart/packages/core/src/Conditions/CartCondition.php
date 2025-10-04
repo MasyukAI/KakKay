@@ -9,6 +9,9 @@ use Illuminate\Contracts\Support\Jsonable;
 use JsonSerializable;
 use MasyukAI\Cart\Exceptions\InvalidCartConditionException;
 
+/**
+ * @implements Arrayable<string, mixed>
+ */
 class CartCondition implements Arrayable, Jsonable, JsonSerializable
 {
     public function __construct(
@@ -26,7 +29,7 @@ class CartCondition implements Arrayable, Jsonable, JsonSerializable
     /**
      * Create condition from array
      */
-    public static function fromArray(array $data): static
+    public static function fromArray(/** @var array<string, mixed> */ array $data): static
     {
         return new static(
             name: $data['name'] ?? throw new InvalidCartConditionException('Condition name is required'),
@@ -73,6 +76,8 @@ class CartCondition implements Arrayable, Jsonable, JsonSerializable
 
     /**
      * Get condition attributes
+     * 
+     * @return array<string, mixed>
      */
     public function getAttributes(): array
     {
@@ -163,7 +168,7 @@ class CartCondition implements Arrayable, Jsonable, JsonSerializable
     /**
      * Create a modified copy of the condition
      */
-    public function with(array $changes): static
+    public function with(/** @var array<string, mixed> */ array $changes): static
     {
         return new static(
             name: $changes['name'] ?? $this->name,
@@ -186,6 +191,8 @@ class CartCondition implements Arrayable, Jsonable, JsonSerializable
 
     /**
      * Get the rules for this condition
+     * 
+     * @return ?array<callable>
      */
     public function getRules(): ?array
     {
@@ -199,6 +206,10 @@ class CartCondition implements Arrayable, Jsonable, JsonSerializable
     {
         if (! $this->isDynamic()) {
             return true; // Static conditions always apply
+        }
+
+        if ($this->rules === null) {
+            return true;
         }
 
         foreach ($this->rules as $rule) {
@@ -255,11 +266,19 @@ class CartCondition implements Arrayable, Jsonable, JsonSerializable
      */
     public function toJson($options = 0): string
     {
-        return json_encode($this->jsonSerialize(), $options);
+        $json = json_encode($this->jsonSerialize(), $options);
+        
+        if ($json === false) {
+            throw new \JsonException('Failed to encode condition to JSON');
+        }
+        
+        return $json;
     }
 
     /**
      * JSON serialize
+     * 
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {
@@ -300,7 +319,7 @@ class CartCondition implements Arrayable, Jsonable, JsonSerializable
             throw new InvalidCartConditionException('Condition target must be one of: subtotal, total, item');
         }
 
-        if (empty($this->value) && $this->value !== '0' && $this->value !== 0) {
+        if ($this->value === '') {
             throw new InvalidCartConditionException('Condition value cannot be empty');
         }
 

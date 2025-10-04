@@ -7,6 +7,9 @@ namespace MasyukAI\Cart\Collections;
 use Illuminate\Support\Collection;
 use MasyukAI\Cart\Models\CartItem;
 
+/**
+ * @extends Collection<string, CartItem>
+ */
 class CartCollection extends Collection
 {
     /**
@@ -105,6 +108,7 @@ class CartCollection extends Collection
 
     /**
      * Convert collection to array with formatted output
+     * @return array<string, mixed>
      */
     public function toFormattedArray(): array
     {
@@ -230,6 +234,7 @@ class CartCollection extends Collection
 
     /**
      * Group items by a specific property
+     * @return Collection<string, static>
      */
     public function groupByProperty(string $property): Collection
     {
@@ -276,12 +281,13 @@ class CartCollection extends Collection
         return $this->sum(function (CartItem $item) {
             $discount = $item->getDiscountAmount();
 
-            return $discount instanceof \Akaunting\Money\Money ? $discount->getAmount() : (float) $discount;
+            return $discount->getAmount();
         });
     }
 
     /**
      * Get statistics about the cart
+     * @return array<string, mixed>
      */
     public function getStatistics(): array
     {
@@ -307,6 +313,7 @@ class CartCollection extends Collection
 
     /**
      * Group items by attribute value
+     * @return Collection<string, static>
      */
     public function groupByAttribute(string $attribute): \Illuminate\Support\Collection
     {

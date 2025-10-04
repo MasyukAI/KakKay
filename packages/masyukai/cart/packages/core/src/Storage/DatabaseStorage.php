@@ -152,7 +152,8 @@ readonly class DatabaseStorage implements StorageInterface
             $metadata[$key] = $value;
             $this->validateDataSize($metadata, 'metadata');
 
-            // Convert empty metadata to null
+            // Filter out null values and convert empty metadata to null
+            $metadata = array_filter($metadata, fn($value) => $value !== null);
             $metadataJson = empty($metadata) ? null : $this->encodeData($metadata, 'metadata');
 
             $this->performCasUpdate($identifier, $instance, [
@@ -307,6 +308,7 @@ readonly class DatabaseStorage implements StorageInterface
     private function performCasUpdate(string $identifier, string $instance, array $data, string $operationName): void
     {
         $this->database->transaction(function () use ($identifier, $instance, $data, $operationName) {
+            /** @var \stdClass|null $current */
             $current = $this->applyLockForUpdate(
                 $this->database->table($this->table)
                     ->where('identifier', $identifier)
@@ -349,6 +351,7 @@ readonly class DatabaseStorage implements StorageInterface
     private function handleCasConflict(string $identifier, string $instance, int $expectedVersion, string $operationName): void
     {
         // Get current version for better error details
+        /** @var \stdClass|null $currentRecord */
         $currentRecord = $this->database->table($this->table)
             ->where('identifier', $identifier)
             ->where('instance', $instance)

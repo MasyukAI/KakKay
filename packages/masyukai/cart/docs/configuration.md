@@ -1,233 +1,104 @@
-# Configuration
+# Configuration Reference
 
-The MasyukAI Cart package provides extensive configuration options to customize its behavior according to your application's needs.
-
-## Publishing Configuration
-
-First, publish the configuration file:
+Publish the configuration once you need to customise defaults:
 
 ```bash
 php artisan vendor:publish --tag=cart-config
 ```
 
-This will create a `config/cart.php` file in your Laravel application.
+This creates `config/cart.php`. The following tables describe every option.
 
-## Configuration Options
+## Storage
 
-### Storage Driver
+| Key | Default | Purpose |
+| --- | --- | --- |
+| `storage` | `session` | Driver alias (`session`, `cache`, `database`). |
+| `session.key` | `cart` | Root key used within the session payload. |
+| `database.table` | `carts` | Table used by the database driver (also referenced by migrations). |
+| `database.lock_for_update` | `false` | Apply `FOR UPDATE` locks during compare-and-swap updates. |
+| `cache.prefix` | `cart` | Cache key prefix. |
+| `cache.ttl` | `86400` | Time-to-live in seconds for cached items and conditions. |
 
-Choose your preferred storage method:
+See [Storage Drivers](storage.md) for implementation specifics.
 
-```php
-// config/cart.php
-'storage' => env('CART_STORAGE_DRIVER', 'session'),
-```
+## Money
 
-**Available Drivers:**
-- `session` - Store cart data in user sessions (default)
-- `database` - Store cart data in database tables
-- `cache` - Store cart data in your configured cache driver
+| Key | Default | Purpose |
+| --- | --- | --- |
+| `money.default_currency` | `MYR` | Currency code used when instantiating `Money` objects. Override to align with your store’s currency. |
 
-### Session Storage Configuration
+All totals and subtotals return `Akaunting\Money\Money` instances.
 
-```php
-'session' => [
-    'key' => env('CART_SESSION_KEY', 'masyukai_cart'),
-],
-```
+## Events & Validation
 
-### Database Storage Configuration
+| Key | Default | Purpose |
+| --- | --- | --- |
+| `events` | `true` | Enables event dispatching for add/update/remove and metadata changes. |
+| `strict_validation` | `true` | Enforces guardrails on IDs, names, price/quantity, and attribute sizes (recommended for production). |
 
-```php
-'database' => [
-    'connection' => env('CART_DB_CONNECTION', null),
-    'table' => env('CART_DB_TABLE', 'carts'),
-],
-```
+## Migration
 
-To use database storage, publish and run the migrations:
+| Key | Default | Purpose |
+| --- | --- | --- |
+| `migration.auto_migrate_on_login` | `true` | Listen to Laravel’s login events and migrate the guest cart automatically. |
+| `migration.merge_strategy` | `add_quantities` | Strategy when both guest and user carts contain the same item (`add_quantities`, `keep_highest_quantity`, `keep_user_cart`, `replace_with_guest`). |
 
-```bash
-php artisan vendor:publish --tag=cart-migrations
-php artisan migrate
-```
+See [Identifiers & Migration](identifiers-and-migration.md) for flow diagrams.
 
-### Cache Storage Configuration
+## Limits & Security
 
-```php
-'cache' => [
-    'store' => env('CART_CACHE_STORE', null),
-    'prefix' => env('CART_CACHE_PREFIX', 'cart'),
-    'ttl' => env('CART_CACHE_TTL', 86400), // 24 hours
-],
-```
+| Key | Default | Purpose |
+| --- | --- | --- |
+| `limits.max_items` | `1000` | Maximum number of line items per instance. |
+| `limits.max_data_size_bytes` | `1048576` (1 MB) | Maximum combined payload size for items/conditions/metadata. |
+| `limits.max_item_quantity` | `10000` | Cap for a single line item quantity. |
+| `limits.max_string_length` | `255` | Guard for ID/name length. |
 
-## Default Instance
+Breaching limits throws `InvalidCartItemException` to protect persistence layers.
 
-Set the default cart instance name:
+## Metrics & Observability
 
-```php
-'default_instance' => env('CART_DEFAULT_INSTANCE', 'default'),
-```
+| Key | Default | Purpose |
+| --- | --- | --- |
+| `metrics.enabled` | `true` | Toggle metrics collection globally. |
+| `metrics.slow_operation_threshold` | `1.0` | Seconds after which an operation is logged as “slow”. |
+| `metrics.track_conflicts` | `true` | Record cart conflict counts. |
+| `metrics.log_channel` | `null` | Optional logging channel. If set, logs route through `Log::channel($channel)`; otherwise the default logger is used. |
 
-## Number Formatting
+Metrics power the `cart:metrics` Artisan command. More details in [Metrics & Observability](metrics-and-observability.md).
 
-Configure how numbers are displayed:
+## Retry
 
-```php
-'format_numbers' => env('CART_FORMAT_NUMBERS', false),
-'decimals' => env('CART_DECIMALS', 2),
-'decimal_point' => env('CART_DECIMAL_POINT', '.'),
-'thousands_separator' => env('CART_THOUSANDS_SEPARATOR', ','),
-```
+| Key | Default | Purpose |
+| --- | --- | --- |
+| `retry.enabled` | `true` | Allow automatic retries for conflict-prone operations. |
+| `retry.max_attempts` | `3` | Default max attempts for backoff strategies. |
+| `retry.base_delay` | `100` | Base delay (ms) used when calculating exponential backoff. |
+| `retry.max_delay` | `1000` | Upper bound (ms) for a single retry sleep. |
+| `retry.exponential_backoff` | `true` | Indicates jitter should be built from exponential growth. |
+| `retry.jitter` | `true` | Adds ±25% randomness to spread concurrent retries. |
 
-## Events
+The `CartRetryService` respects these defaults. See [Concurrency & Retry](concurrency-and-retry.md).
 
-Enable or disable cart events:
+## Cleanup
 
-```php
-'events' => env('CART_EVENTS_ENABLED', true),
-```
+| Key | Default | Purpose |
+| --- | --- | --- |
+| `cleanup.abandoned_after_days` | `7` | Age threshold for considering a cart abandoned. |
+| `cleanup.auto_cleanup` | `false` | Reserved for future automation. Use `cart:clear-abandoned` today. |
+| `cleanup.cleanup_batch_size` | `1000` | Batch size when processing abandoned carts. |
 
-When enabled, the cart will dispatch events for various operations (add, update, remove, etc.).
+## Octane
 
-## Validation
+| Key | Default | Purpose |
+| --- | --- | --- |
+| `octane.auto_register_listeners` | `true` | Registers Octane-specific listeners automatically. |
+| `octane.prefer_cache_storage` | `true` | Suggests using cache storage under Octane to avoid session stickiness. |
+| `octane.queue_events` | `true` | Queue cart events to avoid blocking worker responses. |
+| `octane.reset_static_state` | `true` | Ensures per-request cleanliness inside long-lived workers. |
 
-Configure validation behavior:
+Read [Laravel Octane](octane.md) for deployment guidance.
 
-```php
-'strict_validation' => env('CART_STRICT_VALIDATION', true),
-```
+---
 
-When enabled, the cart performs strict validation on all operations.
-
-## Tax Configuration
-
-Configure default tax settings:
-
-```php
-'tax' => [
-    'enabled' => env('CART_TAX_ENABLED', false),
-    'rate' => env('CART_TAX_RATE', 0.1), // 10%
-    'inclusive' => env('CART_TAX_INCLUSIVE', false),
-],
-```
-
-## Currency Configuration
-
-Set default currency formatting:
-
-```php
-'currency' => [
-    'code' => env('CART_CURRENCY_CODE', 'USD'),
-    'symbol' => env('CART_CURRENCY_SYMBOL', '$'),
-    'position' => env('CART_CURRENCY_POSITION', 'before'), // before, after
-],
-```
-
-## Auto-destroy Empty Carts
-
-Automatically clean up empty carts:
-
-```php
-'destroy_empty_after' => env('CART_DESTROY_EMPTY_AFTER', null), // minutes
-```
-
-Set to `null` to disable auto-cleanup.
-
-## Environment Variables
-
-You can configure most options using environment variables in your `.env` file:
-
-```env
-# Storage
-CART_STORAGE_DRIVER=session
-CART_SESSION_KEY=masyukai_cart
-
-# Database storage
-CART_DB_CONNECTION=mysql
-CART_DB_TABLE=carts
-
-# Cache storage  
-CART_CACHE_STORE=redis
-CART_CACHE_PREFIX=cart
-CART_CACHE_TTL=86400
-
-# General
-CART_DEFAULT_INSTANCE=default
-CART_EVENTS_ENABLED=true
-CART_STRICT_VALIDATION=true
-
-# Formatting
-CART_FORMAT_NUMBERS=false
-CART_DECIMALS=2
-CART_DECIMAL_POINT=.
-CART_THOUSANDS_SEPARATOR=,
-
-# Tax
-CART_TAX_ENABLED=true
-CART_TAX_RATE=0.08
-CART_TAX_INCLUSIVE=false
-
-# Currency
-CART_CURRENCY_CODE=USD
-CART_CURRENCY_SYMBOL=$
-CART_CURRENCY_POSITION=before
-
-# Cleanup
-CART_DESTROY_EMPTY_AFTER=1440
-```
-
-## Advanced Configuration
-
-### Custom Storage Driver
-
-You can create custom storage drivers by implementing the `StorageInterface`:
-
-```php
-use MasyukAI\Cart\Storage\StorageInterface;
-
-class CustomStorage implements StorageInterface
-{
-    public function get(string $key): mixed
-    {
-        // Your implementation
-    }
-    
-    public function put(string $key, mixed $value): void
-    {
-        // Your implementation  
-    }
-    
-    // Implement other required methods...
-}
-```
-
-Register your custom driver in a service provider:
-
-```php
-$this->app->bind('cart.storage.custom', function ($app) {
-    return new CustomStorage();
-});
-```
-
-### Runtime Configuration
-
-You can override configuration at runtime:
-
-```php
-use MasyukAI\Cart\Cart;
-use MasyukAI\Cart\Storage\SessionStorage;
-
-$storage = new SessionStorage(session());
-$cart = new Cart(
-    storage: $storage,
-    events: app('events'),
-    instanceName: 'custom',
-    eventsEnabled: false,
-    config: [
-        'decimals' => 3,
-        'strict_validation' => false,
-    ]
-);
-```
+After tweaking configuration remember to cache it (`php artisan config:cache`) once you are satisfied.

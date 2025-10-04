@@ -108,7 +108,7 @@ class DispatchCartUpdated
     /**
      * Register the listeners for the subscriber
      */
-    public function subscribe($events): array
+    public function subscribe(\Illuminate\Events\Dispatcher $events): array
     {
         return [
             ItemAdded::class => 'handleItemAdded',

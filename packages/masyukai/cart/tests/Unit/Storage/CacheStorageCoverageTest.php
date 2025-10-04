@@ -6,7 +6,7 @@ use MasyukAI\Cart\Storage\CacheStorage;
 
 describe('CacheStorage Coverage Tests', function () {
     beforeEach(function () {
-        $this->mockCache = \Mockery::mock(\Illuminate\Contracts\Cache\Repository::class);
+        $this->mockCache = \Mockery::mock(\Illuminate\Cache\Repository::class);
         $this->storage = new CacheStorage($this->mockCache, 'test_cart', 3600);
     });
 
@@ -15,7 +15,7 @@ describe('CacheStorage Coverage Tests', function () {
     });
 
     it('can be instantiated with custom parameters', function () {
-        $cache = \Mockery::mock(\Illuminate\Contracts\Cache\Repository::class);
+        $cache = \Mockery::mock(\Illuminate\Cache\Repository::class);
         $storage = new CacheStorage($cache, 'custom_cart', 7200);
 
         expect($storage)->toBeInstanceOf(CacheStorage::class);
@@ -134,7 +134,7 @@ describe('CacheStorage Coverage Tests', function () {
         $mockStore = \Mockery::mock(\Illuminate\Contracts\Cache\Store::class);
         $mockStore->shouldReceive('flush')->once()->andReturn(true);
 
-        $this->mockCache->shouldReceive('getStore')->twice()->andReturn($mockStore);
+        $this->mockCache->shouldReceive('getStore')->once()->andReturn($mockStore);
 
         $this->storage->flush();
 
@@ -174,7 +174,7 @@ describe('CacheStorage Coverage Tests', function () {
     });
 
     it('uses default ttl when not specified', function () {
-        $cache = \Mockery::mock(\Illuminate\Contracts\Cache\Repository::class);
+        $cache = \Mockery::mock(\Illuminate\Cache\Repository::class);
         $storage = new CacheStorage($cache, 'test_cart'); // No TTL specified
 
         $items = ['item1' => ['name' => 'Test']];

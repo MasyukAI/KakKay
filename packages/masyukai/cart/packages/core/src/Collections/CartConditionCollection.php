@@ -8,6 +8,9 @@ use Akaunting\Money\Money;
 use Illuminate\Support\Collection;
 use MasyukAI\Cart\Conditions\CartCondition;
 
+/**
+ * @extends Collection<string, CartCondition>
+ */
 class CartConditionCollection extends Collection
 {
     /**
@@ -132,6 +135,7 @@ class CartConditionCollection extends Collection
 
     /**
      * Get conditions summary
+     * @return array<string, mixed>
      */
     public function getSummary(float $baseValue = 0): array
     {
@@ -148,6 +152,7 @@ class CartConditionCollection extends Collection
 
     /**
      * Convert collection to array with detailed information
+     * @return array<string, mixed>
      */
     public function toDetailedArray(float $baseValue = 0): array
     {
@@ -162,17 +167,14 @@ class CartConditionCollection extends Collection
 
     /**
      * Create conditions from array
+     * @param array<array<string, mixed>> $conditions
      */
     public static function fromArray(array $conditions): static
     {
         $collection = new static;
 
         foreach ($conditions as $condition) {
-            if ($condition instanceof CartCondition) {
-                $collection->addCondition($condition);
-            } elseif (is_array($condition)) {
-                $collection->addCondition(CartCondition::fromArray($condition));
-            }
+            $collection->addCondition(CartCondition::fromArray($condition));
         }
 
         return $collection;
@@ -180,6 +182,7 @@ class CartConditionCollection extends Collection
 
     /**
      * Group conditions by type
+     * @return Collection<string, static>
      */
     public function groupByType(): Collection
     {
@@ -188,6 +191,7 @@ class CartConditionCollection extends Collection
 
     /**
      * Group conditions by target
+     * @return Collection<string, static>
      */
     public function groupByTarget(): Collection
     {

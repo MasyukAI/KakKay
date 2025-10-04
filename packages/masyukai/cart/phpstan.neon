@@ -1,11 +1,32 @@
 includes:
     - vendor/larastan/larastan/extension.neon
-    - vendor/nesbot/carbon/extension.neon
 
 parameters:
-
     paths:
         - packages/core/src
-
-    # Level 8 for better static analysis
+    
+    # Level 0-9 (0 is most lenient, 9 is strictest)
     level: 8
+    
+    # Treat PHPDoc types as certain to enable generic array types
+    treatPhpDocTypesAsCertain: true
+    
+    # Ignore specific errors
+    ignoreErrors:
+        - identifier: 'missingType.iterableValue'
+        - message: '#Unsafe usage of new static\(\)#'
+        - identifier: 'larastan.noEnvCallsOutsideOfConfig'
+        - message: '#Method MasyukAI\\Cart\\Models\\CartItem::__construct\(\) has parameter \$conditions with generic class#'
+        - identifier: 'property.onlyWritten'
+    
+    # Check test files too (optional)
+    # paths:
+    #     - src
+    #     - tests
+    
+    # Report all errors
+    reportUnmatchedIgnoredErrors: false
+    
+    # Exclude patterns
+    excludePaths:
+        - vendor

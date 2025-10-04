@@ -132,7 +132,7 @@ return [
     */
     'defaults' => [
         'currency' => env('CHIP_DEFAULT_CURRENCY', 'MYR'),
-        'creator_agent' => env('CHIP_CREATOR_AGENT', 'Laravel Package'),
+        'creator_agent' => env('CHIP_CREATOR_AGENT', 'Masyuk AI Cart'),
         'platform' => env('CHIP_PLATFORM', 'api'),
         'payment_method_whitelist' => env('CHIP_PAYMENT_METHOD_WHITELIST', ''),
         'success_redirect' => env('CHIP_SUCCESS_REDIRECT'),
@@ -150,6 +150,4 @@ return [
     'database' => [
         'table_prefix' => env('CHIP_TABLE_PREFIX', 'chip_'),
     ],
-
-    // Deprecated testing configuration removed (mocking should happen in code/tests)
 ];

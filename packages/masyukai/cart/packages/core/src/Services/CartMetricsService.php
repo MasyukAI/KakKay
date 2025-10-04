@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 use MasyukAI\Cart\Exceptions\CartConflictException;
+use MasyukAI\Cart\Exceptions\CartException;
 
 class CartMetricsService
 {
@@ -225,12 +226,16 @@ class CartMetricsService
             }
 
             $execTimes = array_column($times, 'time');
-            $metrics[$operation] = [
-                'avg' => round(array_sum($execTimes) / count($execTimes), 4),
-                'min' => round(min($execTimes), 4),
-                'max' => round(max($execTimes), 4),
-                'count' => count($execTimes),
-            ];
+            if (!empty($execTimes)) {
+                $metrics[$operation] = [
+                    'avg' => round(array_sum($execTimes) / count($execTimes), 4),
+                    'min' => round(min($execTimes), 4),
+                    'max' => round(max($execTimes), 4),
+                    'count' => count($execTimes),
+                ];
+            } else {
+                $metrics[$operation] = null;
+            }
         }
 
         return $metrics;

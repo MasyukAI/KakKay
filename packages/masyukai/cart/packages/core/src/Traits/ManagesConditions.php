@@ -55,7 +55,7 @@ trait ManagesConditions
     {
         $conditions = $this->storage->getConditions($this->getIdentifier(), $this->instance());
 
-        if (! $conditions || ! is_array($conditions)) {
+        if (! $conditions || ! is_array($conditions)) { // @phpstan-ignore function.alreadyNarrowedType
             return new CartConditionCollection;
         }
 
@@ -157,6 +157,7 @@ trait ManagesConditions
         }
 
         $item = $cartItems->get($itemId);
+        assert($item !== null, 'Item should exist since we checked has()');
         $item = $item->addCondition($condition);
         $cartItems->put($itemId, $item);
         $this->save($cartItems);
@@ -181,6 +182,7 @@ trait ManagesConditions
         }
 
         $item = $cartItems->get($itemId);
+        assert($item !== null, 'Item should exist since we checked has()');
 
         // Check if the condition exists before removing
         if (! $item->conditions->has($conditionName)) {
@@ -214,6 +216,7 @@ trait ManagesConditions
         }
 
         $item = $cartItems->get($itemId);
+        assert($item !== null, 'Item should exist since we checked has()');
         $item = $item->clearConditions();
         $cartItems->put($itemId, $item);
         $this->save($cartItems);

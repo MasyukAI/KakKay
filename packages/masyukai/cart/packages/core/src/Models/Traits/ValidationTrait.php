@@ -46,7 +46,7 @@ trait ValidationTrait
         }
         // Validate attributes size
         if (! empty($this->attributes)) {
-            $attributesArray = $this->attributes instanceof \Illuminate\Support\Collection ? $this->attributes->toArray() : $this->attributes;
+            $attributesArray = $this->attributes->toArray();
             $this->validateDataSize($attributesArray, 'item attributes');
         }
     }

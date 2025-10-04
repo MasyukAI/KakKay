@@ -28,6 +28,7 @@ class HandleUserLogin
         }
 
         // Migrate guest cart to user cart using old session ID
+        /** @var object{success: bool, itemsMerged: int, conflicts: mixed, message: string} $result */
         $result = $this->migrationService->migrateGuestCartForUser($event->user, 'default', $oldSessionId);
 
         if ($result->success && $result->itemsMerged > 0) {

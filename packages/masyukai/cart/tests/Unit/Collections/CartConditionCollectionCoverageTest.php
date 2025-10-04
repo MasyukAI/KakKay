@@ -258,8 +258,8 @@ it('can use removeCondition method', function () {
 
 it('can create collection from array using fromArray method', function () {
     $conditionsArray = [
-        CartCondition::fromArray(['name' => 'discount1', 'type' => 'discount', 'value' => '-10']),
-        new CartCondition('discount2', 'discount', 'subtotal', '-5'),
+        ['name' => 'discount1', 'type' => 'discount', 'value' => '-10'],
+        ['name' => 'discount2', 'type' => 'discount', 'value' => '-5'],
     ];
 
     $collection = CartConditionCollection::fromArray($conditionsArray);
