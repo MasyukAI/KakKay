@@ -13,6 +13,7 @@ return [
         'base_url' => env('CHIP_COLLECT_BASE_URL', 'https://gate.chip-in.asia/api/v1/'),
         'api_key' => env('CHIP_COLLECT_API_KEY'),
         'brand_id' => env('CHIP_COLLECT_BRAND_ID'),
+        'environment' => env('CHIP_COLLECT_ENVIRONMENT', 'sandbox'),
         'timeout' => env('CHIP_COLLECT_TIMEOUT', 30),
         'retry' => [
             'attempts' => env('CHIP_COLLECT_RETRY_ATTEMPTS', 3),
@@ -42,16 +43,6 @@ return [
             'delay' => env('CHIP_SEND_RETRY_DELAY', 1000),
         ],
     ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Environment Configuration
-    |--------------------------------------------------------------------------
-    |
-    | Determine whether to use sandbox or production endpoints
-    |
-    */
-    'sandbox' => env('CHIP_SANDBOX', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -93,24 +84,7 @@ return [
     */
     'events' => [
         'dispatch_purchase_events' => env('CHIP_DISPATCH_PURCHASE_EVENTS', true),
-        'dispatch_payment_events' => env('CHIP_DISPATCH_PAYMENT_EVENTS', true),
         'dispatch_webhook_events' => env('CHIP_DISPATCH_WEBHOOK_EVENTS', true),
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Logging Configuration
-    |--------------------------------------------------------------------------
-    |
-    | Configure logging behavior for CHIP operations
-    |
-    */
-    'logging' => [
-        'channel' => env('CHIP_LOG_CHANNEL', 'default'),
-        'level' => env('CHIP_LOG_LEVEL', 'info'),
-        'log_requests' => env('CHIP_LOG_REQUESTS', false),
-        'log_responses' => env('CHIP_LOG_RESPONSES', false),
-        'log_webhooks' => env('CHIP_LOG_WEBHOOKS', true),
     ],
 
     /*
@@ -150,20 +124,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Validation Configuration
-    |--------------------------------------------------------------------------
-    |
-    | Configure validation rules and behavior
-    |
-    */
-    'validation' => [
-        'strict_mode' => env('CHIP_VALIDATION_STRICT', false),
-        'allow_unknown_events' => env('CHIP_ALLOW_UNKNOWN_EVENTS', true),
-        'webhook_signature_tolerance' => env('CHIP_WEBHOOK_SIGNATURE_TOLERANCE', 300),
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
     | Default Values
     |--------------------------------------------------------------------------
     |
@@ -191,17 +151,5 @@ return [
         'table_prefix' => env('CHIP_TABLE_PREFIX', 'chip_'),
     ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | Testing Configuration
-    |--------------------------------------------------------------------------
-    |
-    | Configuration specific to testing environments
-    |
-    */
-    'testing' => [
-        'mock_responses' => env('CHIP_MOCK_RESPONSES', false),
-        'fake_webhooks' => env('CHIP_FAKE_WEBHOOKS', false),
-        'skip_verification' => env('CHIP_SKIP_VERIFICATION', false),
-    ],
+    // Deprecated testing configuration removed (mocking should happen in code/tests)
 ];

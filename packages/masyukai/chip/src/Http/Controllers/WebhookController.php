@@ -23,12 +23,10 @@ class WebhookController extends Controller
     {
         try {
             $payload = $request->getWebhookPayload();
-            $headers = $request->getHeaders();
 
             Log::channel(config('chip.logging.channel'))
                 ->info('CHIP Webhook received', [
                     'event_type' => $payload->event_type ?? 'unknown',
-                    'payload' => $payload,
                 ]);
 
             // Dispatch the webhook event
@@ -75,7 +73,7 @@ class WebhookController extends Controller
 
             Log::channel(config('chip.logging.channel'))
                 ->info('CHIP Success callback received', [
-                    'payload' => $parsedPayload,
+                    'event_type' => $parsedPayload->event_type ?? 'purchase.success',
                 ]);
 
             // Dispatch the webhook event

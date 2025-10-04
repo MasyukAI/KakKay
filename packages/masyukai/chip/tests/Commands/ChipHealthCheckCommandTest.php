@@ -21,7 +21,7 @@ describe('ChipHealthCheckCommand', function () {
 
     it('checks both CHIP Collect and Send APIs by default', function () {
         Http::fake([
-            '*' => Http::response(['payment_methods' => [], 'bank_accounts' => []], 200),
+            '*' => Http::response(['payment_methods' => [], 'accounts' => []], 200),
         ]);
 
         $this->artisan(ChipHealthCheckCommand::class)
@@ -44,7 +44,7 @@ describe('ChipHealthCheckCommand', function () {
 
     it('checks only CHIP Send API with --send flag', function () {
         Http::fake([
-            '*' => Http::response(['bank_accounts' => []], 200),
+            '*' => Http::response(['accounts' => []], 200),
         ]);
 
         $this->artisan(ChipHealthCheckCommand::class, ['--send' => true])
@@ -57,7 +57,7 @@ describe('ChipHealthCheckCommand', function () {
         Http::fake([
             '*/payment_methods/*' => Http::response(['error' => 'Unauthorized'], 401),
             '*/payment_methods' => Http::response(['error' => 'Unauthorized'], 401),
-            '*/bank_accounts' => Http::response(['bank_accounts' => []], 200),
+            '*/accounts' => Http::response(['accounts' => []], 200),
         ]);
 
         $this->artisan(ChipHealthCheckCommand::class)
@@ -69,7 +69,7 @@ describe('ChipHealthCheckCommand', function () {
         Http::fake([
             '*/payment_methods/*' => Http::response(['payment_methods' => []], 200),
             '*/payment_methods' => Http::response(['payment_methods' => []], 200),
-            '*/bank_accounts' => Http::response(['error' => 'Unauthorized'], 401),
+            '*/accounts' => Http::response(['error' => 'Unauthorized'], 401),
         ]);
 
         $this->artisan(ChipHealthCheckCommand::class)
@@ -79,7 +79,7 @@ describe('ChipHealthCheckCommand', function () {
 
     it('shows all systems operational when all checks pass', function () {
         Http::fake([
-            '*' => Http::response(['payment_methods' => [], 'bank_accounts' => []], 200),
+            '*' => Http::response(['payment_methods' => [], 'accounts' => []], 200),
         ]);
 
         $this->artisan(ChipHealthCheckCommand::class)

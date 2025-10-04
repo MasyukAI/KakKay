@@ -28,6 +28,7 @@ describe('ChipSendService', function () {
             ->with('send/send_instructions', [
                 'bank_account_id' => '1',
                 'amount' => '500.00',
+                'currency' => 'MYR',
                 'description' => 'Payment for services',
                 'reference' => 'TRANSFER_001',
                 'email' => 'test@example.com',

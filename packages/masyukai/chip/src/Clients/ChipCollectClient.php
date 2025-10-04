@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MasyukAI\Chip\Clients;
 
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -14,6 +15,7 @@ class ChipCollectClient
     public function __construct(
         protected string $apiKey,
         protected string $brandId,
+        protected string $baseUrl = 'https://gate.chip-in.asia/api/v1/',
         protected int $timeout = 30,
         protected array $retryConfig = []
     ) {
@@ -22,8 +24,7 @@ class ChipCollectClient
 
     protected function getBaseUrl(): string
     {
-        // CHIP Collect uses a single API endpoint - the API key determines sandbox vs production
-        return 'https://gate.chip-in.asia/api/v1';
+        return rtrim($this->baseUrl, '/');
     }
 
     /**
@@ -43,32 +44,46 @@ class ChipCollectClient
                 ]);
         }
 
-        try {
-            // Implement retry logic
-            $maxRetries = $this->retryConfig['max_retries'] ?? 3;
-            $delay = $this->retryConfig['delay'] ?? 100;
+        $attempts = max(1, (int) ($this->retryConfig['attempts'] ?? 1));
+        $delayMilliseconds = max(0, (int) ($this->retryConfig['delay'] ?? 0));
 
-            $response = retry(
-                times: $maxRetries,
-                callback: fn () => $this->makeRequest($method, $url, $data, $headers),
-                sleepMilliseconds: fn (int $attempt) => $delay * ($attempt - 1),
-                when: fn (?\Throwable $exception, ?Response $response = null) => $this->shouldRetry($exception, $response)
-            );
+        $response = null;
+
+        try {
+            for ($attempt = 1; $attempt <= $attempts; $attempt++) {
+                try {
+                    $response = $this->makeRequest($method, $url, $data, $headers);
+
+                    if ($response->failed() && $attempt < $attempts && $this->shouldRetry(null, $response)) {
+                        usleep($delayMilliseconds * 1000);
+
+                        continue;
+                    }
+
+                    if ($response->failed()) {
+                        $this->handleFailedResponse($response);
+                    }
+
+                    break;
+                } catch (\Exception $e) {
+                    if ($attempt >= $attempts || ! $this->shouldRetry($e, null)) {
+                        throw $e;
+                    }
+
+                    usleep($delayMilliseconds * 1000);
+                }
+            }
 
             // Log response if enabled
-            if (config('chip.logging.enabled') && config('chip.logging.log_responses')) {
+            if ($response instanceof Response && config('chip.logging.enabled') && config('chip.logging.log_responses')) {
                 Log::channel(config('chip.logging.channel', 'stack'))
                     ->info('CHIP Collect API Response', [
                         'status' => $response->status(),
-                        'data' => $response->json(),
+                        'data' => config('chip.logging.mask_sensitive_data', true) ? $this->maskSensitiveData($response->json() ?? []) : $response->json(),
                     ]);
             }
 
-            if ($response->failed()) {
-                $this->handleFailedResponse($response);
-            }
-
-            return $response->json() ?? [];
+            return $response?->json() ?? [];
         } catch (\Exception $e) {
             $this->handleException($e);
         }
@@ -98,14 +113,17 @@ class ChipCollectClient
      */
     protected function shouldRetry(?\Throwable $exception, ?Response $response): bool
     {
-        // Retry on connection errors
         if ($exception !== null) {
-            return true;
+            if ($exception instanceof ChipApiException) {
+                return $exception->getStatusCode() >= 500;
+            }
+
+            return $exception instanceof ConnectionException;
         }
 
         // Retry on 5xx server errors
         if ($response !== null) {
-            return $response->serverError() || $response->status() === 429;
+            return $response->serverError();
         }
 
         return false;

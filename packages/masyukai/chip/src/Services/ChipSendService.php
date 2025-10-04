@@ -30,6 +30,7 @@ class ChipSendService
         $data = [
             'bank_account_id' => $recipientBankAccountId,
             'amount' => number_format($amountInCents / 100, 2, '.', ''),
+            'currency' => $currency,
             'description' => $description,
             'reference' => $reference,
             'email' => $email,
@@ -103,96 +104,11 @@ class ChipSendService
         $this->client->delete("send/bank_accounts/{$id}");
     }
 
-    public function validateBankAccount(array $data): array
-    {
-        return $this->client->post('send/bank_accounts/validate', $data);
-    }
-
-    public function increaseSendLimit(int $amount, string $reason): array
-    {
-        $data = [
-            'amount' => $amount,
-            'reason' => $reason,
-        ];
-
-        return $this->client->post('send/send_limits/increase', $data);
-    }
-
     public function cancelSendInstruction(string $id): SendInstruction
     {
         $response = $this->client->post("send/send_instructions/{$id}/cancel");
 
         return SendInstruction::fromArray($response['data'] ?? $response);
-    }
-
-    public function verifyBankAccount(string $id): BankAccount
-    {
-        $response = $this->client->post("send/bank_accounts/{$id}/verify");
-
-        return BankAccount::fromArray($response['data'] ?? $response);
-    }
-
-    public function getBalance(): array
-    {
-        $response = $this->client->get('send/balance');
-
-        return $response['data'] ?? $response;
-    }
-
-    public function getSendLimits(): array
-    {
-        $response = $this->client->get('send/send_limits');
-
-        return $response['data'] ?? $response;
-    }
-
-    public function requestSendLimitIncrease(
-        int $requestedDailyLimitInCents,
-        int $requestedMonthlyLimitInCents,
-        string $businessJustification
-    ): array {
-        $data = [
-            'requested_daily_limit_in_cents' => $requestedDailyLimitInCents,
-            'requested_monthly_limit_in_cents' => $requestedMonthlyLimitInCents,
-            'business_justification' => $businessJustification,
-        ];
-
-        return $this->client->post('send/send_limits/request_increase', $data);
-    }
-
-    /**
-     * Create a send limit
-     */
-    public function createSendLimit(array $data): array
-    {
-        return $this->client->post('send/send_limits', $data);
-    }
-
-    /**
-     * Get a send limit
-     */
-    public function getSendLimit(string $id): array
-    {
-        return $this->client->get("send/send_limits/{$id}");
-    }
-
-    /**
-     * List all send limits
-     */
-    public function listSendLimits(array $filters = []): array
-    {
-        $queryString = http_build_query($filters);
-        $endpoint = 'send/send_limits'.($queryString ? "?{$queryString}" : '');
-
-        return $this->client->get($endpoint);
-    }
-
-    /**
-     * Resend send limit approval requests
-     */
-    public function resendSendLimitApprovalRequests(string $id): array
-    {
-        return $this->client->post("send/send_limits/{$id}/resend_approval_requests");
     }
 
     /**

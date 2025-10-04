@@ -42,6 +42,8 @@ class ChipCollectService
      */
     public function createPurchase(array $data): Purchase
     {
+        $data['brand_id'] = $data['brand_id'] ?? $this->getBrandId();
+
         $this->validatePurchaseData($data);
 
         try {
@@ -122,7 +124,30 @@ class ChipCollectService
      */
     public function getPaymentMethods(array $filters = []): array
     {
+        $cacheStore = null;
+
+        if (function_exists('app')) {
+            try {
+                $cacheStore = app('cache');
+            } catch (\Throwable $e) {
+                $cacheStore = null;
+            }
+        }
+
         try {
+            if ($cacheStore) {
+                $cacheKey = config('chip.cache.prefix', 'chip:').'payment_methods:'.md5(json_encode($filters));
+                $ttl = config('chip.cache.ttl.payment_methods')
+                    ?? config('chip.cache.default_ttl', 3600);
+
+                return $cacheStore->remember($cacheKey, $ttl, function () use ($filters) {
+                    $queryString = http_build_query($filters);
+                    $endpoint = 'payment_methods/'.($queryString ? '?'.$queryString : '');
+
+                    return $this->client->get($endpoint);
+                });
+            }
+
             $queryString = http_build_query($filters);
             $endpoint = 'payment_methods/'.($queryString ? '?'.$queryString : '');
 
@@ -254,6 +279,11 @@ class ChipCollectService
             ]);
             throw $e;
         }
+    }
+
+    public function getBrandId(): string
+    {
+        return $this->client->getBrandId();
     }
 
     // Client Management Methods
@@ -435,18 +465,33 @@ class ChipCollectService
             ],
             'brand_id' => $this->client->getBrandId(),
             'send_receipt' => $options['send_receipt'] ?? true,
-            'success_redirect' => $options['success_redirect'] ?? config('chip.defaults.success_redirect', '') ?: '',
-            'failure_redirect' => $options['failure_redirect'] ?? config('chip.defaults.failure_redirect', '') ?: '',
-            'cancel_redirect' => $options['cancel_redirect'] ?? config('chip.defaults.failure_redirect', '') ?: '',
-            'success_callback' => $options['success_callback'] ?? '' ?: '',
             'reference' => $options['reference'] ?? null,
             'creator_agent' => config('chip.defaults.creator_agent', 'Laravel Package'),
             'platform' => config('chip.defaults.platform', 'api'),
         ];
 
-        // Only add payment_method_whitelist if it has elements
+        // Apply explicit whitelist or fall back to configured defaults
         if (! empty($options['payment_method_whitelist'])) {
-            $data['payment_method_whitelist'] = $options['payment_method_whitelist'];
+            $data['payment_method_whitelist'] = is_string($options['payment_method_whitelist'])
+                ? array_filter(array_map('trim', explode(',', $options['payment_method_whitelist'])))
+                : $options['payment_method_whitelist'];
+        } else {
+            $defaultWhitelist = array_filter(array_map('trim', explode(',', (string) config('chip.defaults.payment_method_whitelist', ''))));
+
+            if (! empty($defaultWhitelist)) {
+                $data['payment_method_whitelist'] = $defaultWhitelist;
+            }
+        }
+
+        foreach ([
+            'success_redirect' => $options['success_redirect'] ?? config('chip.defaults.success_redirect'),
+            'failure_redirect' => $options['failure_redirect'] ?? config('chip.defaults.failure_redirect'),
+            'cancel_redirect' => $options['cancel_redirect'] ?? null,
+            'success_callback' => $options['success_callback'] ?? null,
+        ] as $key => $value) {
+            if (! empty($value)) {
+                $data[$key] = $value;
+            }
         }
 
         return $this->createPurchase($data);
@@ -457,20 +502,25 @@ class ChipCollectService
      */
     protected function validatePurchaseData(array $data): void
     {
-        $required = ['client', 'purchase', 'brand_id'];
-
-        foreach ($required as $field) {
-            if (! isset($data[$field])) {
-                throw new ChipValidationException("Missing required field: {$field}");
-            }
+        if (! isset($data['purchase']) || ! is_array($data['purchase'])) {
+            throw new ChipValidationException('Purchase payload is required');
         }
 
-        // Validate client data
-        if (! isset($data['client']['email']) && ! isset($data['client_id'])) {
-            throw new ChipValidationException('Either client.email or client_id is required');
+        if (empty($data['brand_id'])) {
+            throw new ChipValidationException('brand_id is required');
         }
 
-        // Validate purchase data
+        $hasClientPayload = isset($data['client']) && is_array($data['client']);
+        $hasClientId = isset($data['client_id']) && ! empty($data['client_id']);
+
+        if (! $hasClientPayload && ! $hasClientId) {
+            throw new ChipValidationException('Either client or client_id must be provided');
+        }
+
+        if ($hasClientPayload && empty($data['client']['email'])) {
+            throw new ChipValidationException('client.email is required when client payload is provided');
+        }
+
         if (! isset($data['purchase']['products']) || empty($data['purchase']['products'])) {
             throw new ChipValidationException('Purchase must have at least one product');
         }

@@ -1,183 +1,152 @@
-# CHIP Laravel Package
+# CHIP for Laravel
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/masyukai/chip.svg?style=flat-square)](https://packagist.org/packages/masyukai/chip)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/masyukai/chip/tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/masyukai/chip/actions?query=workflow%3Atests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/masyukai/chip/pint.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/masyukai/chip/actions?query=workflow%3Apint+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/masyukai/chip.svg?style=flat-square)](https://packagist.org/packages/masyukai/chip)
+> Seamless Laravel 12 integration for the [CHIP](https://docs.chip-in.asia/) payment platform – covering both **CHIP Collect** (payments) and **CHIP Send** (disbursements).
 
-A modern, feature-complete Laravel integration for CHIP payment gateway. This package provides seamless integration with both CHIP Collect (payment collection) and CHIP Send (money transfer) APIs.
+[![Packagist](https://img.shields.io/packagist/v/masyukai/chip.svg?style=flat-square)](https://packagist.org/packages/masyukai/chip)
+[![Tests](https://img.shields.io/github/actions/workflow/status/masyukai/chip/tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/masyukai/chip/actions?query=workflow%3Atests)
+[![Pint](https://img.shields.io/github/actions/workflow/status/masyukai/chip/pint.yml?branch=main&label=pint&style=flat-square)](https://github.com/masyukai/chip/actions?query=workflow%3Apint)
 
-## Features
+## Why this package?
 
-- 🚀 **Modern Laravel 12 Support** - Built for PHP 8.4 and Laravel 12
-- 💳 **Complete CHIP Collect API** - Payment links, subscriptions, pre-auth, refunds
-- 💸 **CHIP Send Integration** - Money transfers and bank account management
-- 🔐 **Webhook Security** - Automatic signature verification
-- 🧪 **Comprehensive Tests** - Full test suite with PestPHP 4
-- 📝 **Type Safety** - Full PHPStan level 8 compliance
-- 🎨 **Laravel Standards** - Follows Laravel coding conventions
-- 🔄 **Queue Support** - Background processing for webhooks and events
-- 📊 **Events & Listeners** - Laravel event system integration
+- **Complete API coverage** – purchases, refunds, subscriptions, payouts, webhooks, statements.  
+- **First-class Laravel DX** – facades, fluent builders, data objects, events, queues, health checks.  
+- **Production ready** – PHP 8.4 / Laravel 12, PHPStan level 8, Pest v4 test suite.  
+- **Secure by default** – webhook signature verification, optional masking of request/response logs.
+
+📚 **Full API reference:** [`docs/CHIP_API_REFERENCE.md`](docs/CHIP_API_REFERENCE.md)
+
+---
 
 ## Installation
-
-You can install the package via composer:
 
 ```bash
 composer require masyukai/chip
 ```
 
-Publish the configuration file:
+Publish configuration and (optionally) package migrations:
 
 ```bash
 php artisan vendor:publish --tag="chip-config"
-```
-
-Add your CHIP credentials to your `.env` file:
-
-```env
-CHIP_API_KEY=your_api_key_here
-CHIP_BRAND_ID=your_brand_id_here
-CHIP_ENVIRONMENT=sandbox # or production
-CHIP_SEND_API_KEY=your_send_api_key_here
-CHIP_SEND_API_SECRET=your_send_api_secret_here
-```
-
-Optionally, publish and run the migrations:
-
-```bash
-php artisan vendor:publish --tag="chip-migrations"
+php artisan vendor:publish --tag="chip-migrations" # optional persistence
 php artisan migrate
 ```
 
-## Quick Start
+### Environment variables
 
-### Creating a Payment
+```env
+# CHIP Collect
+CHIP_COLLECT_API_KEY=your-collect-api-key
+CHIP_COLLECT_BRAND_ID=your-brand-id
+CHIP_COLLECT_BASE_URL=https://gate.chip-in.asia/api/v1/
+CHIP_COLLECT_ENVIRONMENT=sandbox # or production
+
+# CHIP Send
+CHIP_SEND_API_KEY=your-send-api-key
+CHIP_SEND_API_SECRET=your-send-api-secret
+CHIP_SEND_ENVIRONMENT=sandbox # or production
+
+# Webhooks & logging
+CHIP_WEBHOOK_PUBLIC_KEY="-----BEGIN PUBLIC KEY-----..."
+CHIP_WEBHOOK_VERIFY_SIGNATURE=true
+CHIP_LOGGING_ENABLED=false
+```
+
+All options live in `config/chip.php`, including timeout/retry settings, default currency, webhook middleware and cache TTLs.
+
+---
+
+## Usage
+
+### CHIP Collect (payments)
 
 ```php
 use MasyukAI\Chip\Facades\Chip;
 
-$purchase = Chip::collect()->createPurchase([
+$purchase = Chip::createPurchase([
     'client' => [
         'email' => 'customer@example.com',
-        'full_name' => 'John Doe',
+        'full_name' => 'Jane Customer',
     ],
     'purchase' => [
+        'currency' => 'MYR',
         'products' => [
-            [
-                'name' => 'Premium Subscription',
-                'price' => 2990, // RM 29.90 in cents
-            ],
+            ['name' => 'Pro Plan', 'price' => 12900],
         ],
+        'success_redirect' => route('payments.success'),
+        'failure_redirect' => route('payments.failed'),
     ],
 ]);
 
-// Redirect customer to payment page
 return redirect($purchase->checkout_url);
 ```
 
-### Handling Webhooks
+Need the fluent builder?  
+`Chip::purchase()->brand('brand-id')->customer('user@example.com')->addProduct('Add-on', 500)->create();`
 
-```php
-// In your webhook controller
-use MasyukAI\Chip\Http\Requests\WebhookRequest;
-
-public function handle(WebhookRequest $request)
-{
-    $payload = $request->getWebhookPayload();
-    
-    if ($payload->event_type === 'purchase.paid') {
-        // Handle successful payment
-        $purchase = $payload->purchase;
-        // Update your database, send emails, etc.
-    }
-    
-    return response('OK');
-}
-```
-
-### Subscriptions
-
-```php
-// Create subscription with free trial
-$subscription = Chip::collect()->createSubscription([
-    'client_email' => 'customer@example.com',
-    'trial_days' => 7,
-    'amount' => 1990, // RM 19.90
-    'interval' => 'monthly',
-]);
-```
-
-### Money Transfers (CHIP Send)
+### CHIP Send (payouts)
 
 ```php
 use MasyukAI\Chip\Facades\ChipSend;
 
-$transfer = ChipSend::createTransfer([
-    'amount' => 10000, // RM 100.00
-    'recipient' => [
-        'bank_account' => '1234567890',
-        'bank_code' => 'MBBEMYKL',
-        'name' => 'Jane Doe',
-    ],
-    'reference' => 'Salary Payment #123',
-]);
+$instruction = ChipSend::createSendInstruction(
+    amountInCents: 10500,
+    currency: 'MYR',
+    recipientBankAccountId: 'bank_acc_123',
+    description: 'Affiliate Commission',
+    reference: 'AFF-2025-0001',
+    email: 'affiliate@example.com',
+);
 ```
 
-## Configuration
-
-The configuration file allows you to customize:
-
-- API endpoints for different environments
-- Default payment settings
-- Webhook security settings
-- Queue configuration
-- Event listeners
+### Webhook verification
 
 ```php
-return [
-    'collect' => [
-        'api_key' => env('CHIP_API_KEY'),
-        'brand_id' => env('CHIP_BRAND_ID'),
-        'environment' => env('CHIP_ENVIRONMENT', 'sandbox'),
-    ],
-    
-    'send' => [
-        'api_key' => env('CHIP_SEND_API_KEY'),
-        'api_secret' => env('CHIP_SEND_API_SECRET'),
-        'environment' => env('CHIP_ENVIRONMENT', 'sandbox'),
-    ],
-    
-    'webhooks' => [
-        'verify_signature' => true,
-        'tolerance' => 300, // 5 minutes
-    ],
-];
+use MasyukAI\Chip\Http\Requests\WebhookRequest;
+
+Route::post('/chip/webhook', function (WebhookRequest $request) {
+    $payload = $request->getWebhookPayload();
+
+    if ($payload->event === 'purchase.paid') {
+        // handle success
+    }
+
+    return response('OK');
+})->middleware(['verify-chip-signature']);
 ```
 
-## Testing
+The package automatically verifies signatures when `CHIP_WEBHOOK_VERIFY_SIGNATURE=true`. Configure allowed events and middleware stack inside `config/chip.php`.
+
+### Health check command
 
 ```bash
-composer test
+php artisan chip:health
 ```
 
-## Changelog
+Outputs Collect/Send connectivity status, configuration summary (with `-v`), and exits with `1` if any check fails – ideal for CI or uptime probes.
 
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
+---
+
+## Documentation & Examples
+
+- [`docs/CHIP_API_REFERENCE.md`](docs/CHIP_API_REFERENCE.md) – curated endpoint reference.  
+- [`tests/`](tests) – Pest-powered examples of purchases, payouts, webhooks, CLI commands.  
+- [`src/Builders/PurchaseBuilder.php`](src/Builders/PurchaseBuilder.php) – fluent API for advanced purchase creation.  
+- [`src/Services`](src/Services) – typed service layer the facades delegate to.
+
+---
 
 ## Contributing
 
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+1. Fork & clone the repository.  
+2. Install dependencies: `composer install`.  
+3. Run the test suite: `vendor/bin/pest`.  
+4. Apply formatting: `vendor/bin/pint`.  
+5. Submit a pull request with a clear description and, ideally, a link to the relevant CHIP documentation.
 
-## Security Vulnerabilities
+Bug reports and feature requests are welcome via GitHub issues. Please include reproduction steps and API responses (redacted for sensitive data).
 
-Please review our security policy on how to report security vulnerabilities.
-
-## Credits
-
-- [MasyukAI](https://github.com/masyukai)
-- [All Contributors](../../contributors)
+---
 
 ## License
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+Released under the MIT License. See [LICENSE](LICENSE.md) for details.

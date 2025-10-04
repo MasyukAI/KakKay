@@ -113,6 +113,81 @@ describe('ChipCollectService Purchase Management', function () {
         expect($purchase->reference)->toBe('ORDER_001');
     });
 
+    it('accepts an existing client reference without client payload', function () {
+        $purchaseData = [
+            'id' => 'purchase_456',
+            'type' => 'payment',
+            'created_on' => '2024-01-01T12:00:00Z',
+            'updated_on' => '2024-01-01T12:00:00Z',
+            'client' => [
+                'id' => 'client_456',
+                'email' => 'existing@example.com',
+            ],
+            'purchase' => [
+                'currency' => 'MYR',
+                'products' => [
+                    [
+                        'name' => 'Existing Customer Product',
+                        'price' => 20000,
+                        'quantity' => 1,
+                    ],
+                ],
+            ],
+            'brand_id' => 'test_brand_id',
+            'payment' => null,
+            'issuer_details' => [],
+            'transaction_data' => [],
+            'status' => 'created',
+            'status_history' => [],
+            'viewed_on' => null,
+            'company_id' => 'company_456',
+            'is_test' => true,
+            'client_id' => 'client_456',
+            'send_receipt' => false,
+            'is_recurring_token' => false,
+            'skip_capture' => false,
+            'force_recurring' => false,
+            'reference_generated' => 'REF_456',
+            'refund_availability' => 'all',
+            'refundable_amount' => 20000,
+            'currency_conversion' => null,
+            'payment_method_whitelist' => [],
+            'success_redirect' => null,
+            'failure_redirect' => null,
+            'cancel_redirect' => null,
+            'creator_agent' => 'Laravel Package',
+            'platform' => 'api',
+            'product' => 'CHIP',
+            'created_from_ip' => null,
+            'invoice_url' => null,
+            'checkout_url' => 'https://gate.chip-in.asia/checkout/purchase_456',
+            'direct_post_url' => null,
+            'marked_as_paid' => false,
+            'order_id' => null,
+        ];
+
+        $requestData = [
+            'client_id' => 'client_456',
+            'purchase' => [
+                'currency' => 'MYR',
+                'products' => [
+                    ['name' => 'Existing Customer Product', 'price' => 20000, 'quantity' => 1],
+                ],
+            ],
+            'brand_id' => 'test_brand_id',
+        ];
+
+        $this->client->shouldReceive('post')
+            ->with('purchases/', $requestData)
+            ->andReturn($purchaseData);
+
+        $purchase = $this->service->createPurchase($requestData);
+
+        expect($purchase)->toBeInstanceOf(Purchase::class);
+        expect($purchase->client_id)->toBe('client_456');
+        expect($purchase->client->email)->toBe('existing@example.com');
+    });
+
     it('can retrieve a purchase', function () {
         $purchaseData = [
             'id' => 'purchase_123',

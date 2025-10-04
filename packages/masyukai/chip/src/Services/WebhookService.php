@@ -20,10 +20,15 @@ class WebhookService
     /**
      * Verify webhook signature using Request object
      */
-    public function verifySignature(Request $request, ?string $publicKey = null): bool
+    public function verifySignature(Request|string $payloadOrRequest, ?string $signature = null, ?string $publicKey = null): bool
     {
-        $payload = $request->getContent();
-        $signature = $request->header('X-Signature');
+        if ($payloadOrRequest instanceof Request) {
+            $payload = $payloadOrRequest->getContent();
+            $signature ??= $payloadOrRequest->header('X-Signature');
+        } else {
+            $payload = (string) $payloadOrRequest;
+        }
+
         $publicKey = $publicKey ?? $this->getPublicKey();
 
         if (! config('chip.webhooks.verify_signature')) {
@@ -39,31 +44,27 @@ class WebhookService
         }
 
         try {
-            // Remove the "-----BEGIN PUBLIC KEY-----" and "-----END PUBLIC KEY-----" wrapper
-            $cleanedKey = preg_replace('/-----[^-]+-----/', '', $publicKey);
-            $cleanedKey = str_replace(["\n", "\r", ' '], '', $cleanedKey);
+            $pemKey = str_contains($publicKey, 'BEGIN PUBLIC KEY')
+                ? $publicKey
+                : "-----BEGIN PUBLIC KEY-----\n".chunk_split(str_replace(["\n", "\r", ' '], '', $publicKey), 64, "\n").'-----END PUBLIC KEY-----';
 
-            // Create a proper PEM format
-            $pemKey = "-----BEGIN PUBLIC KEY-----\n".chunk_split($cleanedKey, 64, "\n").'-----END PUBLIC KEY-----';
-
-            // Create the public key resource
             $publicKeyResource = openssl_pkey_get_public($pemKey);
             if (! $publicKeyResource) {
                 throw new WebhookVerificationException('Invalid public key format');
             }
 
-            // Hash the payload
-            $hash = hash('sha256', $payload, true);
+            $decodedSignature = base64_decode($signature, true);
+            if ($decodedSignature === false) {
+                throw new WebhookVerificationException('Signature is not valid base64');
+            }
 
-            // Verify the signature
-            $verified = openssl_verify($hash, base64_decode($signature), $publicKeyResource, OPENSSL_ALGO_SHA256);
+            $verified = openssl_verify($payload, $decodedSignature, $publicKeyResource, OPENSSL_ALGO_SHA256);
 
             return $verified === 1;
         } catch (\Exception $e) {
             Log::channel(config('chip.logging.channel'))
                 ->error('Webhook signature verification failed', [
                     'error' => $e->getMessage(),
-                    'signature' => $signature,
                 ]);
 
             throw new WebhookVerificationException('Signature verification failed: '.$e->getMessage());
@@ -87,7 +88,11 @@ class WebhookService
                 // Get general public key for success callbacks
                 $response = app(ChipCollectService::class)->getPublicKey();
 
-                return $response['public_key'] ?? '';
+                if (is_array($response)) {
+                    return $response['public_key'] ?? '';
+                }
+
+                return (string) $response;
             } catch (\Exception $e) {
                 // Fallback to configured public key if API call fails
                 return config('chip.webhooks.public_key', '');
@@ -132,7 +137,7 @@ class WebhookService
         Log::channel(config('chip.logging.channel'))
             ->info('Webhook received', [
                 'event' => $event,
-                'data' => $data,
+                'reference' => $data['id'] ?? null,
             ]);
 
         // Dispatch generic webhook event
@@ -162,14 +167,16 @@ class WebhookService
 
         switch ($event) {
             case 'purchase.created':
-                if (class_exists(PurchaseCreated::class)) {
+                if (config('chip.events.dispatch_purchase_events', true)
+                    && class_exists(PurchaseCreated::class)) {
                     $purchase = Purchase::fromArray($data);
                     Event::dispatch(new PurchaseCreated($purchase));
                 }
                 break;
 
             case 'purchase.paid':
-                if (class_exists(PurchasePaid::class)) {
+                if (config('chip.events.dispatch_purchase_events', true)
+                    && class_exists(PurchasePaid::class)) {
                     $purchase = Purchase::fromArray($data);
                     Event::dispatch(new PurchasePaid($purchase));
                 }

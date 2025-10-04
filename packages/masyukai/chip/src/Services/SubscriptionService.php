@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MasyukAI\Chip\Services;
 
 use MasyukAI\Chip\DataObjects\Purchase;
+use MasyukAI\Chip\Exceptions\ChipValidationException;
 
 class SubscriptionService
 {
@@ -25,7 +26,7 @@ class SubscriptionService
                 ],
             ],
             'skip_capture' => true,
-            'brand_id' => $data['brand_id'] ?? null,
+            'brand_id' => $this->resolveBrandId($data),
             'payment_method_whitelist' => $data['payment_method_whitelist'] ?? ['visa', 'mastercard', 'maestro'],
         ];
 
@@ -46,7 +47,7 @@ class SubscriptionService
             ],
             'payment_method_whitelist' => $data['payment_method_whitelist'] ?? ['visa', 'mastercard', 'maestro'],
             'force_recurring' => true,
-            'brand_id' => $data['brand_id'] ?? null,
+            'brand_id' => $this->resolveBrandId($data),
         ];
 
         return $this->chipService->createPurchase($registrationData);
@@ -64,7 +65,7 @@ class SubscriptionService
                     ],
                 ],
             ],
-            'brand_id' => $data['brand_id'] ?? null,
+            'brand_id' => $this->resolveBrandId($data),
         ];
 
         return $this->chipService->createPurchase($subscriptionData);
@@ -94,12 +95,23 @@ class SubscriptionService
             'client' => $data['client'],
             'amount' => $data['amount'],
             'product_name' => $data['product_name'] ?? 'Monthly Subscription',
-            'brand_id' => $data['brand_id'] ?? null,
+            'brand_id' => $this->resolveBrandId($data),
         ]);
 
         return [
             'initial_purchase' => $initialPurchase,
             'subscription_purchase' => $subscriptionPurchase,
         ];
+    }
+
+    protected function resolveBrandId(array $data): string
+    {
+        $brandId = (string) ($data['brand_id'] ?? $this->chipService->getBrandId());
+
+        if ($brandId === '') {
+            throw new ChipValidationException('brand_id is required to create CHIP subscriptions');
+        }
+
+        return $brandId;
     }
 }

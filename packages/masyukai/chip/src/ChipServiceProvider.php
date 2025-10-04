@@ -65,9 +65,19 @@ class ChipServiceProvider extends PackageServiceProvider
     protected function registerClients(): void
     {
         $this->app->singleton(ChipCollectClient::class, function () {
+            $baseUrlConfig = config('chip.collect.base_url', 'https://gate.chip-in.asia/api/v1/');
+            $environment = config('chip.collect.environment', 'sandbox');
+
+            if (is_array($baseUrlConfig)) {
+                $baseUrl = $baseUrlConfig[$environment] ?? reset($baseUrlConfig);
+            } else {
+                $baseUrl = $baseUrlConfig;
+            }
+
             return new ChipCollectClient(
                 config('chip.collect.api_key'),
                 config('chip.collect.brand_id'),
+                (string) $baseUrl,
                 config('chip.collect.timeout', 30),
                 config('chip.collect.retry', [
                     'attempts' => 3,
@@ -78,17 +88,13 @@ class ChipServiceProvider extends PackageServiceProvider
 
         $this->app->singleton(ChipSendClient::class, function () {
             $environment = config('chip.send.environment', 'sandbox');
-            $baseUrls = config('chip.send.base_url', [
-                'sandbox' => 'https://staging-api.chip-in.asia/api',
-                'production' => 'https://api.chip-in.asia/api',
-            ]);
-            $baseUrl = $baseUrls[$environment] ?? $baseUrls['sandbox'];
 
             return new ChipSendClient(
                 apiKey: config('chip.send.api_key'),
                 apiSecret: config('chip.send.api_secret'),
                 environment: $environment,
-                baseUrl: $baseUrl,
+                baseUrl: config("chip.send.base_url.{$environment}")
+                    ?? config('chip.send.base_url.sandbox', 'https://staging-api.chip-in.asia/api'),
                 timeout: config('chip.send.timeout', 30),
                 retryConfig: config('chip.send.retry', [
                     'attempts' => 3,

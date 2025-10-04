@@ -126,13 +126,15 @@ class ChipHealthCheckCommand extends Command
                 return false;
             }
 
-            // Try to fetch send limits as a connectivity test
-            $limits = $service->listSendLimits();
+            // Try to fetch available payout accounts as a connectivity test
+            $accounts = $service->listAccounts();
 
             $this->info('   ✅ Connected');
 
-            if ($this->option('verbose') && ! empty($limits)) {
-                $this->line('      Send limits retrieved successfully');
+            if ($this->option('verbose')) {
+                $this->line('      Accounts retrieved: '.(
+                    is_countable($accounts) ? count($accounts) : 'unknown'
+                ));
             }
 
             return true;

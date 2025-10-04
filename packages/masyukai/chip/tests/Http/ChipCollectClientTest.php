@@ -8,8 +8,9 @@ beforeEach(function () {
     $this->client = new ChipCollectClient(
         apiKey: 'test_api_key',
         brandId: 'test_brand_id',
+        baseUrl: 'https://gate.chip-in.asia/api/v1/',
         timeout: 30,
-        retryConfig: ['times' => 3, 'sleep' => 1000]
+        retryConfig: ['attempts' => 3, 'delay' => 1000]
     );
 });
 
@@ -122,13 +123,13 @@ describe('ChipCollectClient Error Handling', function () {
 });
 
 describe('ChipCollectClient Retry Logic', function () {
-    it('throws exception on server errors without retrying', function () {
+    it('retries on server errors and surfaces the exception', function () {
         Http::fake(['*' => Http::response(['error' => 'Server Error'], 500)]);
 
         expect(fn () => $this->client->get('/test'))
             ->toThrow(ChipApiException::class, 'Server Error');
 
-        Http::assertSentCount(1); // Should only make 1 request (no retry implemented)
+        Http::assertSentCount(3);
     });
 
     it('gives up after max retries', function () {
@@ -136,6 +137,8 @@ describe('ChipCollectClient Retry Logic', function () {
 
         expect(fn () => $this->client->get('/test'))
             ->toThrow(ChipApiException::class);
+
+        Http::assertSentCount(3);
     });
 });
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MasyukAI\Chip\Clients;
 
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -26,17 +27,15 @@ class ChipSendClient
     protected function getBaseUrl(): string
     {
         if (! empty($this->baseUrl)) {
-            return $this->baseUrl;
+            return rtrim($this->baseUrl, '/');
         }
 
-        // CHIP Send has separate staging and production environments
         $baseUrls = [
-            'staging' => 'https://staging-api.chip-in.asia/api',
-            'sandbox' => 'https://staging-api.chip-in.asia/api', // alias for staging
+            'sandbox' => 'https://staging-api.chip-in.asia/api',
             'production' => 'https://api.chip-in.asia/api',
         ];
 
-        return $baseUrls[$this->environment] ?? $baseUrls['staging'];
+        return rtrim($baseUrls[$this->environment] ?? $baseUrls['sandbox'], '/');
     }
 
     /**
@@ -56,32 +55,45 @@ class ChipSendClient
                 ]);
         }
 
+        $attempts = max(1, (int) ($this->retryConfig['attempts'] ?? 1));
+        $delayMilliseconds = max(0, (int) ($this->retryConfig['delay'] ?? 0));
+
+        $response = null;
+
         try {
-            // Implement retry logic
-            $maxRetries = $this->retryConfig['max_retries'] ?? 3;
-            $delay = $this->retryConfig['delay'] ?? 100;
+            for ($attempt = 1; $attempt <= $attempts; $attempt++) {
+                try {
+                    $response = $this->makeRequest($method, $url, $data);
 
-            $response = retry(
-                times: $maxRetries,
-                callback: fn () => $this->makeRequest($method, $url, $data),
-                sleepMilliseconds: fn (int $attempt) => $delay * ($attempt - 1),
-                when: fn (?\Throwable $exception, ?Response $response = null) => $this->shouldRetry($exception, $response)
-            );
+                    if ($response->failed() && $attempt < $attempts && $this->shouldRetry(null, $response)) {
+                        usleep($delayMilliseconds * 1000);
 
-            // Log response if enabled
-            if (config('chip.logging.enabled') && config('chip.logging.log_responses')) {
+                        continue;
+                    }
+
+                    if ($response->failed()) {
+                        $this->handleFailedResponse($response);
+                    }
+
+                    break;
+                } catch (\Exception $e) {
+                    if ($attempt >= $attempts || ! $this->shouldRetry($e, null)) {
+                        throw $e;
+                    }
+
+                    usleep($delayMilliseconds * 1000);
+                }
+            }
+
+            if ($response instanceof Response && config('chip.logging.enabled') && config('chip.logging.log_responses')) {
                 Log::channel(config('chip.logging.channel', 'stack'))
                     ->info('CHIP Send API Response', [
                         'status' => $response->status(),
-                        'data' => $response->json(),
+                        'data' => config('chip.logging.mask_sensitive_data', true) ? $this->maskSensitiveData($response->json() ?? []) : $response->json(),
                     ]);
             }
 
-            if ($response->failed()) {
-                $this->handleFailedResponse($response);
-            }
-
-            return $response->json() ?? [];
+            return $response?->json() ?? [];
         } catch (\Exception $e) {
             $this->handleException($e);
         }
@@ -114,14 +126,21 @@ class ChipSendClient
      */
     protected function shouldRetry(?\Throwable $exception, ?Response $response): bool
     {
-        // Retry on connection errors
         if ($exception !== null) {
-            return true;
+            if ($exception instanceof ChipApiException) {
+                return $exception->getStatusCode() >= 500;
+            }
+
+            if ($exception instanceof ChipValidationException) {
+                return false;
+            }
+
+            return $exception instanceof ConnectionException;
         }
 
         // Retry on 5xx server errors
         if ($response !== null) {
-            return $response->serverError() || $response->status() === 429;
+            return $response->serverError();
         }
 
         return false;
