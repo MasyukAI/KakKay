@@ -104,8 +104,7 @@ describe('ChipSendService', function () {
         $account = $this->service->createBankAccount(
             'MBBEMYKL',
             '157380111111',
-            'Ahmad Pintu',
-            'savings'
+            'Ahmad Pintu'
         );
 
         expect($account)->toBeInstanceOf(BankAccount::class);

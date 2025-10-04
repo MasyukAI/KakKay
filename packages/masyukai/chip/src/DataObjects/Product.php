@@ -8,7 +8,7 @@ class Product
 {
     public function __construct(
         public readonly string $name,
-        public readonly float $quantity,
+        public readonly int $quantity,
         public readonly int $price,
         public readonly int $discount,
         public readonly float $tax_percent,
@@ -19,7 +19,7 @@ class Product
     {
         return new self(
             name: $data['name'],
-            quantity: (float) ($data['quantity'] ?? 1),
+            quantity: (int) ($data['quantity'] ?? 1),
             price: (int) $data['price'],
             discount: (int) ($data['discount'] ?? 0),
             tax_percent: (float) ($data['tax_percent'] ?? 0.0),

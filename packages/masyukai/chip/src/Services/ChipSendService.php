@@ -24,22 +24,16 @@ class ChipSendService
         string $currency,
         string $recipientBankAccountId,
         string $description,
-        ?string $reference = null,
-        ?string $email = null
+        string $reference,
+        string $email
     ): SendInstruction {
         $data = [
             'bank_account_id' => $recipientBankAccountId,
             'amount' => number_format($amountInCents / 100, 2, '.', ''),
             'description' => $description,
+            'reference' => $reference,
+            'email' => $email,
         ];
-
-        if ($reference) {
-            $data['reference'] = $reference;
-        }
-
-        if ($email) {
-            $data['email'] = $email;
-        }
 
         $response = $this->client->post('send/send_instructions', $data);
 
@@ -65,13 +59,17 @@ class ChipSendService
         string $bankCode,
         string $accountNumber,
         string $accountHolderName,
-        string $accountType = 'savings'
+        ?string $reference = null
     ): BankAccount {
         $data = [
             'bank_code' => $bankCode,
             'account_number' => $accountNumber,
             'name' => $accountHolderName,
         ];
+
+        if ($reference) {
+            $data['reference'] = $reference;
+        }
 
         $response = $this->client->post('send/bank_accounts', $data);
 
@@ -176,6 +174,17 @@ class ChipSendService
     public function getSendLimit(string $id): array
     {
         return $this->client->get("send/send_limits/{$id}");
+    }
+
+    /**
+     * List all send limits
+     */
+    public function listSendLimits(array $filters = []): array
+    {
+        $queryString = http_build_query($filters);
+        $endpoint = 'send/send_limits'.($queryString ? "?{$queryString}" : '');
+
+        return $this->client->get($endpoint);
     }
 
     /**
