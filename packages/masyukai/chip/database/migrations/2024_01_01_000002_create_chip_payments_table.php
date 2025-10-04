@@ -16,7 +16,9 @@ return new class extends Migration
             $table->uuid('purchase_id'); // Reference to purchases table
 
             // Payment type and direction
-            $table->enum('payment_type', ['purchase', 'refund', 'payout'])->default('purchase');
+            $table->string('payment_type', 16)
+                ->default('purchase')
+                ->comment('Backed by CHIP payment type values: purchase, refund, payout.');
             $table->boolean('is_outgoing')->default(false);
 
             // Amount fields - exactly as per API (integers for cents)

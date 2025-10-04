@@ -8,6 +8,10 @@ use Carbon\Carbon;
 
 class Webhook
 {
+    /**
+     * @param array<string> $events
+     * @param array<string, mixed>|null $data
+     */
     public function __construct(
         public readonly string $id,
         public readonly string $type,
@@ -24,6 +28,9 @@ class Webhook
         public readonly ?string $timestamp = null,
     ) {}
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public static function fromArray(array $data): self
     {
         // Handle webhook event data (from webhook payload)
@@ -86,6 +93,9 @@ class Webhook
         return $this->all_events || in_array($eventType, $this->events);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(): array
     {
         return [

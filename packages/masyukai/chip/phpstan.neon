@@ -6,13 +6,13 @@ parameters:
         - src
     
     # Level 0-9 (0 is most lenient, 9 is strictest)
-    level: 5
+    level: 8
+    
+    # Treat PHPDoc types as less certain to avoid false positives
+    treatPhpDocTypesAsCertain: false
     
     # Ignore specific errors
     ignoreErrors:
-        # Allow dynamic properties on test doubles
-        - '#Access to an undefined property Mockery\\#'
-        - '#Call to an undefined method Mockery\\#'
     
     # Check test files too (optional)
     # paths:

@@ -8,6 +8,11 @@ use Carbon\Carbon;
 
 class Client
 {
+    /**
+     * @param array<string> $cc
+     * @param array<string> $bcc
+     * @param array<string, mixed>|null $address_data
+     */
     public function __construct(
         public readonly string $id,
         public readonly string $type,
@@ -41,6 +46,9 @@ class Client
         private readonly ?string $identity_number = null,
     ) {}
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public static function fromArray(array $data): self
     {
         return new self(
@@ -78,6 +86,8 @@ class Client
 
     /**
      * Magic property accessor for convenient camelCase access to snake_case properties
+     * @param string $name
+     * @return mixed
      */
     public function __get($name)
     {
@@ -97,6 +107,9 @@ class Client
         };
     }
 
+    /**
+     * @param string $name
+     */
     public function __isset($name): bool
     {
         return in_array($name, ['fullName', 'personalCode', 'streetAddress', 'zipCode', 'legalName', 'brandName', 'registrationNumber', 'taxNumber', 'address', 'identityType', 'identityNumber']);
@@ -117,6 +130,9 @@ class Client
         return ! empty($this->legal_name) || ! empty($this->registration_number);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(): array
     {
         return [

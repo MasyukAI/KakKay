@@ -9,6 +9,7 @@ use MasyukAI\Chip\Services\ChipCollectService;
 
 class PurchaseBuilder
 {
+    /** @var array<string, mixed> */
     protected array $data = [];
 
     public function __construct(
@@ -287,6 +288,7 @@ class PurchaseBuilder
 
     /**
      * Get the built data array (for inspection)
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {

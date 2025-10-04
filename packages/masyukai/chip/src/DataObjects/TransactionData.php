@@ -6,6 +6,10 @@ namespace MasyukAI\Chip\DataObjects;
 
 class TransactionData
 {
+    /**
+     * @param array<string, mixed> $extra
+     * @param array<array<string, mixed>> $attempts
+     */
     public function __construct(
         public readonly ?string $payment_method,
         public readonly array $extra,
@@ -13,6 +17,9 @@ class TransactionData
         public readonly array $attempts,
     ) {}
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public static function fromArray(array $data): self
     {
         return new self(
@@ -23,6 +30,9 @@ class TransactionData
         );
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getLastAttempt(): ?array
     {
         return ! empty($this->attempts) ? $this->attempts[0] : null;
@@ -33,11 +43,17 @@ class TransactionData
         return ! empty(array_filter($this->attempts, fn ($attempt) => ! ($attempt['successful'] ?? true)));
     }
 
+    /**
+     * @return array<array<string, mixed>>
+     */
     public function getFailedAttempts(): array
     {
         return array_filter($this->attempts, fn ($attempt) => ! ($attempt['successful'] ?? true));
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(): array
     {
         return [

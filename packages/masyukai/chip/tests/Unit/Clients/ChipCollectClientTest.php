@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Http;
 use MasyukAI\Chip\Clients\ChipCollectClient;
 use MasyukAI\Chip\Exceptions\ChipApiException;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->client = new ChipCollectClient(
         apiKey: 'test_api_key',
         brandId: 'test_brand_id',
@@ -14,8 +14,8 @@ beforeEach(function () {
     );
 });
 
-describe('ChipCollectClient Authentication', function () {
-    it('adds bearer token to requests', function () {
+describe('ChipCollectClient Authentication', function (): void {
+    it('adds bearer token to requests', function (): void {
         Http::fake(['*' => Http::response(['data' => []], 200)]);
 
         $this->client->get('/test');
@@ -25,7 +25,7 @@ describe('ChipCollectClient Authentication', function () {
         });
     });
 
-    it('sets correct content type', function () {
+    it('sets correct content type', function (): void {
         Http::fake(['*' => Http::response(['data' => []], 200)]);
 
         $this->client->post('/test', ['key' => 'value']);
@@ -36,8 +36,8 @@ describe('ChipCollectClient Authentication', function () {
     });
 });
 
-describe('ChipCollectClient Request Methods', function () {
-    it('can make GET requests', function () {
+describe('ChipCollectClient Request Methods', function (): void {
+    it('can make GET requests', function (): void {
         Http::fake(['*' => Http::response(['data' => ['id' => '123']], 200)]);
 
         $response = $this->client->get('/test');
@@ -46,7 +46,7 @@ describe('ChipCollectClient Request Methods', function () {
         Http::assertSent(fn ($request) => $request->method() === 'GET');
     });
 
-    it('can make POST requests', function () {
+    it('can make POST requests', function (): void {
         Http::fake(['*' => Http::response(['data' => ['created' => true]], 201)]);
 
         $response = $this->client->post('/test', ['name' => 'Test']);
@@ -55,7 +55,7 @@ describe('ChipCollectClient Request Methods', function () {
         Http::assertSent(fn ($request) => $request->method() === 'POST');
     });
 
-    it('can make PUT requests', function () {
+    it('can make PUT requests', function (): void {
         Http::fake(['*' => Http::response(['data' => ['updated' => true]], 200)]);
 
         $response = $this->client->put('/test', ['name' => 'Updated']);
@@ -64,7 +64,7 @@ describe('ChipCollectClient Request Methods', function () {
         Http::assertSent(fn ($request) => $request->method() === 'PUT');
     });
 
-    it('can make DELETE requests', function () {
+    it('can make DELETE requests', function (): void {
         Http::fake(['*' => Http::response([], 204)]);
 
         $response = $this->client->delete('/test');
@@ -74,29 +74,29 @@ describe('ChipCollectClient Request Methods', function () {
     });
 });
 
-describe('ChipCollectClient Error Handling', function () {
-    it('throws ChipApiException on 400 error', function () {
+describe('ChipCollectClient Error Handling', function (): void {
+    it('throws ChipApiException on 400 error', function (): void {
         Http::fake(['*' => Http::response(['error' => 'Bad Request'], 400)]);
 
         expect(fn () => $this->client->get('/test'))
             ->toThrow(ChipApiException::class, 'Bad Request');
     });
 
-    it('throws ChipApiException on 401 error', function () {
+    it('throws ChipApiException on 401 error', function (): void {
         Http::fake(['*' => Http::response(['error' => 'Unauthorized'], 401)]);
 
         expect(fn () => $this->client->get('/test'))
             ->toThrow(ChipApiException::class, 'Unauthorized');
     });
 
-    it('throws ChipApiException on 404 error', function () {
+    it('throws ChipApiException on 404 error', function (): void {
         Http::fake(['*' => Http::response(['error' => 'Not Found'], 404)]);
 
         expect(fn () => $this->client->get('/test'))
             ->toThrow(ChipApiException::class, 'Not Found');
     });
 
-    it('includes error details in exception', function () {
+    it('includes error details in exception', function (): void {
         Http::fake(['*' => Http::response([
             'error' => 'Validation failed',
             'details' => ['field' => 'required'],
@@ -115,8 +115,8 @@ describe('ChipCollectClient Error Handling', function () {
     });
 });
 
-describe('ChipCollectClient Retry Logic', function () {
-    it('retries on server errors and surfaces the exception', function () {
+describe('ChipCollectClient Retry Logic', function (): void {
+    it('retries on server errors and surfaces the exception', function (): void {
         Http::fake(['*' => Http::response(['error' => 'Server Error'], 500)]);
 
         expect(fn () => $this->client->get('/test'))
@@ -126,8 +126,8 @@ describe('ChipCollectClient Retry Logic', function () {
     });
 });
 
-describe('ChipCollectClient Configuration', function () {
-    it('uses configured base URL', function () {
+describe('ChipCollectClient Configuration', function (): void {
+    it('uses configured base URL', function (): void {
         Http::fake(['*' => Http::response(['data' => []], 200)]);
 
         $this->client->get('/test');

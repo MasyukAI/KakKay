@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 use MasyukAI\Chip\DataObjects\SendInstruction;
 
-describe('SendInstruction data object', function () {
-    it('creates a send instruction from array data', function () {
+describe('SendInstruction data object', function (): void {
+    it('creates a send instruction from array data', function (): void {
         $data = [
             'id' => 50,
             'bank_account_id' => 1,
@@ -30,7 +30,7 @@ describe('SendInstruction data object', function () {
         expect($instruction->created_at)->toBe('2023-07-20T10:41:25.190Z');
     });
 
-    it('handles rejected send instruction', function () {
+    it('handles rejected send instruction', function (): void {
         $instruction = SendInstruction::fromArray([
             'id' => 51,
             'bank_account_id' => 2,
@@ -46,5 +46,32 @@ describe('SendInstruction data object', function () {
         expect($instruction->state)->toBe('rejected');
         expect($instruction->isRejected())->toBeTrue();
         expect($instruction->isCompleted())->toBeFalse();
+    });
+
+    it('provides amount helpers and array export', function (): void {
+        $instruction = SendInstruction::fromArray([
+            'id' => 52,
+            'bank_account_id' => 3,
+            'amount' => '125.50',
+            'state' => 'executing',
+            'email' => 'ops@example.com',
+            'description' => 'Vendor payment',
+            'reference' => 'TRANSFER_003',
+            'receipt_url' => 'https://example.com/receipt.pdf',
+            'slug' => 'transfer-003',
+            'created_at' => '2023-07-20T12:00:00Z',
+            'updated_at' => '2023-07-20T12:05:00Z',
+        ]);
+
+        expect($instruction->getCreatedAt()->toDateTimeString())->toBe('2023-07-20 12:00:00');
+        expect($instruction->getUpdatedAt()->toDateTimeString())->toBe('2023-07-20 12:05:00');
+        expect($instruction->getAmountInMajorUnits())->toBe(125.50);
+        expect($instruction->getAmountInMinorUnits())->toBe(12550);
+        expect($instruction->isPending())->toBeTrue();
+        expect($instruction->toArray())->toMatchArray([
+            'reference' => 'TRANSFER_003',
+            'receipt_url' => 'https://example.com/receipt.pdf',
+            'slug' => 'transfer-003',
+        ]);
     });
 });

@@ -39,14 +39,9 @@ return new class extends Migration
             $table->json('status_history'); // Status change tracking
 
             // Status and workflow - All official CHIP purchase statuses
-            $table->enum('status', [
-                'created', 'sent', 'viewed', 'pending_execute', 'pending_charge',
-                'hold', 'pending_capture', 'pending_release', 'preauthorized',
-                'paid', 'paid_authorized', 'recurring_successful', 'cleared', 'settled',
-                'pending_refund', 'refunded', 'error', 'blocked', 'cancelled',
-                'overdue', 'expired', 'released', 'chargeback',
-                'attempted_capture', 'attempted_refund', 'attempted_recurring',
-            ])->default('created');
+            $table->string('status', 32)
+                ->default('created')
+                ->comment('Backed by MasyukAI\\Chip\\Enums\\PurchaseStatus enum.');
 
             // Timestamps
             $table->integer('viewed_on')->nullable();
@@ -67,9 +62,9 @@ return new class extends Migration
             $table->integer('due')->nullable(); // Unix timestamp
 
             // Refund information
-            $table->enum('refund_availability', [
-                'all', 'full_only', 'partial_only', 'pis_all', 'pis_partial', 'none',
-            ])->default('all');
+            $table->string('refund_availability', 32)
+                ->default('all')
+                ->comment('Backed by CHIP refund availability values.');
             $table->integer('refundable_amount')->default(0);
 
             // Currency conversion data
@@ -89,12 +84,12 @@ return new class extends Migration
 
             // Platform and creation details
             $table->string('creator_agent', 32)->nullable();
-            $table->enum('platform', ['web', 'api', 'ios', 'android', 'macos', 'windows'])
-                ->default('api');
-            $table->enum('product', [
-                'purchases', 'billing_invoices', 'billing_subscriptions',
-                'billing_subscriptions_invoice',
-            ])->default('purchases');
+            $table->string('platform', 16)
+                ->default('api')
+                ->comment('Expected values: web, api, ios, android, macos, windows.');
+            $table->string('product', 48)
+                ->default('purchases')
+                ->comment('Expected values: purchases, billing_invoices, billing_subscriptions, billing_subscriptions_invoice.');
             $table->string('created_from_ip')->nullable();
 
             // Additional flags

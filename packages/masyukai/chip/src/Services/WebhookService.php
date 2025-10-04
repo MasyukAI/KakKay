@@ -29,11 +29,11 @@ class WebhookService
             $payload = (string) $payloadOrRequest;
         }
 
-        $publicKey = $publicKey ?? $this->getPublicKey();
-
         if (! config('chip.webhooks.verify_signature')) {
             return true;
         }
+
+        $publicKey = $publicKey ?? $this->getPublicKey();
 
         if (! $signature) {
             throw new WebhookVerificationException('Missing signature header');
@@ -82,20 +82,20 @@ class WebhookService
                     // Get webhook-specific public key
                     $webhook = app(ChipCollectService::class)->getWebhook($webhookId);
 
-                    return $webhook['public_key'] ?? $webhook->public_key ?? '';
+                    return (string) ($webhook['public_key'] ?? '');
                 }
 
                 // Get general public key for success callbacks
                 $response = app(ChipCollectService::class)->getPublicKey();
 
                 if (is_array($response)) {
-                    return $response['public_key'] ?? '';
+                    return (string) ($response['public_key'] ?? '');
                 }
 
                 return (string) $response;
             } catch (\Exception $e) {
                 // Fallback to configured public key if API call fails
-                return config('chip.webhooks.public_key', '');
+                return (string) config('chip.webhooks.public_key', '');
             }
         });
     }
@@ -111,6 +111,9 @@ class WebhookService
         return (object) $data;
     }
 
+    /**
+     * @param array<string, mixed> $eventConfig
+     */
     public function shouldProcessWebhook(string $eventType, array $eventConfig = []): bool
     {
         // You can add custom logic here to determine if a webhook should be processed
@@ -149,13 +152,17 @@ class WebhookService
         Event::dispatch(new WebhookReceived($webhook));
 
         // Handle specific events
-        $this->handleSpecificEvent($event, $data);
+        if ($event !== null) {
+            $this->handleSpecificEvent($event, $data);
+        }
 
         return true;
     }
 
     /**
      * Handle specific webhook events.
+     *
+     * @param array<string, mixed> $data
      */
     protected function handleSpecificEvent(string $event, array $data): void
     {
@@ -189,16 +196,19 @@ class WebhookService
      */
     public function isEventAllowed(string $event): bool
     {
-        $allowedEvents = config('chip.webhooks.allowed_events', []);
+        $allowedEvents = (array) config('chip.webhooks.allowed_events', []);
 
         return in_array($event, $allowedEvents) || in_array('*', $allowedEvents);
     }
 
     /**
      * Get webhook configuration.
+     *
+     * @return array<string, mixed>
      */
     public function getWebhookConfig(): array
     {
-        return config('chip.webhooks', []);
+        $config = config('chip.webhooks', []);
+        return is_array($config) ? $config : [];
     }
 }

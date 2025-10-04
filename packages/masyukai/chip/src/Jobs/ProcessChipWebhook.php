@@ -26,6 +26,9 @@ class ProcessChipWebhook implements ShouldQueue
 
     public int $timeout = 60;
 
+    /**
+     * @param array<string, mixed> $payload
+     */
     public function __construct(
         public readonly array $payload,
         public readonly string $signature,

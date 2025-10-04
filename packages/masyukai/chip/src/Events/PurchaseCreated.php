@@ -46,11 +46,11 @@ class PurchaseCreated implements ShouldBroadcast
         return [
             'purchase' => [
                 'id' => $this->purchase->id,
-                'amount_in_cents' => $this->purchase->amount,
-                'currency' => $this->purchase->currency,
+                'amount_in_cents' => $this->purchase->purchase->total,
+                'currency' => $this->purchase->purchase->currency,
                 'reference' => $this->purchase->reference,
                 'status' => $this->purchase->status,
-                'metadata' => $this->purchase->metadata,
+                'metadata' => $this->purchase->purchase->metadata,
             ],
         ];
     }

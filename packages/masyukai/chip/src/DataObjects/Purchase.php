@@ -8,6 +8,10 @@ use Carbon\Carbon;
 
 class Purchase
 {
+    /**
+     * @param array<string, mixed> $status_history
+     * @param array<string> $payment_method_whitelist
+     */
     public function __construct(
         public readonly string $id, // UUID as string
         public readonly string $type,
@@ -56,20 +60,31 @@ class Purchase
         public readonly ?string $order_id,
     ) {}
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public static function fromArray(array $data): self
     {
         // Handle both API response structure and simplified test data
 
         // For timestamps, convert string dates to timestamps if needed
         $created_on = $data['created_on'] ?? null;
-        if (! $created_on && isset($data['created_at'])) {
-            $created_on = is_string($data['created_at']) ? strtotime($data['created_at']) : $data['created_at'];
+        if (is_string($created_on)) {
+            $created_on = strtotime($created_on) ?: null;
+        }
+        if ($created_on === null && isset($data['created_at'])) {
+            $created_at = $data['created_at'];
+            $created_on = is_string($created_at) ? strtotime($created_at) : $created_at;
         }
         $created_on = $created_on ?? time();
 
         $updated_on = $data['updated_on'] ?? null;
-        if (! $updated_on && isset($data['updated_at'])) {
-            $updated_on = is_string($data['updated_at']) ? strtotime($data['updated_at']) : $data['updated_at'];
+        if (is_string($updated_on)) {
+            $updated_on = strtotime($updated_on) ?: null;
+        }
+        if ($updated_on === null && isset($data['updated_at'])) {
+            $updated_at = $data['updated_at'];
+            $updated_on = is_string($updated_at) ? strtotime($updated_at) : $updated_at;
         }
         $updated_on = $updated_on ?? time();
 
@@ -147,6 +162,8 @@ class Purchase
 
     /**
      * Magic property accessor for convenient access to nested properties
+     * @param string $name
+     * @return mixed
      */
     public function __get($name)
     {
@@ -154,13 +171,16 @@ class Purchase
             'amountInCents' => $this->purchase->total,
             'currency' => $this->purchase->currency,
             'checkoutUrl' => $this->checkout_url,
-            'metadata' => ($this->purchase->metadata && count($this->purchase->metadata) > 0) ? $this->purchase->metadata : null,
+            'metadata' => ($this->purchase->metadata !== null && count($this->purchase->metadata) > 0) ? $this->purchase->metadata : null,
             'clientId' => $this->client->clientId ?? null,
             'isRecurring' => $this->is_recurring_token,
             default => null,
         };
     }
 
+    /**
+     * @param string $name
+     */
     public function __isset($name): bool
     {
         return in_array($name, ['amountInCents', 'currency', 'checkoutUrl', 'isRecurring', 'metadata', 'clientId']);
@@ -241,6 +261,9 @@ class Purchase
         return $this->refundable_amount / 100;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(): array
     {
         return [

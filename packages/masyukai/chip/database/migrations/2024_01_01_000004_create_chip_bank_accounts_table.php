@@ -16,21 +16,14 @@ return new class extends Migration
 
             // Account identification
             $table->string('account_number'); // Account number (length varies by bank)
-            $table->enum('bank_code', [
-                'PHBMMYKL', 'AIBBMYKL', 'BPMBMYKL', 'MFBBMYKL', 'ALSRMYK1',
-                'RJHIMYKL', 'ARBKMYKL', 'AISLMYKL', 'BIMBMYKL', 'BKRMMYKL',
-                'BMMBMYKL', 'BSNAMYK1', 'CIBBMYKL', 'CTBBMYKL', 'HLBBMYKL',
-                'HLIBMYKL', 'HBMBMYKL', 'HMABMYKL', 'KFHOMYKL', 'MBBEMYKL',
-                'MBISMYKL', 'OCBCMYKL', 'OABBMYKL', 'PBBEMYKL', 'PIBEMYK1',
-                'RHBBMYKL', 'RHBAMYKL', 'SCBLMYKX', 'UOVBMYKL', 'ACDBMYK2',
-                'AGOBMYKL', 'BOFAMY2X', 'BKCHMYKL', 'BOTKMYKX', 'BNPAMYKL',
-                'PCBCMYKL', 'DEUTMYKL', 'FNXSMYNB', 'GXSPMYKL', 'ICBKMYKL',
-                'CHASMYKX', 'AFBQMYKL', 'MHCBMYKA', 'SMBCMYKL', 'TNGDMYNB',
-            ]); // Exact bank codes from CHIP API
+            $table->string('bank_code', 10)
+                ->comment('Expected CHIP bank codes such as MBBEMYKL, HLBBMYKL, etc.');
             $table->string('name'); // Account holder name
 
             // Status and verification - exact states from API
-            $table->enum('status', ['pending', 'verified', 'rejected'])->default('pending');
+            $table->string('status', 16)
+                ->default('pending')
+                ->comment('Backed by MasyukAI\\Chip\\Enums\\BankAccountStatus enum.');
             $table->integer('group_id')->nullable(); // Account grouping
             $table->string('reference')->nullable(); // Unique submission reference
 

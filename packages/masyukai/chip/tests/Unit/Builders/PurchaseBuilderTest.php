@@ -5,8 +5,8 @@ declare(strict_types=1);
 use MasyukAI\Chip\Builders\PurchaseBuilder;
 use MasyukAI\Chip\Services\ChipCollectService;
 
-describe('PurchaseBuilder', function () {
-    beforeEach(function () {
+describe('PurchaseBuilder', function (): void {
+    beforeEach(function (): void {
         config([
             'chip.collect.brand_id' => 'test-brand-id',
         ]);
@@ -15,7 +15,7 @@ describe('PurchaseBuilder', function () {
         $this->builder = new PurchaseBuilder($this->service);
     });
 
-    it('can build a basic purchase with required fields', function () {
+    it('can build a basic purchase with required fields', function (): void {
         $data = $this->builder
             ->currency('MYR')
             ->addProduct('Test Product', 5000)
@@ -34,7 +34,7 @@ describe('PurchaseBuilder', function () {
             ->and($data['client'])->toHaveKey('email', 'test@example.com');
     });
 
-    it('can add multiple products', function () {
+    it('can add multiple products', function (): void {
         $data = $this->builder
             ->currency('MYR')
             ->addProduct('Product 1', 1000, 2)
@@ -57,7 +57,7 @@ describe('PurchaseBuilder', function () {
             ]);
     });
 
-    it('can set customer details using customer method', function () {
+    it('can set customer details using customer method', function (): void {
         $data = $this->builder
             ->currency('MYR')
             ->addProduct('Test', 1000)
@@ -72,7 +72,7 @@ describe('PurchaseBuilder', function () {
         ]);
     });
 
-    it('can set billing address', function () {
+    it('can set billing address', function (): void {
         $data = $this->builder
             ->currency('MYR')
             ->addProduct('Test', 1000)
@@ -87,7 +87,7 @@ describe('PurchaseBuilder', function () {
             ->and($data['client'])->toHaveKey('country', 'MY');
     });
 
-    it('can set shipping address', function () {
+    it('can set shipping address', function (): void {
         $data = $this->builder
             ->currency('MYR')
             ->addProduct('Test', 1000)
@@ -102,7 +102,7 @@ describe('PurchaseBuilder', function () {
             ->and($data['client'])->toHaveKey('shipping_country', 'MY');
     });
 
-    it('can set all redirect URLs at once', function () {
+    it('can set all redirect URLs at once', function (): void {
         $data = $this->builder
             ->currency('MYR')
             ->addProduct('Test', 1000)
@@ -119,7 +119,7 @@ describe('PurchaseBuilder', function () {
             ->and($data)->toHaveKey('cancel_redirect', 'https://example.com/cancel');
     });
 
-    it('can set individual redirect URLs', function () {
+    it('can set individual redirect URLs', function (): void {
         $data = $this->builder
             ->currency('MYR')
             ->addProduct('Test', 1000)
@@ -134,7 +134,7 @@ describe('PurchaseBuilder', function () {
             ->and($data)->toHaveKey('cancel_redirect', 'https://example.com/cancel');
     });
 
-    it('can set webhook callback URL', function () {
+    it('can set webhook callback URL', function (): void {
         $data = $this->builder
             ->currency('MYR')
             ->addProduct('Test', 1000)
@@ -145,7 +145,7 @@ describe('PurchaseBuilder', function () {
         expect($data)->toHaveKey('success_callback', 'https://example.com/webhooks/chip');
     });
 
-    it('can set reference', function () {
+    it('can set reference', function (): void {
         $data = $this->builder
             ->currency('MYR')
             ->addProduct('Test', 1000)
@@ -156,7 +156,7 @@ describe('PurchaseBuilder', function () {
         expect($data)->toHaveKey('reference', 'ORDER-2025-001');
     });
 
-    it('can enable send receipt', function () {
+    it('can enable send receipt', function (): void {
         $data = $this->builder
             ->currency('MYR')
             ->addProduct('Test', 1000)
@@ -167,7 +167,7 @@ describe('PurchaseBuilder', function () {
         expect($data)->toHaveKey('send_receipt', true);
     });
 
-    it('can enable pre-authorization', function () {
+    it('can enable pre-authorization', function (): void {
         $data = $this->builder
             ->currency('MYR')
             ->addProduct('Test', 1000)
@@ -178,7 +178,7 @@ describe('PurchaseBuilder', function () {
         expect($data)->toHaveKey('skip_capture', true);
     });
 
-    it('can force recurring', function () {
+    it('can force recurring', function (): void {
         $data = $this->builder
             ->currency('MYR')
             ->addProduct('Test', 1000)
@@ -189,7 +189,7 @@ describe('PurchaseBuilder', function () {
         expect($data)->toHaveKey('force_recurring', true);
     });
 
-    it('can set due date', function () {
+    it('can set due date', function (): void {
         $dueDate = now()->addDays(7)->timestamp;
 
         $data = $this->builder
@@ -202,7 +202,7 @@ describe('PurchaseBuilder', function () {
         expect($data)->toHaveKey('due', $dueDate);
     });
 
-    it('can set notes', function () {
+    it('can set notes', function (): void {
         $data = $this->builder
             ->currency('MYR')
             ->addProduct('Test', 1000)
@@ -213,7 +213,7 @@ describe('PurchaseBuilder', function () {
         expect($data['purchase'])->toHaveKey('notes', 'This is a test purchase');
     });
 
-    it('can override brand ID', function () {
+    it('can override brand ID', function (): void {
         $data = $this->builder
             ->brand('custom-brand-id')
             ->currency('MYR')
@@ -224,7 +224,7 @@ describe('PurchaseBuilder', function () {
         expect($data)->toHaveKey('brand_id', 'custom-brand-id');
     });
 
-    it('can set client ID', function () {
+    it('can set client ID', function (): void {
         $data = $this->builder
             ->currency('MYR')
             ->addProduct('Test', 1000)
@@ -235,7 +235,7 @@ describe('PurchaseBuilder', function () {
         expect($data)->toHaveKey('client_id', 'existing-client-id');
     });
 
-    it('supports method chaining for fluent API', function () {
+    it('supports method chaining for fluent API', function (): void {
         $data = $this->builder
             ->currency('MYR')
             ->addProduct('Premium Plan', 9900, 1, 0, 6.0, 'subscription')
@@ -253,7 +253,7 @@ describe('PurchaseBuilder', function () {
             ->and($data['reference'])->toBe('ORDER-2025-001');
     });
 
-    it('can create purchase using create method', function () {
+    it('can create purchase using create method', function (): void {
         $mockPurchase = Mockery::mock(\MasyukAI\Chip\DataObjects\Purchase::class);
 
         $this->service->shouldReceive('createPurchase')
@@ -269,7 +269,7 @@ describe('PurchaseBuilder', function () {
         expect($result)->toBeInstanceOf(\MasyukAI\Chip\DataObjects\Purchase::class);
     });
 
-    it('can create purchase using save method alias', function () {
+    it('can create purchase using save method alias', function (): void {
         $mockPurchase = Mockery::mock(\MasyukAI\Chip\DataObjects\Purchase::class);
 
         $this->service->shouldReceive('createPurchase')

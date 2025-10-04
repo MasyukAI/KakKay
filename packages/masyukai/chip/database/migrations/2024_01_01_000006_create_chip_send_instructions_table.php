@@ -22,16 +22,9 @@ return new class extends Migration
             $table->string('reference'); // Any reference value
 
             // Status tracking - exact states from API
-            $table->enum('state', [
-                'received',   // Instruction received, processing not started
-                'enquiring',  // Pending verification
-                'executing',  // Pending execution
-                'reviewing',  // Requires further attention
-                'accepted',   // Accepted but not completed
-                'completed',  // Execution completed
-                'rejected',   // Instruction rejected
-                'deleted',     // Instruction deleted
-            ])->default('received');
+            $table->string('state', 24)
+                ->default('received')
+                ->comment('Backed by MasyukAI\\Chip\\Enums\\SendInstructionState enum.');
 
             // Generated fields from API response
             $table->string('receipt_url')->nullable(); // Generated receipt URL

@@ -41,7 +41,9 @@ class ChipHealthCheckCommand extends Command
         if ($checkCollect) {
             $this->line('📦 <fg=cyan>Checking CHIP Collect API...</>');
             $collectHealthy = $this->checkCollectApi($collectService);
-            $allHealthy = $allHealthy && $collectHealthy;
+            if (! $collectHealthy) {
+                $allHealthy = false;
+            }
             $this->newLine();
         }
 
@@ -49,7 +51,9 @@ class ChipHealthCheckCommand extends Command
         if ($checkSend) {
             $this->line('💸 <fg=cyan>Checking CHIP Send API...</>');
             $sendHealthy = $this->checkSendApi($sendService);
-            $allHealthy = $allHealthy && $sendHealthy;
+            if (! $sendHealthy) {
+                $allHealthy = false;
+            }
             $this->newLine();
         }
 
@@ -132,9 +136,7 @@ class ChipHealthCheckCommand extends Command
             $this->info('   ✅ Connected');
 
             if ($this->option('verbose')) {
-                $this->line('      Accounts retrieved: '.(
-                    is_countable($accounts) ? count($accounts) : 'unknown'
-                ));
+                $this->line('      Accounts retrieved: '.count($accounts));
             }
 
             return true;

@@ -13,6 +13,9 @@ class SubscriptionService
         protected ChipCollectService $chipService
     ) {}
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public function createWithFreeTrial(array $data): Purchase
     {
         $trialData = [
@@ -33,6 +36,9 @@ class SubscriptionService
         return $this->chipService->createPurchase($trialData);
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public function createWithRegistrationFee(array $data): Purchase
     {
         $registrationData = [
@@ -53,6 +59,9 @@ class SubscriptionService
         return $this->chipService->createPurchase($registrationData);
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public function createSubscriptionPayment(array $data): Purchase
     {
         $subscriptionData = [
@@ -76,6 +85,10 @@ class SubscriptionService
         return $this->chipService->chargePurchase($subscriptionPurchaseId, $recurringToken);
     }
 
+    /**
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
+     */
     public function createMonthlySubscription(array $data): array
     {
         $hasRegistrationFee = isset($data['registration_fee']) && $data['registration_fee'] > 0;
@@ -104,6 +117,9 @@ class SubscriptionService
         ];
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     protected function resolveBrandId(array $data): string
     {
         $brandId = (string) ($data['brand_id'] ?? $this->chipService->getBrandId());

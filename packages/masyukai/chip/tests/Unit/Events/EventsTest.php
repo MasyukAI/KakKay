@@ -6,8 +6,8 @@ use MasyukAI\Chip\Events\PurchaseCreated;
 use MasyukAI\Chip\Events\PurchasePaid;
 use MasyukAI\Chip\Events\WebhookReceived;
 
-describe('PurchaseCreated Event', function () {
-    it('creates event with purchase data', function () {
+describe('PurchaseCreated Event', function (): void {
+    it('creates event with purchase data', function (): void {
         $purchaseData = [
             'id' => 'purchase_123',
             'amount_in_cents' => 10000,
@@ -24,7 +24,7 @@ describe('PurchaseCreated Event', function () {
         expect($event->purchase->status)->toBe('created');
     });
 
-    it('broadcasts on purchase channel', function () {
+    it('broadcasts on purchase channel', function (): void {
         $purchase = Purchase::fromArray([
             'id' => 'purchase_123',
             'amount_in_cents' => 10000,
@@ -39,7 +39,7 @@ describe('PurchaseCreated Event', function () {
         expect($channels[0]->name)->toBe('purchase.purchase_123');
     });
 
-    it('broadcasts with correct data', function () {
+    it('broadcasts with correct data', function (): void {
         $purchase = Purchase::fromArray([
             'id' => 'purchase_123',
             'amount_in_cents' => 10000,
@@ -56,8 +56,8 @@ describe('PurchaseCreated Event', function () {
     });
 });
 
-describe('PurchasePaid Event', function () {
-    it('creates event with paid purchase data', function () {
+describe('PurchasePaid Event', function (): void {
+    it('creates event with paid purchase data', function (): void {
         $purchaseData = [
             'id' => 'purchase_123',
             'amount_in_cents' => 10000,
@@ -74,7 +74,7 @@ describe('PurchasePaid Event', function () {
         expect($event->purchase->status)->toBe('paid');
     });
 
-    it('broadcasts on purchase channel', function () {
+    it('broadcasts on purchase channel', function (): void {
         $purchase = Purchase::fromArray([
             'id' => 'purchase_123',
             'amount_in_cents' => 10000,
@@ -89,7 +89,7 @@ describe('PurchasePaid Event', function () {
         expect($channels[0]->name)->toBe('purchase.purchase_123');
     });
 
-    it('includes payment timestamp in broadcast data', function () {
+    it('includes payment timestamp in broadcast data', function (): void {
         $purchase = Purchase::fromArray([
             'id' => 'purchase_123',
             'amount_in_cents' => 10000,
@@ -106,8 +106,8 @@ describe('PurchasePaid Event', function () {
     });
 });
 
-describe('WebhookReceived Event', function () {
-    it('creates event with webhook data', function () {
+describe('WebhookReceived Event', function (): void {
+    it('creates event with webhook data', function (): void {
         $webhookData = [
             'event' => 'purchase.paid',
             'data' => [
@@ -125,7 +125,7 @@ describe('WebhookReceived Event', function () {
         expect($event->webhook->event)->toBe('purchase.paid');
     });
 
-    it('stores raw webhook payload', function () {
+    it('stores raw webhook payload', function (): void {
         $webhookData = [
             'event' => 'purchase.paid',
             'data' => [
@@ -142,7 +142,7 @@ describe('WebhookReceived Event', function () {
         expect($event->webhook->event)->toBe('purchase.paid');
     });
 
-    it('can determine webhook event type', function () {
+    it('can determine webhook event type', function (): void {
         $webhook = Webhook::fromArray([
             'event' => 'send_instruction.completed',
             'data' => ['id' => 'send_123'],
@@ -156,8 +156,8 @@ describe('WebhookReceived Event', function () {
     });
 });
 
-describe('Event Broadcasting Configuration', function () {
-    it('uses correct queue for background events', function () {
+describe('Event Broadcasting Configuration', function (): void {
+    it('uses correct queue for background events', function (): void {
         $webhook = Webhook::fromArray([
             'event' => 'test.event',
             'data' => ['id' => 'test_123'],
@@ -168,7 +168,7 @@ describe('Event Broadcasting Configuration', function () {
         expect($event->queue)->toBe('webhooks');
     });
 
-    it('sets appropriate broadcast queue for real-time events', function () {
+    it('sets appropriate broadcast queue for real-time events', function (): void {
         $purchase = Purchase::fromArray([
             'id' => 'purchase_123',
             'amount_in_cents' => 10000,
@@ -182,8 +182,8 @@ describe('Event Broadcasting Configuration', function () {
     });
 });
 
-describe('Event Data Serialization', function () {
-    it('serializes purchase data correctly for broadcasting', function () {
+describe('Event Data Serialization', function (): void {
+    it('serializes purchase data correctly for broadcasting', function (): void {
         $purchase = Purchase::fromArray([
             'id' => 'purchase_123',
             'amount_in_cents' => 10000,
@@ -203,7 +203,7 @@ describe('Event Data Serialization', function () {
         expect($broadcastData['purchase']['metadata'])->toBe(['order_id' => '456']);
     });
 
-    it('includes event metadata in broadcast payload', function () {
+    it('includes event metadata in broadcast payload', function (): void {
         $purchase = Purchase::fromArray([
             'id' => 'purchase_123',
             'amount_in_cents' => 10000,

@@ -37,6 +37,7 @@ class WebhookRequest extends FormRequest
 
     /**
      * Validation rules for webhook request
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
@@ -52,6 +53,9 @@ class WebhookRequest extends FormRequest
         return $this->input('event');
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getData(): array
     {
         return $this->input('data', []);
@@ -95,6 +99,9 @@ class WebhookRequest extends FormRequest
         return $data['id'] ?? null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getHeaders(): array
     {
         return $this->headers->all();

@@ -5,12 +5,12 @@ use MasyukAI\Chip\Clients\ChipSendClient;
 use MasyukAI\Chip\Exceptions\ChipApiException;
 use MasyukAI\Chip\Exceptions\ChipValidationException;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->client = new ChipSendClient('test_api_key', 'test_secret_key', 'sandbox');
 });
 
-describe('ChipSendClient Authentication', function () {
-    it('adds correct headers to requests', function () {
+describe('ChipSendClient Authentication', function (): void {
+    it('adds correct headers to requests', function (): void {
         Http::fake(['*' => Http::response(['data' => []], 200)]);
 
         $this->client->get('/test');
@@ -25,7 +25,7 @@ describe('ChipSendClient Authentication', function () {
         });
     });
 
-    it('generates valid HMAC signature', function () {
+    it('generates valid HMAC signature', function (): void {
         Http::fake(['*' => Http::response(['data' => []], 200)]);
 
         $this->client->post('/test', ['key' => 'value']);
@@ -43,8 +43,8 @@ describe('ChipSendClient Authentication', function () {
 
 });
 
-describe('ChipSendClient Request Methods', function () {
-    it('can make GET requests', function () {
+describe('ChipSendClient Request Methods', function (): void {
+    it('can make GET requests', function (): void {
         Http::fake(['*' => Http::response(['data' => ['id' => '123']], 200)]);
 
         $response = $this->client->get('/test');
@@ -53,7 +53,7 @@ describe('ChipSendClient Request Methods', function () {
         Http::assertSent(fn ($request) => $request->method() === 'GET');
     });
 
-    it('can make POST requests with JSON body', function () {
+    it('can make POST requests with JSON body', function (): void {
         Http::fake(['*' => Http::response(['data' => ['created' => true]], 201)]);
 
         $response = $this->client->post('/test', ['name' => 'Test']);
@@ -66,8 +66,8 @@ describe('ChipSendClient Request Methods', function () {
     });
 });
 
-describe('ChipSendClient Error Handling', function () {
-    it('throws ChipValidationException with proper error details', function () {
+describe('ChipSendClient Error Handling', function (): void {
+    it('throws ChipValidationException with proper error details', function (): void {
         Http::fake(['*' => Http::response([
             'error' => 'Invalid amount',
             'code' => 'INVALID_AMOUNT',
@@ -88,7 +88,7 @@ describe('ChipSendClient Error Handling', function () {
         }
     });
 
-    it('handles network timeouts', function () {
+    it('handles network timeouts', function (): void {
         Http::fake(['*' => Http::response(null, 408)]);
 
         expect(fn () => $this->client->get('/test'))
@@ -96,8 +96,8 @@ describe('ChipSendClient Error Handling', function () {
     });
 });
 
-describe('ChipSendClient URL Building', function () {
-    it('uses sandbox URL in test mode', function () {
+describe('ChipSendClient URL Building', function (): void {
+    it('uses sandbox URL in test mode', function (): void {
         Http::fake(['*' => Http::response(['data' => []], 200)]);
 
         $this->client->get('/test');
@@ -107,7 +107,7 @@ describe('ChipSendClient URL Building', function () {
         });
     });
 
-    it('uses production URL in live mode', function () {
+    it('uses production URL in live mode', function (): void {
         $liveClient = new ChipSendClient('live_api_key', 'live_secret_key', 'production');
         Http::fake(['*' => Http::response(['data' => []], 200)]);
 
@@ -119,8 +119,8 @@ describe('ChipSendClient URL Building', function () {
     });
 });
 
-describe('ChipSendClient Timestamp Generation', function () {
-    it('generates current epoch timestamp', function () {
+describe('ChipSendClient Timestamp Generation', function (): void {
+    it('generates current epoch timestamp', function (): void {
         Http::fake(['*' => Http::response(['data' => []], 200)]);
 
         $beforeTime = time();

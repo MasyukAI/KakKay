@@ -4,8 +4,8 @@ use MasyukAI\Chip\Exceptions\ChipApiException;
 use MasyukAI\Chip\Exceptions\ChipValidationException;
 use MasyukAI\Chip\Exceptions\WebhookVerificationException;
 
-describe('ChipApiException', function () {
-    it('creates exception with message and status code', function () {
+describe('ChipApiException', function (): void {
+    it('creates exception with message and status code', function (): void {
         $exception = new ChipApiException('API request failed', 400);
 
         expect($exception->getMessage())->toBe('API request failed');
@@ -13,7 +13,7 @@ describe('ChipApiException', function () {
         expect($exception->getErrorDetails())->toBe([]);
     });
 
-    it('stores error details from API response', function () {
+    it('stores error details from API response', function (): void {
         $errorDetails = [
             'field' => 'amount_in_cents',
             'message' => 'Must be greater than 0',
@@ -25,14 +25,24 @@ describe('ChipApiException', function () {
         expect($exception->hasErrorDetails())->toBeTrue();
     });
 
-    it('handles empty error details', function () {
+    it('handles empty error details', function (): void {
         $exception = new ChipApiException('Server error', 500);
 
         expect($exception->getErrorDetails())->toBe([]);
         expect($exception->hasErrorDetails())->toBeFalse();
     });
 
-    it('formats error message with details', function () {
+    it('exposes error code and message accessors', function (): void {
+        $exception = new ChipApiException('Request failed', 400, [
+            'code' => 'INVALID_REQUEST',
+            'message' => 'Payload is invalid',
+        ]);
+
+        expect($exception->getErrorCode())->toBe('INVALID_REQUEST');
+        expect($exception->getErrorMessage())->toBe('Payload is invalid');
+    });
+
+    it('formats error message with details', function (): void {
         $errorDetails = [
             'errors' => [
                 'amount_in_cents' => ['Must be greater than 0'],
@@ -47,7 +57,7 @@ describe('ChipApiException', function () {
         expect($exception->getFormattedMessage())->toContain('currency');
     });
 
-    it('creates exception from HTTP response', function () {
+    it('creates exception from HTTP response', function (): void {
         $responseData = [
             'error' => 'Insufficient funds',
             'code' => 'INSUFFICIENT_FUNDS',
@@ -64,7 +74,7 @@ describe('ChipApiException', function () {
         ]);
     });
 
-    it('handles missing error message in response', function () {
+    it('handles missing error message in response', function (): void {
         $responseData = [
             'code' => 'UNKNOWN_ERROR',
             'details' => ['timestamp' => '2024-01-01T12:00:00Z'],
@@ -75,10 +85,20 @@ describe('ChipApiException', function () {
         expect($exception->getMessage())->toBe('Unknown API error');
         expect($exception->getErrorDetails())->toBe($responseData);
     });
+
+    it('converts the exception to array structure', function (): void {
+        $exception = new ChipApiException('Failure', 503, ['code' => 'DOWNSTREAM']);
+
+        expect($exception->toArray())->toBe([
+            'message' => 'Failure',
+            'status_code' => 503,
+            'error_data' => ['code' => 'DOWNSTREAM'],
+        ]);
+    });
 });
 
-describe('ChipValidationException', function () {
-    it('creates validation exception with field errors', function () {
+describe('ChipValidationException', function (): void {
+    it('creates validation exception with field errors', function (): void {
         $errors = [
             'amount_in_cents' => ['Required field'],
             'currency' => ['Invalid currency code'],
@@ -90,7 +110,7 @@ describe('ChipValidationException', function () {
         expect($exception->getValidationErrors())->toBe($errors);
     });
 
-    it('checks if specific field has error', function () {
+    it('checks if specific field has error', function (): void {
         $errors = [
             'amount_in_cents' => ['Required field'],
             'currency' => ['Invalid currency code'],
@@ -102,7 +122,7 @@ describe('ChipValidationException', function () {
         expect($exception->hasError('reference'))->toBeFalse();
     });
 
-    it('gets errors for specific field', function () {
+    it('gets errors for specific field', function (): void {
         $errors = [
             'amount_in_cents' => ['Required field', 'Must be positive'],
             'currency' => ['Invalid currency code'],
@@ -114,7 +134,7 @@ describe('ChipValidationException', function () {
         expect($exception->getFieldErrors('unknown_field'))->toBe([]);
     });
 
-    it('formats all validation errors as string', function () {
+    it('formats all validation errors as string', function (): void {
         $errors = [
             'amount_in_cents' => ['Required field'],
             'currency' => ['Invalid currency code'],
@@ -127,7 +147,7 @@ describe('ChipValidationException', function () {
         expect($formatted)->toContain('currency: Invalid currency code');
     });
 
-    it('creates exception from Laravel validator', function () {
+    it('creates exception from Laravel validator', function (): void {
         $validator = validator([
             'amount_in_cents' => null,
             'currency' => 'INVALID',
@@ -147,43 +167,43 @@ describe('ChipValidationException', function () {
     });
 });
 
-describe('WebhookVerificationException', function () {
-    it('creates exception with verification failure message', function () {
+describe('WebhookVerificationException', function (): void {
+    it('creates exception with verification failure message', function (): void {
         $exception = new WebhookVerificationException('Invalid signature');
 
         expect($exception->getMessage())->toBe('Invalid signature');
         expect($exception->getCode())->toBe(0);
     });
 
-    it('creates exception for missing signature', function () {
+    it('creates exception for missing signature', function (): void {
         $exception = WebhookVerificationException::missingSignature();
 
         expect($exception->getMessage())->toContain('missing');
         expect($exception->getMessage())->toContain('signature');
     });
 
-    it('creates exception for invalid signature format', function () {
+    it('creates exception for invalid signature format', function (): void {
         $exception = WebhookVerificationException::invalidSignatureFormat();
 
         expect($exception->getMessage())->toContain('invalid');
         expect($exception->getMessage())->toContain('format');
     });
 
-    it('creates exception for signature verification failure', function () {
+    it('creates exception for signature verification failure', function (): void {
         $exception = WebhookVerificationException::verificationFailed();
 
         expect($exception->getMessage())->toContain('verification');
         expect($exception->getMessage())->toContain('failed');
     });
 
-    it('creates exception for invalid payload', function () {
+    it('creates exception for invalid payload', function (): void {
         $exception = WebhookVerificationException::invalidPayload('Malformed JSON');
 
         expect($exception->getMessage())->toContain('Invalid payload');
         expect($exception->getMessage())->toContain('Malformed JSON');
     });
 
-    it('creates exception for missing public key', function () {
+    it('creates exception for missing public key', function (): void {
         $exception = WebhookVerificationException::missingPublicKey();
 
         expect($exception->getMessage())->toContain('public key');
@@ -191,15 +211,15 @@ describe('WebhookVerificationException', function () {
     });
 });
 
-describe('Exception Error Context', function () {
-    it('preserves original exception context', function () {
+describe('Exception Error Context', function (): void {
+    it('preserves original exception context', function (): void {
         $previous = new \Exception('Original error');
         $exception = new ChipApiException('API error', 500, [], $previous);
 
         expect($exception->getPrevious())->toBe($previous);
     });
 
-    it('maintains error context through exception chain', function () {
+    it('maintains error context through exception chain', function (): void {
         $httpException = new \Exception('HTTP connection failed');
         $apiException = new ChipApiException('Request failed', 500, [], $httpException);
 

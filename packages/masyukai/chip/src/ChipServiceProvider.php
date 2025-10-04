@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MasyukAI\Chip;
 
+use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use MasyukAI\Chip\Clients\ChipCollectClient;
 use MasyukAI\Chip\Clients\ChipSendClient;
 use MasyukAI\Chip\Commands\ChipHealthCheckCommand;
@@ -40,20 +41,20 @@ class ChipServiceProvider extends PackageServiceProvider
 
     protected function registerServices(): void
     {
-        $this->app->singleton(ChipCollectService::class, function ($app) {
+        $this->app->singleton(function ($app): \MasyukAI\Chip\Services\ChipCollectService {
             return new ChipCollectService(
                 $app->make(ChipCollectClient::class),
-                $app->make(WebhookService::class)
+                $app->make(CacheRepository::class)
             );
         });
 
-        $this->app->singleton(ChipSendService::class, function ($app) {
+        $this->app->singleton(function ($app): \MasyukAI\Chip\Services\ChipSendService {
             return new ChipSendService(
                 $app->make(ChipSendClient::class)
             );
         });
 
-        $this->app->singleton(WebhookService::class, function ($app) {
+        $this->app->singleton(function ($app): \MasyukAI\Chip\Services\WebhookService {
             return new WebhookService;
         });
 
@@ -64,7 +65,7 @@ class ChipServiceProvider extends PackageServiceProvider
 
     protected function registerClients(): void
     {
-        $this->app->singleton(ChipCollectClient::class, function () {
+        $this->app->singleton(function (): \MasyukAI\Chip\Clients\ChipCollectClient {
             $baseUrlConfig = config('chip.collect.base_url', 'https://gate.chip-in.asia/api/v1/');
             $environment = config('chip.collect.environment', 'sandbox');
 
@@ -86,7 +87,7 @@ class ChipServiceProvider extends PackageServiceProvider
             );
         });
 
-        $this->app->singleton(ChipSendClient::class, function () {
+        $this->app->singleton(function (): \MasyukAI\Chip\Clients\ChipSendClient {
             $environment = config('chip.send.environment', 'sandbox');
 
             return new ChipSendClient(

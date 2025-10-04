@@ -4,281 +4,104 @@ declare(strict_types=1);
 
 namespace MasyukAI\Chip\Services;
 
-use Illuminate\Support\Facades\Log;
+use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use MasyukAI\Chip\Builders\PurchaseBuilder;
 use MasyukAI\Chip\Clients\ChipCollectClient;
 use MasyukAI\Chip\DataObjects\Client;
 use MasyukAI\Chip\DataObjects\ClientDetails;
-use MasyukAI\Chip\DataObjects\CurrencyConversion;
-use MasyukAI\Chip\DataObjects\IssuerDetails;
-use MasyukAI\Chip\DataObjects\Payment;
-use MasyukAI\Chip\DataObjects\Product;
 use MasyukAI\Chip\DataObjects\Purchase;
-use MasyukAI\Chip\DataObjects\PurchaseDetails;
-use MasyukAI\Chip\DataObjects\TransactionData;
-use MasyukAI\Chip\Exceptions\ChipValidationException;
+use MasyukAI\Chip\Services\Collect\AccountApi;
+use MasyukAI\Chip\Services\Collect\ClientsApi;
+use MasyukAI\Chip\Services\Collect\PurchasesApi;
+use MasyukAI\Chip\Services\Collect\WebhooksApi;
 
 class ChipCollectService
 {
+    protected PurchasesApi $purchases;
+
+    protected ClientsApi $clients;
+
+    protected AccountApi $account;
+
+    protected WebhooksApi $webhooks;
+
+    protected ?SubscriptionService $subscriptionService = null;
+
     public function __construct(
         protected ChipCollectClient $client,
-        protected ?WebhookService $webhookService = null
+        ?CacheRepository $cache = null,
     ) {
-        //
+        $this->purchases = new PurchasesApi($cache, $client);
+        $this->clients = new ClientsApi($client);
+        $this->account = new AccountApi($client);
+        $this->webhooks = new WebhooksApi($client);
     }
 
-    /**
-     * Create a new purchase builder instance for fluent API
-     */
     public function purchase(): PurchaseBuilder
     {
         return new PurchaseBuilder($this);
     }
 
     /**
-     * Create a purchase
-     *
-     * @param  array  $data  Purchase data
+     * @param array<string, mixed> $data
      */
     public function createPurchase(array $data): Purchase
     {
-        $data['brand_id'] = $data['brand_id'] ?? $this->getBrandId();
-
-        $this->validatePurchaseData($data);
-
-        try {
-            $responseData = $this->client->post('purchases/', $data);
-
-            return $this->mapToPurchase($responseData);
-        } catch (\Exception $e) {
-            Log::error('Failed to create CHIP purchase', [
-                'error' => $e->getMessage(),
-                'data' => $data,
-            ]);
-            throw $e;
-        }
+        return $this->purchases->create($data);
     }
 
-    /**
-     * Retrieve a purchase by ID
-     */
     public function getPurchase(string $purchaseId): Purchase
     {
-        try {
-            $responseData = $this->client->get("purchases/{$purchaseId}/");
-
-            return $this->mapToPurchase($responseData);
-        } catch (\Exception $e) {
-            Log::error('Failed to retrieve CHIP purchase', [
-                'purchase_id' => $purchaseId,
-                'error' => $e->getMessage(),
-            ]);
-            throw $e;
-        }
+        return $this->purchases->find($purchaseId);
     }
 
-    /**
-     * Cancel a purchase
-     */
     public function cancelPurchase(string $purchaseId): Purchase
     {
-        try {
-            $responseData = $this->client->post("purchases/{$purchaseId}/cancel/");
-
-            return $this->mapToPurchase($responseData);
-        } catch (\Exception $e) {
-            Log::error('Failed to cancel CHIP purchase', [
-                'purchase_id' => $purchaseId,
-                'error' => $e->getMessage(),
-            ]);
-            throw $e;
-        }
+        return $this->purchases->cancel($purchaseId);
     }
 
-    /**
-     * Refund a purchase
-     */
     public function refundPurchase(string $purchaseId, ?int $amount = null): Purchase
     {
-        $data = [];
-        if ($amount !== null) {
-            $data['amount'] = $amount;
-        }
-
-        try {
-            $responseData = $this->client->post("purchases/{$purchaseId}/refund/", $data);
-
-            return $this->mapToPurchase($responseData);
-        } catch (\Exception $e) {
-            Log::error('Failed to refund CHIP purchase', [
-                'purchase_id' => $purchaseId,
-                'amount' => $amount,
-                'error' => $e->getMessage(),
-            ]);
-            throw $e;
-        }
+        return $this->purchases->refund($purchaseId, $amount);
     }
 
     /**
-     * Get available payment methods
+     * @param array<string, mixed> $filters
+     * @return array<string, mixed>
      */
     public function getPaymentMethods(array $filters = []): array
     {
-        $cacheStore = null;
-
-        if (function_exists('app')) {
-            try {
-                $cacheStore = app('cache');
-            } catch (\Throwable $e) {
-                $cacheStore = null;
-            }
-        }
-
-        try {
-            if ($cacheStore) {
-                $cacheKey = config('chip.cache.prefix', 'chip:').'payment_methods:'.md5(json_encode($filters));
-                $ttl = config('chip.cache.ttl.payment_methods')
-                    ?? config('chip.cache.default_ttl', 3600);
-
-                return $cacheStore->remember($cacheKey, $ttl, function () use ($filters) {
-                    $queryString = http_build_query($filters);
-                    $endpoint = 'payment_methods/'.($queryString ? '?'.$queryString : '');
-
-                    return $this->client->get($endpoint);
-                });
-            }
-
-            $queryString = http_build_query($filters);
-            $endpoint = 'payment_methods/'.($queryString ? '?'.$queryString : '');
-
-            return $this->client->get($endpoint);
-        } catch (\Exception $e) {
-            Log::error('Failed to get CHIP payment methods', [
-                'filters' => $filters,
-                'error' => $e->getMessage(),
-            ]);
-            throw $e;
-        }
+        return $this->purchases->paymentMethods($filters);
     }
 
-    /**
-     * Charge a purchase using a saved token
-     */
     public function chargePurchase(string $purchaseId, string $recurringToken): Purchase
     {
-        try {
-            $data = ['recurring_token' => $recurringToken];
-            $responseData = $this->client->post("purchases/{$purchaseId}/charge/", $data);
-
-            return $this->mapToPurchase($responseData);
-        } catch (\Exception $e) {
-            Log::error('Failed to charge CHIP purchase', [
-                'purchase_id' => $purchaseId,
-                'recurring_token' => $recurringToken,
-                'error' => $e->getMessage(),
-            ]);
-            throw $e;
-        }
+        return $this->purchases->charge($purchaseId, $recurringToken);
     }
 
-    /**
-     * Capture a previously authorized payment
-     */
     public function capturePurchase(string $purchaseId, ?int $amount = null): Purchase
     {
-        try {
-            $data = [];
-            if ($amount !== null) {
-                $data['amount'] = $amount;
-            }
-
-            $responseData = $this->client->post("purchases/{$purchaseId}/capture/", $data);
-
-            return $this->mapToPurchase($responseData);
-        } catch (\Exception $e) {
-            Log::error('Failed to capture CHIP purchase', [
-                'purchase_id' => $purchaseId,
-                'amount' => $amount,
-                'error' => $e->getMessage(),
-            ]);
-            throw $e;
-        }
+        return $this->purchases->capture($purchaseId, $amount);
     }
 
-    /**
-     * Release funds on hold
-     */
     public function releasePurchase(string $purchaseId): Purchase
     {
-        try {
-            $responseData = $this->client->post("purchases/{$purchaseId}/release/");
-
-            return $this->mapToPurchase($responseData);
-        } catch (\Exception $e) {
-            Log::error('Failed to release CHIP purchase', [
-                'purchase_id' => $purchaseId,
-                'error' => $e->getMessage(),
-            ]);
-            throw $e;
-        }
+        return $this->purchases->release($purchaseId);
     }
 
-    /**
-     * Mark a purchase as paid
-     */
     public function markPurchaseAsPaid(string $purchaseId, ?int $paidOn = null): Purchase
     {
-        try {
-            $data = [];
-            if ($paidOn !== null) {
-                $data['paid_on'] = $paidOn;
-            }
-
-            $responseData = $this->client->post("purchases/{$purchaseId}/mark_as_paid/", $data);
-
-            return $this->mapToPurchase($responseData);
-        } catch (\Exception $e) {
-            Log::error('Failed to mark CHIP purchase as paid', [
-                'purchase_id' => $purchaseId,
-                'paid_on' => $paidOn,
-                'error' => $e->getMessage(),
-            ]);
-            throw $e;
-        }
+        return $this->purchases->markAsPaid($purchaseId, $paidOn);
     }
 
-    /**
-     * Resend invoice for a purchase
-     */
     public function resendInvoice(string $purchaseId): Purchase
     {
-        try {
-            $responseData = $this->client->post("purchases/{$purchaseId}/resend_invoice/");
-
-            return $this->mapToPurchase($responseData);
-        } catch (\Exception $e) {
-            Log::error('Failed to resend CHIP purchase invoice', [
-                'purchase_id' => $purchaseId,
-                'error' => $e->getMessage(),
-            ]);
-            throw $e;
-        }
+        return $this->purchases->resendInvoice($purchaseId);
     }
 
-    /**
-     * Delete a recurring token
-     */
     public function deleteRecurringToken(string $purchaseId): void
     {
-        try {
-            $this->client->delete("purchases/{$purchaseId}/recurring_token/");
-        } catch (\Exception $e) {
-            Log::error('Failed to delete CHIP recurring token', [
-                'purchase_id' => $purchaseId,
-                'error' => $e->getMessage(),
-            ]);
-            throw $e;
-        }
+        $this->purchases->deleteRecurringToken($purchaseId);
     }
 
     public function getBrandId(): string
@@ -286,489 +109,168 @@ class ChipCollectService
         return $this->client->getBrandId();
     }
 
-    // Client Management Methods
-
     /**
-     * Create a client
+     * @param array<string, mixed> $data
      */
     public function createClient(array $data): Client
     {
-        try {
-            $responseData = $this->client->post('clients/', $data);
-
-            return Client::fromArray($responseData);
-        } catch (\Exception $e) {
-            Log::error('Failed to create CHIP client', [
-                'error' => $e->getMessage(),
-                'data' => $data,
-            ]);
-            throw $e;
-        }
+        return $this->clients->create($data);
     }
 
-    /**
-     * Retrieve a client by ID
-     */
     public function getClient(string $clientId): Client
     {
-        try {
-            $responseData = $this->client->get("clients/{$clientId}/");
-
-            return Client::fromArray($responseData);
-        } catch (\Exception $e) {
-            Log::error('Failed to retrieve CHIP client', [
-                'client_id' => $clientId,
-                'error' => $e->getMessage(),
-            ]);
-            throw $e;
-        }
+        return $this->clients->find($clientId);
     }
 
     /**
-     * List all clients
+     * @param array<string, mixed> $filters
+     * @return array<string, mixed>
      */
     public function listClients(array $filters = []): array
     {
-        try {
-            $queryString = http_build_query($filters);
-            $endpoint = 'clients/'.($queryString ? '?'.$queryString : '');
-
-            return $this->client->get($endpoint);
-        } catch (\Exception $e) {
-            Log::error('Failed to list CHIP clients', [
-                'filters' => $filters,
-                'error' => $e->getMessage(),
-            ]);
-            throw $e;
-        }
+        return $this->clients->list($filters);
     }
 
     /**
-     * Update a client
+     * @param array<string, mixed> $data
      */
     public function updateClient(string $clientId, array $data): Client
     {
-        try {
-            $responseData = $this->client->put("clients/{$clientId}/", $data);
-
-            return Client::fromArray($responseData);
-        } catch (\Exception $e) {
-            Log::error('Failed to update CHIP client', [
-                'client_id' => $clientId,
-                'error' => $e->getMessage(),
-                'data' => $data,
-            ]);
-            throw $e;
-        }
+        return $this->clients->update($clientId, $data);
     }
 
     /**
-     * Partially update a client
+     * @param array<string, mixed> $data
      */
     public function partialUpdateClient(string $clientId, array $data): Client
     {
-        try {
-            $responseData = $this->client->patch("clients/{$clientId}/", $data);
-
-            return Client::fromArray($responseData);
-        } catch (\Exception $e) {
-            Log::error('Failed to partially update CHIP client', [
-                'client_id' => $clientId,
-                'error' => $e->getMessage(),
-                'data' => $data,
-            ]);
-            throw $e;
-        }
+        return $this->clients->partialUpdate($clientId, $data);
     }
 
-    /**
-     * Delete a client
-     */
     public function deleteClient(string $clientId): void
     {
-        try {
-            $this->client->delete("clients/{$clientId}/");
-        } catch (\Exception $e) {
-            Log::error('Failed to delete CHIP client', [
-                'client_id' => $clientId,
-                'error' => $e->getMessage(),
-            ]);
-            throw $e;
-        }
+        $this->clients->delete($clientId);
     }
 
     /**
-     * List recurring tokens for a client
+     * @return array<string, mixed>
      */
     public function listClientRecurringTokens(string $clientId): array
     {
-        try {
-            return $this->client->get("clients/{$clientId}/recurring_tokens/");
-        } catch (\Exception $e) {
-            Log::error('Failed to list CHIP client recurring tokens', [
-                'client_id' => $clientId,
-                'error' => $e->getMessage(),
-            ]);
-            throw $e;
-        }
+        return $this->clients->recurringTokens($clientId);
     }
 
     /**
-     * Retrieve a specific recurring token for a client
+     * @return array<string, mixed>
      */
     public function getClientRecurringToken(string $clientId, string $tokenId): array
     {
-        try {
-            return $this->client->get("clients/{$clientId}/recurring_tokens/{$tokenId}/");
-        } catch (\Exception $e) {
-            Log::error('Failed to retrieve CHIP client recurring token', [
-                'client_id' => $clientId,
-                'token_id' => $tokenId,
-                'error' => $e->getMessage(),
-            ]);
-            throw $e;
-        }
+        return $this->clients->recurringToken($clientId, $tokenId);
     }
 
-    /**
-     * Delete a recurring token for a client
-     */
     public function deleteClientRecurringToken(string $clientId, string $tokenId): void
     {
-        try {
-            $this->client->delete("clients/{$clientId}/recurring_tokens/{$tokenId}/");
-        } catch (\Exception $e) {
-            Log::error('Failed to delete CHIP client recurring token', [
-                'client_id' => $clientId,
-                'token_id' => $tokenId,
-                'error' => $e->getMessage(),
-            ]);
-            throw $e;
-        }
+        $this->clients->deleteRecurringToken($clientId, $tokenId);
     }
 
     /**
-     * Create a purchase for checkout
+     * @param array<\MasyukAI\Chip\DataObjects\Product> $products
+     * @param array<string, mixed> $options
      */
-    public function createCheckoutPurchase(
-        array $products,
-        ClientDetails $client,
-        array $options = []
-    ): Purchase {
-        $data = [
-            'client' => $client->toArray(),
-            'purchase' => [
-                'products' => array_map(fn ($product) => $product instanceof Product
-                    ? $product->toArray()
-                    : $product, $products),
-                'currency' => $options['currency'] ?? config('chip.defaults.currency', 'MYR'),
-            ],
-            'brand_id' => $this->client->getBrandId(),
-            'send_receipt' => $options['send_receipt'] ?? true,
-            'reference' => $options['reference'] ?? null,
-            'creator_agent' => config('chip.defaults.creator_agent', 'Laravel Package'),
-            'platform' => config('chip.defaults.platform', 'api'),
-        ];
-
-        // Apply explicit whitelist or fall back to configured defaults
-        if (! empty($options['payment_method_whitelist'])) {
-            $data['payment_method_whitelist'] = is_string($options['payment_method_whitelist'])
-                ? array_filter(array_map('trim', explode(',', $options['payment_method_whitelist'])))
-                : $options['payment_method_whitelist'];
-        } else {
-            $defaultWhitelist = array_filter(array_map('trim', explode(',', (string) config('chip.defaults.payment_method_whitelist', ''))));
-
-            if (! empty($defaultWhitelist)) {
-                $data['payment_method_whitelist'] = $defaultWhitelist;
-            }
-        }
-
-        foreach ([
-            'success_redirect' => $options['success_redirect'] ?? config('chip.defaults.success_redirect'),
-            'failure_redirect' => $options['failure_redirect'] ?? config('chip.defaults.failure_redirect'),
-            'cancel_redirect' => $options['cancel_redirect'] ?? null,
-            'success_callback' => $options['success_callback'] ?? null,
-        ] as $key => $value) {
-            if (! empty($value)) {
-                $data[$key] = $value;
-            }
-        }
-
-        return $this->createPurchase($data);
-    }
-
-    /**
-     * Validate purchase data
-     */
-    protected function validatePurchaseData(array $data): void
+    public function createCheckoutPurchase(array $products, ClientDetails $clientDetails, array $options = []): Purchase
     {
-        if (! isset($data['purchase']) || ! is_array($data['purchase'])) {
-            throw new ChipValidationException('Purchase payload is required');
-        }
-
-        if (empty($data['brand_id'])) {
-            throw new ChipValidationException('brand_id is required');
-        }
-
-        $hasClientPayload = isset($data['client']) && is_array($data['client']);
-        $hasClientId = isset($data['client_id']) && ! empty($data['client_id']);
-
-        if (! $hasClientPayload && ! $hasClientId) {
-            throw new ChipValidationException('Either client or client_id must be provided');
-        }
-
-        if ($hasClientPayload && empty($data['client']['email'])) {
-            throw new ChipValidationException('client.email is required when client payload is provided');
-        }
-
-        if (! isset($data['purchase']['products']) || empty($data['purchase']['products'])) {
-            throw new ChipValidationException('Purchase must have at least one product');
-        }
-
-        foreach ($data['purchase']['products'] as $product) {
-            if (! isset($product['name']) || ! isset($product['price'])) {
-                throw new ChipValidationException('Each product must have name and price');
-            }
-        }
+        return $this->purchases->createCheckoutPurchase($products, $clientDetails, $options);
     }
 
-    /**
-     * Map API response to Purchase object
-     */
-    protected function mapToPurchase(array $response): Purchase
-    {
-        // Map the response to our Purchase data object
-        // This is a simplified mapping - you may need to adjust based on your needs
-        return new Purchase(
-            id: $response['id'],
-            type: $response['type'],
-            created_on: (int) $response['created_on'],
-            updated_on: (int) $response['updated_on'],
-            client: ClientDetails::fromArray($response['client']),
-            purchase: PurchaseDetails::fromArray($response['purchase']),
-            brand_id: $response['brand_id'],
-            payment: $response['payment'] ? Payment::fromArray($response['payment']) : null,
-            issuer_details: IssuerDetails::fromArray($response['issuer_details']),
-            transaction_data: TransactionData::fromArray($response['transaction_data']),
-            status: $response['status'],
-            status_history: $response['status_history'],
-            viewed_on: $response['viewed_on'] ?? null,
-            company_id: $response['company_id'],
-            is_test: $response['is_test'],
-            user_id: $response['user_id'] ?? null,
-            billing_template_id: $response['billing_template_id'] ?? null,
-            client_id: $response['client_id'] ?? null,
-            send_receipt: $response['send_receipt'],
-            is_recurring_token: $response['is_recurring_token'],
-            recurring_token: $response['recurring_token'] ?? null,
-            skip_capture: $response['skip_capture'],
-            force_recurring: $response['force_recurring'],
-            reference_generated: $response['reference_generated'],
-            reference: $response['reference'] ?? null,
-            notes: $response['notes'] ?? null,
-            issued: $response['issued'] ?? null,
-            due: $response['due'] ?? null,
-            refund_availability: $response['refund_availability'],
-            refundable_amount: $response['refundable_amount'],
-            currency_conversion: $response['currency_conversion'] ? CurrencyConversion::fromArray($response['currency_conversion']) : null,
-            payment_method_whitelist: $response['payment_method_whitelist'] ?? [],
-            success_redirect: $response['success_redirect'] ?? null,
-            failure_redirect: $response['failure_redirect'] ?? null,
-            cancel_redirect: $response['cancel_redirect'] ?? null,
-            success_callback: $response['success_callback'] ?? null,
-            creator_agent: $response['creator_agent'] ?? null,
-            platform: $response['platform'],
-            product: $response['product'],
-            created_from_ip: $response['created_from_ip'] ?? null,
-            invoice_url: $response['invoice_url'] ?? null,
-            checkout_url: $response['checkout_url'] ?? null,
-            direct_post_url: $response['direct_post_url'] ?? null,
-            marked_as_paid: $response['marked_as_paid'] ?? false,
-            order_id: $response['order_id'] ?? null,
-        );
-    }
-
-    /**
-     * Get the public key for webhook signature verification
-     */
     public function getPublicKey(): string
     {
-        try {
-            return $this->client->get('public_key/');
-        } catch (\Exception $e) {
-            Log::error('Failed to get CHIP public key', [
-                'error' => $e->getMessage(),
-            ]);
-            throw $e;
-        }
+        return $this->purchases->publicKey();
     }
 
     /**
-     * Get account balance
+     * @return array<string, mixed>
      */
     public function getAccountBalance(): array
     {
-        try {
-            return $this->client->get('account/balance/');
-        } catch (\Exception $e) {
-            Log::error('Failed to get CHIP account balance', [
-                'error' => $e->getMessage(),
-            ]);
-            throw $e;
-        }
+        return $this->account->balance();
     }
 
     /**
-     * Get account turnover
+     * @param array<string, mixed> $filters
+     * @return array<string, mixed>
      */
     public function getAccountTurnover(array $filters = []): array
     {
-        try {
-            $queryString = http_build_query($filters);
-            $endpoint = 'account/turnover/'.($queryString ? '?'.$queryString : '');
-
-            return $this->client->get($endpoint);
-        } catch (\Exception $e) {
-            Log::error('Failed to get CHIP account turnover', [
-                'filters' => $filters,
-                'error' => $e->getMessage(),
-            ]);
-            throw $e;
-        }
+        return $this->account->turnover($filters);
     }
 
     /**
-     * List company statements
+     * @param array<string, mixed> $filters
+     * @return array<string, mixed>
      */
     public function listCompanyStatements(array $filters = []): array
     {
-        try {
-            $queryString = http_build_query($filters);
-            $endpoint = 'company_statements/'.($queryString ? '?'.$queryString : '');
-
-            return $this->client->get($endpoint);
-        } catch (\Exception $e) {
-            Log::error('Failed to get CHIP company statements', [
-                'filters' => $filters,
-                'error' => $e->getMessage(),
-            ]);
-            throw $e;
-        }
+        return $this->account->companyStatements($filters);
     }
 
     /**
-     * Get a company statement
+     * @return array<string, mixed>
      */
     public function getCompanyStatement(string $statementId): array
     {
-        try {
-            return $this->client->get("company_statements/{$statementId}/");
-        } catch (\Exception $e) {
-            Log::error('Failed to get CHIP company statement', [
-                'statement_id' => $statementId,
-                'error' => $e->getMessage(),
-            ]);
-            throw $e;
-        }
+        return $this->account->companyStatement($statementId);
     }
 
     /**
-     * Cancel a company statement
+     * @return array<string, mixed>
      */
     public function cancelCompanyStatement(string $statementId): array
     {
-        try {
-            return $this->client->post("company_statements/{$statementId}/cancel/");
-        } catch (\Exception $e) {
-            Log::error('Failed to cancel CHIP company statement', [
-                'statement_id' => $statementId,
-                'error' => $e->getMessage(),
-            ]);
-            throw $e;
-        }
+        return $this->account->cancelCompanyStatement($statementId);
     }
 
     /**
-     * Create a webhook
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
      */
     public function createWebhook(array $data): array
     {
-        try {
-            return $this->client->post('webhooks/', $data);
-        } catch (\Exception $e) {
-            Log::error('Failed to create CHIP webhook', [
-                'data' => $data,
-                'error' => $e->getMessage(),
-            ]);
-            throw $e;
-        }
+        return $this->webhooks->create($data);
     }
 
     /**
-     * Get a webhook
+     * @return array<string, mixed>
      */
     public function getWebhook(string $webhookId): array
     {
-        try {
-            return $this->client->get("webhooks/{$webhookId}/");
-        } catch (\Exception $e) {
-            Log::error('Failed to get CHIP webhook', [
-                'webhook_id' => $webhookId,
-                'error' => $e->getMessage(),
-            ]);
-            throw $e;
-        }
+        return $this->webhooks->find($webhookId);
     }
 
     /**
-     * Update a webhook
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
      */
     public function updateWebhook(string $webhookId, array $data): array
     {
-        try {
-            return $this->client->put("webhooks/{$webhookId}/", $data);
-        } catch (\Exception $e) {
-            Log::error('Failed to update CHIP webhook', [
-                'webhook_id' => $webhookId,
-                'data' => $data,
-                'error' => $e->getMessage(),
-            ]);
-            throw $e;
-        }
+        return $this->webhooks->update($webhookId, $data);
     }
 
-    /**
-     * Delete a webhook
-     */
     public function deleteWebhook(string $webhookId): void
     {
-        try {
-            $this->client->delete("webhooks/{$webhookId}/");
-        } catch (\Exception $e) {
-            Log::error('Failed to delete CHIP webhook', [
-                'webhook_id' => $webhookId,
-                'error' => $e->getMessage(),
-            ]);
-            throw $e;
-        }
+        $this->webhooks->delete($webhookId);
     }
 
     /**
-     * List webhooks
+     * @param array<string, mixed> $filters
+     * @return array<string, mixed>
      */
     public function listWebhooks(array $filters = []): array
     {
-        try {
-            $queryString = http_build_query($filters);
-            $endpoint = 'webhooks/'.($queryString ? '?'.$queryString : '');
+        return $this->webhooks->list($filters);
+    }
 
-            return $this->client->get($endpoint);
-        } catch (\Exception $e) {
-            Log::error('Failed to list CHIP webhooks', [
-                'filters' => $filters,
-                'error' => $e->getMessage(),
-            ]);
-            throw $e;
-        }
+    public function subscriptions(): SubscriptionService
+    {
+        return $this->subscriptionService ??= new SubscriptionService($this);
     }
 }

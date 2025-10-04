@@ -14,6 +14,9 @@ class ChipSendService
         protected ChipSendClient $client
     ) {}
 
+    /**
+     * @return array<string, mixed>
+     */
     public function listAccounts(): array
     {
         return $this->client->get('send/accounts');
@@ -48,6 +51,10 @@ class ChipSendService
         return SendInstruction::fromArray($response);
     }
 
+    /**
+     * @param array<string, mixed> $filters
+     * @return array<string, mixed>
+     */
     public function listSendInstructions(array $filters = []): array
     {
         $queryString = http_build_query($filters);
@@ -84,6 +91,10 @@ class ChipSendService
         return BankAccount::fromArray($response);
     }
 
+    /**
+     * @param array<string, mixed> $filters
+     * @return array<string, mixed>
+     */
     public function listBankAccounts(array $filters = []): array
     {
         $queryString = http_build_query($filters);
@@ -92,6 +103,9 @@ class ChipSendService
         return $this->client->get($endpoint);
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public function updateBankAccount(string $id, array $data): BankAccount
     {
         $response = $this->client->put("send/bank_accounts/{$id}", $data);
@@ -113,6 +127,8 @@ class ChipSendService
 
     /**
      * Create a group
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
      */
     public function createGroup(array $data): array
     {
@@ -121,6 +137,7 @@ class ChipSendService
 
     /**
      * Get a group
+     * @return array<string, mixed>
      */
     public function getGroup(string $id): array
     {
@@ -129,6 +146,8 @@ class ChipSendService
 
     /**
      * Update a group
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
      */
     public function updateGroup(string $id, array $data): array
     {
@@ -145,6 +164,8 @@ class ChipSendService
 
     /**
      * List groups
+     * @param array<string, mixed> $filters
+     * @return array<string, mixed>
      */
     public function listGroups(array $filters = []): array
     {
@@ -156,6 +177,8 @@ class ChipSendService
 
     /**
      * Create a webhook for CHIP Send
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
      */
     public function createSendWebhook(array $data): array
     {
@@ -164,6 +187,7 @@ class ChipSendService
 
     /**
      * Get a CHIP Send webhook
+     * @return array<string, mixed>
      */
     public function getSendWebhook(string $id): array
     {
@@ -172,6 +196,9 @@ class ChipSendService
 
     /**
      * Update a CHIP Send webhook
+     *
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
      */
     public function updateSendWebhook(string $id, array $data): array
     {
@@ -188,6 +215,9 @@ class ChipSendService
 
     /**
      * List CHIP Send webhooks
+     *
+     * @param array<string, mixed> $filters
+     * @return array<string, mixed>
      */
     public function listSendWebhooks(array $filters = []): array
     {
@@ -207,6 +237,8 @@ class ChipSendService
 
     /**
      * Resend a send instruction webhook
+     *
+     * @return array<string, mixed>
      */
     public function resendSendInstructionWebhook(string $id): array
     {
@@ -215,6 +247,8 @@ class ChipSendService
 
     /**
      * Resend a bank account webhook
+     *
+     * @return array<string, mixed>
      */
     public function resendBankAccountWebhook(string $id): array
     {

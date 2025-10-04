@@ -22,30 +22,13 @@ class WebhookController extends Controller
     public function handle(WebhookRequest $request): Response
     {
         try {
-            $payload = $request->getWebhookPayload();
-
-            Log::channel(config('chip.logging.channel'))
-                ->info('CHIP Webhook received', [
-                    'event_type' => $payload->event_type ?? 'unknown',
-                ]);
-
-            // Dispatch the webhook event
-            if (config('chip.events.dispatch_webhook_events')) {
-                $webhook = Webhook::fromArray([
-                    'event' => $payload->event ?? 'unknown',
-                    'data' => (array) $payload,
-                    'timestamp' => now()->toISOString(),
-                ]);
-
-                event(new WebhookReceived($webhook));
-            }
+            $this->webhookService->processWebhook($request);
 
             return response('OK', 200);
         } catch (\Exception $e) {
             Log::channel(config('chip.logging.channel'))
                 ->error('CHIP Webhook processing failed', [
                     'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString(),
                 ]);
 
             return response('Error processing webhook', 400);

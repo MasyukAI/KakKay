@@ -22,6 +22,9 @@ class SendInstruction
         public readonly string $updated_at,
     ) {}
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public static function fromArray(array $data): self
     {
         return new self(
@@ -104,6 +107,9 @@ class SendInstruction
         return in_array($this->state, ['received', 'enquiring', 'executing', 'reviewing', 'accepted']);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(): array
     {
         return [

@@ -8,6 +8,9 @@ use Exception;
 
 class ChipApiException extends Exception
 {
+    /**
+     * @param array<string, mixed> $errorData
+     */
     public function __construct(
         string $message = '',
         protected int $statusCode = 0,
@@ -22,6 +25,9 @@ class ChipApiException extends Exception
         return $this->statusCode;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getErrorData(): array
     {
         return $this->errorData;
@@ -37,6 +43,9 @@ class ChipApiException extends Exception
         return $this->errorData['message'] ?? $this->getMessage();
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getErrorDetails(): array
     {
         return $this->errorData;
@@ -60,7 +69,7 @@ class ChipApiException extends Exception
                 $details[] = "{$key}: {$value}";
             }
 
-            if (! empty($details)) {
+            if (count($details) > 0) {
                 $message .= ' - '.implode(', ', $details);
             }
         }
@@ -68,6 +77,9 @@ class ChipApiException extends Exception
         return $message;
     }
 
+    /**
+     * @param array<string, mixed> $responseData
+     */
     public static function fromResponse(array $responseData, int $statusCode): self
     {
         $message = $responseData['error'] ?? $responseData['message'] ?? 'Unknown API error';
@@ -79,6 +91,9 @@ class ChipApiException extends Exception
         return new self($message, $statusCode, $errorDetails);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(): array
     {
         return [

@@ -6,6 +6,11 @@ namespace MasyukAI\Chip\DataObjects;
 
 class PurchaseDetails
 {
+    /**
+     * @param array<Product> $products
+     * @param array<string, mixed> $request_client_details
+     * @param array<string, mixed>|null $metadata
+     */
     public function __construct(
         public readonly string $currency,
         public readonly array $products,
@@ -24,6 +29,9 @@ class PurchaseDetails
         public readonly ?array $metadata,
     ) {}
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public static function fromArray(array $data): self
     {
         return new self(
@@ -57,6 +65,9 @@ class PurchaseDetails
         }, 0) / 100;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(): array
     {
         return [
