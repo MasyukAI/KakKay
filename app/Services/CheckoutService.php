@@ -1,21 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Models\Address;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\User;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use MasyukAI\Cart\Cart;
 use MasyukAI\Cart\Facades\Cart as CartFacade;
 
-class CheckoutService
+final class CheckoutService
 {
     public function __construct(
-        protected PaymentService $paymentService,
-        protected OrderService $orderService
+        private PaymentService $paymentService,
+        private OrderService $orderService
     ) {}
 
     /**
@@ -55,7 +58,7 @@ class CheckoutService
             // Create new payment intent
             return $this->paymentService->createPaymentIntent($cart, $customerData);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Enhanced checkout failed', [
                 'error' => $e->getMessage(),
                 'customer_data' => $customerData,
@@ -127,7 +130,7 @@ class CheckoutService
                 return $order;
             });
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Failed to handle payment success', [
                 'purchase_id' => $purchaseId,
                 'error' => $e->getMessage(),
@@ -138,9 +141,26 @@ class CheckoutService
     }
 
     /**
+     * Get cart change validation for UI display
+     */
+    public function getCartChangeStatus(): array
+    {
+        $cart = CartFacade::getCurrentCart();
+        $validation = $this->paymentService->validateCartPaymentIntent($cart);
+
+        return [
+            'has_active_intent' => isset($validation['intent']),
+            'cart_changed' => $validation['cart_changed'] ?? false,
+            'amount_changed' => $validation['amount_changed'] ?? false,
+            'expired' => $validation['expired'] ?? false,
+            'intent' => $validation['intent'] ?? null,
+        ];
+    }
+
+    /**
      * Create order from cart snapshot stored in payment intent
      */
-    protected function createOrderFromCartSnapshot(array $cartSnapshot, array $customerData): Order
+    private function createOrderFromCartSnapshot(array $cartSnapshot, array $customerData): Order
     {
         // Create or find user
         $user = $this->createOrFindUser($customerData);
@@ -155,7 +175,7 @@ class CheckoutService
     /**
      * Create payment record for completed order
      */
-    protected function createPaymentRecord(Order $order, array $paymentIntent, array $webhookData): Payment
+    private function createPaymentRecord(Order $order, array $paymentIntent, array $webhookData): Payment
     {
         return Payment::create([
             'order_id' => $order->id,
@@ -170,30 +190,42 @@ class CheckoutService
     }
 
     /**
-     * Find cart by purchase ID - temporary implementation
-     * TODO: Implement proper cart lookup by iterating through user's carts
+     * Find cart by purchase ID using database lookup
+     * This is critical for webhook processing where no session exists
      */
-    protected function findCartByPurchaseId(string $purchaseId): ?Cart
+    private function findCartByPurchaseId(string $purchaseId): ?Cart
     {
-        // For now, we'll use session-based approach since we don't have
-        // direct database access to search cart metadata
-        // In a production scenario, you'd want to implement a proper lookup
+        // Query database for cart with this purchase_id in metadata
+        // Uses JSONB operators for efficient PostgreSQL querying
+        $cartData = DB::table('carts')
+            ->whereRaw(
+                "metadata->>'payment_intent' IS NOT NULL AND ".
+                "(metadata::jsonb->'payment_intent'->>'purchase_id')::text = ?",
+                [$purchaseId]
+            )
+            ->first();
 
-        // Try current session cart first
-        $cart = CartFacade::getCurrentCart();
-        $intent = $cart->getMetadata('payment_intent');
+        if (! $cartData) {
+            Log::warning('Cart not found for purchase ID', [
+                'purchase_id' => $purchaseId,
+            ]);
 
-        if ($intent && $intent['purchase_id'] === $purchaseId) {
-            return $cart;
+            return null;
         }
 
-        return null;
+        // Get CartManager and reconstruct Cart instance from database
+        $cartManager = app(\MasyukAI\Cart\CartManager::class);
+
+        return $cartManager->getCartInstance(
+            $cartData->instance,
+            $cartData->identifier
+        );
     }
 
     /**
      * Create or find user record
      */
-    protected function createOrFindUser(array $customerData): User
+    private function createOrFindUser(array $customerData): User
     {
         $user = User::where('email', $customerData['email'])->first();
 
@@ -212,7 +244,7 @@ class CheckoutService
     /**
      * Create address record
      */
-    protected function createAddress(User $user, array $customerData): Address
+    private function createAddress(User $user, array $customerData): Address
     {
         return Address::create([
             'user_id' => $user->id,
@@ -226,22 +258,5 @@ class CheckoutService
             'postcode' => $customerData['postcode'],
             'phone' => $customerData['phone'],
         ]);
-    }
-
-    /**
-     * Get cart change validation for UI display
-     */
-    public function getCartChangeStatus(): array
-    {
-        $cart = CartFacade::getCurrentCart();
-        $validation = $this->paymentService->validateCartPaymentIntent($cart);
-
-        return [
-            'has_active_intent' => isset($validation['intent']),
-            'cart_changed' => $validation['cart_changed'] ?? false,
-            'amount_changed' => $validation['amount_changed'] ?? false,
-            'expired' => $validation['expired'] ?? false,
-            'intent' => $validation['intent'] ?? null,
-        ];
     }
 }

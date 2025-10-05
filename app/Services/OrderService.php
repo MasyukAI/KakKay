@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Models\Address;
@@ -7,13 +9,14 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\User;
+use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 use MasyukAI\Cart\Facades\Cart;
 
-class OrderService
+final class OrderService
 {
-    protected ShippingService $shippingService;
+    private ShippingService $shippingService;
 
     public function __construct(?ShippingService $shippingService = null)
     {
@@ -32,7 +35,8 @@ class OrderService
         $shipping = 0;
         $shippingValue = Cart::getShippingValue();
         if ($shippingValue !== null) {
-            $shipping = (int) ($shippingValue * 100); // Convert to cents
+            // Cart::getShippingValue() returns cents already, just cast to int
+            $shipping = (int) $shippingValue;
         } else {
             // Fall back to calculating shipping if no condition exists
             $shipping = $this->shippingService->calculateShipping($customerData['delivery_method'] ?? 'standard');
@@ -100,7 +104,7 @@ class OrderService
             }
         } while ($retries < $maxRetries);
 
-        throw new \Exception("Unable to create order with unique order number after {$maxRetries} attempts");
+        throw new Exception("Unable to create order with unique order number after {$maxRetries} attempts");
     }
 
     /**
@@ -108,15 +112,25 @@ class OrderService
      */
     public function createOrderItems(Order $order, array $cartItems): void
     {
-        foreach ($cartItems as $item) {
-            // Find product by ID or name (depending on cart structure)
-            $product = null;
+        // Collect all product IDs first
+        $productIds = collect($cartItems)
+            ->map(fn ($item) => $item['id'] ?? $item['product_id'] ?? null)
+            ->filter()
+            ->unique()
+            ->toArray();
 
-            if (isset($item['id'])) {
-                $product = Product::find($item['id']);
-            } elseif (isset($item['product_id'])) {
-                $product = Product::find($item['product_id']);
-            } elseif (isset($item['name'])) {
+        // Single query to load all products (fixes N+1 issue)
+        $products = Product::whereIn('id', $productIds)
+            ->get()
+            ->keyBy('id');
+
+        foreach ($cartItems as $item) {
+            // Find product by ID
+            $productId = $item['id'] ?? $item['product_id'] ?? null;
+            $product = $productId ? ($products[$productId] ?? null) : null;
+
+            // Fallback: try finding by name if ID lookup failed
+            if (! $product && isset($item['name'])) {
                 $product = Product::where('name', $item['name'])->first();
             }
 
@@ -151,7 +165,8 @@ class OrderService
         $shipping = 0;
         $shippingValue = Cart::getShippingValue();
         if ($shippingValue !== null) {
-            $shipping = (int) ($shippingValue * 100); // Convert to cents
+            // Cart::getShippingValue() returns cents already, just cast to int
+            $shipping = (int) $shippingValue;
         } else {
             // Fall back to calculating shipping if no condition exists
             $shipping = $this->shippingService->calculateShipping($customerData['delivery_method'] ?? 'standard');

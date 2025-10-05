@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -18,7 +20,7 @@ return new class extends Migration
             // Gateway transaction identifiers
             $table->string('gateway_transaction_id')->nullable(); // Gateway's transaction ID
             $table->string('gateway_payment_id')->nullable(); // Gateway's payment/purchase ID
-            $table->json('gateway_response')->nullable(); // Store full gateway response
+            $table->jsonb('gateway_response')->nullable(); // Store full gateway response
 
             // Payment details
             $table->integer('amount')->default(0);

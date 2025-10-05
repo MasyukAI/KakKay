@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\Address;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -85,7 +87,7 @@ test('order service handles duplicate order numbers gracefully', function () {
 test('order service can calculate order totals', function () {
     // Mock Cart facade
     Cart::shouldReceive('getRawSubtotal')->andReturn(4000.0); // $40.00
-    Cart::shouldReceive('getShippingValue')->andReturn(5.0); // $5.00
+    Cart::shouldReceive('getShippingValue')->andReturn(500.0); // Already in cents: $5.00 = 500 cents
     Cart::shouldReceive('getRawTotal')->andReturn(4500.0); // $45.00
 
     $orderService = new OrderService;
@@ -98,7 +100,7 @@ test('order service can calculate order totals', function () {
     expect($totals)->toHaveKey('total');
 
     expect($totals['subtotal'])->toBe(4000);
-    expect($totals['shipping'])->toBe(500); // $5.00 * 100
+    expect($totals['shipping'])->toBe(500); // Cart returns 500.0, we cast to int
     expect($totals['tax'])->toBe(0);
     expect($totals['total'])->toBe(4500);
 });

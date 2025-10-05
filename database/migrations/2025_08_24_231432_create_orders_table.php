@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -18,9 +20,9 @@ return new class extends Migration
             $table->uuid('address_id')->nullable();
 
             // Cart data snapshot
-            $table->json('cart_items')->nullable();
+            $table->jsonb('cart_items')->nullable();
             $table->string('delivery_method')->nullable();
-            $table->json('checkout_form_data')->nullable(); // Full form backup
+            $table->jsonb('checkout_form_data')->nullable(); // Full form backup
 
             $table->string('status')->default('pending');
             $table->integer('total')->default(0);
