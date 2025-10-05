@@ -22,7 +22,7 @@ describe('CartCleared Event Dispatch', function () {
 
         // Assert CartCleared event was dispatched
         Event::assertDispatched(CartCleared::class, function (CartCleared $event) {
-            return $event->cart instanceof \MasyukAI\Cart\Cart;
+            return $event->cart instanceof MasyukAI\Cart\Cart;
         });
     });
 

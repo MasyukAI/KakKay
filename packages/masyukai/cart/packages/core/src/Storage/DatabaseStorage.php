@@ -6,27 +6,19 @@ namespace MasyukAI\Cart\Storage;
 
 use Illuminate\Database\ConnectionInterface as Database;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
+use JsonException;
 use MasyukAI\Cart\Exceptions\CartConflictException;
+use RuntimeException;
+use stdClass;
 
-readonly class DatabaseStorage implements StorageInterface
+final readonly class DatabaseStorage implements StorageInterface
 {
     public function __construct(
         private Database $database,
         private string $table = 'carts'
     ) {
         //
-    }
-
-    /**
-     * Apply lockForUpdate to a query if configured
-     */
-    private function applyLockForUpdate(\Illuminate\Database\Query\Builder $query): \Illuminate\Database\Query\Builder
-    {
-        if (config('cart.database.lock_for_update', false)) {
-            return $query->lockForUpdate();
-        }
-
-        return $query;
     }
 
     /**
@@ -122,7 +114,7 @@ readonly class DatabaseStorage implements StorageInterface
         if (app()->environment(['testing', 'local'])) {
             $this->database->table($this->table)->truncate();
         } else {
-            throw new \RuntimeException('Flush operation is only allowed in testing and local environments');
+            throw new RuntimeException('Flush operation is only allowed in testing and local environments');
         }
     }
 
@@ -229,6 +221,18 @@ readonly class DatabaseStorage implements StorageInterface
     }
 
     /**
+     * Apply lockForUpdate to a query if configured
+     */
+    private function applyLockForUpdate(\Illuminate\Database\Query\Builder $query): \Illuminate\Database\Query\Builder
+    {
+        if (config('cart.database.lock_for_update', false)) {
+            return $query->lockForUpdate();
+        }
+
+        return $query;
+    }
+
+    /**
      * Validate data size to prevent memory issues and DoS attacks
      *
      * @param  array<string, mixed>  $data
@@ -241,18 +245,18 @@ readonly class DatabaseStorage implements StorageInterface
 
         // Check item count limit
         if ($type === 'items' && count($data) > $maxItems) {
-            throw new \InvalidArgumentException("Cart cannot contain more than {$maxItems} items");
+            throw new InvalidArgumentException("Cart cannot contain more than {$maxItems} items");
         }
 
         // Check data size limit
         try {
-            $jsonSize = strlen(json_encode($data, JSON_THROW_ON_ERROR));
+            $jsonSize = mb_strlen(json_encode($data, JSON_THROW_ON_ERROR));
             if ($jsonSize > $maxDataSize) {
                 $maxSizeMB = round($maxDataSize / (1024 * 1024), 2);
-                throw new \InvalidArgumentException("Cart {$type} data size ({$jsonSize} bytes) exceeds maximum allowed size of {$maxSizeMB}MB");
+                throw new InvalidArgumentException("Cart {$type} data size ({$jsonSize} bytes) exceeds maximum allowed size of {$maxSizeMB}MB");
             }
-        } catch (\JsonException $e) {
-            throw new \InvalidArgumentException("Cannot validate {$type} data size: ".$e->getMessage());
+        } catch (JsonException $e) {
+            throw new InvalidArgumentException("Cannot validate {$type} data size: ".$e->getMessage());
         }
     }
 
@@ -297,8 +301,8 @@ readonly class DatabaseStorage implements StorageInterface
     {
         try {
             return json_encode($data, JSON_THROW_ON_ERROR);
-        } catch (\JsonException $e) {
-            throw new \InvalidArgumentException("Cannot encode {$type} to JSON: ".$e->getMessage());
+        } catch (JsonException $e) {
+            throw new InvalidArgumentException("Cannot encode {$type} to JSON: ".$e->getMessage());
         }
     }
 
@@ -316,7 +320,7 @@ readonly class DatabaseStorage implements StorageInterface
 
         try {
             return json_decode($jsonData, true, 512, JSON_THROW_ON_ERROR);
-        } catch (\JsonException $e) {
+        } catch (JsonException $e) {
             logger()->error("Failed to decode {$type} JSON", [
                 'type' => $type,
                 'error' => $e->getMessage(),
@@ -334,7 +338,7 @@ readonly class DatabaseStorage implements StorageInterface
     private function performCasUpdate(string $identifier, string $instance, array $data, string $operationName): void
     {
         $this->database->transaction(function () use ($identifier, $instance, $data, $operationName) {
-            /** @var \stdClass|null $current */
+            /** @var stdClass|null $current */
             $current = $this->applyLockForUpdate(
                 $this->database->table($this->table)
                     ->where('identifier', $identifier)
@@ -377,7 +381,7 @@ readonly class DatabaseStorage implements StorageInterface
     private function handleCasConflict(string $identifier, string $instance, int $expectedVersion, string $operationName): void
     {
         // Get current version for better error details
-        /** @var \stdClass|null $currentRecord */
+        /** @var stdClass|null $currentRecord */
         $currentRecord = $this->database->table($this->table)
             ->where('identifier', $identifier)
             ->where('instance', $instance)

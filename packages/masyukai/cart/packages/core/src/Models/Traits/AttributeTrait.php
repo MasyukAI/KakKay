@@ -67,7 +67,7 @@ trait AttributeTrait
      */
     public function setName(string $name): static
     {
-        $name = trim($name);
+        $name = mb_trim($name);
         if (empty($name)) {
             throw new \MasyukAI\Cart\Exceptions\InvalidCartItemException('Cart item name cannot be empty');
         }

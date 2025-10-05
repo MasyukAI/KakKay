@@ -6,11 +6,13 @@ namespace MasyukAI\Cart;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use MasyukAI\Cart\Storage\StorageInterface;
+use RuntimeException;
+use Throwable;
 
 /**
  * Cart Manager handles global instance switching for the Cart facade
  */
-class CartManager
+final class CartManager
 {
     private Cart $currentCart;
 
@@ -28,6 +30,16 @@ class CartManager
             instanceName: $this->currentInstance,
             eventsEnabled: $this->eventsEnabled
         );
+    }
+
+    /**
+     * Proxy all other method calls to the current cart instance
+     *
+     * @param  array<string, mixed>  $arguments
+     */
+    public function __call(string $method, array $arguments): mixed
+    {
+        return $this->currentCart->{$method}(...$arguments);
     }
 
     /**
@@ -85,24 +97,14 @@ class CartManager
      */
     public function session(?string $sessionKey = null): StorageInterface
     {
-        if ($this->storage instanceof \MasyukAI\Cart\Storage\SessionStorage) {
+        if ($this->storage instanceof Storage\SessionStorage) {
             return $this->storage;
         }
 
         // If not using session storage, create a temporary session storage instance
         $session = app(\Illuminate\Session\SessionManager::class)->driver();
 
-        return new \MasyukAI\Cart\Storage\SessionStorage($session, $sessionKey ?? config('cart.session.key', 'cart'));
-    }
-
-    /**
-     * Proxy all other method calls to the current cart instance
-     *
-     * @param  array<string, mixed>  $arguments
-     */
-    public function __call(string $method, array $arguments): mixed
-    {
-        return $this->currentCart->{$method}(...$arguments);
+        return new Storage\SessionStorage($session, $sessionKey ?? config('cart.session.key', 'cart'));
     }
 
     /**
@@ -119,7 +121,7 @@ class CartManager
      */
     public function swap(string $oldIdentifier, string $newIdentifier, string $instance = 'default'): bool
     {
-        $migrationService = new \MasyukAI\Cart\Services\CartMigrationService([], $this->storage);
+        $migrationService = new Services\CartMigrationService([], $this->storage);
 
         return $migrationService->swap($oldIdentifier, $newIdentifier, $instance);
     }
@@ -127,7 +129,7 @@ class CartManager
     /**
      * Resolve storage identifier (auth()->id() for authenticated users, session()->id() for guests)
      */
-    protected function resolveIdentifier(?string $customIdentifier = null): string
+    private function resolveIdentifier(?string $customIdentifier = null): string
     {
         // Use custom identifier if provided
         if ($customIdentifier !== null) {
@@ -145,7 +147,7 @@ class CartManager
         }
 
         // If neither is available, throw exception
-        throw new \RuntimeException(
+        throw new RuntimeException(
             'Cart identifier cannot be determined: neither auth nor session services are available'
         );
     }
@@ -153,7 +155,7 @@ class CartManager
     /**
      * Get authenticated user ID if available
      */
-    protected function getAuthenticatedUserId(): ?string
+    private function getAuthenticatedUserId(): ?string
     {
         try {
             if (! app()->bound('auth')) {
@@ -164,7 +166,7 @@ class CartManager
             $guard = $auth->guard();
 
             return $guard->check() ? (string) $guard->id() : null;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return null;
         }
     }
@@ -172,7 +174,7 @@ class CartManager
     /**
      * Get session ID if available
      */
-    protected function getSessionId(): ?string
+    private function getSessionId(): ?string
     {
         try {
             if (! app()->bound('session')) {
@@ -182,7 +184,7 @@ class CartManager
             $session = app(\Illuminate\Session\SessionManager::class);
 
             return $session->getId();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return null;
         }
     }

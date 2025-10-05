@@ -31,7 +31,7 @@ beforeEach(function () {
         $table->unique(['identifier', 'instance']);
     });
 
-    $this->storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'carts_swap_test');
+    $this->storage = new MasyukAI\Cart\Storage\DatabaseStorage($connection, 'carts_swap_test');
     $this->cartMigration = new CartMigrationService([], $this->storage);
 });
 
@@ -205,7 +205,7 @@ it('returns false when swapping non-existent cart', function () {
         $table->unique(['identifier', 'instance']);
     });
 
-    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'carts_swap_test_3');
+    $storage = new MasyukAI\Cart\Storage\DatabaseStorage($connection, 'carts_swap_test_3');
     $migration = new CartMigrationService;
 
     // Try to swap a non-existent cart
@@ -269,7 +269,7 @@ it('can swap through cart facade', function () {
     $storage->putBoth('guest_session_facade', 'default', $guestItems, []);
 
     // Create a cart manager with our test storage
-    $cartManager = new \MasyukAI\Cart\CartManager($storage);
+    $cartManager = new MasyukAI\Cart\CartManager($storage);
 
     // Verify guest cart exists
     expect($storage->getItems('guest_session_facade', 'default'))->toHaveCount(1);

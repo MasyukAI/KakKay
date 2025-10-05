@@ -10,56 +10,6 @@ use MasyukAI\Cart\Models\CartItem;
 trait CalculatesTotals
 {
     /**
-     * Get cart subtotal with item-level conditions and subtotal-targeted cart conditions applied
-     */
-    protected function getSubtotal(): Money
-    {
-        $totalAmount = $this->getItems()->sum(fn (CartItem $item) => $item->getRawSubtotal());
-
-        // Apply cart-level conditions targeting 'subtotal'
-        $cartConditions = $this->getConditions();
-        $subtotalConditions = $cartConditions->byTarget('subtotal');
-        $finalAmount = $subtotalConditions->reduce(function ($amount, $condition) {
-            return $condition->apply($amount);
-        }, $totalAmount);
-
-        $currency = config('cart.money.default_currency', 'USD');
-
-        return Money::{$currency}($finalAmount);
-    }
-
-    /**
-     * Get cart subtotal without any conditions
-     */
-    protected function getSubtotalWithoutConditions(): Money
-    {
-        $totalAmount = $this->getItems()->sum(fn (CartItem $item) => $item->getRawSubtotalWithoutConditions());
-        $currency = config('cart.money.default_currency', 'USD');
-
-        return Money::{$currency}($totalAmount);
-    }
-
-    /**
-     * Get cart total with all conditions applied
-     */
-    protected function getTotal(): Money
-    {
-        // Start with subtotal (which already has 'subtotal' conditions applied)
-        $subtotalAmount = $this->getRawSubtotal();
-
-        // Apply cart-level conditions targeting 'total'
-        $cartConditions = $this->getConditions();
-        $totalConditions = $cartConditions->byTarget('total');
-        $finalAmount = $totalConditions->reduce(function ($amount, $condition) {
-            return $condition->apply($amount);
-        }, $subtotalAmount);
-
-        $currency = config('cart.money.default_currency', 'USD');
-
-        return Money::{$currency}($finalAmount);
-    }
-
-    /**
      * Get cart subtotal (with item-level and subtotal-targeted conditions applied) - returns Money object for chaining
      */
     public function subtotal(): Money
@@ -153,5 +103,55 @@ trait CalculatesTotals
     public function count(): int
     {
         return $this->getTotalQuantity();
+    }
+
+    /**
+     * Get cart subtotal with item-level conditions and subtotal-targeted cart conditions applied
+     */
+    protected function getSubtotal(): Money
+    {
+        $totalAmount = $this->getItems()->sum(fn (CartItem $item) => $item->getRawSubtotal());
+
+        // Apply cart-level conditions targeting 'subtotal'
+        $cartConditions = $this->getConditions();
+        $subtotalConditions = $cartConditions->byTarget('subtotal');
+        $finalAmount = $subtotalConditions->reduce(function ($amount, $condition) {
+            return $condition->apply($amount);
+        }, $totalAmount);
+
+        $currency = config('cart.money.default_currency', 'USD');
+
+        return Money::{$currency}($finalAmount);
+    }
+
+    /**
+     * Get cart subtotal without any conditions
+     */
+    protected function getSubtotalWithoutConditions(): Money
+    {
+        $totalAmount = $this->getItems()->sum(fn (CartItem $item) => $item->getRawSubtotalWithoutConditions());
+        $currency = config('cart.money.default_currency', 'USD');
+
+        return Money::{$currency}($totalAmount);
+    }
+
+    /**
+     * Get cart total with all conditions applied
+     */
+    protected function getTotal(): Money
+    {
+        // Start with subtotal (which already has 'subtotal' conditions applied)
+        $subtotalAmount = $this->getRawSubtotal();
+
+        // Apply cart-level conditions targeting 'total'
+        $cartConditions = $this->getConditions();
+        $totalConditions = $cartConditions->byTarget('total');
+        $finalAmount = $totalConditions->reduce(function ($amount, $condition) {
+            return $condition->apply($amount);
+        }, $subtotalAmount);
+
+        $currency = config('cart.money.default_currency', 'USD');
+
+        return Money::{$currency}($finalAmount);
     }
 }

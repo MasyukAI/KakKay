@@ -64,16 +64,8 @@ use Illuminate\Support\Facades\Facade;
  *
  * @see \MasyukAI\Cart\CartManager
  */
-class Cart extends Facade
+final class Cart extends Facade
 {
-    /**
-     * Get the registered name of the component.
-     */
-    protected static function getFacadeAccessor(): string
-    {
-        return 'cart';
-    }
-
     /**
      * Handle dynamic, static calls to the facade.
      * This allows us to handle the setInstance method properly for chaining.
@@ -82,10 +74,18 @@ class Cart extends Facade
      */
     public static function __callStatic($method, $args): mixed
     {
-        $instance = static::getFacadeRoot();
+        $instance = self::getFacadeRoot();
 
         // For setInstance, we return the CartManager for chaining
         // All other methods will be proxied to the current cart via __call
         return $instance->$method(...$args);
+    }
+
+    /**
+     * Get the registered name of the component.
+     */
+    protected static function getFacadeAccessor(): string
+    {
+        return 'cart';
     }
 }

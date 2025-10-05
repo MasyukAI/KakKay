@@ -17,12 +17,12 @@ class CartMigrationService
      *
      * @var array<string, mixed>
      */
-    protected array $config = [];
+    private array $config = [];
 
     /**
      * Optional storage instance for testing.
      */
-    protected ?StorageInterface $storage = null;
+    private ?StorageInterface $storage = null;
 
     /**
      * Create a new cart migration service instance.
@@ -179,20 +179,6 @@ class CartMigrationService
     }
 
     /**
-     * Resolve quantity conflicts based on merge strategy.
-     */
-    protected function resolveQuantityConflict(int $userQuantity, int $guestQuantity, string $strategy): int
-    {
-        return match ($strategy) {
-            'add_quantities' => $userQuantity + $guestQuantity,
-            'keep_highest_quantity' => max($userQuantity, $guestQuantity),
-            'keep_user_cart' => $userQuantity,
-            'replace_with_guest' => $guestQuantity,
-            default => $userQuantity + $guestQuantity, // Fallback to add_quantities
-        };
-    }
-
-    /**
      * Automatically switch to appropriate cart identifier based on authentication state.
      * Note: The Cart system automatically determines the identifier based on authentication state,
      * so this method serves as a placeholder for potential future functionality.
@@ -241,63 +227,6 @@ class CartMigrationService
     }
 
     /**
-     * Merge cart conditions from guest to user cart.
-     *
-     * @param  array<string, mixed>  $guestConditions
-     * @param  array<string, mixed>  $userConditions
-     * @return array<string, mixed>
-     */
-    protected function mergeConditionsData(array $guestConditions, array $userConditions): array
-    {
-        // For now, keep all conditions from both carts
-        // In the future, we could add strategies for condition conflicts
-        $mergedConditions = $userConditions;
-
-        foreach ($guestConditions as $conditionName => $conditionData) {
-            if (! isset($mergedConditions[$conditionName])) {
-                $mergedConditions[$conditionName] = $conditionData;
-            }
-            // If condition exists in both, keep the user's version (could be configurable)
-        }
-
-        return $mergedConditions;
-    }
-
-    /**
-     * Merge items arrays from guest cart and user cart.
-     *
-     * @param  array<string, mixed>  $guestItems
-     * @param  array<string, mixed>  $userItems
-     * @return array<string, mixed>
-     */
-    protected function mergeItemsArray(array $guestItems, array $userItems): array
-    {
-        $mergedItems = $userItems; // Start with user items
-        $mergeStrategy = config('cart.migration.merge_strategy', 'add_quantities');
-
-        foreach ($guestItems as $itemId => $guestItemData) {
-            $existingItem = $userItems[$itemId] ?? null;
-
-            if ($existingItem) {
-                // Handle conflict based on strategy
-                $newQuantity = $this->resolveQuantityConflict(
-                    $existingItem['quantity'] ?? 0,
-                    $guestItemData['quantity'] ?? 0,
-                    $mergeStrategy
-                );
-
-                // Update the quantity in merged items
-                $mergedItems[$itemId]['quantity'] = $newQuantity;
-            } else {
-                // No conflict, add the guest item
-                $mergedItems[$itemId] = $guestItemData;
-            }
-        }
-
-        return $mergedItems;
-    }
-
-    /**
      * Swap cart ownership by transferring cart from old identifier to new identifier.
      *
      * This ensures the new identifier has an active cart by transferring
@@ -335,5 +264,76 @@ class CartMigrationService
         $userIdentifier = $this->getIdentifier($userId);
 
         return $this->swap($guestIdentifier, $userIdentifier, $instance);
+    }
+
+    /**
+     * Resolve quantity conflicts based on merge strategy.
+     */
+    private function resolveQuantityConflict(int $userQuantity, int $guestQuantity, string $strategy): int
+    {
+        return match ($strategy) {
+            'add_quantities' => $userQuantity + $guestQuantity,
+            'keep_highest_quantity' => max($userQuantity, $guestQuantity),
+            'keep_user_cart' => $userQuantity,
+            'replace_with_guest' => $guestQuantity,
+            default => $userQuantity + $guestQuantity, // Fallback to add_quantities
+        };
+    }
+
+    /**
+     * Merge cart conditions from guest to user cart.
+     *
+     * @param  array<string, mixed>  $guestConditions
+     * @param  array<string, mixed>  $userConditions
+     * @return array<string, mixed>
+     */
+    private function mergeConditionsData(array $guestConditions, array $userConditions): array
+    {
+        // For now, keep all conditions from both carts
+        // In the future, we could add strategies for condition conflicts
+        $mergedConditions = $userConditions;
+
+        foreach ($guestConditions as $conditionName => $conditionData) {
+            if (! isset($mergedConditions[$conditionName])) {
+                $mergedConditions[$conditionName] = $conditionData;
+            }
+            // If condition exists in both, keep the user's version (could be configurable)
+        }
+
+        return $mergedConditions;
+    }
+
+    /**
+     * Merge items arrays from guest cart and user cart.
+     *
+     * @param  array<string, mixed>  $guestItems
+     * @param  array<string, mixed>  $userItems
+     * @return array<string, mixed>
+     */
+    private function mergeItemsArray(array $guestItems, array $userItems): array
+    {
+        $mergedItems = $userItems; // Start with user items
+        $mergeStrategy = config('cart.migration.merge_strategy', 'add_quantities');
+
+        foreach ($guestItems as $itemId => $guestItemData) {
+            $existingItem = $userItems[$itemId] ?? null;
+
+            if ($existingItem) {
+                // Handle conflict based on strategy
+                $newQuantity = $this->resolveQuantityConflict(
+                    $existingItem['quantity'] ?? 0,
+                    $guestItemData['quantity'] ?? 0,
+                    $mergeStrategy
+                );
+
+                // Update the quantity in merged items
+                $mergedItems[$itemId]['quantity'] = $newQuantity;
+            } else {
+                // No conflict, add the guest item
+                $mergedItems[$itemId] = $guestItemData;
+            }
+        }
+
+        return $mergedItems;
     }
 }

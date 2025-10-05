@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace MasyukAI\Cart\Storage;
 
 use Illuminate\Cache\Repository as Cache;
+use InvalidArgumentException;
+use JsonException;
 
-readonly class CacheStorage implements StorageInterface
+final readonly class CacheStorage implements StorageInterface
 {
     public function __construct(
         private Cache $cache,
@@ -174,6 +176,30 @@ readonly class CacheStorage implements StorageInterface
     }
 
     /**
+     * Swap cart identifier by transferring cart data from old identifier to new identifier.
+     * This changes cart ownership to ensure the new identifier has an active cart.
+     */
+    public function swapIdentifier(string $oldIdentifier, string $newIdentifier, string $instance): bool
+    {
+        // Check if source cart exists
+        if (! $this->has($oldIdentifier, $instance)) {
+            return false;
+        }
+
+        // Get all data from the source identifier
+        $items = $this->getItems($oldIdentifier, $instance);
+        $conditions = $this->getConditions($oldIdentifier, $instance);
+
+        // Transfer source cart to new identifier (swap even if empty to ensure ownership)
+        $this->putBoth($newIdentifier, $instance, $items, $conditions);
+
+        // Remove data from old identifier
+        $this->forget($oldIdentifier, $instance);
+
+        return true;
+    }
+
+    /**
      * Store items with locking to prevent concurrent modification
      *
      * @param  array<string, mixed>  $items
@@ -270,18 +296,18 @@ readonly class CacheStorage implements StorageInterface
 
         // Check item count limit
         if ($type === 'items' && count($data) > $maxItems) {
-            throw new \InvalidArgumentException("Cart cannot contain more than {$maxItems} items");
+            throw new InvalidArgumentException("Cart cannot contain more than {$maxItems} items");
         }
 
         // Check data size limit
         try {
-            $jsonSize = strlen(json_encode($data, JSON_THROW_ON_ERROR));
+            $jsonSize = mb_strlen(json_encode($data, JSON_THROW_ON_ERROR));
             if ($jsonSize > $maxDataSize) {
                 $maxSizeMB = round($maxDataSize / (1024 * 1024), 2);
-                throw new \InvalidArgumentException("Cart {$type} data size ({$jsonSize} bytes) exceeds maximum allowed size of {$maxSizeMB}MB");
+                throw new InvalidArgumentException("Cart {$type} data size ({$jsonSize} bytes) exceeds maximum allowed size of {$maxSizeMB}MB");
             }
-        } catch (\JsonException $e) {
-            throw new \InvalidArgumentException("Cannot validate {$type} data size: ".$e->getMessage());
+        } catch (JsonException $e) {
+            throw new InvalidArgumentException("Cannot validate {$type} data size: ".$e->getMessage());
         }
     }
 
@@ -307,29 +333,5 @@ readonly class CacheStorage implements StorageInterface
     private function getMetadataKey(string $identifier, string $instance, string $key): string
     {
         return "{$this->keyPrefix}.{$identifier}.{$instance}.metadata.{$key}";
-    }
-
-    /**
-     * Swap cart identifier by transferring cart data from old identifier to new identifier.
-     * This changes cart ownership to ensure the new identifier has an active cart.
-     */
-    public function swapIdentifier(string $oldIdentifier, string $newIdentifier, string $instance): bool
-    {
-        // Check if source cart exists
-        if (! $this->has($oldIdentifier, $instance)) {
-            return false;
-        }
-
-        // Get all data from the source identifier
-        $items = $this->getItems($oldIdentifier, $instance);
-        $conditions = $this->getConditions($oldIdentifier, $instance);
-
-        // Transfer source cart to new identifier (swap even if empty to ensure ownership)
-        $this->putBoth($newIdentifier, $instance, $items, $conditions);
-
-        // Remove data from old identifier
-        $this->forget($oldIdentifier, $instance);
-
-        return true;
     }
 }

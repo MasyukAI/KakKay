@@ -6,6 +6,7 @@ namespace MasyukAI\Cart\Conditions;
 
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
+use JsonException;
 use JsonSerializable;
 use MasyukAI\Cart\Exceptions\InvalidCartConditionException;
 
@@ -25,6 +26,19 @@ final class CartCondition implements Arrayable, Jsonable, JsonSerializable
         private ?array $rules = null
     ) {
         $this->validateCondition();
+    }
+
+    /**
+     * String representation
+     */
+    public function __toString(): string
+    {
+        return sprintf(
+            '%s (%s): %s',
+            $this->name,
+            $this->type,
+            $this->value
+        );
     }
 
     /**
@@ -274,7 +288,7 @@ final class CartCondition implements Arrayable, Jsonable, JsonSerializable
         $json = json_encode($this->jsonSerialize(), $options);
 
         if ($json === false) {
-            throw new \JsonException('Failed to encode condition to JSON');
+            throw new JsonException('Failed to encode condition to JSON');
         }
 
         return $json;
@@ -291,32 +305,19 @@ final class CartCondition implements Arrayable, Jsonable, JsonSerializable
     }
 
     /**
-     * String representation
-     */
-    public function __toString(): string
-    {
-        return sprintf(
-            '%s (%s): %s',
-            $this->name,
-            $this->type,
-            $this->value
-        );
-    }
-
-    /**
      * Validate condition data
      */
     private function validateCondition(): void
     {
-        if (empty(trim($this->name))) {
+        if (empty(mb_trim($this->name))) {
             throw new InvalidCartConditionException('Condition name cannot be empty');
         }
 
-        if (empty(trim($this->type))) {
+        if (empty(mb_trim($this->type))) {
             throw new InvalidCartConditionException('Condition type cannot be empty');
         }
 
-        if (empty(trim($this->target))) {
+        if (empty(mb_trim($this->target))) {
             throw new InvalidCartConditionException('Condition target cannot be empty');
         }
 
@@ -367,7 +368,7 @@ final class CartCondition implements Arrayable, Jsonable, JsonSerializable
 
         // Handle operators
         if (in_array($value[0] ?? '', ['+', '-', '*', '/'])) {
-            $numericValue = (float) substr($value, 1);
+            $numericValue = (float) mb_substr($value, 1);
         } else {
             $numericValue = (float) $value;
         }
@@ -375,7 +376,7 @@ final class CartCondition implements Arrayable, Jsonable, JsonSerializable
         // Explicitly check for INF, -INF, NAN as strings
         if (
             ! is_finite($numericValue) ||
-            in_array(strtoupper(trim($value)), ['INF', '-INF', 'INFINITY', '-INFINITY', 'NAN'], true)
+            in_array(mb_strtoupper(mb_trim($value)), ['INF', '-INF', 'INFINITY', '-INFINITY', 'NAN'], true)
         ) {
             throw new InvalidCartConditionException("Invalid condition value: {$this->value}");
         }
@@ -388,7 +389,7 @@ final class CartCondition implements Arrayable, Jsonable, JsonSerializable
      */
     private function parsePercentValue(string $value): float
     {
-        $numericValue = (float) substr($value, 0, -1);
+        $numericValue = (float) mb_substr($value, 0, -1);
         if (! is_finite($numericValue)) {
             throw new InvalidCartConditionException("Invalid condition value: {$this->value}");
         }

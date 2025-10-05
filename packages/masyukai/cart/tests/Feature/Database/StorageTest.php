@@ -161,7 +161,7 @@ describe('Database Storage Edge Cases', function () {
         ]);
 
         $item = Cart::get('sized-item');
-        expect(strlen($item->getAttribute('description')))->toBe(1000);
+        expect(mb_strlen($item->getAttribute('description')))->toBe(1000);
     });
 
     it('handles concurrent cart operations', function () {

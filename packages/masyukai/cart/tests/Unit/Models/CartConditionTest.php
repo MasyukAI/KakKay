@@ -521,8 +521,8 @@ it('shouldApply returns true for static and evaluates rules for dynamic', functi
         target: 'total',
         value: '+5'
     );
-    $cart = new \MasyukAI\Cart\Cart(
-        storage: new class implements \MasyukAI\Cart\Storage\StorageInterface
+    $cart = new MasyukAI\Cart\Cart(
+        storage: new class implements MasyukAI\Cart\Storage\StorageInterface
         {
             public function get(string $identifier, string $instance): ?string
             {
@@ -577,7 +577,7 @@ it('shouldApply returns true for static and evaluates rules for dynamic', functi
         },
         identifier: 'test-user'
     );
-    $item = new \MasyukAI\Cart\Models\CartItem(
+    $item = new MasyukAI\Cart\Models\CartItem(
         id: 'test',
         name: 'Test',
         price: 1.0,

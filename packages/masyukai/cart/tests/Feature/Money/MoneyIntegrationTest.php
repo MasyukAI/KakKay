@@ -182,12 +182,12 @@ it('shows item-level money calculations', function () {
     $item = $cart->get('bulk-item');
 
     // Verify individual item Money calculations
-    expect($item->getPrice())->toBeInstanceOf(\Akaunting\Money\Money::class);
+    expect($item->getPrice())->toBeInstanceOf(Money::class);
     expect($item->getPrice()->getAmount())->toBe(2499.0); // 24.99 stored as 2499 cents
     expect($item->getPrice()->getCurrency()->getName())->toBe('US Dollar'); // Currency name for USD
 
     // Verify calculated totals
-    expect($item->getSubtotal())->toBeInstanceOf(\Akaunting\Money\Money::class);
+    expect($item->getSubtotal())->toBeInstanceOf(Money::class);
     expect($item->getSubtotal()->getAmount())->toBe(12495.0); // 124.95 stored as 12495 cents
 
     // Test Money arithmetic operations

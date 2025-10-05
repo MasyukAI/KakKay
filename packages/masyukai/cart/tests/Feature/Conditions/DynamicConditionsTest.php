@@ -7,7 +7,7 @@ use MasyukAI\Cart\Conditions\CartCondition;
 use MasyukAI\Cart\Storage\SessionStorage;
 
 beforeEach(function () {
-    $sessionStore = new \Illuminate\Session\Store('testing', new \Illuminate\Session\ArraySessionHandler(120));
+    $sessionStore = new Illuminate\Session\Store('testing', new Illuminate\Session\ArraySessionHandler(120));
     $this->storage = new SessionStorage($sessionStore);
     $this->cart = new Cart($this->storage, 'dynamic_conditions_test');
 });
@@ -62,7 +62,7 @@ it('prevents registering static conditions as dynamic', function () {
     );
 
     expect(fn () => $this->cart->registerDynamicCondition($condition))
-        ->toThrow(\InvalidArgumentException::class, 'Only dynamic conditions (with rules) can be registered.');
+        ->toThrow(InvalidArgumentException::class, 'Only dynamic conditions (with rules) can be registered.');
 });
 
 it('can register multiple dynamic conditions with different rules', function () {

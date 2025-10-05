@@ -22,7 +22,7 @@ use MasyukAI\Cart\Events\MetadataRemoved;
  * This listener automatically fires CartUpdated whenever any cart modification occurs.
  * It consolidates cart update logic in one place and ensures consistency.
  */
-class DispatchCartUpdated
+final class DispatchCartUpdated
 {
     /**
      * Handle item added event

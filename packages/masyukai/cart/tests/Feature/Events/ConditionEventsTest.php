@@ -105,7 +105,7 @@ describe('Item Condition Events', function () {
 
     it('dispatches events for item-level condition additions', function () {
         Cart::add('item', 'Item', 100.00, 1);
-        Cart::addItemCondition('item', new \MasyukAI\Cart\Conditions\CartCondition(
+        Cart::addItemCondition('item', new MasyukAI\Cart\Conditions\CartCondition(
             name: 'Item Discount',
             type: 'discount',
             target: 'subtotal',
@@ -119,7 +119,7 @@ describe('Item Condition Events', function () {
 
     it('dispatches events for item-level condition removals', function () {
         Cart::add('item', 'Item', 100.00, 1);
-        Cart::addItemCondition('item', new \MasyukAI\Cart\Conditions\CartCondition(
+        Cart::addItemCondition('item', new MasyukAI\Cart\Conditions\CartCondition(
             name: 'Item Discount',
             type: 'discount',
             target: 'subtotal',

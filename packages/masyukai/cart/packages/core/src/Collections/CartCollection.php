@@ -7,7 +7,7 @@ namespace MasyukAI\Cart\Collections;
 use Illuminate\Support\Collection;
 use MasyukAI\Cart\Models\CartItem;
 
-class CartCollection extends Collection
+final class CartCollection extends Collection
 {
     /**
      * Add a cart item to the collection
@@ -47,26 +47,6 @@ class CartCollection extends Collection
     public function getTotalQuantity(): int
     {
         return $this->sum('quantity');
-    }
-
-    /**
-     * Get subtotal of all items with item-level conditions applied (raw value)
-     *
-     * @internal For internal calculations only
-     */
-    protected function getSubtotal(): float
-    {
-        return $this->sum(fn ($item) => $item->getRawSubtotal());
-    }
-
-    /**
-     * Get subtotal of all items without any conditions (raw value)
-     *
-     * @internal For internal calculations only
-     */
-    protected function getSubtotalWithoutConditions(): float
-    {
-        return $this->sum(fn ($item) => $item->getRawSubtotalWithoutConditions());
     }
 
     /**
@@ -187,8 +167,8 @@ class CartCollection extends Collection
     public function searchByName(string $query): static
     {
         return $this->filter(fn (CartItem $item) => str_contains(
-            strtolower($item->name),
-            strtolower($query)
+            mb_strtolower($item->name),
+            mb_strtolower($query)
         ));
     }
 
@@ -316,7 +296,7 @@ class CartCollection extends Collection
      *
      * @return Collection<string, static>
      */
-    public function groupByAttribute(string $attribute): \Illuminate\Support\Collection
+    public function groupByAttribute(string $attribute): Collection
     {
         return $this->groupBy(fn (CartItem $item) => $item->getAttribute($attribute));
     }
@@ -327,5 +307,25 @@ class CartCollection extends Collection
     public function whereModel(string $modelClass): static
     {
         return $this->filter(fn (CartItem $item) => $item->isAssociatedWith($modelClass));
+    }
+
+    /**
+     * Get subtotal of all items with item-level conditions applied (raw value)
+     *
+     * @internal For internal calculations only
+     */
+    protected function getSubtotal(): float
+    {
+        return $this->sum(fn ($item) => $item->getRawSubtotal());
+    }
+
+    /**
+     * Get subtotal of all items without any conditions (raw value)
+     *
+     * @internal For internal calculations only
+     */
+    protected function getSubtotalWithoutConditions(): float
+    {
+        return $this->sum(fn ($item) => $item->getRawSubtotalWithoutConditions());
     }
 }

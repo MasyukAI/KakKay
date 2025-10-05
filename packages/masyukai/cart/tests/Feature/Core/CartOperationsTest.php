@@ -113,7 +113,7 @@ describe('Cart Conditions', function () {
     it('can add and apply cart conditions', function () {
         Cart::add('taxable-item', 'Taxable Item', 100.00, 1);
 
-        $taxCondition = new \MasyukAI\Cart\Conditions\CartCondition(
+        $taxCondition = new MasyukAI\Cart\Conditions\CartCondition(
             name: 'VAT',
             type: 'tax',
             target: 'subtotal',
@@ -129,7 +129,7 @@ describe('Cart Conditions', function () {
     it('can remove cart conditions', function () {
         Cart::add('taxable-item', 'Taxable Item', 100.00, 1);
 
-        $taxCondition = new \MasyukAI\Cart\Conditions\CartCondition(
+        $taxCondition = new MasyukAI\Cart\Conditions\CartCondition(
             name: 'VAT',
             type: 'tax',
             target: 'subtotal',
@@ -205,8 +205,8 @@ describe('Enhanced API', function () {
     it('provides intuitive method aliases', function () {
         Cart::add('item', 'Item', 50.00, 1);
 
-        expect(Cart::subtotal())->toBeInstanceOf(\Akaunting\Money\Money::class);
-        expect(Cart::total())->toBeInstanceOf(\Akaunting\Money\Money::class);
+        expect(Cart::subtotal())->toBeInstanceOf(Akaunting\Money\Money::class);
+        expect(Cart::total())->toBeInstanceOf(Akaunting\Money\Money::class);
         expect(Cart::subtotal()->getAmount())->toBe(50.00);
     });
 

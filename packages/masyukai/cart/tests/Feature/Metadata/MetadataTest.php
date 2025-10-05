@@ -7,7 +7,7 @@ use MasyukAI\Cart\Storage\SessionStorage;
 
 describe('Cart Metadata Management', function () {
     beforeEach(function () {
-        $session = new \Illuminate\Session\Store('test', new \Illuminate\Session\ArraySessionHandler(60));
+        $session = new Illuminate\Session\Store('test', new Illuminate\Session\ArraySessionHandler(60));
         $this->storage = new SessionStorage($session);
         $this->cart = new Cart($this->storage, 'test-user');
     });

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MasyukAI\Cart\Models\Traits;
 
+use JsonException;
 use MasyukAI\Cart\Exceptions\InvalidCartItemException;
 use MasyukAI\Cart\Exceptions\UnknownModelException;
 
@@ -14,18 +15,18 @@ trait ValidationTrait
      */
     private function validateCartItem(): void
     {
-        if (empty(trim($this->id))) {
+        if (empty(mb_trim($this->id))) {
             throw new InvalidCartItemException('Cart item ID cannot be empty');
         }
-        if (empty(trim($this->name))) {
+        if (empty(mb_trim($this->name))) {
             throw new InvalidCartItemException('Cart item name cannot be empty');
         }
         // Check string length limits
         $maxStringLength = config('cart.limits.max_string_length', 255);
-        if (strlen($this->id) > $maxStringLength) {
+        if (mb_strlen($this->id) > $maxStringLength) {
             throw new InvalidCartItemException("Cart item ID cannot exceed {$maxStringLength} characters");
         }
-        if (strlen($this->name) > $maxStringLength) {
+        if (mb_strlen($this->name) > $maxStringLength) {
             throw new InvalidCartItemException("Cart item name cannot exceed {$maxStringLength} characters");
         }
         if ($this->price < 0) {
@@ -60,12 +61,12 @@ trait ValidationTrait
     {
         $maxDataSize = config('cart.limits.max_data_size_bytes', 1024 * 1024); // 1MB default
         try {
-            $jsonSize = strlen(json_encode($data, JSON_THROW_ON_ERROR));
+            $jsonSize = mb_strlen(json_encode($data, JSON_THROW_ON_ERROR));
             if ($jsonSize > $maxDataSize) {
                 $maxSizeMB = round($maxDataSize / (1024 * 1024), 2);
                 throw new InvalidCartItemException("Cart item {$type} data size ({$jsonSize} bytes) exceeds maximum allowed size of {$maxSizeMB}MB");
             }
-        } catch (\JsonException $e) {
+        } catch (JsonException $e) {
             throw new InvalidCartItemException("Cannot validate {$type} data size: ".$e->getMessage());
         }
     }

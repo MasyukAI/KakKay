@@ -17,8 +17,8 @@ use MasyukAI\Cart\Storage\SessionStorage;
  */
 describe('Cart Events', function () {
     beforeEach(function () {
-        $sessionStore = new \Illuminate\Session\Store('testing', new \Illuminate\Session\ArraySessionHandler(120));
-        $this->events = new \Illuminate\Events\Dispatcher;
+        $sessionStore = new Illuminate\Session\Store('testing', new Illuminate\Session\ArraySessionHandler(120));
+        $this->events = new Illuminate\Events\Dispatcher;
         $this->dispatchedEvents = [];
 
         // Set up event listeners to capture all dispatched events
@@ -126,8 +126,8 @@ describe('Cart Events', function () {
     it('does not dispatch condition events when events are disabled', function () {
         $cartWithoutEvents = new Cart(
             identifier: 'no_events_cart',
-            storage: new SessionStorage(new \Illuminate\Session\Store('testing', new \Illuminate\Session\ArraySessionHandler(120))),
-            events: new \Illuminate\Events\Dispatcher,
+            storage: new SessionStorage(new Illuminate\Session\Store('testing', new Illuminate\Session\ArraySessionHandler(120))),
+            events: new Illuminate\Events\Dispatcher,
             instanceName: 'no_events_cart',
             eventsEnabled: false
         );
@@ -145,8 +145,8 @@ describe('Cart Events', function () {
 
 // Additional standalone tests
 beforeEach(function () {
-    $sessionStore = new \Illuminate\Session\Store('testing', new \Illuminate\Session\ArraySessionHandler(120));
-    $this->events = new \Illuminate\Events\Dispatcher;
+    $sessionStore = new Illuminate\Session\Store('testing', new Illuminate\Session\ArraySessionHandler(120));
+    $this->events = new Illuminate\Events\Dispatcher;
     $this->dispatchedEvents = [];
 
     // Set up event listeners to capture all dispatched events

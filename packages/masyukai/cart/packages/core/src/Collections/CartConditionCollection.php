@@ -11,6 +11,22 @@ use MasyukAI\Cart\Conditions\CartCondition;
 final class CartConditionCollection extends Collection
 {
     /**
+     * Create conditions from array
+     *
+     * @param  array<string, mixed>  $conditions
+     */
+    public static function fromArray(array $conditions): static
+    {
+        $collection = new self;
+
+        foreach ($conditions as $condition) {
+            $collection->addCondition(CartCondition::fromArray($condition));
+        }
+
+        return $collection;
+    }
+
+    /**
      * Add a condition to the collection
      */
     public function addCondition(CartCondition $condition): static
@@ -111,7 +127,7 @@ final class CartConditionCollection extends Collection
         // Return as Laravel Money object (default currency from config)
         $currency = config('cart.money.default_currency', 'MYR');
 
-        return \Akaunting\Money\Money::{$currency}($result);
+        return Money::{$currency}($result);
     }
 
     /**
@@ -162,22 +178,6 @@ final class CartConditionCollection extends Collection
             ])->toArray(),
             'summary' => $this->getSummary($baseValue),
         ];
-    }
-
-    /**
-     * Create conditions from array
-     *
-     * @param  array<string, mixed>  $conditions
-     */
-    public static function fromArray(array $conditions): static
-    {
-        $collection = new static;
-
-        foreach ($conditions as $condition) {
-            $collection->addCondition(CartCondition::fromArray($condition));
-        }
-
-        return $collection;
     }
 
     /**

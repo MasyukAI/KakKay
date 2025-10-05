@@ -740,21 +740,21 @@ describe('CartCollection Statistics', function () {
 
 describe('CartCollection Condition Filtering', function () {
     it('filters items by condition name', function () {
-        $discountCondition1 = new \MasyukAI\Cart\Conditions\CartCondition(
+        $discountCondition1 = new MasyukAI\Cart\Conditions\CartCondition(
             name: 'discount',
             type: 'discount',
             target: 'item',
             value: '-10%'
         );
 
-        $taxCondition = new \MasyukAI\Cart\Conditions\CartCondition(
+        $taxCondition = new MasyukAI\Cart\Conditions\CartCondition(
             name: 'tax',
             type: 'tax',
             target: 'item',
             value: '+5%'
         );
 
-        $discountCondition2 = new \MasyukAI\Cart\Conditions\CartCondition(
+        $discountCondition2 = new MasyukAI\Cart\Conditions\CartCondition(
             name: 'discount',
             type: 'discount',
             target: 'item',
@@ -789,21 +789,21 @@ describe('CartCollection Condition Filtering', function () {
     });
 
     it('filters items by condition type', function () {
-        $holidaySale = new \MasyukAI\Cart\Conditions\CartCondition(
+        $holidaySale = new MasyukAI\Cart\Conditions\CartCondition(
             name: 'holiday-sale',
             type: 'discount',
             target: 'item',
             value: '-20%'
         );
 
-        $vat = new \MasyukAI\Cart\Conditions\CartCondition(
+        $vat = new MasyukAI\Cart\Conditions\CartCondition(
             name: 'vat',
             type: 'tax',
             target: 'item',
             value: '+15%'
         );
 
-        $memberDiscount = new \MasyukAI\Cart\Conditions\CartCondition(
+        $memberDiscount = new MasyukAI\Cart\Conditions\CartCondition(
             name: 'member-discount',
             type: 'discount',
             target: 'item',
@@ -828,21 +828,21 @@ describe('CartCollection Condition Filtering', function () {
     });
 
     it('filters items by condition target', function () {
-        $subtotalDiscount = new \MasyukAI\Cart\Conditions\CartCondition(
+        $subtotalDiscount = new MasyukAI\Cart\Conditions\CartCondition(
             name: 'subtotal-discount',
             type: 'discount',
             target: 'subtotal',
             value: '-10%'
         );
 
-        $itemDiscount = new \MasyukAI\Cart\Conditions\CartCondition(
+        $itemDiscount = new MasyukAI\Cart\Conditions\CartCondition(
             name: 'item-discount',
             type: 'discount',
             target: 'item',
             value: '-5%'
         );
 
-        $subtotalTax = new \MasyukAI\Cart\Conditions\CartCondition(
+        $subtotalTax = new MasyukAI\Cart\Conditions\CartCondition(
             name: 'subtotal-tax',
             type: 'tax',
             target: 'subtotal',
@@ -867,21 +867,21 @@ describe('CartCollection Condition Filtering', function () {
     });
 
     it('filters items by condition value', function () {
-        $discount1 = new \MasyukAI\Cart\Conditions\CartCondition(
+        $discount1 = new MasyukAI\Cart\Conditions\CartCondition(
             name: 'discount-1',
             type: 'discount',
             target: 'item',
             value: '-10%'
         );
 
-        $discount2 = new \MasyukAI\Cart\Conditions\CartCondition(
+        $discount2 = new MasyukAI\Cart\Conditions\CartCondition(
             name: 'discount-2',
             type: 'discount',
             target: 'item',
             value: '-5%'
         );
 
-        $discount3 = new \MasyukAI\Cart\Conditions\CartCondition(
+        $discount3 = new MasyukAI\Cart\Conditions\CartCondition(
             name: 'discount-3',
             type: 'discount',
             target: 'item',
@@ -906,14 +906,14 @@ describe('CartCollection Condition Filtering', function () {
     });
 
     it('filters items by numeric condition value', function () {
-        $fixedDiscount = new \MasyukAI\Cart\Conditions\CartCondition(
+        $fixedDiscount = new MasyukAI\Cart\Conditions\CartCondition(
             name: 'fixed-discount',
             type: 'discount',
             target: 'item',
             value: -5.00
         );
 
-        $fixedTax = new \MasyukAI\Cart\Conditions\CartCondition(
+        $fixedTax = new MasyukAI\Cart\Conditions\CartCondition(
             name: 'fixed-tax',
             type: 'tax',
             target: 'item',
@@ -937,7 +937,7 @@ describe('CartCollection Condition Filtering', function () {
     });
 
     it('checks if collection has items with conditions', function () {
-        $discount = new \MasyukAI\Cart\Conditions\CartCondition(
+        $discount = new MasyukAI\Cart\Conditions\CartCondition(
             name: 'discount',
             type: 'discount',
             target: 'item',
@@ -966,14 +966,14 @@ describe('CartCollection Condition Filtering', function () {
     });
 
     it('gets total discount amount from all items', function () {
-        $discount1 = new \MasyukAI\Cart\Conditions\CartCondition(
+        $discount1 = new MasyukAI\Cart\Conditions\CartCondition(
             name: 'discount-1',
             type: 'discount',
             target: 'item',
             value: '-10%'
         );
 
-        $discount2 = new \MasyukAI\Cart\Conditions\CartCondition(
+        $discount2 = new MasyukAI\Cart\Conditions\CartCondition(
             name: 'discount-2',
             type: 'discount',
             target: 'item',

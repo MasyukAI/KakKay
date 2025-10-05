@@ -55,17 +55,6 @@ final readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
     }
 
     /**
-     * Sanitize string price input
-     */
-    private function sanitizeStringPrice(string $price): float|int
-    {
-        // Only sanitize string input - no transformation
-        $price = str_replace([',', '$', '€', '£', '¥', '₹', 'RM', ' '], '', $price);
-
-        return str_contains($price, '.') ? (float) $price : (int) $price;
-    }
-
-    /**
      * Set item quantity
      */
     public function setQuantity(int $quantity): static
@@ -88,7 +77,7 @@ final readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
     /**
      * Check if two cart items are equal
      */
-    public function equals(CartItem $other): bool
+    public function equals(self $other): bool
     {
         return $this->id === $other->id;
     }
@@ -109,6 +98,17 @@ final readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
             $attributes['conditions'] ?? $this->conditions->toArray(),
             $attributes['associated_model'] ?? $this->associatedModel
         );
+    }
+
+    /**
+     * Sanitize string price input
+     */
+    private function sanitizeStringPrice(string $price): float|int
+    {
+        // Only sanitize string input - no transformation
+        $price = str_replace([',', '$', '€', '£', '¥', '₹', 'RM', ' '], '', $price);
+
+        return str_contains($price, '.') ? (float) $price : (int) $price;
     }
 
     /**

@@ -16,14 +16,6 @@ use MasyukAI\Cart\Models\CartItem;
 trait ManagesItems
 {
     /**
-     * Evaluate dynamic conditions if the method exists
-     */
-    private function evaluateDynamicConditionsIfAvailable(): void
-    {
-        $this->evaluateDynamicConditions();
-    }
-
-    /**
      * Add item(s) to the cart
      *
      * @param  string|int|array<array<string, mixed>>  $id
@@ -87,33 +79,6 @@ trait ManagesItems
         $this->evaluateDynamicConditionsIfAvailable();
 
         return $item;
-    }
-
-    /**
-     * Add multiple items to cart
-     *
-     * @param  array<array<string, mixed>>  $items
-     */
-    private function addMultiple(array $items): CartCollection
-    {
-        $cartItems = new CartCollection;
-
-        foreach ($items as $item) {
-            $cartItem = $this->add(
-                $item['id'],
-                $item['name'] ?? null,
-                $item['price'] ?? null,
-                $item['quantity'] ?? 1,
-                $item['attributes'] ?? [],
-                $item['conditions'] ?? null,
-                $item['associated_model'] ?? null
-            );
-
-            assert($cartItem instanceof CartItem, 'add() should return CartItem when called with scalar id');
-            $cartItems->put($cartItem->id, $cartItem);
-        }
-
-        return $cartItems;
     }
 
     /**
@@ -235,6 +200,41 @@ trait ManagesItems
     public function search(callable $callback): CartCollection
     {
         return $this->getItems()->filter($callback);
+    }
+
+    /**
+     * Evaluate dynamic conditions if the method exists
+     */
+    private function evaluateDynamicConditionsIfAvailable(): void
+    {
+        $this->evaluateDynamicConditions();
+    }
+
+    /**
+     * Add multiple items to cart
+     *
+     * @param  array<array<string, mixed>>  $items
+     */
+    private function addMultiple(array $items): CartCollection
+    {
+        $cartItems = new CartCollection;
+
+        foreach ($items as $item) {
+            $cartItem = $this->add(
+                $item['id'],
+                $item['name'] ?? null,
+                $item['price'] ?? null,
+                $item['quantity'] ?? 1,
+                $item['attributes'] ?? [],
+                $item['conditions'] ?? null,
+                $item['associated_model'] ?? null
+            );
+
+            assert($cartItem instanceof CartItem, 'add() should return CartItem when called with scalar id');
+            $cartItems->put($cartItem->id, $cartItem);
+        }
+
+        return $cartItems;
     }
 
     /**

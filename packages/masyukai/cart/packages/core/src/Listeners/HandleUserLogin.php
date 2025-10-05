@@ -8,7 +8,7 @@ use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Cache;
 use MasyukAI\Cart\Services\CartMigrationService;
 
-class HandleUserLogin
+final class HandleUserLogin
 {
     public function __construct(
         private CartMigrationService $migrationService

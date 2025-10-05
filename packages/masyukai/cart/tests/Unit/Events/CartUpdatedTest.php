@@ -129,7 +129,7 @@ beforeEach(function (): void {
             // Move metadata
             foreach ($this->data as $key => $value) {
                 if (str_starts_with($key, "{$oldIdentifier}.{$instance}.metadata.")) {
-                    $metadataKeySuffix = substr($key, strlen("{$oldIdentifier}.{$instance}.metadata."));
+                    $metadataKeySuffix = mb_substr($key, mb_strlen("{$oldIdentifier}.{$instance}.metadata."));
                     $newMetadataKey = "{$newIdentifier}.{$instance}.metadata.{$metadataKeySuffix}";
                     $this->data[$newMetadataKey] = $value;
                     unset($this->data[$key]);
@@ -146,7 +146,7 @@ beforeEach(function (): void {
 it('can be instantiated with required parameters', function (): void {
     $cart = new Cart(
         identifier: 'event_test',
-        storage: app(\MasyukAI\Cart\Storage\StorageInterface::class),
+        storage: app(StorageInterface::class),
         events: app('events'),
         instanceName: 'default',
         eventsEnabled: true
@@ -165,7 +165,7 @@ it('can be dispatched manually', function (): void {
 
     $cart = new Cart(
         identifier: 'event_test',
-        storage: app(\MasyukAI\Cart\Storage\StorageInterface::class),
+        storage: app(StorageInterface::class),
         events: app('events'),
         instanceName: 'default',
         eventsEnabled: true
@@ -184,7 +184,7 @@ it('can be dispatched manually', function (): void {
 it('contains proper cart data when event is created', function (): void {
     $cart = new Cart(
         identifier: 'event_test',
-        storage: app(\MasyukAI\Cart\Storage\StorageInterface::class),
+        storage: app(StorageInterface::class),
         events: app('events'),
         instanceName: 'default',
         eventsEnabled: true
@@ -204,7 +204,7 @@ it('cart update triggers ItemUpdated event which could fire CartUpdated', functi
 
     $cart = new Cart(
         identifier: 'event_test',
-        storage: app(\MasyukAI\Cart\Storage\StorageInterface::class),
+        storage: app(StorageInterface::class),
         events: app('events'),
         instanceName: 'default',
         eventsEnabled: true
@@ -227,14 +227,14 @@ it('cart condition updates can trigger manual CartUpdated', function (): void {
 
     $cart = new Cart(
         identifier: 'event_test',
-        storage: app(\MasyukAI\Cart\Storage\StorageInterface::class),
+        storage: app(StorageInterface::class),
         events: app('events'),
         instanceName: 'default',
         eventsEnabled: true
     );
     $cart->add('product-1', 'Product 1', 100, 2);
 
-    $condition = new \MasyukAI\Cart\Conditions\CartCondition(
+    $condition = new MasyukAI\Cart\Conditions\CartCondition(
         'item-discount',
         'discount',
         'subtotal',
@@ -253,7 +253,7 @@ it('cart condition updates can trigger manual CartUpdated', function (): void {
 it('preserves event data immutability', function (): void {
     $cart = new Cart(
         identifier: 'event_test',
-        storage: app(\MasyukAI\Cart\Storage\StorageInterface::class),
+        storage: app(StorageInterface::class),
         events: app('events'),
         instanceName: 'default',
         eventsEnabled: true
@@ -271,7 +271,7 @@ it('preserves event data immutability', function (): void {
 it('converts event to array with all cart data', function (): void {
     $cart = new Cart(
         identifier: 'cart-123',
-        storage: app(\MasyukAI\Cart\Storage\StorageInterface::class),
+        storage: app(StorageInterface::class),
         events: app('events'),
         instanceName: 'shopping',
         eventsEnabled: true
@@ -297,7 +297,7 @@ it('converts event to array with all cart data', function (): void {
 it('converts event to array without reason', function (): void {
     $cart = new Cart(
         identifier: 'cart-456',
-        storage: app(\MasyukAI\Cart\Storage\StorageInterface::class),
+        storage: app(StorageInterface::class),
         events: app('events'),
         instanceName: 'default',
         eventsEnabled: true
@@ -317,14 +317,14 @@ it('converts event to array without reason', function (): void {
 it('includes conditions count in array', function (): void {
     $cart = new Cart(
         identifier: 'cart-789',
-        storage: app(\MasyukAI\Cart\Storage\StorageInterface::class),
+        storage: app(StorageInterface::class),
         events: app('events'),
         instanceName: 'default',
         eventsEnabled: true
     );
     $cart->add('product-1', 'Product 1', 100.00, 1);
-    $cart->addCondition(new \MasyukAI\Cart\Conditions\CartCondition('tax', 'percentage', 'total', '5.0'));
-    $cart->addCondition(new \MasyukAI\Cart\Conditions\CartCondition('discount', 'percentage', 'subtotal', '-10.0'));
+    $cart->addCondition(new MasyukAI\Cart\Conditions\CartCondition('tax', 'percentage', 'total', '5.0'));
+    $cart->addCondition(new MasyukAI\Cart\Conditions\CartCondition('discount', 'percentage', 'subtotal', '-10.0'));
 
     $event = new CartUpdated($cart, 'conditions_applied');
     $array = $event->toArray();

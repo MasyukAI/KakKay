@@ -9,7 +9,7 @@ it('can be instantiated with message', function (): void {
     $exception = new UnknownModelException($message);
 
     expect($exception->getMessage())->toBe($message)
-        ->and($exception)->toBeInstanceOf(\Exception::class);
+        ->and($exception)->toBeInstanceOf(Exception::class);
 });
 
 it('can be instantiated with message and code', function (): void {
@@ -22,7 +22,7 @@ it('can be instantiated with message and code', function (): void {
 });
 
 it('can be instantiated with message, code and previous exception', function (): void {
-    $previous = new \RuntimeException('Previous error');
+    $previous = new RuntimeException('Previous error');
     $message = 'Model configuration error';
     $code = 500;
 
@@ -36,7 +36,7 @@ it('can be instantiated with message, code and previous exception', function ():
 it('extends exception class', function (): void {
     $exception = new UnknownModelException('Test');
 
-    expect($exception)->toBeInstanceOf(\Exception::class);
+    expect($exception)->toBeInstanceOf(Exception::class);
 });
 
 it('can be thrown and caught', function (): void {
@@ -50,8 +50,8 @@ it('can be thrown and caught', function (): void {
 it('maintains proper exception hierarchy', function (): void {
     $exception = new UnknownModelException('Test');
 
-    expect($exception)->toBeInstanceOf(\Throwable::class)
-        ->and($exception)->toBeInstanceOf(\Exception::class);
+    expect($exception)->toBeInstanceOf(Throwable::class)
+        ->and($exception)->toBeInstanceOf(Exception::class);
 });
 
 it('can include model class information in message', function (): void {

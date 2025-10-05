@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MasyukAI\Cart\Traits;
 
+use InvalidArgumentException;
 use MasyukAI\Cart\Collections\CartConditionCollection;
 use MasyukAI\Cart\Conditions\CartCondition;
 
@@ -20,7 +21,7 @@ trait ManagesDynamicConditions
     public function registerDynamicCondition(CartCondition $condition): static
     {
         if (! $condition->isDynamic()) {
-            throw new \InvalidArgumentException('Only dynamic conditions (with rules) can be registered.');
+            throw new InvalidArgumentException('Only dynamic conditions (with rules) can be registered.');
         }
 
         $this->initializeDynamicConditions();

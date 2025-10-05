@@ -69,9 +69,9 @@ it('can migrate guest cart to user cart', function () {
         $table->unique(['identifier', 'instance']);
     });
 
-    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'carts');
+    $storage = new MasyukAI\Cart\Storage\DatabaseStorage($connection, 'carts');
     $guestSessionId = session()->getId();
-    $cart = new \MasyukAI\Cart\Cart($storage, $guestSessionId);
+    $cart = new MasyukAI\Cart\Cart($storage, $guestSessionId);
 
     // Add items to guest cart using the cart instance (not facade)
     $cart->add('product-1', 'Test Product 1', 10.00, 2);
@@ -253,8 +253,8 @@ it('dispatches cart merged event on successful migration', function () {
 it('handles user login event automatically when configured', function () {
     // Initialize cart with database storage
     $connection = app('db')->connection();
-    $storage = new \MasyukAI\Cart\Storage\DatabaseStorage($connection, 'carts');
-    $cart = new \MasyukAI\Cart\Cart($storage, 'migration_test');
+    $storage = new MasyukAI\Cart\Storage\DatabaseStorage($connection, 'carts');
+    $cart = new MasyukAI\Cart\Cart($storage, 'migration_test');
 
     // Configure auto migration
     config(['cart.migration.auto_migrate_on_login' => true]);
@@ -281,7 +281,7 @@ it('handles user login event automatically when configured', function () {
     ]);
 
     // Set the cache key for migration (matches getUserIdentifier logic)
-    \Illuminate\Support\Facades\Cache::put('cart_migration_testuser@example.com', 'guest_session_login_123');
+    Illuminate\Support\Facades\Cache::put('cart_migration_testuser@example.com', 'guest_session_login_123');
 
     $listener = new HandleUserLogin($this->cartMigration);
     $event = new Login('web', $this->user, false);

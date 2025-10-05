@@ -15,13 +15,13 @@ beforeEach(function () {
     // Ensure events dispatcher is available
     if (! app()->bound('events')) {
         app()->singleton('events', function ($app) {
-            return new \Illuminate\Events\Dispatcher($app);
+            return new Illuminate\Events\Dispatcher($app);
         });
     }
 
     // Initialize session and database storage with proper connections
     // Use array session store for testing
-    $sessionStore = new \Illuminate\Session\Store('testing', new \Illuminate\Session\ArraySessionHandler(120));
+    $sessionStore = new Illuminate\Session\Store('testing', new Illuminate\Session\ArraySessionHandler(120));
     $this->sessionStorage = new SessionStorage($sessionStore);
 
     // Only initialize database storage if db is available (some tests don't need it)
@@ -31,7 +31,7 @@ beforeEach(function () {
                 database: app('db')->connection(),
                 table: 'carts'
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->databaseStorage = null; // Skip database tests if connection fails
         }
     } else {
@@ -42,7 +42,7 @@ beforeEach(function () {
     $this->cart = new Cart(
         $this->sessionStorage,
         'bulletproof_test',
-        new \Illuminate\Events\Dispatcher,
+        new Illuminate\Events\Dispatcher,
         'bulletproof_test',
         true
     );
@@ -65,8 +65,8 @@ describe('Cart instantiation', function () {
     it('has empty collections by default', function () {
         expect($this->cart->getItems())->toHaveCount(0);
         expect($this->cart->getConditions())->toHaveCount(0);
-        expect($this->cart->getItems())->toBeInstanceOf(\MasyukAI\Cart\Collections\CartCollection::class);
-        expect($this->cart->getConditions())->toBeInstanceOf(\MasyukAI\Cart\Collections\CartConditionCollection::class);
+        expect($this->cart->getItems())->toBeInstanceOf(MasyukAI\Cart\Collections\CartCollection::class);
+        expect($this->cart->getConditions())->toBeInstanceOf(MasyukAI\Cart\Collections\CartConditionCollection::class);
     });
 
     it('enforces strict type declarations at runtime', function () {
@@ -836,7 +836,7 @@ describe('Multiple items and array operations', function () {
 
         $result = $this->cart->add($items);
 
-        expect($result)->toBeInstanceOf(\MasyukAI\Cart\Collections\CartCollection::class);
+        expect($result)->toBeInstanceOf(MasyukAI\Cart\Collections\CartCollection::class);
         expect($result)->toHaveCount(3);
         expect($this->cart->getItems())->toHaveCount(3);
         expect($this->cart->getTotalQuantity())->toBe(6);
@@ -1095,7 +1095,7 @@ describe('Associated model validation', function () {
             [],
             null,
             'NonExistentModel'
-        ))->toThrow(\MasyukAI\Cart\Exceptions\UnknownModelException::class);
+        ))->toThrow(MasyukAI\Cart\Exceptions\UnknownModelException::class);
     });
 
     it('accepts object associated models', function () {
@@ -1134,7 +1134,7 @@ describe('Edge cases for 100% coverage', function () {
     it('handles condition validation properly', function () {
         // Test invalid condition type (line 396)
         expect(fn () => $this->cart->addCondition(['invalid_condition']))
-            ->toThrow(\MasyukAI\Cart\Exceptions\InvalidCartConditionException::class);
+            ->toThrow(MasyukAI\Cart\Exceptions\InvalidCartConditionException::class);
     });
 
     it('handles item condition removal for non-existent condition', function () {

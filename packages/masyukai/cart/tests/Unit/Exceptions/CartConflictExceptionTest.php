@@ -50,7 +50,7 @@ describe('CartConflictException', function () {
     });
 
     it('stores conflicted cart', function () {
-        $manager = app(\MasyukAI\Cart\CartManager::class);
+        $manager = app(MasyukAI\Cart\CartManager::class);
         $cart = $manager->getCartInstance('test-cart');
 
         $exception = new CartConflictException(
@@ -102,7 +102,7 @@ describe('CartConflictException', function () {
     });
 
     it('includes cart comparison suggestion when cart is present', function () {
-        $manager = app(\MasyukAI\Cart\CartManager::class);
+        $manager = app(MasyukAI\Cart\CartManager::class);
         $cart = $manager->getCartInstance('test-cart');
 
         $exception = new CartConflictException(

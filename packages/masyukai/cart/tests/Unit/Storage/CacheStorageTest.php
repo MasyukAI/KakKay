@@ -170,7 +170,7 @@ describe('CacheStorage', function () {
         }
 
         expect(fn () => $this->storage->putItems('cart-123', 'default', $largeItems))
-            ->toThrow(\InvalidArgumentException::class, 'data size');
+            ->toThrow(InvalidArgumentException::class, 'data size');
     });
 
     it('throws exception when conditions data size exceeds limit', function () {
@@ -182,7 +182,7 @@ describe('CacheStorage', function () {
         }
 
         expect(fn () => $this->storage->putConditions('cart-123', 'default', $largeConditions))
-            ->toThrow(\InvalidArgumentException::class, 'data size');
+            ->toThrow(InvalidArgumentException::class, 'data size');
     });
 
     it('handles multiple instances per identifier correctly', function () {
@@ -304,7 +304,7 @@ describe('CacheStorage', function () {
         }
 
         expect(fn () => $this->storage->putItems('cart-123', 'default', $items))
-            ->toThrow(\InvalidArgumentException::class, 'cannot contain more than');
+            ->toThrow(InvalidArgumentException::class, 'cannot contain more than');
     });
 
     it('stores metadata with locking enabled and retrieves it', function () {

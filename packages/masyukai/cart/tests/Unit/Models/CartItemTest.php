@@ -32,9 +32,9 @@ it('can create cart item with basic data', function (): void {
         ->and($item->name)->toBe('Test Product')
         ->and($item->price)->toBe(99.99)
         ->and($item->quantity)->toBe(2)
-        ->and($item->attributes)->toBeInstanceOf(\Illuminate\Support\Collection::class)
+        ->and($item->attributes)->toBeInstanceOf(Illuminate\Support\Collection::class)
         ->and($item->attributes->toArray())->toBe([])
-        ->and($item->conditions)->toBeInstanceOf(\MasyukAI\Cart\Collections\CartConditionCollection::class)
+        ->and($item->conditions)->toBeInstanceOf(MasyukAI\Cart\Collections\CartConditionCollection::class)
         ->and($item->conditions->isEmpty())->toBeTrue()
         ->and($item->associatedModel)->toBeNull();
 });
@@ -71,7 +71,7 @@ it('can calculate price sum', function (): void {
     );
 
     expect($item->getSubtotal())
-        ->toBeInstanceOf(\Akaunting\Money\Money::class)
+        ->toBeInstanceOf(Akaunting\Money\Money::class)
         ->and($item->getRawSubtotal())->toBe(150.0);
 });
 
@@ -374,28 +374,28 @@ it('validates required fields on creation', function (): void {
         name: 'Test Product',
         price: 99.99,
         quantity: 1
-    ))->toThrow(\MasyukAI\Cart\Exceptions\InvalidCartItemException::class);
+    ))->toThrow(MasyukAI\Cart\Exceptions\InvalidCartItemException::class);
 
     expect(fn () => new CartItem(
         id: 'product-1',
         name: '',
         price: 99.99,
         quantity: 1
-    ))->toThrow(\MasyukAI\Cart\Exceptions\InvalidCartItemException::class);
+    ))->toThrow(MasyukAI\Cart\Exceptions\InvalidCartItemException::class);
 
     expect(fn () => new CartItem(
         id: 'product-1',
         name: 'Test Product',
         price: -10.0,
         quantity: 1
-    ))->toThrow(\MasyukAI\Cart\Exceptions\InvalidCartItemException::class);
+    ))->toThrow(MasyukAI\Cart\Exceptions\InvalidCartItemException::class);
 
     expect(fn () => new CartItem(
         id: 'product-1',
         name: 'Test Product',
         price: 99.99,
         quantity: -1
-    ))->toThrow(\MasyukAI\Cart\Exceptions\InvalidCartItemException::class);
+    ))->toThrow(MasyukAI\Cart\Exceptions\InvalidCartItemException::class);
 });
 
 it('can convert to JSON', function (): void {
@@ -503,8 +503,8 @@ it('validates name when setting', function (): void {
         quantity: 2
     );
 
-    expect(fn () => $item->setName(''))->toThrow(\MasyukAI\Cart\Exceptions\InvalidCartItemException::class)
-        ->and(fn () => $item->setName('   '))->toThrow(\MasyukAI\Cart\Exceptions\InvalidCartItemException::class);
+    expect(fn () => $item->setName(''))->toThrow(MasyukAI\Cart\Exceptions\InvalidCartItemException::class)
+        ->and(fn () => $item->setName('   '))->toThrow(MasyukAI\Cart\Exceptions\InvalidCartItemException::class);
 });
 
 it('can set item price', function (): void {
@@ -532,7 +532,7 @@ it('validates price when setting', function (): void {
         quantity: 2
     );
 
-    expect(fn () => $item->setPrice(-10.0))->toThrow(\MasyukAI\Cart\Exceptions\InvalidCartItemException::class);
+    expect(fn () => $item->setPrice(-10.0))->toThrow(MasyukAI\Cart\Exceptions\InvalidCartItemException::class);
 });
 
 it('validates quantity when setting', function (): void {
@@ -543,7 +543,7 @@ it('validates quantity when setting', function (): void {
         quantity: 2
     );
 
-    expect(fn () => $item->setQuantity(-1))->toThrow(\MasyukAI\Cart\Exceptions\InvalidCartItemException::class);
+    expect(fn () => $item->setQuantity(-1))->toThrow(MasyukAI\Cart\Exceptions\InvalidCartItemException::class);
 });
 
 it('can set item attributes', function (): void {
@@ -681,7 +681,7 @@ it('throws exception when creating item with non-existent model class', function
         price: 100.0,
         quantity: 2,
         associatedModel: 'NonExistentClass'
-    ))->toThrow(\MasyukAI\Cart\Exceptions\UnknownModelException::class);
+    ))->toThrow(MasyukAI\Cart\Exceptions\UnknownModelException::class);
 });
 
 it('throws exception when attributes exceed max data size', function (): void {
@@ -698,19 +698,19 @@ it('throws exception when attributes exceed max data size', function (): void {
         price: 100.0,
         quantity: 2,
         attributes: $largeAttributes
-    ))->toThrow(\MasyukAI\Cart\Exceptions\InvalidCartItemException::class, 'data size');
+    ))->toThrow(MasyukAI\Cart\Exceptions\InvalidCartItemException::class, 'data size');
 });
 
 describe('CartItem Condition Normalization', function () {
     it('normalizes CartCondition array to collection', function () {
-        $condition1 = new \MasyukAI\Cart\Conditions\CartCondition(
+        $condition1 = new CartCondition(
             name: 'discount',
             type: 'discount',
             target: 'item',
             value: '-10%'
         );
 
-        $condition2 = new \MasyukAI\Cart\Conditions\CartCondition(
+        $condition2 = new CartCondition(
             name: 'tax',
             type: 'tax',
             target: 'item',
@@ -751,14 +751,14 @@ describe('CartItem Condition Normalization', function () {
     });
 
     it('normalizes Collection to CartConditionCollection', function () {
-        $condition = new \MasyukAI\Cart\Conditions\CartCondition(
+        $condition = new CartCondition(
             name: 'discount',
             type: 'discount',
             target: 'item',
             value: '-15%'
         );
 
-        $collection = new \Illuminate\Support\Collection([
+        $collection = new Illuminate\Support\Collection([
             'discount' => $condition,
         ]);
 
@@ -770,20 +770,20 @@ describe('CartItem Condition Normalization', function () {
             conditions: $collection
         );
 
-        expect($item->getConditions())->toBeInstanceOf(\MasyukAI\Cart\Collections\CartConditionCollection::class);
+        expect($item->getConditions())->toBeInstanceOf(MasyukAI\Cart\Collections\CartConditionCollection::class);
         expect($item->getConditions()->count())->toBe(1);
         expect($item->hasCondition('discount'))->toBeTrue();
     });
 
     it('handles CartConditionCollection directly', function () {
-        $condition = new \MasyukAI\Cart\Conditions\CartCondition(
+        $condition = new CartCondition(
             name: 'shipping',
             type: 'shipping',
             target: 'item',
             value: 10.0
         );
 
-        $conditionCollection = new \MasyukAI\Cart\Collections\CartConditionCollection;
+        $conditionCollection = new MasyukAI\Cart\Collections\CartConditionCollection;
         $conditionCollection->put('shipping', $condition);
 
         $item = new CartItem(
@@ -799,7 +799,7 @@ describe('CartItem Condition Normalization', function () {
     });
 
     it('handles mixed condition formats', function () {
-        $conditionObj = new \MasyukAI\Cart\Conditions\CartCondition(
+        $conditionObj = new CartCondition(
             name: 'discount',
             type: 'discount',
             target: 'item',
@@ -841,7 +841,7 @@ describe('CartItem Condition Normalization', function () {
     });
 
     it('skips invalid condition entries in array', function () {
-        $validCondition = new \MasyukAI\Cart\Conditions\CartCondition(
+        $validCondition = new CartCondition(
             name: 'discount',
             type: 'discount',
             target: 'item',
@@ -865,14 +865,14 @@ describe('CartItem Condition Normalization', function () {
     });
 
     it('handles CartConditionCollection directly without transformation', function () {
-        $condition = new \MasyukAI\Cart\Conditions\CartCondition(
+        $condition = new CartCondition(
             name: 'premium-discount',
             type: 'discount',
             target: 'item',
             value: '-25%'
         );
 
-        $conditionCollection = new \MasyukAI\Cart\Collections\CartConditionCollection;
+        $conditionCollection = new MasyukAI\Cart\Collections\CartConditionCollection;
         $conditionCollection->put('premium-discount', $condition);
 
         $item = new CartItem(
@@ -889,7 +889,7 @@ describe('CartItem Condition Normalization', function () {
     });
 
     it('uses condition name as key when normalizing CartCondition objects in array', function () {
-        $condition = new \MasyukAI\Cart\Conditions\CartCondition(
+        $condition = new CartCondition(
             name: 'auto-keyed-discount',
             type: 'discount',
             target: 'item',
@@ -909,14 +909,14 @@ describe('CartItem Condition Normalization', function () {
     });
 
     it('uses condition name as key when normalizing from Collection', function () {
-        $condition = new \MasyukAI\Cart\Conditions\CartCondition(
+        $condition = new CartCondition(
             name: 'collection-discount',
             type: 'discount',
             target: 'item',
             value: '-20%'
         );
 
-        $collection = new \Illuminate\Support\Collection([
+        $collection = new Illuminate\Support\Collection([
             'some-key' => $condition,
         ]);
 
@@ -933,14 +933,14 @@ describe('CartItem Condition Normalization', function () {
     });
 
     it('clears all conditions from an item', function () {
-        $condition1 = new \MasyukAI\Cart\Conditions\CartCondition(
+        $condition1 = new CartCondition(
             name: 'discount-10',
             type: 'discount',
             target: 'item',
             value: '-10%'
         );
 
-        $condition2 = new \MasyukAI\Cart\Conditions\CartCondition(
+        $condition2 = new CartCondition(
             name: 'tax',
             type: 'tax',
             target: 'item',
@@ -966,7 +966,7 @@ describe('CartItem Condition Normalization', function () {
     });
 
     it('checks if item has specific condition by name', function () {
-        $condition = new \MasyukAI\Cart\Conditions\CartCondition(
+        $condition = new CartCondition(
             name: 'vip-discount',
             type: 'discount',
             target: 'item',
@@ -986,7 +986,7 @@ describe('CartItem Condition Normalization', function () {
     });
 
     it('normalizes array with both CartCondition objects and array definitions', function () {
-        $objectCondition = new \MasyukAI\Cart\Conditions\CartCondition(
+        $objectCondition = new CartCondition(
             name: 'object-discount',
             type: 'discount',
             target: 'item',
@@ -1013,27 +1013,27 @@ describe('CartItem Condition Normalization', function () {
         expect($item->hasCondition('object-discount'))->toBeTrue();
         // The key from the array becomes the condition key, not the name
         expect($item->hasCondition('array'))->toBeTrue();
-        expect($item->getCondition('object-discount'))->toBeInstanceOf(\MasyukAI\Cart\Conditions\CartCondition::class);
-        expect($item->getCondition('array'))->toBeInstanceOf(\MasyukAI\Cart\Conditions\CartCondition::class);
+        expect($item->getCondition('object-discount'))->toBeInstanceOf(CartCondition::class);
+        expect($item->getCondition('array'))->toBeInstanceOf(CartCondition::class);
         expect($item->getCondition('array')->getName())->toBe('array-discount');
     });
 
     it('normalizes Collection of CartCondition objects', function () {
-        $condition1 = new \MasyukAI\Cart\Conditions\CartCondition(
+        $condition1 = new CartCondition(
             name: 'first-discount',
             type: 'discount',
             target: 'item',
             value: '-10%'
         );
 
-        $condition2 = new \MasyukAI\Cart\Conditions\CartCondition(
+        $condition2 = new CartCondition(
             name: 'second-discount',
             type: 'discount',
             target: 'item',
             value: '-5%'
         );
 
-        $collection = new \Illuminate\Support\Collection([
+        $collection = new Illuminate\Support\Collection([
             'first' => $condition1,
             'second' => $condition2,
         ]);

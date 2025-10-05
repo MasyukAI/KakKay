@@ -22,7 +22,7 @@ describe('HandleUserLogin', function () {
             'message' => 'Cart migrated!',
         ];
 
-        $migrationService = \Mockery::instanceMock(CartMigrationService::class);
+        $migrationService = Mockery::instanceMock(CartMigrationService::class);
         $migrationService->shouldReceive('migrateGuestCartForUser')
             ->with($user, 'default', $oldSessionId)
             ->andReturn($migrationResult)

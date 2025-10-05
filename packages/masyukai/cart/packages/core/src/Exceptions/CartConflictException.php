@@ -7,7 +7,7 @@ namespace MasyukAI\Cart\Exceptions;
 use Exception;
 use MasyukAI\Cart\Cart;
 
-class CartConflictException extends CartException
+final class CartConflictException extends CartException
 {
     private ?Cart $conflictedCart = null;
 

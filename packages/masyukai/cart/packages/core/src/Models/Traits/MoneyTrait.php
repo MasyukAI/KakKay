@@ -20,7 +20,7 @@ trait MoneyTrait
         $result = max(0, $price);
 
         // Preserve original input type behavior - if original was float, keep as float
-        if (is_float($this->price) || $result != (int) $result) {
+        if (is_float($this->price) || $result !== (int) $result) {
             return (float) $result;
         }
 
@@ -44,7 +44,7 @@ trait MoneyTrait
         $result = $this->getRawPrice() * $this->quantity;
 
         // If any part is float or result has decimals, return float
-        if (is_float($this->getRawPrice()) || $result != (int) $result) {
+        if (is_float($this->getRawPrice()) || $result !== (int) $result) {
             return (float) $result;
         }
 
@@ -59,7 +59,7 @@ trait MoneyTrait
         $result = $this->price * $this->quantity;
 
         // If any part is float or result has decimals, return float
-        if (is_float($this->price) || $result != (int) $result) {
+        if (is_float($this->price) || $result !== (int) $result) {
             return (float) $result;
         }
 

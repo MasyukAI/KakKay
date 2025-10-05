@@ -7,7 +7,7 @@ namespace MasyukAI\Cart\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
-class ClearAbandonedCartsCommand extends Command
+final class ClearAbandonedCartsCommand extends Command
 {
     /**
      * The name and signature of the console command.

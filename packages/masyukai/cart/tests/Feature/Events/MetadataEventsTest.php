@@ -19,7 +19,7 @@ describe('Metadata Events Dispatch', function () {
         Event::assertDispatched(MetadataAdded::class, function (MetadataAdded $event) {
             return $event->key === 'customer_note' &&
                    $event->value === 'Please gift wrap this order' &&
-                   $event->cart instanceof \MasyukAI\Cart\Cart;
+                   $event->cart instanceof MasyukAI\Cart\Cart;
         });
     });
 
@@ -30,7 +30,7 @@ describe('Metadata Events Dispatch', function () {
 
         Event::assertDispatched(MetadataRemoved::class, function (MetadataRemoved $event) {
             return $event->key === 'promo_code' &&
-                   $event->cart instanceof \MasyukAI\Cart\Cart;
+                   $event->cart instanceof MasyukAI\Cart\Cart;
         });
     });
 

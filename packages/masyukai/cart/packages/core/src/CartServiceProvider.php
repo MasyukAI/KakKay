@@ -18,7 +18,7 @@ use MasyukAI\Cart\Storage\StorageInterface;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class CartServiceProvider extends PackageServiceProvider
+final class CartServiceProvider extends PackageServiceProvider
 {
     public function configurePackage(Package $package): void
     {
@@ -28,7 +28,7 @@ class CartServiceProvider extends PackageServiceProvider
             ->discoversMigrations()
             ->runsMigrations()
             ->hasCommands([
-                \MasyukAI\Cart\Console\Commands\ClearAbandonedCartsCommand::class,
+                Console\Commands\ClearAbandonedCartsCommand::class,
             ]);
     }
 
@@ -42,6 +42,24 @@ class CartServiceProvider extends PackageServiceProvider
     public function bootingPackage(): void
     {
         $this->registerEventListeners();
+    }
+
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array<string>
+     */
+    public function provides(): array
+    {
+        return [
+            'cart',
+            Cart::class,
+            StorageInterface::class,
+            CartMigrationService::class,
+            'cart.storage.session',
+            'cart.storage.cache',
+            'cart.storage.database',
+        ];
     }
 
     /**
@@ -98,8 +116,8 @@ class CartServiceProvider extends PackageServiceProvider
      */
     protected function registerMigrationService(): void
     {
-        $this->app->singleton(function (\Illuminate\Contracts\Foundation\Application $app): \MasyukAI\Cart\Services\CartMigrationService {
-            return new \MasyukAI\Cart\Services\CartMigrationService;
+        $this->app->singleton(function (\Illuminate\Contracts\Foundation\Application $app): CartMigrationService {
+            return new CartMigrationService;
         });
     }
 
@@ -108,7 +126,7 @@ class CartServiceProvider extends PackageServiceProvider
      */
     protected function registerEventListeners(): void
     {
-        $dispatcher = $this->app->make(\Illuminate\Contracts\Events\Dispatcher::class);
+        $dispatcher = $this->app->make(Dispatcher::class);
 
         // Register cart update event subscriber
         $dispatcher->subscribe(DispatchCartUpdated::class);
@@ -119,23 +137,5 @@ class CartServiceProvider extends PackageServiceProvider
             // Register login listener to handle cart migration
             $dispatcher->listen(Login::class, HandleUserLogin::class);
         }
-    }
-
-    /**
-     * Get the services provided by the provider.
-     *
-     * @return array<string>
-     */
-    public function provides(): array
-    {
-        return [
-            'cart',
-            Cart::class,
-            StorageInterface::class,
-            CartMigrationService::class,
-            'cart.storage.session',
-            'cart.storage.cache',
-            'cart.storage.database',
-        ];
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Foundation\Application;
 use MasyukAI\Cart\CartServiceProvider;
+use MasyukAI\Cart\Services\CartMigrationService;
 
 describe('CartServiceProvider', function () {
     afterEach(function () {
@@ -17,9 +18,9 @@ describe('CartServiceProvider', function () {
 
         expect($provides)->toBeArray();
         expect($provides)->toContain('cart');
-        expect($provides)->toContain(\MasyukAI\Cart\Cart::class);
-        expect($provides)->toContain(\MasyukAI\Cart\Storage\StorageInterface::class);
-        expect($provides)->toContain(\MasyukAI\Cart\Services\CartMigrationService::class);
+        expect($provides)->toContain(MasyukAI\Cart\Cart::class);
+        expect($provides)->toContain(MasyukAI\Cart\Storage\StorageInterface::class);
+        expect($provides)->toContain(CartMigrationService::class);
         expect($provides)->toContain('cart.storage.session');
         expect($provides)->toContain('cart.storage.cache');
         expect($provides)->toContain('cart.storage.database');
@@ -59,7 +60,7 @@ describe('CartServiceProvider', function () {
     it('registers cart manager correctly', function () {
         $app = mock(Application::class);
         $app->shouldReceive('singleton')->withArgs(['cart', Mockery::type('callable')])->once();
-        $app->shouldReceive('alias')->withArgs(['cart', \MasyukAI\Cart\CartManager::class])->once();
+        $app->shouldReceive('alias')->withArgs(['cart', MasyukAI\Cart\CartManager::class])->once();
 
         $provider = new CartServiceProvider($app);
 
@@ -76,7 +77,7 @@ describe('CartServiceProvider', function () {
         $provider = new CartServiceProvider($app);
 
         // Test that the provider has been properly converted to use Spatie Package Tools
-        expect($provider)->toBeInstanceOf(\Spatie\LaravelPackageTools\PackageServiceProvider::class);
+        expect($provider)->toBeInstanceOf(Spatie\LaravelPackageTools\PackageServiceProvider::class);
     });
 
     it('registers migration service correctly', function () {
@@ -148,7 +149,6 @@ describe('CartServiceProvider', function () {
 // --- Integration-style tests for real container/config/event logic ---
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
-use MasyukAI\Cart\Services\CartMigrationService;
 use MasyukAI\Cart\Storage\CacheStorage;
 use MasyukAI\Cart\Storage\DatabaseStorage;
 use MasyukAI\Cart\Storage\SessionStorage;
@@ -160,7 +160,7 @@ beforeEach(function () {
 
 it('integration: registers all storage drivers', function () {
     $app = app();
-    $provider = new \MasyukAI\Cart\CartServiceProvider($app);
+    $provider = new CartServiceProvider($app);
     $provider->register();
 
     expect($app->make('cart.storage.session'))->toBeInstanceOf(SessionStorage::class);
@@ -172,24 +172,24 @@ it('integration: registers all storage drivers', function () {
 
 it('integration: registers cart manager and aliases', function () {
     $app = app();
-    $provider = new \MasyukAI\Cart\CartServiceProvider($app);
+    $provider = new CartServiceProvider($app);
     $provider->register();
 
-    expect($app->make('cart'))->toBeInstanceOf(\MasyukAI\Cart\CartManager::class);
-    expect($app->make(\MasyukAI\Cart\CartManager::class))->toBeInstanceOf(\MasyukAI\Cart\CartManager::class);
+    expect($app->make('cart'))->toBeInstanceOf(MasyukAI\Cart\CartManager::class);
+    expect($app->make(MasyukAI\Cart\CartManager::class))->toBeInstanceOf(MasyukAI\Cart\CartManager::class);
 });
 
 it('integration: registers migration service', function () {
     $app = app();
-    $provider = new \MasyukAI\Cart\CartServiceProvider($app);
+    $provider = new CartServiceProvider($app);
     $provider->register();
 
     expect($app->make(CartMigrationService::class))->toBeInstanceOf(CartMigrationService::class);
 });
 
 it('integration: publishes config, migrations, and views', function () {
-    $provider = new \MasyukAI\Cart\CartServiceProvider(app());
-    $package = new \Spatie\LaravelPackageTools\Package;
+    $provider = new CartServiceProvider(app());
+    $package = new Spatie\LaravelPackageTools\Package;
     $provider->configurePackage($package);
 
     expect($package->name)->toBe('cart');
@@ -199,12 +199,12 @@ it('integration: publishes config, migrations, and views', function () {
 
 it('integration: registers event listeners based on config', function () {
     $app = app();
-    $provider = new \MasyukAI\Cart\CartServiceProvider($app);
+    $provider = new CartServiceProvider($app);
     Event::fake();
     $reflection = new ReflectionClass($provider);
     $method = $reflection->getMethod('registerEventListeners');
     $method->setAccessible(true);
     $method->invoke($provider);
-    Event::assertListening(\Illuminate\Auth\Events\Attempting::class, \MasyukAI\Cart\Listeners\HandleUserLoginAttempt::class);
-    Event::assertListening(\Illuminate\Auth\Events\Login::class, \MasyukAI\Cart\Listeners\HandleUserLogin::class);
+    Event::assertListening(Illuminate\Auth\Events\Attempting::class, MasyukAI\Cart\Listeners\HandleUserLoginAttempt::class);
+    Event::assertListening(Illuminate\Auth\Events\Login::class, MasyukAI\Cart\Listeners\HandleUserLogin::class);
 });

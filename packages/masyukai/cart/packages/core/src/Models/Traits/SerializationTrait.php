@@ -7,6 +7,20 @@ namespace MasyukAI\Cart\Models\Traits;
 trait SerializationTrait
 {
     /**
+     * Convert to string representation
+     */
+    public function __toString(): string
+    {
+        return sprintf(
+            '%s (ID: %s, Price: %.2f, Quantity: %d)',
+            $this->name,
+            $this->id,
+            $this->price,
+            $this->quantity
+        );
+    }
+
+    /**
      * Convert to array
      *
      * Note: Subtotal is intentionally NOT included here because it's a calculated value
@@ -44,19 +58,5 @@ trait SerializationTrait
     public function jsonSerialize(): array
     {
         return $this->toArray();
-    }
-
-    /**
-     * Convert to string representation
-     */
-    public function __toString(): string
-    {
-        return sprintf(
-            '%s (ID: %s, Price: %.2f, Quantity: %d)',
-            $this->name,
-            $this->id,
-            $this->price,
-            $this->quantity
-        );
     }
 }

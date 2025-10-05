@@ -8,7 +8,7 @@ use Illuminate\Auth\Events\Attempting;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 
-class HandleUserLoginAttempt
+final class HandleUserLoginAttempt
 {
     /**
      * Handle the user login attempt event.

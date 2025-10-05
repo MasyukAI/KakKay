@@ -15,22 +15,6 @@ use MasyukAI\Cart\Exceptions\InvalidCartConditionException;
 trait ManagesConditions
 {
     /**
-     * Add a cart condition
-     */
-    private function addCartCondition(CartCondition $condition): void
-    {
-        $conditions = $this->getConditions();
-        $conditions->put($condition->getName(), $condition);
-        $conditionsArray = $conditions->toArray();
-        $this->storage->putConditions($this->getIdentifier(), $this->instance(), $conditionsArray);
-
-        // Dispatch cart-level condition added event
-        if ($this->eventsEnabled && $this->events) {
-            $this->events->dispatch(new CartConditionAdded($condition, $this));
-        }
-    }
-
-    /**
      * Add condition to cart
      *
      * @param  CartCondition|array<string, mixed>  $condition
@@ -321,7 +305,7 @@ trait ManagesConditions
     /**
      * Get the current shipping condition if any
      */
-    public function getShipping(): ?\MasyukAI\Cart\Conditions\CartCondition
+    public function getShipping(): ?CartCondition
     {
         // Get all conditions
         $conditions = $this->getConditions();
@@ -374,5 +358,21 @@ trait ManagesConditions
         }
 
         return null;
+    }
+
+    /**
+     * Add a cart condition
+     */
+    private function addCartCondition(CartCondition $condition): void
+    {
+        $conditions = $this->getConditions();
+        $conditions->put($condition->getName(), $condition);
+        $conditionsArray = $conditions->toArray();
+        $this->storage->putConditions($this->getIdentifier(), $this->instance(), $conditionsArray);
+
+        // Dispatch cart-level condition added event
+        if ($this->eventsEnabled && $this->events) {
+            $this->events->dispatch(new CartConditionAdded($condition, $this));
+        }
     }
 }
