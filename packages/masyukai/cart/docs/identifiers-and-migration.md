@@ -68,6 +68,7 @@ Cart::swap($oldIdentifier, $newIdentifier, 'default');
 
 ### Guest Cart Preservation
 
+
 If you require cart preservation across logouts, store the last session ID in a cookie or table and pass it into `migrateGuestCartToUser()` explicitly.
 
 ## Handling Edge Cases
@@ -78,4 +79,12 @@ If you require cart preservation across logouts, store the last session ID in a 
 | Need to inspect carts before migrating | Use the storage driver (`Cart::storage()->getItems($identifier, $instance)`) to preview data. |
 | Aborted migrations | The service leaves guest carts untouched unless a successful swap or merge occurs. |
 
-Lean on migrations for analytics: after a successful login, call `CartManager::recordConversion()` with context to capture conversion metrics.
+For analytics after successful login, query your database directly:
+
+```php
+$cart = Cart::instance('default');
+$cartData = DB::table('carts')->where('identifier', auth()->id())->first();
+// Track conversion in your analytics system
+```
+
+```

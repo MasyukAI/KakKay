@@ -25,15 +25,12 @@ Quick lookup for primary classes, methods, and console commands. Refer to PHPDoc
 | `getShipping()` / `removeShipping()` | Shipping helpers. |
 | `setMetadata()` / `getMetadata()` / `removeMetadata()` | Manage metadata. |
 | `swap($oldIdentifier, $newIdentifier, $instance = 'default')` | Transfer cart ownership. |
-| `getMetrics()` | Return metrics summary (if metrics enabled). |
 
 ## Manager: `MasyukAI\Cart\CartManager`
 
 - `getCurrentCart()`, `getCartInstance($name, $identifier = null)` – retrieve cart objects without switching global state.
 - `setInstance($name)` – change the active instance globally.
-- `retryWithBackoff(Closure $operation)` – execute with automatic retry.
-- `recordConversion(array $context = [])`, `recordAbandonment(array $context = [])` – record analytics signals.
-- Magic `__call` proxies to the active `Cart` and records metrics for tracked operations.
+- Magic `__call` proxies to the active `Cart`.
 
 ## Models
 
@@ -57,10 +54,8 @@ Quick lookup for primary classes, methods, and console commands. Refer to PHPDoc
 | Service | Key Methods |
 | --- | --- |
 | `CartMigrationService` | `getIdentifier()`, `migrateGuestCartToUser()`, `swapGuestCartToUser()`, `swap()`, `mergeConditionsData()`. |
-| `CartMetricsService` | `recordOperation()`, `recordPerformance()`, `recordConflict()`, `recordAbandonment()`, `recordConversion()`, `getMetricsSummary()`, `clearMetrics()`. |
-| `CartRetryService` | `executeWithRetry()`, `executeWithSmartRetry()`, `executeWithAggressiveRetry()`, `executeWithConservativeRetry()`, `createRetryableOperation()`, `isRetryable()`. |
 
-All services are registered in the container; resolve them via `app(Service::class)`.
+Services are registered in the container; resolve them via `app(Service::class)`.
 
 ## Exceptions
 
@@ -76,7 +71,6 @@ All services are registered in the container; resolve them via `app(Service::cla
 
 | Command | Description |
 | --- | --- |
-| `cart:metrics` | Display metrics. Options: `--clear`, `--json`. |
 | `cart:clear-abandoned` | Remove carts older than the configured threshold. Options: `--days`, `--dry-run`, `--batch-size`. |
 
 ## Storage Interface

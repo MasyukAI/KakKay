@@ -32,6 +32,7 @@ trait SerializationTrait
     public function toJson($options = 0): string
     {
         $json = json_encode($this->jsonSerialize(), $options);
+
         return $json !== false ? $json : '{}';
     }
 

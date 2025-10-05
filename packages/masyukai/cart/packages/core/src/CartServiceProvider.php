@@ -29,7 +29,6 @@ class CartServiceProvider extends PackageServiceProvider
             ->runsMigrations()
             ->hasCommands([
                 \MasyukAI\Cart\Console\Commands\ClearAbandonedCartsCommand::class,
-                \MasyukAI\Cart\Console\Commands\CartMetricsCommand::class,
             ]);
     }
 
@@ -38,7 +37,6 @@ class CartServiceProvider extends PackageServiceProvider
         $this->registerStorageDrivers();
         $this->registerCartManager();
         $this->registerMigrationService();
-        $this->registerEnhancedServices();
     }
 
     public function bootingPackage(): void
@@ -124,21 +122,8 @@ class CartServiceProvider extends PackageServiceProvider
     }
 
     /**
-     * Register enhanced cart services
-     */
-    protected function registerEnhancedServices(): void
-    {
-        $this->app->singleton(function ($app): \MasyukAI\Cart\Services\CartMetricsService {
-            return new \MasyukAI\Cart\Services\CartMetricsService;
-        });
-
-        $this->app->singleton(function ($app): \MasyukAI\Cart\Services\CartRetryService {
-            return new \MasyukAI\Cart\Services\CartRetryService;
-        });
-    }
-
-    /**
      * Get the services provided by the provider.
+     *
      * @return array<string>
      */
     public function provides(): array
@@ -148,8 +133,6 @@ class CartServiceProvider extends PackageServiceProvider
             Cart::class,
             StorageInterface::class,
             CartMigrationService::class,
-            \MasyukAI\Cart\Services\CartMetricsService::class,
-            \MasyukAI\Cart\Services\CartRetryService::class,
             'cart.storage.session',
             'cart.storage.cache',
             'cart.storage.database',

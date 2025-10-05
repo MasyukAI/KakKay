@@ -6,7 +6,6 @@ namespace MasyukAI\Cart\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use MasyukAI\Cart\Services\CartMetricsService;
 
 class ClearAbandonedCartsCommand extends Command
 {
@@ -75,18 +74,6 @@ class ClearAbandonedCartsCommand extends Command
             if (! $dryRun) {
                 $deleted = DB::table($table)->whereIn('id', $ids)->delete();
                 $deletedCount += $deleted;
-
-                // Record abandonment metrics
-                if (app()->bound(CartMetricsService::class)) {
-                    foreach ($carts as $cart) {
-                        $cartData = (array) $cart;
-                        app(CartMetricsService::class)->recordAbandonment(
-                            $cartData['identifier'],
-                            $cartData['instance'],
-                            ['cleared_by_command' => true]
-                        );
-                    }
-                }
             } else {
                 $deletedCount += count($ids);
             }

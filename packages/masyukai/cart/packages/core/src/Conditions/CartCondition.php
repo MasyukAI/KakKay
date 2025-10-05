@@ -76,7 +76,7 @@ class CartCondition implements Arrayable, Jsonable, JsonSerializable
 
     /**
      * Get condition attributes
-     * 
+     *
      * @return array<string, mixed>
      */
     public function getAttributes(): array
@@ -191,7 +191,7 @@ class CartCondition implements Arrayable, Jsonable, JsonSerializable
 
     /**
      * Get the rules for this condition
-     * 
+     *
      * @return ?array<callable>
      */
     public function getRules(): ?array
@@ -267,17 +267,17 @@ class CartCondition implements Arrayable, Jsonable, JsonSerializable
     public function toJson($options = 0): string
     {
         $json = json_encode($this->jsonSerialize(), $options);
-        
+
         if ($json === false) {
             throw new \JsonException('Failed to encode condition to JSON');
         }
-        
+
         return $json;
     }
 
     /**
      * JSON serialize
-     * 
+     *
      * @return array<string, mixed>
      */
     public function jsonSerialize(): array

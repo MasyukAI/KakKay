@@ -63,17 +63,10 @@ Event::assertDispatched(CartCreated::class);
 
 ## Database Driver Tips
 
+
 - Run migrations via `php artisan migrate` or `Schema::create` in your test case.
 - Use `RefreshDatabase` or `DatabaseTransactions` to isolate tests.
 - To simulate conflicts, manipulate the `version` column manually and assert `CartConflictException` is thrown.
-
-## Disabling Metrics in Tests
-
-Metrics can clutter in-memory cache stores during tests. Disable them when asserting pure logic:
-
-```php
-config()->set('cart.metrics.enabled', false);
-```
 
 ## Browser & Integration Tests
 
@@ -82,6 +75,8 @@ For end-to-end tests (Pest Browser or Dusk):
 1. Seed items through HTTP routes that call the facade.
 2. Assert the DOM presents totals via `->assertSee('Subtotal: $42.00')`.
 3. Consider clearing (`Cart::clear()`) between scenarios to avoid data carry-over.
+
+```
 
 ## Snapshotting Cart State
 

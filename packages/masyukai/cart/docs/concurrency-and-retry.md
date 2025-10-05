@@ -1,6 +1,6 @@
-# Concurrency & Retry
+# Concurrency & Conflict Handling
 
-High-traffic carts frequently encounter conflicting writes. MasyukAI Cart guards data integrity with optimistic locking and structured retries.
+High-traffic carts occasionally encounter conflicting writes. MasyukAI Cart guards data integrity with optimistic locking and provides detailed conflict information for proper error handling.
 
 ## Optimistic Locking
 
@@ -21,43 +21,64 @@ Properties exposed:
 - `getResolutionSuggestions()` – hints for clients (`retry_with_refresh`, `merge_changes`, `reload_cart`, …).
 - Optional `getConflictedCart()` and `getConflictedData()` to inspect the cart that won the race.
 
-Catch the exception around critical sections to surface meaningful UI messaging.
+Catch the exception around critical sections to surface meaningful UI messaging or implement custom retry logic.
 
-## Retry Helpers
+## Handling Conflicts
 
-`CartRetryService` implements exponential backoff with jitter:
+You can handle conflicts at the application level based on your requirements:
 
 ```php
-use MasyukAI\Cart\Services\CartRetryService;
+use MasyukAI\Cart\Exceptions\CartConflictException;
 
-$result = app(CartRetryService::class)->executeWithRetry(function () {
-    return Cart::add('sku-1', 'Notebook', 5.00);
-});
+try {
+    Cart::add('sku-1', 'Notebook', 5.00);
+} catch (CartConflictException $e) {
+    // Option 1: Show user a message
+    if ($e->isMinorConflict()) {
+        return response()->json([
+            'message' => 'Your cart was updated in another tab. Please refresh.',
+            'suggestions' => $e->getResolutionSuggestions(),
+        ], 409);
+    }
+    
+    // Option 2: Implement custom retry logic
+    $maxRetries = 3;
+    for ($i = 0; $i < $maxRetries; $i++) {
+        try {
+            Cart::add('sku-1', 'Notebook', 5.00);
+            break;
+        } catch (CartConflictException $e) {
+            if ($i === $maxRetries - 1) throw $e;
+            usleep(100000 * ($i + 1)); // 100ms, 200ms, 300ms
+        }
+    }
+    
+    // Option 3: Reload cart and retry
+    $cart = Cart::content(); // Get fresh cart data
+    // Retry operation with fresh state
+}
 ```
 
-Variants:
-
-- `executeWithSmartRetry()` – defaults to 3 attempts, 50 ms base delay.
-- `executeWithAggressiveRetry()` – 5 attempts, 25 ms base delay (good for small payloads in conflict-heavy domains).
-- `executeWithConservativeRetry()` – 2 attempts, longer delays.
-- `createRetryableOperation($closure, $maxAttempts)` – wraps existing closures for reuse.
-
-`CartManager::retryWithBackoff()` routes through the service when it is bound in the container, capturing metrics for success and conflict counts.
-
-## When to Retry
-
-Conflict handling strategy suggestions:
+## Conflict Resolution Strategies
 
 | Scenario | Strategy |
 | --- | --- |
-| Two browser tabs editing the same cart | Wrap writes in `retryWithBackoff()` to merge sequential updates. |
-| API clients with stale cart state | Inspect `CartConflictException::getResolutionSuggestions()` and instruct clients to refresh cart data. |
-| High-value checkout operations | Use `executeWithAggressiveRetry()` followed by a definitive reload. |
+| Two browser tabs editing the same cart | Show message: "Cart updated in another tab. Please refresh." |
+| API clients with stale cart state | Inspect `CartConflictException::getResolutionSuggestions()` and return 409 with instructions to refresh. |
+| High-value checkout operations | Reload cart state and retry once, or enable `lock_for_update` to prevent conflicts. |
+| Mobile app with poor network | Implement exponential backoff retry in the app layer. |
 
 ## Database Locking
 
-Enable `config('cart.database.lock_for_update')` when you need strict serialization inside relational databases. This introduces more blocking but can reduce conflicts on write-intensive loads.
+Enable `config('cart.database.lock_for_update')` when you need strict serialization inside relational databases. This introduces more blocking but prevents conflicts entirely on write-intensive loads.
+
+**Trade-offs:**
+
+- **When false** (default): Uses optimistic locking only. Higher concurrency, but conflicts may occur rarely.
+- **When true**: Adds pessimistic locking (`SELECT ... FOR UPDATE`). Prevents conflicts but reduces concurrency and may cause deadlocks.
+
+Enable when multiple servers modify the same cart simultaneously AND you cannot tolerate any conflicts.
 
 ## Observability
 
-Metrics (see [Metrics & Observability](metrics-and-observability.md)) track conflicts and retry outcomes. Use them to identify when backoff parameters need tuning or when you should revisit client behaviour.
+Metrics (see [Metrics & Observability](metrics-and-observability.md)) track conflicts. Use them to identify if conflicts are frequent (indicating you might need `lock_for_update` or better client-side handling).

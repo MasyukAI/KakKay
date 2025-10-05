@@ -13,7 +13,7 @@ MasyukAI Cart ships with three storage drivers out of the box. Choose the one th
 
 ```php
 // config/cart.php
-' storage' => 'session',
+'storage' => 'session',
 'session' => [
     'key' => 'cart',
 ],
@@ -24,7 +24,7 @@ No migrations or infrastructure changes are required.
 ## Cache Driver
 
 - **Use when:** you need shared, fast access across multiple web servers or workers.
-- **Persistence:** stored through Laravel’s cache repository (`cart.cache.prefix`, `cart.cache.ttl`).
+- **Persistence:** stored through Laravel's cache repository (`cart.cache.prefix`, `cart.cache.ttl`).
 - **Strengths:** low-latency read/write, optional locking for concurrent writes (when the cache store supports locks, e.g., Redis).
 - **Considerations:** TTL determines how long carts survive; coordinate with business requirements.
 
@@ -59,7 +59,7 @@ Check that your migration aligns with `config('cart.database.table')`.
 
 - Each write increments a `version` column to detect conflicting updates.
 - Set `cart.database.lock_for_update` to `true` to wrap updates in `FOR UPDATE` locks if your workload demands strict serialization.
-- Conflicts raise `CartConflictException`. Use `CartManager::retryWithBackoff()` or the `CartRetryService` utilities (see [Concurrency & Retry](concurrency-and-retry.md)).
+- Conflicts raise `CartConflictException`. Handle these at the application level with try/catch blocks and custom retry logic as needed.
 
 ## Swapping Drivers
 
@@ -88,10 +88,10 @@ Ensure the class honours the complete interface (items, conditions, metadata, an
 
 | Requirement | Recommended Driver |
 | --- | --- |
-| “Ready in 30 seconds” | Session |
+| "Ready in 30 seconds" | Session |
 | Shared cart between web servers | Cache |
 | Persistent carts for authenticated users | Database |
 | Analytics on abandoned carts | Database |
-| Octane worker-friendly | Cache or Database |
+| Long-lived worker processes | Cache or Database |
 
 Switch drivers intentionally and test migrations between drivers via `CartMigrationService::swap()` if you need to move existing carts.

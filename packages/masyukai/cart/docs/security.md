@@ -4,7 +4,7 @@ Cart data is user-controlled. Follow these guidelines to keep your application r
 
 ## Validation & Limits
 
-- Keep `config('cart.strict_validation', true)` enabled in production. It rejects missing IDs/names, negative prices, zero quantities, and oversized attribute payloads.
+- Built-in validation is always active and rejects missing IDs/names, negative prices, zero quantities, and oversized attribute payloads.
 - Adjust `cart.limits.max_items`, `max_item_quantity`, and `max_data_size_bytes` to reflect business rules. Exceeding limits raises `InvalidCartItemException`.
 
 ## Sensitive Data
@@ -21,7 +21,7 @@ Cart data is user-controlled. Follow these guidelines to keep your application r
 ## Concurrency Safety
 
 - Database writes leverage optimistic locking. Handle `CartConflictException` and surface friendly UI messages to encourage users to refresh carts.
-- Avoid blocking operations in event listeners unless events are queued (`cart.octane.queue_events` under Octane).
+- For long-running event handlers, consider queueing them to avoid blocking requests.
 
 ## Logging
 

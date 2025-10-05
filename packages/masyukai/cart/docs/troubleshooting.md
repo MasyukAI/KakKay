@@ -33,22 +33,11 @@ Quick answers to the most common integration hiccups.
 
 - Ensure the request has access to either the authentication system or the session manager. In stateless API contexts, pass a custom identifier to `CartManager::getCartInstance()`.
 
-## Metrics Count Stuck at Zero
-
-- Verify `cart.metrics.enabled` is still `true` after configuration caching.
-- Ensure you’re interacting through the `Cart` facade (directly instantiating `Cart` bypasses metrics unless you proxy through `CartManager`).
-- If using a custom cache store, confirm it supports increment operations.
-
-## Octane Workers See Stale Data
-
-- Prefer the cache or database driver (session storage requires stickiness).
-- Enable `cart.octane.reset_static_state` to clear state between requests.
-- Queue events (`cart.octane.queue_events`) to avoid long-running listeners blocking the worker.
-
 ## Tests Fail Randomly with Shared State
 
 - Run `Cart::clear()` inside `beforeEach` hooks.
 - Flush the cache between tests (`Cache::store()->flush()`) when using array or Redis drivers.
-- Disable metrics in tests that focus solely on business logic (`config()->set('cart.metrics.enabled', false)`).
 
 Still stuck? Inspect the storage driver directly (`Cart::storage()->getItems($identifier, $instance)`) to view the raw payload.
+
+```

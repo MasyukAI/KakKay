@@ -40,7 +40,7 @@ Because the cart object is passed by value, access totals immediately to capture
 ## Broadcasting & Queuing
 
 - Events are regular Laravel events; broadcast or queue them like any others.
-- Under Octane, enable `cart.octane.queue_events` to offload processing to the queue worker.
+- For long-running event handlers, consider queueing them to avoid blocking requests.
 
 ## Testing Events
 

@@ -127,6 +127,7 @@ readonly class SessionStorage implements StorageInterface
      */
     public function putItems(string $identifier, string $instance, array $items): void
     {
+        $this->validateDataSize($items, 'items');
         $this->session->put($this->getItemsKey($identifier, $instance), $items);
     }
 
@@ -135,6 +136,7 @@ readonly class SessionStorage implements StorageInterface
      */
     public function putConditions(string $identifier, string $instance, array $conditions): void
     {
+        $this->validateDataSize($conditions, 'conditions');
         $this->session->put($this->getConditionsKey($identifier, $instance), $conditions);
     }
 
@@ -164,6 +166,32 @@ readonly class SessionStorage implements StorageInterface
         $metadataKey = $this->getMetadataKey($identifier, $instance, $key);
 
         return $this->session->get($metadataKey);
+    }
+
+    /**
+     * Validate data size to prevent memory issues and DoS attacks
+     */
+    private function validateDataSize(array $data, string $type): void
+    {
+        // Get size limits from config or use defaults
+        $maxItems = config('cart.limits.max_items', 1000);
+        $maxDataSize = config('cart.limits.max_data_size_bytes', 1024 * 1024); // 1MB default
+
+        // Check item count limit
+        if ($type === 'items' && count($data) > $maxItems) {
+            throw new \InvalidArgumentException("Cart cannot contain more than {$maxItems} items");
+        }
+
+        // Check data size limit
+        try {
+            $jsonSize = strlen(json_encode($data, JSON_THROW_ON_ERROR));
+            if ($jsonSize > $maxDataSize) {
+                $maxSizeMB = round($maxDataSize / (1024 * 1024), 2);
+                throw new \InvalidArgumentException("Cart {$type} data size ({$jsonSize} bytes) exceeds maximum allowed size of {$maxSizeMB}MB");
+            }
+        } catch (\JsonException $e) {
+            throw new \InvalidArgumentException("Cannot validate {$type} data size: ".$e->getMessage());
+        }
     }
 
     /**

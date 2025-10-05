@@ -153,7 +153,7 @@ readonly class DatabaseStorage implements StorageInterface
             $this->validateDataSize($metadata, 'metadata');
 
             // Filter out null values and convert empty metadata to null
-            $metadata = array_filter($metadata, fn($value) => $value !== null);
+            $metadata = array_filter($metadata, fn ($value) => $value !== null);
             $metadataJson = empty($metadata) ? null : $this->encodeData($metadata, 'metadata');
 
             $this->performCasUpdate($identifier, $instance, [

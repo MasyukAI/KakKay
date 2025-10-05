@@ -86,7 +86,6 @@ abstract class TestCase extends Orchestra
         $app['config']->set('cart.database.connection', 'testing');
         $app['config']->set('cart.database.table', 'carts');
         $app['config']->set('cart.events', true);
-        $app['config']->set('cart.strict_validation', true);
     }
 
     protected function setUpDatabase(): void

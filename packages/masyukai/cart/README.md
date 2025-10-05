@@ -19,7 +19,11 @@ MasyukAI Cart pairs developer ergonomics with enterprise durability: optimistic 
 - 🧮 **Accurate totals** – Akaunting\Money under the hood, stackable conditions, dynamic rules.
 - ♻️ **Resilient storage** – Session, cache, and database drivers with identifier swapping.
 - 📊 **Observability built in** – Metrics, conflict tracking, artisan dashboards.
-- 🔐 **Safety first** – Strict validation, payload limits, sanitised logging.
+- 🧱 **Flexible design** – Bring your own storage (session, cache, database with concurrency guards).
+- � **Multi-currency aware** – Powered by [akaunting/money](https://github.com/akaunting/money) for precision.
+- �🔐 **Safety first** – Built-in validation, payload limits, sanitised logging.
+- ⚡ **Optional batteries** – Events, guest→user switching, multiple cart instances.
+- 🏗 **Full-stack ready** – Easy integration with Laravel, Livewire, Filament.
 
 ## Documentation
 
@@ -31,8 +35,7 @@ MasyukAI Cart pairs developer ergonomics with enterprise durability: optimistic 
 | [Configuration Reference](docs/configuration.md) | Every config flag, explained and cross-linked. |
 | [Storage Drivers](docs/storage.md) | Session vs cache vs database, plus custom driver guidance. |
 | [Identifiers & Migration](docs/identifiers-and-migration.md) | Guest → user flows, merge strategies, identifier swaps. |
-| [Concurrency & Retry](docs/concurrency-and-retry.md) | Optimistic locking, conflict handling, smart retry patterns. |
-| [Metrics & Observability](docs/metrics-and-observability.md) | Capture cart signals and navigate the artisan metrics UI. |
+| [Concurrency & Conflict Handling](docs/concurrency-and-retry.md) | Optimistic locking, conflict handling strategies. |
 | [Money & Currency](docs/money-and-currency.md) | Working with Money objects and multi-currency strategies. |
 | [Laravel Octane](docs/octane.md) | Deploy safely on long-lived workers. |
 | [Testing Guide](docs/testing.md) | Pest patterns, Testbench setup, recommended assertions. |
@@ -67,8 +70,7 @@ printf("%s items → %s\n", $count, $total);
 // 1 items → 71.15
 ```
 
-- Need raw numbers? `Cart::getRawTotal()` returns `float` for further math.
-- Want to track conversions? `Cart::recordConversion([...])` feeds the metrics dashboard.
+Need raw numbers? `Cart::getRawTotal()` returns `float` for further math.
 
 ## Feature Highlights
 
@@ -106,23 +108,44 @@ Dynamic conditions respond to live cart state—see [Conditions & Discounts](doc
 
 ### Durable Storage with Optimistic Locking
 
-Use the database driver for cross-device carts and analytics. Conflicts raise `CartConflictException` with actionable metadata, and `CartRetryService` provides exponential backoff helpers out of the box.
+Use the database driver for cross-device carts and analytics. Conflicts raise `CartConflictException` with actionable metadata. Enable `lock_for_update` in config for stronger conflict prevention, or handle conflicts at the application level with custom retry logic.
 
 ```php
-app(CartRetryService::class)->executeWithSmartRetry(function () {
+try {
     Cart::update('sku-1', ['quantity' => 3]);
-});
+} catch (CartConflictException $e) {
+    // Handle conflict - show user message, retry, or reload cart
+}
 ```
 
 ### Metrics & Observability
 
-Get operational visibility in one command:
+Monitor cart performance and usage with Laravel's built-in tools:
 
 ```bash
-php artisan cart:metrics --json
+# Use Laravel Telescope for debugging and monitoring
+composer require laravel/telescope --dev
+php artisan telescope:install
+php artisan migrate
+
+# Or use Debugbar for development
+composer require barryvdh/laravel-debugbar --dev
 ```
 
-Track conversions vs abandonments, conflict severities, and slow operations. Configure logging channels via `CART_METRICS_LOG_CHANNEL`.
+Track business metrics by querying your data directly:
+
+```php
+// Conversion rate
+$carts = DB::table('carts')->count();
+$orders = Order::count();
+$rate = ($orders / $carts) * 100;
+
+// Abandoned carts
+$abandoned = DB::table('carts')
+    ->where('updated_at', '<', now()->subDays(7))
+    ->whereDoesntHave('orders')
+    ->count();
+```
 
 ## Testing & Tooling
 

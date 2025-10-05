@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace MasyukAI\Cart\Storage;
 
-use Illuminate\Contracts\Cache\Repository as CacheContract;
 use Illuminate\Cache\Repository as Cache;
 
 readonly class CacheStorage implements StorageInterface
@@ -105,7 +104,9 @@ readonly class CacheStorage implements StorageInterface
      */
     public function putItems(string $identifier, string $instance, array $items): void
     {
-        if ($this->useLocking && method_exists($this->cache, 'lock')) {
+        $this->validateDataSize($items, 'items');
+
+        if ($this->useLocking) {
             $this->putItemsWithLock($identifier, $instance, $items);
         } else {
             $this->putItemsSimple($identifier, $instance, $items);
@@ -117,7 +118,9 @@ readonly class CacheStorage implements StorageInterface
      */
     public function putConditions(string $identifier, string $instance, array $conditions): void
     {
-        if ($this->useLocking && method_exists($this->cache, 'lock')) {
+        $this->validateDataSize($conditions, 'conditions');
+
+        if ($this->useLocking) {
             $this->putConditionsWithLock($identifier, $instance, $conditions);
         } else {
             $this->putConditionsSimple($identifier, $instance, $conditions);
@@ -163,13 +166,14 @@ readonly class CacheStorage implements StorageInterface
     private function putItemsWithLock(string $identifier, string $instance, array $items): void
     {
         $key = $this->getItemsKey($identifier, $instance);
-        
-        if (!method_exists($this->cache, 'lock')) {
+
+        if (! method_exists($this->cache, 'lock')) {
             // Fallback for cache drivers that don't support locking
             $this->cache->put($key, $items, $this->ttl);
+
             return;
         }
-        
+
         $lock = $this->cache->lock("lock.{$key}", $this->lockTimeout);
 
         $lock->block($this->lockTimeout, function () use ($key, $items) {
@@ -191,13 +195,14 @@ readonly class CacheStorage implements StorageInterface
     private function putConditionsWithLock(string $identifier, string $instance, array $conditions): void
     {
         $key = $this->getConditionsKey($identifier, $instance);
-        
-        if (!method_exists($this->cache, 'lock')) {
+
+        if (! method_exists($this->cache, 'lock')) {
             // Fallback for cache drivers that don't support locking
             $this->cache->put($key, $conditions, $this->ttl);
+
             return;
         }
-        
+
         $lock = $this->cache->lock("lock.{$key}", $this->lockTimeout);
 
         $lock->block($this->lockTimeout, function () use ($key, $conditions) {
@@ -220,6 +225,7 @@ readonly class CacheStorage implements StorageInterface
     {
         if (! method_exists($this->cache, 'lock')) {
             $this->cache->put($metadataKey, $value, $this->ttl);
+
             return;
         }
 
@@ -228,6 +234,32 @@ readonly class CacheStorage implements StorageInterface
         $lock->block($this->lockTimeout, function () use ($metadataKey, $value) {
             $this->cache->put($metadataKey, $value, $this->ttl);
         });
+    }
+
+    /**
+     * Validate data size to prevent memory issues and DoS attacks
+     */
+    private function validateDataSize(array $data, string $type): void
+    {
+        // Get size limits from config or use defaults
+        $maxItems = config('cart.limits.max_items', 1000);
+        $maxDataSize = config('cart.limits.max_data_size_bytes', 1024 * 1024); // 1MB default
+
+        // Check item count limit
+        if ($type === 'items' && count($data) > $maxItems) {
+            throw new \InvalidArgumentException("Cart cannot contain more than {$maxItems} items");
+        }
+
+        // Check data size limit
+        try {
+            $jsonSize = strlen(json_encode($data, JSON_THROW_ON_ERROR));
+            if ($jsonSize > $maxDataSize) {
+                $maxSizeMB = round($maxDataSize / (1024 * 1024), 2);
+                throw new \InvalidArgumentException("Cart {$type} data size ({$jsonSize} bytes) exceeds maximum allowed size of {$maxSizeMB}MB");
+            }
+        } catch (\JsonException $e) {
+            throw new \InvalidArgumentException("Cannot validate {$type} data size: ".$e->getMessage());
+        }
     }
 
     /**

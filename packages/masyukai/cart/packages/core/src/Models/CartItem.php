@@ -110,8 +110,8 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
 
     /**
      * Normalize conditions to CartConditionCollection
-     * 
-     * @param array|Collection<string, CartCondition> $conditions
+     *
+     * @param  array|Collection<string, CartCondition>  $conditions
      */
     private function normalizeConditions(array|Collection $conditions): CartConditionCollection
     {

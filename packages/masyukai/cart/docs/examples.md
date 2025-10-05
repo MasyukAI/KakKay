@@ -2,7 +2,33 @@
 
 Copy-ready snippets for common cart scenarios.
 
-## Persist a Selected Shipping Method
+## P    return response()->json([
+        'message' => 'Your cart was updated elsewhere. Please refresh.',
+        'suggestions' => $e->getResolutionSuggestions(),
+    ], 409);
+}
+```
+
+## Track Business Metrics
+
+Query your data directly for accurate analytics:
+
+```php
+// Conversion rate
+$totalCarts = DB::table('carts')->count();
+$completedOrders = Order::whereNotNull('completed_at')->count();
+$conversionRate = ($completedOrders / $totalCarts) * 100;
+
+// Abandoned carts
+$abandonedCarts = DB::table('carts')
+    ->where('updated_at', '<', now()->subDays(7))
+    ->whereDoesntHave('orders')
+    ->count();
+```
+
+## Clear Abandoned Carts Nightly
+
+Schedule the artisan command via Laravel's scheduler:ipping Method
 
 ```php
 // Controller
@@ -64,22 +90,19 @@ app(CartMigrationService::class)->swapGuestCartToUser(
 );
 ```
 
-## Wrap High-Value Operations with Retry
+## Handle Conflicts Gracefully
 
 ```php
-app(CartRetryService::class)->executeWithSmartRetry(function () use ($request) {
+use MasyukAI\Cart\Exceptions\CartConflictException;
+
+try {
     Cart::update($request->item_id, ['quantity' => $request->quantity]);
-});
-```
-
-## Record Conversion with Context
-
-```php
-Cart::recordConversion([
-    'order_id' => $order->id,
-    'value' => $order->total,
-    'channel' => 'web',
-]);
+} catch (CartConflictException $e) {
+    return response()->json([
+        'message' => 'Your cart was updated elsewhere. Please refresh.',
+        'suggestions' => $e->getResolutionSuggestions(),
+    ], 409);
+}
 ```
 
 ## Clear Abandoned Carts Nightly

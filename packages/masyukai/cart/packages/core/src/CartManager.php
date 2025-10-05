@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace MasyukAI\Cart;
 
 use Illuminate\Contracts\Events\Dispatcher;
-use MasyukAI\Cart\Exceptions\CartConflictException;
-use MasyukAI\Cart\Services\CartMetricsService;
-use MasyukAI\Cart\Services\CartRetryService;
 use MasyukAI\Cart\Storage\StorageInterface;
 
 /**
@@ -18,10 +15,6 @@ class CartManager
     private Cart $currentCart;
 
     private string $currentInstance = 'default';
-
-    private ?CartMetricsService $metricsService = null;
-
-    private ?CartRetryService $retryService = null;
 
     public function __construct(
         private StorageInterface $storage,
@@ -35,15 +28,6 @@ class CartManager
             instanceName: $this->currentInstance,
             eventsEnabled: $this->eventsEnabled
         );
-
-        // Initialize services if available
-        if (app()->bound(CartMetricsService::class)) {
-            $this->metricsService = app(CartMetricsService::class);
-        }
-
-        if (app()->bound(CartRetryService::class)) {
-            $this->retryService = app(CartRetryService::class);
-        }
     }
 
     /**
@@ -112,175 +96,13 @@ class CartManager
     }
 
     /**
-     * Execute cart operation with automatic retry on conflicts
-     */
-    public function retryWithBackoff(\Closure $operation): mixed
-    {
-        if (! $this->retryService) {
-            return $operation();
-        }
-
-        $startTime = microtime(true);
-
-        try {
-            $result = $this->retryService->executeWithSmartRetry($operation);
-
-            // Record success metrics
-            if ($this->metricsService) {
-                $executionTime = microtime(true) - $startTime;
-                $this->metricsService->recordPerformance('retry_operation', $executionTime);
-                $this->metricsService->recordOperation('retry_success');
-            }
-
-            return $result;
-        } catch (CartConflictException $e) {
-            // Record conflict metrics
-            if ($this->metricsService) {
-                $this->metricsService->recordConflict($e, [
-                    'operation' => 'retry_operation',
-                    'instance' => $this->currentInstance,
-                ]);
-            }
-
-            throw $e;
-        }
-    }
-
-    /**
-     * Get cart metrics summary
-     * @return array<string, mixed>
-     */
-    public function getMetrics(): array
-    {
-        return $this->metricsService?->getMetricsSummary() ?? [];
-    }
-
-    /**
-     * Record cart conversion for analytics
-     * @param array<string, mixed> $context
-     */
-    public function recordConversion(array $context = []): void
-    {
-        if ($this->metricsService) {
-            $this->metricsService->recordConversion(
-                $this->currentCart->getIdentifier(),
-                $this->currentInstance,
-                $context
-            );
-        }
-    }
-
-    /**
-     * Record cart abandonment for analytics
-     * @param array<string, mixed> $context
-     */
-    public function recordAbandonment(array $context = []): void
-    {
-        if ($this->metricsService) {
-            $this->metricsService->recordAbandonment(
-                $this->currentCart->getIdentifier(),
-                $this->currentInstance,
-                $context
-            );
-        }
-    }
-
-    /**
-     * Proxy all other method calls to the current cart instance with metrics
-     * @param array<mixed> $arguments
+     * Proxy all other method calls to the current cart instance
+     *
+     * @param  array<mixed>  $arguments
      */
     public function __call(string $method, array $arguments): mixed
     {
-        $startTime = microtime(true);
-
-        try {
-            $result = $this->currentCart->{$method}(...$arguments);
-
-            // Record operation metrics for cart operations
-            if ($this->metricsService && $this->isCartOperation($method)) {
-                $executionTime = microtime(true) - $startTime;
-                $this->metricsService->recordOperation($method);
-                $this->metricsService->recordPerformance($method, $executionTime);
-            }
-
-            return $result;
-        } catch (CartConflictException $e) {
-            // Record conflict metrics
-            if ($this->metricsService) {
-                $this->metricsService->recordConflict($e, [
-                    'operation' => $method,
-                    'instance' => $this->currentInstance,
-                    'arguments' => $this->sanitizeArguments($arguments),
-                ]);
-            }
-
-            throw $e;
-        }
-    }
-
-    /**
-     * Check if method is a cart operation that should be tracked
-     */
-    private function isCartOperation(string $method): bool
-    {
-        return in_array($method, [
-            'add', 'update', 'remove', 'clear', 'get', 'has',
-            'addCondition', 'removeCondition', 'clearConditions',
-            'associate', 'taxRate', 'count', 'content',
-            'subtotal', 'total', 'tax', 'discount',
-        ]);
-    }
-
-    /**
-     * Sanitize arguments for logging (remove sensitive data)
-     * @param array<mixed> $arguments
-     * @return array<mixed>
-     */
-    private function sanitizeArguments(array $arguments): array
-    {
-        // Remove potentially sensitive data like payment info, personal details
-        $sanitized = [];
-        foreach ($arguments as $key => $value) {
-            if (is_array($value)) {
-                $sanitized[$key] = $this->sanitizeArray($value);
-            } elseif (is_string($value) && strlen($value) > 100) {
-                $sanitized[$key] = substr($value, 0, 100).'...';
-            } else {
-                $sanitized[$key] = $value;
-            }
-        }
-
-        return $sanitized;
-    }
-
-    /**
-     * Sanitize array values
-     * @param array<mixed> $data
-     * @return array<mixed>
-     */
-    private function sanitizeArray(array $data): array
-    {
-        $sensitive = ['password', 'token', 'secret', 'key', 'card', 'ssn', 'cvv'];
-        $sanitized = [];
-
-        foreach ($data as $key => $value) {
-            if (is_string($key) && str_contains(strtolower($key), 'password')) {
-                $sanitized[$key] = '[HIDDEN]';
-            } elseif (is_string($key)) {
-                foreach ($sensitive as $sensitiveKey) {
-                    if (str_contains(strtolower($key), $sensitiveKey)) {
-                        $sanitized[$key] = '[HIDDEN]';
-
-                        continue 2;
-                    }
-                }
-                $sanitized[$key] = is_array($value) ? $this->sanitizeArray($value) : $value;
-            } else {
-                $sanitized[$key] = is_array($value) ? $this->sanitizeArray($value) : $value;
-            }
-        }
-
-        return $sanitized;
+        return $this->currentCart->{$method}(...$arguments);
     }
 
     /**

@@ -115,7 +115,6 @@ describe('CartServiceProvider', function () {
             'registerCartManager',
             'registerMigrationService',
             'registerEventListeners',
-            'registerEnhancedServices',
             'configurePackage',
             'registeringPackage',
             'bootingPackage',
@@ -156,7 +155,6 @@ use MasyukAI\Cart\Storage\SessionStorage;
 
 beforeEach(function () {
     Config::set('cart.storage', 'session');
-    // Config::set('cart.price_formatting.transformer', DecimalPriceTransformer::class);
     Config::set('cart.migration.auto_migrate_on_login', true);
 });
 
@@ -195,7 +193,7 @@ it('integration: publishes config, migrations, and views', function () {
     $provider->configurePackage($package);
 
     expect($package->name)->toBe('cart');
-    expect($package->commands)->toHaveCount(2);  // ClearAbandonedCartsCommand and CartMetricsCommand
+    expect($package->commands)->toHaveCount(1);  // ClearAbandonedCartsCommand
     expect(true)->toBeTrue(); // Package was configured successfully
 });
 

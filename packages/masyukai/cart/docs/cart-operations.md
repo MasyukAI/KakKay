@@ -151,6 +151,9 @@ Item payloads accept an Eloquent model class or instance via `associatedModel`. 
 
 - Missing `id`, `name`, or invalid pricing/quantity throw `InvalidCartItemException`.
 - Unknown model classes trigger `UnknownModelException`.
-- Supply `config('cart.strict_validation', true)` to keep validation active in production.
+- **Best practices**
+- Validation is built-in and always active to ensure data integrity.
+- For variable-pricing items (membership tiers, subscriptions), store `base_price` in attributes and calculate `price` dynamically via a condition.
+- If you need incremental stock reservation, pair the cart with a `StockReservation` model that expires unconfirmed holds after N minutes.
 
 For a complete list of exceptions, see [API Reference](api-reference.md#exceptions).

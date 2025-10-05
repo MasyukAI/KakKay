@@ -1,14 +1,18 @@
 # MasyukAI Cart Documentation
 
-MasyukAI Cart is a multi-channel shopping cart engine for Laravel 12 built around robust storage drivers, accurate money calculations, and rich analytics. These docs guide you from installation to advanced tuning.
+MasyukAI Cart is a multi-channel shopping cart engine for Laravel 12 built around robust storage drivers, accurate money calculations, and powerful conditions. These docs guide you from installation to advanced tuning.
 
 ## Feature Highlights
 
 - **First-class storage drivers** for session, cache, and database (with concurrency-safe versioning).
 - **Composable cart instances** per user, channel, or purpose with automatic identifier resolution.
 - **Powerful pricing engine** supporting dynamic cart- and item-level conditions, taxes, fees, and shipping rules.
-- **Observability built in** via metrics, conflict tracking, and artisan tooling.
-- **Production-ready extras** including seamless guest → user migration, Octane support, and strict validation limits.
+## Why This Cart?
+
+- **Flexible storage** with session, cache, or database (with optimistic locking for concurrent checkouts).
+- **Money precision** via [akaunting/money](https://github.com/akaunting/money)—no floating‑point pitfalls.
+- **Production-ready extras** including seamless guest → user migration and built-in validation.
+- **Extensible architecture** supporting conditions, events, and multiple cart instances.
 
 ## Documentation Roadmap
 
@@ -21,10 +25,8 @@ MasyukAI Cart is a multi-channel shopping cart engine for Laravel 12 built aroun
 | [Storage Drivers](storage.md) | Choose between session, cache, or database and see how they differ. |
 | [Identifiers & Migration](identifiers-and-migration.md) | Control how carts follow users across sessions and logins. |
 | [Events](events.md) | Hook into lifecycle events across items, metadata, and merges. |
-| [Metrics & Observability](metrics-and-observability.md) | Surface cart health signals and monitor performance. |
-| [Concurrency & Retry](concurrency-and-retry.md) | Handle conflicts, optimistic locking, and automatic retries. |
+| [Concurrency](concurrency-and-retry.md) | Handle conflicts and optimistic locking. |
 | [Money & Currency](money-and-currency.md) | Discover how totals are calculated with Akaunting Money. |
-| [Laravel Octane](octane.md) | Tune the package for Octane workers. |
 | [Testing Guide](testing.md) | Reproduce cart scenarios with Pest and Testbench. |
 | [Security Checklist](security.md) | Enforce limits and guard sensitive data. |
 | [Troubleshooting](troubleshooting.md) | Resolve the most common integration surprises. |

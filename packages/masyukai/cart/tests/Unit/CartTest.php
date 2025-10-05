@@ -138,7 +138,7 @@ describe('Cart instantiation', function () {
 });
 
 describe('Adding items', function () {
-    it('can add a simple item with strict validation', function () {
+    it('can add a simple item with validation', function () {
 
         // Recreate cart with the fake event dispatcher
         $cart = new Cart(

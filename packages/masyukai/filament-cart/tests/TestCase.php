@@ -209,7 +209,6 @@ abstract class TestCase extends OrchestraTestCase
         $app['config']->set('cart.database.connection', 'testing');
         $app['config']->set('cart.database.table', 'carts');
         $app['config']->set('cart.events', true);
-        $app['config']->set('cart.strict_validation', true);
 
         // Set filament-cart config
         $app['config']->set('filament-cart.enable_normalized_models', true);

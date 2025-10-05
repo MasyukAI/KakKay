@@ -135,6 +135,7 @@ class CartConditionCollection extends Collection
 
     /**
      * Get conditions summary
+     *
      * @return array<string, mixed>
      */
     public function getSummary(float $baseValue = 0): array
@@ -152,6 +153,7 @@ class CartConditionCollection extends Collection
 
     /**
      * Convert collection to array with detailed information
+     *
      * @return array<string, mixed>
      */
     public function toDetailedArray(float $baseValue = 0): array
@@ -167,7 +169,8 @@ class CartConditionCollection extends Collection
 
     /**
      * Create conditions from array
-     * @param array<array<string, mixed>> $conditions
+     *
+     * @param  array<array<string, mixed>>  $conditions
      */
     public static function fromArray(array $conditions): static
     {
@@ -182,6 +185,7 @@ class CartConditionCollection extends Collection
 
     /**
      * Group conditions by type
+     *
      * @return Collection<string, static>
      */
     public function groupByType(): Collection
@@ -191,6 +195,7 @@ class CartConditionCollection extends Collection
 
     /**
      * Group conditions by target
+     *
      * @return Collection<string, static>
      */
     public function groupByTarget(): Collection

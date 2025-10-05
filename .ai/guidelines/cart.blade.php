@@ -25,12 +25,10 @@ These rules support AI-assisted development inside the `masyukai/cart` monorepo.
 
 ## Events & Metrics
 - Guard code paths that dispatch events with `eventsEnabled` and `$events` checks.
-- Wrap new cart operations with metrics when routed through `CartManager`.
-- `CartMetricsService` now supports optional log channels and early exits when metrics are disabled—reuse helpers (`metricsEnabled()`, `writeLog()`).
 
 ## Concurrency
 - Database driver uses optimistic locking with version numbers; ensure new writes increment versions and throw `CartConflictException` on conflicts.
-- Use `CartRetryService` for retry logic; do not implement ad hoc loops.
+- Handle conflicts explicitly at the application level with try/catch blocks.
 
 ## Testing
 - All tests use Pest. Place feature specs under `tests/Feature`, unit specs under `tests/Unit`.
@@ -44,11 +42,11 @@ These rules support AI-assisted development inside the `masyukai/cart` monorepo.
 
 ## Documentation
 - Docs live under `docs/`. Keep them aligned with the rewritten structure (see `docs/index.md`). Update docs when behaviours change.
-- Troubleshooting and configuration sections must remain accurate for metrics logging, storage drivers, and migration flows.
+- Troubleshooting and configuration sections must remain accurate for storage drivers and migration flows.
 
 ## Pull Request Ready Checklist
 1. No TODOs or commented-out code.
 2. Tests updated & passing locally.
 3. Pint formatting applied.
 4. Documentation updated when public behaviour changes.
-5. Metrics, events, and retry logic considered for new cart operations.
+5. Events properly guarded with config checks.

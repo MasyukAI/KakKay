@@ -100,17 +100,20 @@ class CartMigrationService
             // Swap guest cart to user cart (ownership transfer)
             $this->swap($guestIdentifier, $userIdentifier, $instance);
 
-            // Get Cart instances for the event
-            $cartManager = Cart::getFacadeRoot();
-            $targetCartInstance = $cartManager->getCartInstance($instance);
+            // Dispatch event if events are enabled
+            if (config('cart.events', true)) {
+                // Get Cart instances for the event
+                $cartManager = Cart::getFacadeRoot();
+                $targetCartInstance = $cartManager->getCartInstance($instance);
 
-            event(new CartMerged(
-                targetCart: $targetCartInstance,
-                sourceCart: $targetCartInstance, // Limited by design
-                totalItemsMerged: array_sum(array_column($guestItems, 'quantity')),
-                mergeStrategy: $this->config['merge_strategy'] ?? 'add_quantities',
-                hadConflicts: false
-            ));
+                event(new CartMerged(
+                    targetCart: $targetCartInstance,
+                    sourceCart: $targetCartInstance, // Limited by design
+                    totalItemsMerged: array_sum(array_column($guestItems, 'quantity')),
+                    mergeStrategy: $this->config['merge_strategy'] ?? 'add_quantities',
+                    hadConflicts: false
+                ));
+            }
 
             return true;
         }
@@ -137,18 +140,21 @@ class CartMigrationService
         // ...existing code...
         $storage->forget($guestIdentifier, $instance);
 
-        // Get Cart instances for the event
-        $cartManager = Cart::getFacadeRoot();
-        $targetCartInstance = $cartManager->getCartInstance($instance);
+        // Dispatch event if events are enabled
+        if (config('cart.events', true)) {
+            // Get Cart instances for the event
+            $cartManager = Cart::getFacadeRoot();
+            $targetCartInstance = $cartManager->getCartInstance($instance);
 
-        // ...existing code...
-        event(new CartMerged(
-            targetCart: $targetCartInstance,
-            sourceCart: $targetCartInstance, // Limited by design
-            totalItemsMerged: array_sum(array_column($mergedItems, 'quantity')),
-            mergeStrategy: $this->config['merge_strategy'] ?? 'add_quantities',
-            hadConflicts: count($mergedItems) > count($guestItems)
-        ));
+            // ...existing code...
+            event(new CartMerged(
+                targetCart: $targetCartInstance,
+                sourceCart: $targetCartInstance, // Limited by design
+                totalItemsMerged: array_sum(array_column($mergedItems, 'quantity')),
+                mergeStrategy: $this->config['merge_strategy'] ?? 'add_quantities',
+                hadConflicts: count($mergedItems) > count($guestItems)
+            ));
+        }
 
         return true;
     }

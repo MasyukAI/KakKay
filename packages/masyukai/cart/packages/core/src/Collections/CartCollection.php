@@ -108,6 +108,7 @@ class CartCollection extends Collection
 
     /**
      * Convert collection to array with formatted output
+     *
      * @return array<string, mixed>
      */
     public function toFormattedArray(): array
@@ -234,6 +235,7 @@ class CartCollection extends Collection
 
     /**
      * Group items by a specific property
+     *
      * @return Collection<string, static>
      */
     public function groupByProperty(string $property): Collection
@@ -287,6 +289,7 @@ class CartCollection extends Collection
 
     /**
      * Get statistics about the cart
+     *
      * @return array<string, mixed>
      */
     public function getStatistics(): array
@@ -313,6 +316,7 @@ class CartCollection extends Collection
 
     /**
      * Group items by attribute value
+     *
      * @return Collection<string, static>
      */
     public function groupByAttribute(string $attribute): \Illuminate\Support\Collection
