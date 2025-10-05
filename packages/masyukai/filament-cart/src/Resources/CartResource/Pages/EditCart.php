@@ -5,8 +5,7 @@ namespace MasyukAI\FilamentCart\Resources\CartResource\Pages;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Icons\Heroicon;
-use Illuminate\Support\Facades\DB;
-use MasyukAI\Cart\Facades\Cart;
+use MasyukAI\Cart\Facades\Cart as CartFacade;
 use MasyukAI\FilamentCart\Resources\CartResource;
 
 class EditCart extends EditRecord
@@ -27,27 +26,13 @@ class EditCart extends EditRecord
                 ->icon(Heroicon::OutlinedXCircle)
                 ->color('danger')
                 ->requiresConfirmation()
-                ->action(function () {
-                    // Clear cart items and conditions manually without deleting the cart record
-                    // This allows admins to manually add items/conditions after clearing
-
-                    // Delete normalized cart_items records
-                    DB::table('cart_items')->where('cart_id', $this->record->id)->delete();
-
-                    // Delete normalized cart_conditions records
-                    DB::table('cart_conditions')->where('cart_id', $this->record->id)->delete();
-
-                    // Clear cart data and increment version
-                    $this->record->update([
-                        'items' => [],
-                        'conditions' => [],
-                        'metadata' => [],
-                        'version' => $this->record->version + 1,
-                    ]);
-
-                    $this->redirect($this->getResource()::getUrl('edit', ['record' => $this->record]));
+                ->action(function (): void {
+                    /** @phpstan-ignore-next-line */
+                    CartFacade::getCartInstance($this->record->instance, $this->record->identifier)->clear();
+                    $this->redirect($this->getResource()::getUrl('index'));
                 })
-                ->visible(fn () => ! $this->record->isEmpty()),
+                /** @phpstan-ignore-next-line */
+                ->visible(fn (): bool => $this->record->items_count > 0),
         ];
     }
 

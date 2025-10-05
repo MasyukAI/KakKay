@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MasyukAI\FilamentCart\Resources;
 
 use BackedEnum;
@@ -19,13 +21,11 @@ use MasyukAI\FilamentCart\Resources\CartResource\Schemas\CartInfolist;
 use MasyukAI\FilamentCart\Resources\CartResource\Tables\CartsTable;
 use UnitEnum;
 
-class CartResource extends Resource
+final class CartResource extends Resource
 {
     protected static ?string $model = Cart::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShoppingCart;
-
-    protected static string|UnitEnum|null $navigationGroup = 'E-commerce';
 
     protected static ?string $recordTitleAttribute = 'identifier';
 
@@ -34,8 +34,6 @@ class CartResource extends Resource
     protected static ?string $modelLabel = 'Cart';
 
     protected static ?string $pluralModelLabel = 'Carts';
-
-    protected static ?int $navigationSort = 30;
 
     public static function form(Schema $schema): Schema
     {
@@ -72,11 +70,23 @@ class CartResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::count();
+        $count = self::getModel()::count();
+
+        return $count > 0 ? (string) $count : null;
     }
 
-    public static function getNavigationBadgeColor(): string|array|null
+    public static function getNavigationBadgeColor(): string
     {
         return 'primary';
+    }
+
+    public static function getNavigationGroup(): string|UnitEnum|null
+    {
+        return config('filament-cart.navigation_group');
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return config('filament-cart.resources.navigation_sort.carts', 30);
     }
 }

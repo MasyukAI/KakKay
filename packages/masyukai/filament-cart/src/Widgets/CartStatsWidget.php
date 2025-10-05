@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MasyukAI\FilamentCart\Widgets;
 
 use Akaunting\Money\Money;
@@ -8,7 +10,7 @@ use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use MasyukAI\FilamentCart\Models\Cart;
 
-class CartStatsWidget extends BaseWidget
+final class CartStatsWidget extends BaseWidget
 {
     protected function getStats(): array
     {
@@ -23,34 +25,27 @@ class CartStatsWidget extends BaseWidget
                 ->descriptionIcon(Heroicon::OutlinedCheckCircle)
                 ->color('success'),
 
-            Stat::make('Total Items', $this->getTotalItemsCount())
+            Stat::make('Total Items', Cart::sum('quantity'))
                 ->description('Across all carts')
                 ->descriptionIcon(Heroicon::OutlinedShoppingBag)
                 ->color('info'),
 
-            Stat::make('Cart Value', Money::MYR($this->getTotalCartValue()))
+            Stat::make('Cart Value', $this->formatMoney((int) Cart::sum('subtotal')))
                 ->description('Total potential revenue')
                 ->descriptionIcon(Heroicon::OutlinedCurrencyDollar)
                 ->color('warning'),
         ];
     }
 
-    private function getTotalItemsCount(): int
-    {
-        return Cart::notEmpty()
-            ->get()
-            ->sum('total_quantity');
-    }
-
-    private function getTotalCartValue(): float
-    {
-        return Cart::notEmpty()
-            ->get()
-            ->sum('subtotal');
-    }
-
     protected function getColumns(): int
     {
         return 4;
+    }
+
+    private function formatMoney(int $amount): string
+    {
+        $currency = strtoupper(config('cart.money.default_currency', 'USD'));
+
+        return (string) Money::{$currency}($amount);
     }
 }

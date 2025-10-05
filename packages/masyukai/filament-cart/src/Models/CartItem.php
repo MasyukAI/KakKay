@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MasyukAI\FilamentCart\Models;
 
 use Akaunting\Money\Money;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,9 +17,19 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Normalized representation of cart items for efficient querying.
  * This model is readonly and only updated via cart events
  * to maintain data consistency with the cart package.
+ *
+ * @property int $cart_id
+ * @property string $item_id
+ * @property string $name
+ * @property int $price
+ * @property int $quantity
+ * @property array<mixed>|null $attributes
+ * @property array<mixed>|null $conditions
+ * @property string|null $associated_model
  */
 class CartItem extends Model
 {
+    /** @use HasFactory<\MasyukAI\FilamentCart\Database\Factories\CartItemFactory> */
     use HasFactory;
     use HasUuids;
 
@@ -33,7 +44,7 @@ class CartItem extends Model
     /**
      * The table associated with the model.
      */
-    protected $table = 'cart_items';
+    protected $table = 'cart_snapshot_items';
 
     /**
      * The attributes that are mass assignable.
@@ -76,7 +87,9 @@ class CartItem extends Model
 
     /**
      * Get the cart that owns this item.
+     * @return BelongsTo<Cart, CartItem>
      */
+    /** @phpstan-ignore return.type, missingType.generics */
     public function cart(): BelongsTo
     {
         return $this->belongsTo(Cart::class);
@@ -84,8 +97,9 @@ class CartItem extends Model
 
     /**
      * Scope to filter by cart instance.
+     * @param Builder<self> $query
      */
-    public function scopeInstance($query, string $instance): void
+    public function scopeInstance(Builder $query, string $instance): void
     {
         $query->whereHas('cart', function ($q) use ($instance) {
             $q->where('instance', $instance);
@@ -94,8 +108,9 @@ class CartItem extends Model
 
     /**
      * Scope to filter by cart identifier.
+     * @param Builder<self> $query
      */
-    public function scopeByIdentifier($query, string $identifier): void
+    public function scopeByIdentifier(Builder $query, string $identifier): void
     {
         $query->whereHas('cart', function ($q) use ($identifier) {
             $q->where('identifier', $identifier);
@@ -104,16 +119,18 @@ class CartItem extends Model
 
     /**
      * Scope to filter by item name.
+     * @param Builder<self> $query
      */
-    public function scopeByName($query, string $name): void
+    public function scopeByName(Builder $query, string $name): void
     {
         $query->where('name', 'like', "%{$name}%");
     }
 
     /**
      * Scope to filter by price range.
+     * @param Builder<self> $query
      */
-    public function scopePriceBetween($query, float $min, float $max): void
+    public function scopePriceBetween(Builder $query, float $min, float $max): void
     {
         // Convert dollars to cents for comparison
         $query->whereBetween('price', [$min * 100, $max * 100]);
@@ -121,32 +138,31 @@ class CartItem extends Model
 
     /**
      * Scope to filter by quantity range.
+     * @param Builder<self> $query
      */
-    public function scopeQuantityBetween($query, int $min, int $max): void
+    public function scopeQuantityBetween(Builder $query, int $min, int $max): void
     {
         $query->whereBetween('quantity', [$min, $max]);
     }
 
     /**
      * Scope to get items with conditions.
+     * @param Builder<self> $query
      */
-    public function scopeWithConditions($query): void
+    public function scopeWithConditions(Builder $query): void
     {
         $query->whereNotNull('conditions')
-            ->whereRaw("conditions::text != '[]'")
-            ->whereRaw("conditions::text != '{}'");
+            ->whereJsonLength('conditions', '>', 0);
     }
 
     /**
      * Scope to get items without conditions.
+     * @param Builder<self> $query
      */
-    public function scopeWithoutConditions($query): void
+    public function scopeWithoutConditions(Builder $query): void
     {
-        $query->where(function ($q) {
-            $q->whereNull('conditions')
-                ->orWhereRaw("conditions::text = '[]'")
-                ->orWhereRaw("conditions::text = '{}'");
-        });
+        $query->whereNull('conditions')
+            ->orWhereJsonLength('conditions', '=', 0);
     }
 
     /**
@@ -170,7 +186,7 @@ class CartItem extends Model
      */
     public function getFormattedPriceAttribute(): string
     {
-        return (string) Money::MYR($this->price);
+        return $this->formatMoney($this->price);
     }
 
     /**
@@ -178,7 +194,7 @@ class CartItem extends Model
      */
     public function getFormattedSubtotalAttribute(): string
     {
-        return (string) Money::MYR($this->subtotal);
+        return $this->formatMoney($this->subtotal);
     }
 
     /**
@@ -203,5 +219,12 @@ class CartItem extends Model
     public function getAttributesCountAttribute(): int
     {
         return ! empty($this->attributes) && is_array($this->attributes) ? count($this->attributes) : 0;
+    }
+
+    private function formatMoney(int $amount): string
+    {
+        $currency = strtoupper($this->cart->currency ?? config('cart.money.default_currency', 'USD'));
+
+        return (string) Money::{$currency}($amount);
     }
 }

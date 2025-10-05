@@ -16,9 +16,28 @@ use MasyukAI\FilamentCart\Services\RuleConverter;
  *
  * This model stores conditions that can be used to quickly create cart
  * conditions with predefined settings.
+ *
+ * @property string $name
+ * @property string|null $display_name
+ * @property string|null $description
+ * @property string $type
+ * @property string $target
+ * @property string $value
+ * @property string|null $operator
+ * @property bool $is_charge
+ * @property bool $is_dynamic
+ * @property bool $is_discount
+ * @property bool $is_percentage
+ * @property string|null $parsed_value
+ * @property int $order
+ * @property array<mixed>|null $attributes
+ * @property array<mixed>|null $rules
+ * @property bool $is_active
+ * @property bool $is_global
  */
 class Condition extends Model
 {
+    /** @use HasFactory<\MasyukAI\FilamentCart\Database\Factories\ConditionFactory> */
     use HasFactory;
     use HasUuids;
 
@@ -142,6 +161,7 @@ class Condition extends Model
 
     /**
      * Scope to filter active conditions.
+     * @param Builder<self> $query
      */
     public function scopeActive(Builder $query): void
     {
@@ -150,6 +170,7 @@ class Condition extends Model
 
     /**
      * Scope to filter by condition type.
+     * @param Builder<self> $query
      */
     public function scopeOfType(Builder $query, string $type): void
     {
@@ -158,6 +179,7 @@ class Condition extends Model
 
     /**
      * Scope to filter by condition target.
+     * @param Builder<self> $query
      */
     public function scopeForItems(Builder $query): void
     {
@@ -166,6 +188,7 @@ class Condition extends Model
 
     /**
      * Scope to filter discounts.
+     * @param Builder<self> $query
      */
     public function scopeDiscounts(Builder $query): void
     {
@@ -174,6 +197,7 @@ class Condition extends Model
 
     /**
      * Scope to filter charges/fees.
+     * @param Builder<self> $query
      */
     public function scopeCharges(Builder $query): void
     {
@@ -182,6 +206,7 @@ class Condition extends Model
 
     /**
      * Scope to filter dynamic conditions.
+     * @param Builder<self> $query
      */
     public function scopeDynamic(Builder $query): void
     {
@@ -190,6 +215,7 @@ class Condition extends Model
 
     /**
      * Scope to filter global conditions.
+     * @param Builder<self> $query
      */
     public function scopeGlobal(Builder $query): void
     {
@@ -199,6 +225,7 @@ class Condition extends Model
 
     /**
      * Scope to filter percentage-based conditions.
+     * @param Builder<self> $query
      */
     public function scopePercentageBased(Builder $query): void
     {
@@ -280,7 +307,7 @@ class Condition extends Model
 
         $rawValue = $this->value;
         $normalized = ltrim($rawValue, '+');
-        $money = Money::MYR($normalized);
+        $money = Money::{$this->resolveCurrency()}($normalized);
 
         return str_starts_with($rawValue, '+')
             ? '+'.$money
@@ -289,6 +316,9 @@ class Condition extends Model
 
     /**
      * Convert condition to CartCondition data array.
+     */
+    /**
+     * @return array<string, mixed>
      */
     public function toConditionArray(?string $customName = null): array
     {
@@ -301,8 +331,10 @@ class Condition extends Model
             'attributes' => array_merge($this->attributes ?? [], [
                 'condition_id' => $this->id,
                 'condition_name' => $this->name,
+                'is_global' => $this->is_global,
             ]),
             'rules' => $this->is_dynamic ? $this->rules : null,
+            'is_global' => $this->is_global,
         ];
     }
 
@@ -328,5 +360,10 @@ class Condition extends Model
             order: $data['order'],
             rules: $rules
         );
+    }
+
+    private function resolveCurrency(): string
+    {
+        return strtoupper(config('cart.money.default_currency', 'USD'));
     }
 }

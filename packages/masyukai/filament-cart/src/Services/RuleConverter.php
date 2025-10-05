@@ -12,6 +12,8 @@ class RuleConverter
 {
     /**
      * Convert JSON rule definitions to callable functions
+     * @param array<string, mixed> $rules
+     * @return array<callable>
      */
     public static function convertRules(array $rules): array
     {
@@ -69,6 +71,7 @@ class RuleConverter
 
     /**
      * Check if cart contains specific items (by ID or SKU)
+     * @param array<string> $itemIds
      */
     private static function cartHasSpecificItems(Cart $cart, array $itemIds): bool
     {

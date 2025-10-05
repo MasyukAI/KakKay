@@ -37,21 +37,12 @@ class ApplyGlobalConditions
     /**
      * Apply all global conditions to the cart.
      */
-    protected function applyGlobalConditions($cart): void
+    protected function applyGlobalConditions(\MasyukAI\Cart\Cart $cart): void
     {
         $globalConditions = Condition::global()->get();
+        $hasDynamicConditions = false;
 
         foreach ($globalConditions as $condition) {
-            // Check if condition already exists in cart
-            $existingConditions = method_exists($cart, 'getConditions') ? $cart->getConditions() : [];
-            if (is_object($existingConditions) && method_exists($existingConditions, 'has')) {
-                if ($existingConditions->has($condition->name)) {
-                    continue;
-                }
-            } elseif (is_array($existingConditions) && isset($existingConditions[$condition->name])) {
-                continue;
-            }
-
             // Build condition data
             $conditionData = [
                 'name' => $condition->name,
@@ -62,26 +53,42 @@ class ApplyGlobalConditions
                 'attributes' => [
                     'display_name' => $condition->display_name,
                     'description' => $condition->description,
+                    'is_global' => true,
                 ],
             ];
 
-            // Add rules if dynamic condition
-            if ($condition->isDynamic()) {
-                $conditionData['attributes']['rules'] = $condition->rules;
+            // Instantiate CartCondition
+            $cartConditionClass = \MasyukAI\Cart\Conditions\CartCondition::class;
 
-                // Evaluate rules before applying
+            // Handle dynamic vs static conditions differently
+            if ($condition->isDynamic()) {
+                $hasDynamicConditions = true;
+
+                // Convert rules to callables
                 $rules = $this->ruleConverter::convertRules($condition->rules);
-                foreach ($rules as $rule) {
-                    if (! $rule($cart)) {
-                        continue 2; // Skip this condition if any rule fails
-                    }
+                $conditionData['rules'] = $rules;
+
+                // Create dynamic condition with rules
+                $cartCondition = $cartConditionClass::fromArray($conditionData);
+
+                // Check if already registered as dynamic condition
+                if (! $cart->getDynamicConditions()->has($condition->name)) {
+                    // Register as dynamic condition for automatic evaluation
+                    // Note: registerDynamicCondition() automatically calls evaluateDynamicConditions()
+                    $cart->registerDynamicCondition($cartCondition);
+                }
+            } else {
+                // Static condition - add only if not already present
+                if (! $cart->getConditions()->has($condition->name)) {
+                    $cartCondition = $cartConditionClass::fromArray($conditionData);
+                    $cart->addCondition($cartCondition);
                 }
             }
+        }
 
-            // Instantiate CartCondition and apply to cart
-            $cartConditionClass = \MasyukAI\Cart\Conditions\CartCondition::class;
-            $cartCondition = $cartConditionClass::fromArray($conditionData);
-            $cart->addCondition($cartCondition);
+        // Re-evaluate all dynamic conditions after registration to ensure they're applied/removed correctly
+        if ($hasDynamicConditions && method_exists($cart, 'evaluateDynamicConditions')) {
+            $cart->evaluateDynamicConditions();
         }
     }
 }

@@ -1,161 +1,133 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MasyukAI\FilamentCart\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Arr;
 use MasyukAI\FilamentCart\Models\Cart;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\MasyukAI\FilamentCart\Models\Cart>
+ * @extends Factory<Cart>
  */
-class CartFactory extends Factory
+final class CartFactory extends Factory
 {
     protected $model = Cart::class;
 
-    /**
-     * Define the model's default state.
-     */
     public function definition(): array
     {
+        [$items, $quantity, $subtotal] = $this->generateItems();
+        $conditions = $this->generateConditions();
+
         return [
-            'identifier' => 'cart_'.$this->faker->uuid(),
-            'instance' => $this->faker->randomElement(['default', 'wishlist', 'comparison', 'quote']),
-            'items' => $this->generateRandomItems(),
-            'conditions' => $this->generateRandomConditions(),
-            'metadata' => $this->generateRandomMetadata(),
+            'identifier' => $this->faker->uuid(),
+            'instance' => Arr::random(['default', 'wishlist', 'comparison', 'quote']),
+            'items' => $items,
+            'conditions' => $conditions,
+            'metadata' => $this->generateMetadata(),
+            'items_count' => count($items),
+            'quantity' => $quantity,
+            'subtotal' => $subtotal,
+            'total' => $subtotal,
+            'savings' => 0,
+            'currency' => strtoupper(config('cart.money.default_currency', 'USD')),
         ];
     }
 
-    /**
-     * Generate a cart with no items (empty cart).
-     */
     public function empty(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn () => [
             'items' => [],
             'conditions' => [],
             'metadata' => [],
+            'items_count' => 0,
+            'quantity' => 0,
+            'subtotal' => 0,
+            'total' => 0,
+            'savings' => 0,
         ]);
     }
 
-    /**
-     * Generate a cart for a specific instance.
-     */
     public function instance(string $instance): static
     {
-        return $this->state(fn (array $attributes) => [
-            'instance' => $instance,
-        ]);
+        return $this->state(fn () => ['instance' => $instance]);
     }
 
-    /**
-     * Generate a cart with a specific identifier.
-     */
     public function withIdentifier(string $identifier): static
     {
-        return $this->state(fn (array $attributes) => [
-            'identifier' => $identifier,
-        ]);
+        return $this->state(fn () => ['identifier' => $identifier]);
     }
 
-    /**
-     * Generate a cart with many items.
-     */
     public function withManyItems(int $count = 10): static
     {
-        return $this->state(fn (array $attributes) => [
-            'items' => $this->generateRandomItems($count),
-        ]);
+        return $this->state(function () use ($count) {
+            [$items, $quantity, $subtotal] = $this->generateItems($count);
+
+            return [
+                'items' => $items,
+                'items_count' => count($items),
+                'quantity' => $quantity,
+                'subtotal' => $subtotal,
+                'total' => $subtotal,
+            ];
+        });
     }
 
     /**
-     * Generate a cart with expensive items.
+     * @return array{0: array<int, array<string, mixed>>, 1: int, 2: int}
      */
-    public function expensive(): static
+    private function generateItems(?int $count = null): array
     {
-        return $this->state(fn (array $attributes) => [
-            'items' => $this->generateRandomItems(3, 500, 2000),
-        ]);
-    }
+        $count ??= $this->faker->numberBetween(1, 4);
 
-    /**
-     * Generate random cart items.
-     */
-    private function generateRandomItems(?int $count = null, float $minPrice = 10, float $maxPrice = 500): array
-    {
-        $count = $count ?? $this->faker->numberBetween(1, 5);
         $items = [];
+        $quantity = 0;
+        $subtotal = 0;
 
         for ($i = 0; $i < $count; $i++) {
+            $lineQuantity = $this->faker->numberBetween(1, 5);
+            $price = $this->faker->numberBetween(500, 5000); // cents
+
             $items[] = [
-                'id' => 'product_'.$this->faker->numberBetween(1, 1000),
+                'id' => 'product_'.$this->faker->unique()->numberBetween(1, 99999),
                 'name' => $this->faker->words(3, true),
-                'price' => $this->faker->randomFloat(2, $minPrice, $maxPrice),
-                'quantity' => $this->faker->numberBetween(1, 5),
+                'price' => $price,
+                'quantity' => $lineQuantity,
                 'attributes' => [
-                    'color' => $this->faker->colorName(),
+                    'color' => $this->faker->safeColorName(),
                     'size' => $this->faker->randomElement(['S', 'M', 'L', 'XL']),
-                    'brand' => $this->faker->company(),
                 ],
             ];
+
+            $quantity += $lineQuantity;
+            $subtotal += $price * $lineQuantity;
         }
 
-        return $items;
+        return [$items, $quantity, $subtotal];
     }
 
-    /**
-     * Generate random cart conditions.
-     */
-    private function generateRandomConditions(): array
+    private function generateConditions(): array
     {
-        $conditions = [];
-
-        // Sometimes add a discount
-        if ($this->faker->boolean(30)) {
-            $conditions[] = [
-                'name' => 'Holiday Discount',
-                'type' => 'discount',
-                'value' => $this->faker->randomFloat(2, 5, 50),
-                'description' => 'Special holiday promotion',
-            ];
-        }
-
-        // Sometimes add tax
         if ($this->faker->boolean(70)) {
-            $conditions[] = [
+            return [[
                 'name' => 'Sales Tax',
                 'type' => 'tax',
-                'value' => $this->faker->randomFloat(2, 5, 12),
-                'description' => 'Local sales tax',
-            ];
+                'target' => 'total',
+                'value' => '+600',
+                'order' => 0,
+            ]];
         }
 
-        // Sometimes add shipping
-        if ($this->faker->boolean(50)) {
-            $conditions[] = [
-                'name' => 'Shipping Fee',
-                'type' => 'shipping',
-                'value' => $this->faker->randomFloat(2, 5, 25),
-                'description' => 'Standard shipping',
-            ];
-        }
-
-        return $conditions;
+        return [];
     }
 
-    /**
-     * Generate random cart metadata.
-     */
-    private function generateRandomMetadata(): array
+    private function generateMetadata(): array
     {
         return [
-            'user_id' => $this->faker->numberBetween(1, 100),
             'session_id' => $this->faker->uuid(),
             'ip_address' => $this->faker->ipv4(),
             'user_agent' => $this->faker->userAgent(),
-            'currency' => $this->faker->randomElement(['USD', 'EUR', 'GBP']),
-            'created_from' => $this->faker->randomElement(['web', 'mobile', 'api']),
-            'notes' => $this->faker->optional()->sentence(),
         ];
     }
 }

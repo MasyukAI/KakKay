@@ -24,6 +24,8 @@ use MasyukAI\FilamentCart\Listeners\SyncCartItemOnRemove;
 use MasyukAI\FilamentCart\Listeners\SyncCartItemOnUpdate;
 use MasyukAI\FilamentCart\Listeners\SyncCartOnClear;
 use MasyukAI\FilamentCart\Listeners\SyncCompleteCart;
+use MasyukAI\FilamentCart\Services\CartSyncManager;
+use MasyukAI\FilamentCart\Services\NormalizedCartSynchronizer;
 
 class FilamentCartServiceProvider extends ServiceProvider
 {
@@ -33,6 +35,9 @@ class FilamentCartServiceProvider extends ServiceProvider
             __DIR__.'/../config/filament-cart.php',
             'filament-cart'
         );
+
+        $this->app->singleton(NormalizedCartSynchronizer::class);
+        $this->app->singleton(CartSyncManager::class);
     }
 
     public function boot(): void
@@ -63,10 +68,8 @@ class FilamentCartServiceProvider extends ServiceProvider
      */
     protected function registerEventListeners(): void
     {
-        // Only register listeners if normalized models are enabled
-        if (! config('filament-cart.enable_normalized_models', true)) {
-            return;
-        }
+        Event::listen(CartCreated::class, [ApplyGlobalConditions::class, 'handleCartCreated']);
+        Event::listen(CartUpdated::class, [ApplyGlobalConditions::class, 'handleCartUpdated']);
 
         // Item events
         Event::listen(ItemAdded::class, SyncCartItemOnAdd::class);
@@ -83,9 +86,5 @@ class FilamentCartServiceProvider extends ServiceProvider
         Event::listen(CartCreated::class, SyncCompleteCart::class);
         Event::listen(CartUpdated::class, SyncCompleteCart::class);
         Event::listen(CartCleared::class, SyncCartOnClear::class);
-
-        // Global conditions (always registered, even if normalized models disabled)
-        Event::listen(CartCreated::class, [ApplyGlobalConditions::class, 'handleCartCreated']);
-        Event::listen(CartUpdated::class, [ApplyGlobalConditions::class, 'handleCartUpdated']);
     }
 }

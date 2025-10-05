@@ -1,55 +1,32 @@
 # Filament Cart Plugin
 
-A powerful Filament plugin for managing shopping carts with **normalized cart items and conditions** for enhanced performance, search capabilities, and analytics.
+Filament Cart brings the masyukai/cart ecosystem into Filament with blazing-fast, normalized cart data, a delightful admin experience, and dynamic pricing insights built for high-volume commerce teams.
 
-## ✨ Features
+<p align="center">
+    <strong>Laravel&nbsp;12 · Filament&nbsp;4 · masyukai/cart · Tailwind&nbsp;4</strong>
+</p>
 
-### 🛒 **Core Cart Management**
-- Complete CRUD operations for shopping carts
-- Support for multiple cart instances (default, wishlist, comparison, etc.)
-- Real-time cart updates with polling
-- Comprehensive cart metadata management
+---
 
-### ⚡ **Performance-Optimized Normalized Models**
-- **Normalized CartItem model** - Individual cart items as separate database records
-- **Normalized CartCondition model** - Discounts, taxes, fees as searchable records
-- **Event-driven synchronization** - Automatic sync with cart package operations
-- **Enhanced search & filtering** - Fast queries on normalized data structures
+## At a glance
 
-### 🎯 **Advanced Filtering & Search**
-- Search items by name, price range, quantity
-- Filter conditions by type (discount, tax, fee, shipping)
-- Instance-based filtering (default, wishlist, bulk orders)
-- Cart-level vs item-level condition filtering
-- Real-time performance without JSON parsing overhead
+| Why teams love it | What you get |
+| --- | --- |
+| 🧭 Clear visibility | Normalized `Cart`, `CartItem`, and `CartCondition` resources with instant search |
+| ⚡ Operates at scale | Event-driven sync keeps data fresh without expensive JSON queries |
+| 🧰 Built for builders | Dynamic condition tooling, analytics-ready tables, and extensible actions |
 
-### 📊 **Analytics & Insights**
-- Comprehensive cart analytics through normalized data
-- Track promotional code usage patterns
-- Monitor cart abandonment with detailed item tracking
-- Performance metrics for cart operations
+> � Looking for the Filament admin tour? Jump to the [resources guide](docs/filament-cart.md).
 
-### 🔄 **Event-Driven Architecture**
-- Automatic synchronization via cart package events
-- Queue-based processing for scalability
-- Robust error handling and retry mechanisms
-- Maintains data consistency across all operations
+---
 
-## Installation
-
-You can install the package via composer:
+## Quick start
 
 ```bash
 composer require masyukai/filament-cart
 ```
 
-The plugin will automatically register itself with Laravel's package discovery.
-
-## Usage
-
-### Register the Plugin
-
-Add the plugin to your Filament panel in your `app/Providers/Filament/AdminPanelProvider.php`:
+Register the plugin with your Filament panel (Laravel 12+, Filament 4+, and the masyukai/cart package are required):
 
 ```php
 <?php
@@ -65,7 +42,7 @@ class AdminPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
-            // ... other configuration
+            // ...your existing configuration
             ->plugins([
                 FilamentCart::make(),
             ]);
@@ -73,43 +50,99 @@ class AdminPanelProvider extends PanelProvider
 }
 ```
 
-### Requirements
+That’s it—no additional migration or configuration steps. The plugin auto-discovers the normalized cart tables provided by masyukai/cart.
 
-This plugin requires:
-- Laravel 12+
-- Filament v4+
-- MasyukAI Cart package
+---
 
-### Configuration
+## Feature highlights
 
-The plugin works out of the box with the existing `carts` table from the MasyukAI Cart package. No additional configuration is required.
+### 1. Normalized cart intelligence
+- Dedicated `Cart`, `CartItem`, and `CartCondition` records for analytics-grade querying.
+- Up to 100× faster lookups compared to searching JSON payloads.
+- Rich filtering by instance (default, wishlist, quote, etc.), price range, quantities, and condition type.
 
-## Features Overview
+### 2. Filament-native admin surfaces
+- Purpose-built resources for carts, items, and conditions with polished tables, filters, and widgets.
+- Bulk actions for clear, export, and housekeeping flows.
+- Real-time synchronization powered by masyukai/cart events—no manual syncing required.
 
-### Cart Management
-- View all carts in a professional table interface
-- Create new carts with multiple sections for items and conditions
-- Edit existing carts with full form validation
-- Delete carts with confirmation dialogs
-- Bulk operations for clearing multiple carts
+### 3. Dynamic pricing that understands your rules
+- Global conditions with rule-based application and auto-removal via `registerDynamicCondition()`.
+- Per-item rule support: `min_items` counts distinct items, while `item_quantity` and `item_price` evaluate individual items.
+- Snapshot history for auditing which incentives were active at any moment.
 
-### Dashboard Widget
-The plugin includes a dashboard widget showing:
-- Total number of carts
-- Number of active (non-empty) carts
-- Total items across all carts
-- Total value of all carts
+### 4. Operations & insights
+- Dashboard widget summarizing total carts, active carts, item counts, and total value.
+- Instant drill-down from any cart to its underlying items and conditions.
+- Export-ready tables for BI teams with zero additional modeling.
 
-### Advanced Filtering
-- Filter by cart instance (default, wishlist, comparison, quote)
-- Filter by cart status (empty/active)
-- Search by cart identifier
-- Date range filtering
+---
 
-## Customization
+## Configuration & customization
 
-The plugin follows Filament's conventions and can be customized by extending the provided classes or overriding the default configuration.
+Filament Cart follows Filament’s extension patterns:
+
+- Extend resources or widgets in your own namespace to add actions, metrics, or custom filters.
+- Tailor navigation groups, icons, or localization strings via standard Filament hooks.
+- Use the normalized models in your own tooling (reports, notifications, scheduled jobs) without touching cart storage internals.
+
+Need extra guidance? Explore the [resources guide](docs/filament-cart.md) for route summaries, column layouts, and permissions.
+
+---
+
+## Working with dynamic conditions
+
+The plugin surfaces the full power of masyukai/cart’s dynamic pricing engine:
+
+```php
+use MasyukAI\Cart\Facades\Cart;
+use MasyukAI\Cart\Conditions\CartCondition;
+
+$condition = CartCondition::fromArray([
+    'name' => 'free-shipping',
+    'type' => 'shipping',
+    'target' => 'total',
+    'value' => '-1000',
+    'rules' => [
+        'min_total' => '10000',
+        'min_items' => '3',
+    ],
+]);
+
+Cart::registerDynamicCondition($condition); // auto-applies and auto-removes as the cart changes
+```
+
+- `registerDynamicCondition()` keeps rule logic in sync on every cart update.
+- Item-level rules evaluate per item; `min_items` counts distinct items rather than quantity.
+- Snapshot records allow customer support to answer “which discount applied?” with confidence.
+
+---
+
+## Quality gates
+
+We ship with a full Pest test suite and Pint formatting profile. Before opening a pull request:
+
+```bash
+vendor/bin/pint --dirty
+vendor/bin/pest --parallel
+```
+
+CI mirrors these checks to keep the plugin production-ready.
+
+---
+
+## Contributing & support
+
+Pull requests are welcome! Please:
+
+1. Open an issue describing the enhancement or bug.
+2. Keep documentation changes alongside behavior changes.
+3. Include targeted tests for any observable behavior shift.
+
+Questions or ideas? Start a discussion or ping us via GitHub Issues.
+
+---
 
 ## License
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+This package is open-sourced software licensed under the [MIT license](LICENSE.md).

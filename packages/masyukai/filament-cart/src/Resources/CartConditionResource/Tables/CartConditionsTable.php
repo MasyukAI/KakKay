@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MasyukAI\FilamentCart\Resources\CartConditionResource\Tables;
 
 use Akaunting\Money\Money;
@@ -10,7 +12,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
-class CartConditionsTable
+final class CartConditionsTable
 {
     public static function configure(Table $table): Table
     {
@@ -91,6 +93,13 @@ class CartConditionsTable
                     ->boolean()
                     ->toggleable(isToggledHiddenByDefault: true),
 
+                IconColumn::make('is_global')
+                    ->label('Global')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-globe-asia-australia')
+                    ->falseIcon('heroicon-o-minus-circle')
+                    ->toggleable(),
+
                 TextColumn::make('level')
                     ->label('Level')
                     ->badge()
@@ -155,27 +164,31 @@ class CartConditionsTable
 
                 Filter::make('cart_level')
                     ->label('Cart Level')
-                    ->query(fn (Builder $query): Builder => $query->cartLevel()),
+                    ->query(fn (Builder $query): Builder => /** @phpstan-ignore method.notFound */ $query->cartLevel()),
 
                 Filter::make('item_level')
                     ->label('Item Level')
-                    ->query(fn (Builder $query): Builder => $query->itemLevel()),
+                    ->query(fn (Builder $query): Builder => /** @phpstan-ignore method.notFound */ $query->itemLevel()),
 
                 Filter::make('discounts')
                     ->label('Discounts Only')
-                    ->query(fn (Builder $query): Builder => $query->discounts()),
+                    ->query(fn (Builder $query): Builder => /** @phpstan-ignore method.notFound */ $query->discounts()),
 
                 Filter::make('taxes')
                     ->label('Taxes Only')
-                    ->query(fn (Builder $query): Builder => $query->taxes()),
+                    ->query(fn (Builder $query): Builder => /** @phpstan-ignore method.notFound */ $query->taxes()),
 
                 Filter::make('fees')
                     ->label('Fees Only')
-                    ->query(fn (Builder $query): Builder => $query->fees()),
+                    ->query(fn (Builder $query): Builder => /** @phpstan-ignore method.notFound */ $query->fees()),
 
                 Filter::make('shipping')
                     ->label('Shipping Only')
-                    ->query(fn (Builder $query): Builder => $query->shipping()),
+                    ->query(fn (Builder $query): Builder => /** @phpstan-ignore method.notFound */ $query->shipping()),
+
+                Filter::make('global')
+                    ->label('Global Only')
+                    ->query(fn (Builder $query): Builder => $query->where('is_global', true)),
             ])
             ->actions([])
             ->bulkActions([])

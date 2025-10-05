@@ -5,312 +5,222 @@ declare(strict_types=1);
 namespace MasyukAI\FilamentCart\Models;
 
 use Akaunting\Money\Money;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Log;
-use MasyukAI\Cart\Cart as CartPackage;
+use MasyukAI\Cart\Cart as BaseCart;
+use MasyukAI\Cart\Facades\Cart as CartFacade;
+use Throwable;
 
-class Cart extends Model
+/**
+ * @property string $identifier
+ * @property string $instance
+ * @property array<mixed>|null $items
+ * @property array<mixed>|null $conditions
+ * @property array<mixed>|null $metadata
+ * @property int $items_count
+ * @property int $quantity
+ * @property int $subtotal
+ * @property int $total
+ * @property int $savings
+ * @property string $currency
+ */
+final class Cart extends Model
 {
+    /** @use HasFactory<\MasyukAI\FilamentCart\Database\Factories\CartFactory> */
     use HasFactory;
     use HasUuids;
 
-    /**
-     * Create a new factory instance for the model.
-     */
-    protected static function newFactory(): \MasyukAI\FilamentCart\Database\Factories\CartFactory
-    {
-        return \MasyukAI\FilamentCart\Database\Factories\CartFactory::new();
-    }
+    protected $table = 'cart_snapshots';
 
-    /**
-     * The table associated with the model.
-     */
-    protected $table = 'carts';
-
-    /**
-     * The attributes that are mass assignable.
-     */
     protected $fillable = [
         'identifier',
         'instance',
         'items',
         'conditions',
         'metadata',
+        'items_count',
+        'quantity',
+        'subtotal',
+        'total',
+        'savings',
+        'currency',
     ];
 
-    /**
-     * The attributes that should be cast.
-     */
     protected $casts = [
         'items' => 'array',
         'conditions' => 'array',
         'metadata' => 'array',
+        'items_count' => 'integer',
+        'quantity' => 'integer',
+        'subtotal' => 'integer',
+        'total' => 'integer',
+        'savings' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
 
-    /**
-     * The model's default attribute values.
-     */
-    // protected $attributes = [
-    //     'identifier' => null,
-    //     'instance' => 'default',
-    //     'items' => null,
-    //     'conditions' => null,
-    //     'metadata' => null,
-    // ];
+    protected $attributes = [
+        'items' => null,
+        'conditions' => null,
+        'metadata' => null,
+        'items_count' => 0,
+        'quantity' => 0,
+        'subtotal' => 0,
+        'total' => 0,
+        'savings' => 0,
+        'currency' => 'USD',
+    ];
 
-    /**
-     * Get the Cart package instance for this cart.
-     * This allows us to use the cart package's calculations which properly handle conditions.
-     */
-    public function getCartInstance(): ?CartPackage
+    public function getCartInstance(): ?BaseCart
     {
         try {
-            // Get the configured storage driver from the service container
-            $storageDriver = config('cart.storage', 'session');
-            $storage = app("cart.storage.{$storageDriver}");
-
-            // Create cart instance with the same identifier and instance name
-            $cart = new CartPackage(
-                storage: $storage,
-                identifier: $this->identifier,
-                events: app(\Illuminate\Contracts\Events\Dispatcher::class),
-                instanceName: $this->instance,
-                eventsEnabled: false // Don't trigger events when just reading
-            );
-
-            return $cart;
-        } catch (\Exception $e) {
-            Log::warning('Failed to get cart instance', [
-                'cart_id' => $this->id,
+            return CartFacade::getCartInstance($this->instance, $this->identifier);
+        } catch (Throwable $exception) {
+            Log::warning('Failed to resolve cart instance', [
                 'identifier' => $this->identifier,
-                'error' => $e->getMessage(),
+                'instance' => $this->instance,
+                'error' => $exception->getMessage(),
             ]);
 
             return null;
         }
     }
 
-    /**
-     * Get the items count for the cart.
-     */
-    protected function itemsCount(): Attribute
-    {
-        return Attribute::make(
-            get: function () {
-                $cart = $this->getCartInstance();
-
-                return $cart ? $cart->count() : 0;
-            },
-        );
-    }
-
-    /**
-     * Get the total quantity of items in the cart.
-     */
-    protected function totalQuantity(): Attribute
-    {
-        return Attribute::make(
-            get: function () {
-                $cart = $this->getCartInstance();
-
-                return $cart ? $cart->getTotalQuantity() : 0;
-            },
-        );
-    }
-
-    /**
-     * Get the subtotal of the cart (without conditions applied).
-     */
-    protected function subtotal(): Attribute
-    {
-        return Attribute::make(
-            get: function () {
-                $cart = $this->getCartInstance();
-
-                if (! $cart) {
-                    return 0;
-                }
-
-                // Get subtotal without conditions applied, convert to cents
-                return $cart->subtotalWithoutConditions()->getAmount();
-            },
-        );
-    }
-
-    /**
-     * Get the total of the cart (with conditions applied).
-     */
-    protected function total(): Attribute
-    {
-        return Attribute::make(
-            get: function () {
-                $cart = $this->getCartInstance();
-
-                if (! $cart) {
-                    return 0;
-                }
-
-                // Get total with conditions applied, convert to cents
-                return (int) ($cart->total()->getAmount());
-            },
-        );
-    }
-
-    /**
-     * Get the savings from conditions (subtotal - total).
-     */
-    protected function savings(): Attribute
-    {
-        return Attribute::make(
-            get: function () {
-                $cart = $this->getCartInstance();
-
-                if (! $cart) {
-                    return 0;
-                }
-
-                // Get savings, convert to cents
-                return (int) ($cart->savings()->getAmount());
-            },
-        );
-    }
-
-    /**
-     * Check if cart is empty.
-     */
-    public function isEmpty(): bool
-    {
-        return $this->items_count === 0;
-    }
-
-    /**
-     * Get subtotal in dollars (converted from cents).
-     */
     public function getSubtotalInDollarsAttribute(): float
     {
         return $this->subtotal / 100;
     }
 
-    /**
-     * Get total in dollars (converted from cents).
-     */
     public function getTotalInDollarsAttribute(): float
     {
         return $this->total / 100;
     }
 
-    /**
-     * Get savings in dollars (converted from cents).
-     */
     public function getSavingsInDollarsAttribute(): float
     {
         return $this->savings / 100;
     }
 
     /**
-     * Get formatted total.
+     * @param Builder<self> $query
      */
-    public function getFormattedTotalAttribute(): string
-    {
-        return (string) Money::MYR($this->total);
-    }
-
-    /**
-     * Get formatted savings.
-     */
-    public function getFormattedSavingsAttribute(): string
-    {
-        return (string) Money::MYR($this->savings);
-    }
-
-    /**
-     * Scope to filter by instance.
-     */
-    public function scopeInstance($query, string $instance): void
+    public function scopeInstance(Builder $query, string $instance): void
     {
         $query->where('instance', $instance);
     }
 
     /**
-     * Scope to filter by identifier.
+     * @param Builder<self> $query
      */
-    public function scopeByIdentifier($query, string $identifier): void
+    public function scopeByIdentifier(Builder $query, string $identifier): void
     {
         $query->where('identifier', $identifier);
     }
 
     /**
-     * Scope to get non-empty carts.
+     * @param Builder<self> $query
      */
-    public function scopeNotEmpty($query): void
+    public function scopeNotEmpty(Builder $query): void
     {
-        $connection = $query->getConnection();
-        $driverName = $connection->getDriverName();
-
-        $query->whereNotNull('items');
-
-        if ($driverName === 'pgsql') {
-            // PostgreSQL requires explicit casting
-            $query->whereRaw("items::text != '[]'")
-                ->whereRaw("items::text != '{}'");
-        } else {
-            // SQLite and MySQL can handle direct comparison
-            $query->where('items', '!=', '[]')
-                ->where('items', '!=', '{}');
-        }
+        $query->where('items_count', '>', 0);
     }
 
     /**
-     * Scope to get recent carts.
+     * @param Builder<self> $query
      */
-    public function scopeRecent($query, int $days = 7): void
+    public function scopeRecent(Builder $query, int $days = 7): void
     {
         $query->where('updated_at', '>=', now()->subDays($days));
     }
 
     /**
-     * Get the normalized cart items.
+     * @param Builder<self> $query
      */
+    public function scopeWithSavings(Builder $query): void
+    {
+        $query->where('savings', '>', 0);
+    }
+
+    /** @return HasMany<CartItem, Cart> */
+    /** @phpstan-ignore return.type, missingType.generics */
     public function cartItems(): HasMany
     {
         return $this->hasMany(CartItem::class);
     }
 
-    /**
-     * Get the normalized cart conditions.
-     */
+    /** @return HasMany<CartItem, Cart> */
+    public function items(): HasMany
+    {
+        return $this->cartItems();
+    }
+
+    /** @return HasMany<CartCondition, Cart> */
+    /** @phpstan-ignore return.type, missingType.generics */
     public function cartConditions(): HasMany
     {
         return $this->hasMany(CartCondition::class);
     }
 
-    /**
-     * Get cart-level conditions only.
-     */
+    /** @return HasMany<CartCondition, Cart> */
+    /** @phpstan-ignore method.notFound, missingType.generics */
     public function cartLevelConditions(): HasMany
     {
-        return $this->hasMany(CartCondition::class)->cartLevel();
+        /** @phpstan-ignore-next-line */
+        return $this->cartConditions()->cartLevel();
     }
 
-    /**
-     * Get item-level conditions only.
-     */
+    /** @return HasMany<CartCondition, Cart> */
+    /** @phpstan-ignore method.notFound, missingType.generics */
     public function itemLevelConditions(): HasMany
     {
-        return $this->hasMany(CartCondition::class)->itemLevel();
+        /** @phpstan-ignore-next-line */
+        return $this->cartConditions()->itemLevel();
     }
 
-    /**
-     * Get the user associated with the cart (if identifier is a UUID).
-     */
-    public function user()
+    /** @phpstan-ignore-next-line */
+    public function user(): BelongsTo
     {
         return $this->belongsTo(\App\Models\User::class, 'identifier', 'id');
+    }
+
+    public function isEmpty(): bool
+    {
+        return $this->items_count === 0 || $this->quantity === 0;
+    }
+
+    protected static function newFactory(): \MasyukAI\FilamentCart\Database\Factories\CartFactory
+    {
+        return \MasyukAI\FilamentCart\Database\Factories\CartFactory::new();
+    }
+
+    /** @return Attribute<string, never> */
+    protected function formattedSubtotal(): Attribute
+    {
+        return Attribute::get(fn (): string => $this->formatMoney($this->subtotal));
+    }
+
+    /** @return Attribute<string, never> */
+    protected function formattedTotal(): Attribute
+    {
+        return Attribute::get(fn (): string => $this->formatMoney($this->total));
+    }
+
+    /** @return Attribute<string, never> */
+    protected function formattedSavings(): Attribute
+    {
+        return Attribute::get(fn (): string => $this->formatMoney($this->savings));
+    }
+
+    public function formatMoney(int $amount): string
+    {
+        $currency = strtoupper($this->currency ?: config('cart.money.default_currency', 'USD'));
+
+        return (string) Money::{$currency}($amount);
     }
 }

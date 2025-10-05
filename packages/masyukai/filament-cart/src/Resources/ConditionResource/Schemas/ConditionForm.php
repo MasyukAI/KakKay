@@ -134,11 +134,11 @@ class ConditionForm
                             ->schema([
                                 Placeholder::make('operator')
                                     ->label('Operator')
-                                    ->content(fn ($record) => $record?->operator ?? 'Not computed yet'),
+                                    ->content(fn ($record) => $record->operator ?? 'Not computed yet'),
 
                                 Placeholder::make('parsed_value')
                                     ->label('Parsed Value')
-                                    ->content(fn ($record) => $record?->parsed_value ?? 'Not computed yet'),
+                                    ->content(fn ($record) => $record->parsed_value ?? 'Not computed yet'),
 
                                 Placeholder::make('is_discount')
                                     ->label('Is Discount')
@@ -155,6 +155,10 @@ class ConditionForm
                                 Placeholder::make('is_dynamic')
                                     ->label('Is Dynamic')
                                     ->content(fn ($record) => $record?->is_dynamic ? '✓ Yes' : '✗ No'),
+
+                                Placeholder::make('is_global_placeholder')
+                                    ->label('Is Global')
+                                    ->content(fn ($record) => $record?->is_global ? '✓ Yes' : '✗ No'),
                             ]),
                     ])
                     ->collapsible()

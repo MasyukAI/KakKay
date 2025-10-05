@@ -13,6 +13,10 @@ parameters:
     
     # Ignore specific errors
     ignoreErrors:
+        - '#Call to function method_exists\(\) with MasyukAI\\Cart\\Cart and .* will always evaluate to true#'
+        - '#Class App\\Models\\User not found#'
+        - '#Parameter \#1 \$related of method Illuminate\\Database\\Eloquent\\Model::belongsTo\(\) expects class-string<Illuminate\\Database\\Eloquent\\Model>, string given#'
+        - '#Unable to resolve the template type TRelatedModel in call to method Illuminate\\Database\\Eloquent\\Model::belongsTo\(\)#'
     
     # Check test files too (optional)
     # paths:

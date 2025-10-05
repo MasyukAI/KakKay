@@ -2,9 +2,6 @@
 
 namespace MasyukAI\FilamentCart\Tests;
 
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 
 abstract class TestCase extends OrchestraTestCase
@@ -14,7 +11,6 @@ abstract class TestCase extends OrchestraTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->setUpDatabase();
 
         // Register Str::ucwords macro if missing
         \Illuminate\Support\Str::macro('ucwords', function ($value) {
@@ -36,7 +32,6 @@ abstract class TestCase extends OrchestraTestCase
             });
         }
 
-        // Manually register event listeners for synchronization
         $this->registerEventListeners();
     }
 
@@ -45,10 +40,15 @@ abstract class TestCase extends OrchestraTestCase
      */
     protected function registerEventListeners(): void
     {
-        // Only register listeners if normalized models are enabled
-        if (! config('filament-cart.enable_normalized_models', true)) {
-            return;
-        }
+        // Global conditions should always register to mimic service provider
+        \Illuminate\Support\Facades\Event::listen(
+            \MasyukAI\Cart\Events\CartCreated::class,
+            [\MasyukAI\FilamentCart\Listeners\ApplyGlobalConditions::class, 'handleCartCreated']
+        );
+        \Illuminate\Support\Facades\Event::listen(
+            \MasyukAI\Cart\Events\CartUpdated::class,
+            [\MasyukAI\FilamentCart\Listeners\ApplyGlobalConditions::class, 'handleCartUpdated']
+        );
 
         // Item events
         \Illuminate\Support\Facades\Event::listen(
@@ -97,89 +97,13 @@ abstract class TestCase extends OrchestraTestCase
         );
     }
 
-    protected function setUpDatabase(): void
-    {
-        // Enable foreign key constraints in SQLite
-        DB::statement('PRAGMA foreign_keys=ON');
-
-        // Drop tables if they exist (order matters for FKs)
-        Schema::dropIfExists('cart_conditions');
-        Schema::dropIfExists('cart_items');
-        Schema::dropIfExists('carts');
-
-        // Create carts table
-        Schema::create('carts', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->string('identifier')->index();
-            $table->string('instance')->default('default')->index();
-            $table->jsonb('items')->nullable();
-            $table->jsonb('conditions')->nullable();
-            $table->jsonb('metadata')->nullable();
-            $table->bigInteger('version')->default(1)->index();
-            $table->timestamps();
-            $table->unique(['identifier', 'instance']);
-        });
-
-        // Create cart_items table
-        Schema::create('cart_items', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->foreignUuid('cart_id')->constrained('carts')->onDelete('cascade');
-            $table->string('item_id')->index();
-            $table->string('name');
-            $table->integer('price'); // Price in cents (from Money object)
-            $table->integer('quantity');
-            $table->jsonb('attributes')->nullable();
-            $table->jsonb('conditions')->nullable();
-            $table->string('associated_model')->nullable();
-            $table->timestamps();
-            $table->index(['cart_id', 'item_id']);
-            $table->index(['name']);
-            $table->index(['price']);
-            $table->index(['quantity']);
-            $table->index(['created_at']);
-            $table->index(['updated_at']);
-        });
-
-        // Create cart_conditions table
-        Schema::create('cart_conditions', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->foreignUuid('cart_id')->constrained('carts')->onDelete('cascade');
-            $table->foreignUuid('cart_item_id')->nullable()->constrained('cart_items')->onDelete('cascade');
-            $table->string('name');
-            $table->string('type'); // discount, tax, fee, shipping, etc.
-            $table->string('target'); // subtotal, total, price, etc.
-            $table->string('value'); // percentage or fixed amount
-            $table->string('operator')->nullable(); // +, -, *, /, %
-            $table->boolean('is_charge')->default(false);
-            $table->boolean('is_dynamic')->default(false);
-            $table->boolean('is_discount')->default(false);
-            $table->boolean('is_percentage')->default(false);
-            $table->string('parsed_value')->nullable(); // Calculated value
-            $table->jsonb('rules')->nullable(); // Additional rules
-            $table->integer('order')->default(0);
-            $table->jsonb('attributes')->nullable();
-            $table->string('item_id')->nullable()->index(); // Cart item ID this applies to (if item-level)
-            $table->timestamps();
-
-            // Indexes for performance
-            $table->index(['cart_id', 'name']);
-            $table->index(['type']);
-            $table->index(['target']);
-            $table->index(['order']);
-            $table->index(['is_discount']);
-            $table->index(['is_percentage']);
-            $table->index(['created_at']);
-            $table->index(['updated_at']);
-        });
-    }
-
     protected function defineEnvironment($app): void
     {
         // Setup the test environment (mirroring cart package)
         $app['config']->set('app.key', 'base64:'.base64_encode(random_bytes(32)));
         $app['config']->set('app.env', 'testing');
         $app['config']->set('database.default', 'testing');
-        $app['config']->set('cart.default_currency', 'USD');
+        $app['config']->set('cart.money.default_currency', 'USD');
         $app['config']->set('database.connections.testing', [
             'driver' => 'sqlite',
             'database' => ':memory:',
@@ -211,7 +135,6 @@ abstract class TestCase extends OrchestraTestCase
         $app['config']->set('cart.events', true);
 
         // Set filament-cart config
-        $app['config']->set('filament-cart.enable_normalized_models', true);
         $app['config']->set('filament-cart.synchronization.queue_sync', false);
 
         // Register Filament Blade components namespaces for testing

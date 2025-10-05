@@ -59,7 +59,7 @@ class CartItemResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::count();
+        return (string) static::getModel()::count();
     }
 
     public static function getNavigationBadgeColor(): string|array|null
@@ -72,11 +72,17 @@ class CartItemResource extends Resource
         return false; // Read-only resource
     }
 
+    /**
+     * @param \MasyukAI\FilamentCart\Models\CartItem $record
+     */
     public static function canEdit($record): bool
     {
         return false; // Read-only resource
     }
 
+    /**
+     * @param \MasyukAI\FilamentCart\Models\CartItem $record
+     */
     public static function canDelete($record): bool
     {
         return false; // Read-only resource

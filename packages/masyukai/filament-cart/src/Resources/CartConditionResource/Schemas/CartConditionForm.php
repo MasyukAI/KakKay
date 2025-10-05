@@ -58,7 +58,7 @@ class CartConditionForm
                                     ->dehydrated(false),
                             ]),
 
-                        Grid::make(4)
+                        Grid::make(5)
                             ->schema([
                                 \Filament\Forms\Components\Checkbox::make('is_charge')
                                     ->label('Is Charge')
@@ -77,6 +77,11 @@ class CartConditionForm
 
                                 \Filament\Forms\Components\Checkbox::make('is_dynamic')
                                     ->label('Is Dynamic')
+                                    ->disabled()
+                                    ->dehydrated(false),
+
+                                \Filament\Forms\Components\Checkbox::make('is_global')
+                                    ->label('Is Global')
                                     ->disabled()
                                     ->dehydrated(false),
                             ]),

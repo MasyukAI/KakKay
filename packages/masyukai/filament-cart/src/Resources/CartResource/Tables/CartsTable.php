@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MasyukAI\FilamentCart\Resources\CartResource\Tables;
 
-use Akaunting\Money\Money;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkAction;
@@ -10,17 +11,17 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\DB;
-use MasyukAI\Cart\Facades\Cart;
+use MasyukAI\Cart\Facades\Cart as CartFacade;
+use MasyukAI\FilamentCart\Models\Cart;
+use MasyukAI\FilamentCart\Resources\CartResource;
 
-class CartsTable
+final class CartsTable
 {
     public static function configure(Table $table): Table
     {
@@ -36,53 +37,45 @@ class CartsTable
                 TextColumn::make('instance')
                     ->label('Instance')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'default' => 'gray',
-                        'wishlist' => 'warning',
-                        'comparison' => 'info',
-                        'quote' => 'success',
-                        default => 'primary',
-                    })
+                    ->color(fn (string $state): string => $state === 'default' ? 'primary' : 'gray')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
 
                 TextColumn::make('items_count')
                     ->label('Items')
-                    // ->alignCenter()
                     ->sortable()
-                    ->icon(Heroicon::OutlinedShoppingBag),
+                    ->alignCenter(),
 
-                TextColumn::make('total_quantity')
+                TextColumn::make('quantity')
                     ->label('Quantity')
                     ->alignCenter()
                     ->sortable(),
 
                 TextColumn::make('subtotal')
                     ->label('Subtotal')
-                    // ->alignEnd()
-                    ->formatStateUsing(fn ($state) => Money::MYR($state))
-                    ->sortable(query: fn (Builder $query, string $direction): Builder => $query->orderByRaw('JSON_EXTRACT(items, "$[*].price") '.$direction)
-                    ),
+                    ->alignEnd()
+                    ->money(fn (Cart $record): string => /** @phpstan-ignore property.notFound */ $record->currency, divideBy: 100)
+                    ->sortable(),
 
                 TextColumn::make('total')
                     ->label('Total')
                     ->alignEnd()
-                    ->formatStateUsing(fn ($state) => Money::MYR($state))
+                    ->money(fn (Cart $record): string => /** @phpstan-ignore property.notFound */ $record->currency, divideBy: 100)
                     ->sortable(),
 
-                TextColumn::make('version')
-                    ->label('Version')
-                    ->alignCenter()
+                TextColumn::make('savings')
+                    ->label('Savings')
+                    ->alignEnd()
+                    ->badge()
+                    ->color('success')
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->money(fn (Cart $record): string => $record->currency, divideBy: 100)
                     ->sortable(),
 
-                // IconColumn::make('isEmpty')
-                //     ->label('Status')
-                //     ->boolean()
-                //     ->trueIcon(Heroicon::OutlinedXCircle)
-                //     ->falseIcon(Heroicon::OutlinedCheckCircle)
-                //     ->trueColor('danger')
-                //     ->falseColor('success'),
-                // ->tooltip(fn ($record): string => $record->isEmpty() ? 'Empty Cart' : 'Has Items'),
+                TextColumn::make('currency')
+                    ->label('Currency')
+                    ->badge()
+                    ->sortable(),
 
                 TextColumn::make('created_at')
                     ->label('Created')
@@ -99,26 +92,43 @@ class CartsTable
             ])
             ->filters([
                 SelectFilter::make('instance')
-                    ->options([
-                        'default' => 'Default',
-                        'wishlist' => 'Wishlist',
-                        'comparison' => 'Comparison',
-                        'quote' => 'Quote',
-                    ])
+                    ->options(fn () => Cart::query()
+                        ->select('instance')
+                        ->distinct()
+                        ->orderBy('instance')
+                        ->pluck('instance', 'instance')
+                        ->toArray()
+                    )
                     ->multiple(),
+
+                SelectFilter::make('currency')
+                    ->options(fn () => Cart::query()
+                        ->select('currency')
+                        ->distinct()
+                        ->orderBy('currency')
+                        ->pluck('currency', 'currency')
+                        ->toArray()
+                    ),
 
                 Filter::make('has_items')
                     ->label('Has Items')
-                    ->query(fn (Builder $query): Builder => $query->notEmpty()),
+                    ->query(fn (Builder $query): Builder => /** @phpstan-ignore method.notFound */ $query->notEmpty()),
+
+                Filter::make('has_savings')
+                    ->label('Has Savings')
+                    ->query(fn (Builder $query): Builder => /** @phpstan-ignore method.notFound */ $query->withSavings()),
+
+                Filter::make('high_quantity')
+                    ->label('10+ Units')
+                    ->query(fn (Builder $query): Builder => $query->where('quantity', '>=', 10)),
 
                 Filter::make('recent')
                     ->label('Recent (7 days)')
-                    ->query(fn (Builder $query): Builder => $query->recent()),
+                    ->query(fn (Builder $query): Builder => /** @phpstan-ignore method.notFound */ $query->recent()),
 
                 Filter::make('created_today')
                     ->label('Created Today')
-                    ->query(fn (Builder $query): Builder => $query->whereDate('created_at', today())
-                    ),
+                    ->query(fn (Builder $query): Builder => $query->whereDate('created_at', today())),
             ])
             ->recordActions([
                 ViewAction::make()
@@ -133,34 +143,27 @@ class CartsTable
                         ->icon(Heroicon::OutlinedTrash)
                         ->color('danger')
                         ->requiresConfirmation()
-                        ->action(function ($record) {
-                            // Clear cart items and conditions manually without deleting the cart record
-                            // This allows admins to manually add items/conditions after clearing
-
-                            // Delete normalized cart_items records
-                            DB::table('cart_items')->where('cart_id', $record->id)->delete();
-
-                            // Delete normalized cart_conditions records
-                            DB::table('cart_conditions')->where('cart_id', $record->id)->delete();
-
-                            // Clear cart data and increment version
-                            $record->update([
-                                'items' => [],
-                                'conditions' => [],
-                                'metadata' => [],
-                                'version' => $record->version + 1,
-                            ]);
-                        }),
-                    // ->visible(fn ($record) => !$record->isEmpty()),
+                        ->action(function (Cart $record): void {
+                            /** @phpstan-ignore property.notFound */
+                            $cart = CartFacade::getCartInstance($record->instance, $record->identifier);
+                            $cart->clear();
+                        })
+                        ->visible(fn (Cart $record): bool => /** @phpstan-ignore property.notFound */ $record->items_count > 0)
+                        ->successNotificationTitle('Cart cleared'),
 
                     Action::make('view_items')
                         ->label('View Items')
                         ->icon(Heroicon::OutlinedListBullet)
-                        ->url(fn ($record) => route('filament.admin.resources.carts.view', $record)),
-                    // ->visible(fn ($record) => !$record->isEmpty()),
+                        ->url(fn (Cart $record) => CartResource::getUrl('view', ['record' => $record])),
 
                     DeleteAction::make()
-                        ->icon(Heroicon::OutlinedXMark),
+                        ->icon(Heroicon::OutlinedXMark)
+                        ->using(function (Cart $record): void {
+                            $cart = CartFacade::getCartInstance($record->instance, $record->identifier);
+                            $cart->clear();
+                            $record->delete();
+                        })
+                        ->successNotificationTitle('Cart deleted'),
                 ])
                     ->icon(Heroicon::OutlinedEllipsisVertical)
                     ->tooltip('More actions'),
@@ -171,17 +174,12 @@ class CartsTable
                     ->icon(Heroicon::OutlinedTrash)
                     ->color('danger')
                     ->requiresConfirmation()
-                    ->action(function (Collection $records) {
-                        $cartIds = $records->pluck('id')->toArray();
-                        DB::table('cart_items')->whereIn('cart_id', $cartIds)->delete();
-                        DB::table('cart_conditions')->whereIn('cart_id', $cartIds)->delete();
-                        $records->each(function ($record) {
-                            $record->update([
-                                'items' => [],
-                                'conditions' => [],
-                                'metadata' => [],
-                                'version' => $record->version + 1,
-                            ]);
+                    ->action(function (Collection $records): void {
+                        /** @var Collection<int|string, Cart> $records */
+                        $records->each(/** @param Cart $record */ function (Cart $record): void {
+                            /** @phpstan-ignore property.notFound */
+                            $cart = CartFacade::getCartInstance($record->instance, $record->identifier);
+                            $cart->clear();
                         });
                     }),
 
@@ -190,17 +188,18 @@ class CartsTable
                     ->icon(Heroicon::OutlinedXMark)
                     ->color('danger')
                     ->requiresConfirmation()
-                    ->action(function (Collection $records) {
-                        $cartIds = $records->pluck('id')->toArray();
-                        // Delete normalized cart_items and cart_conditions for selected carts
-                        DB::table('cart_items')->whereIn('cart_id', $cartIds)->delete();
-                        DB::table('cart_conditions')->whereIn('cart_id', $cartIds)->delete();
-                        // Delete the carts themselves
-                        $records->each->delete();
+                    ->action(function (Collection $records): void {
+                        /** @var Collection<int|string, Cart> $records */
+                        $records->each(/** @param Cart $record */ function (Cart $record): void {
+                            /** @phpstan-ignore property.notFound */
+                            $cart = CartFacade::getCartInstance($record->instance, $record->identifier);
+                            $cart->clear();
+                            $record->delete();
+                        });
                     }),
             ])
             ->defaultSort('updated_at', 'desc')
-            ->poll('30s')
+            ->poll(fn () => config('filament-cart.polling_interval', 30).'s')
             ->striped();
     }
 }

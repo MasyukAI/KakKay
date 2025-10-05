@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MasyukAI\FilamentCart\Models;
 
 use Akaunting\Money\Money;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,9 +16,28 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  *
  * This model is readonly and only updated via cart events
  * to maintain data consistency with the cart package.
+ *
+ * @property int $cart_id
+ * @property int|null $cart_item_id
+ * @property string $name
+ * @property string $type
+ * @property string $target
+ * @property string $value
+ * @property int $order
+ * @property array<mixed>|null $attributes
+ * @property string|null $item_id
+ * @property string|null $operator
+ * @property bool $is_charge
+ * @property bool $is_dynamic
+ * @property bool $is_discount
+ * @property bool $is_percentage
+ * @property bool $is_global
+ * @property string|null $parsed_value
+ * @property array<mixed>|null $rules
  */
 class CartCondition extends Model
 {
+    /** @use HasFactory<\MasyukAI\FilamentCart\Database\Factories\CartConditionFactory> */
     use HasFactory;
     use HasUuids;
 
@@ -32,7 +52,7 @@ class CartCondition extends Model
     /**
      * The table associated with the model.
      */
-    protected $table = 'cart_conditions';
+    protected $table = 'cart_snapshot_conditions';
 
     /**
      * The attributes that are mass assignable.
@@ -52,6 +72,7 @@ class CartCondition extends Model
         'is_dynamic',
         'is_discount',
         'is_percentage',
+        'is_global',
         'parsed_value',
         'rules',
     ];
@@ -69,6 +90,7 @@ class CartCondition extends Model
         'is_dynamic' => 'boolean',
         'is_discount' => 'boolean',
         'is_percentage' => 'boolean',
+        'is_global' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -80,7 +102,9 @@ class CartCondition extends Model
 
     /**
      * Get the cart that owns this condition.
+     * @return BelongsTo<Cart, CartCondition>
      */
+    /** @phpstan-ignore return.type, missingType.generics */
     public function cart(): BelongsTo
     {
         return $this->belongsTo(Cart::class);
@@ -88,7 +112,9 @@ class CartCondition extends Model
 
     /**
      * Get the cart item this condition applies to (if item-level).
+     * @return BelongsTo<CartItem, CartCondition>
      */
+    /** @phpstan-ignore return.type, missingType.generics */
     public function cartItem(): BelongsTo
     {
         return $this->belongsTo(CartItem::class);
@@ -96,8 +122,9 @@ class CartCondition extends Model
 
     /**
      * Scope to filter by cart instance.
+     * @param Builder<self> $query
      */
-    public function scopeInstance($query, string $instance): void
+    public function scopeInstance(Builder $query, string $instance): void
     {
         $query->whereHas('cart', function ($q) use ($instance) {
             $q->where('instance', $instance);
@@ -106,8 +133,9 @@ class CartCondition extends Model
 
     /**
      * Scope to filter by cart identifier.
+     * @param Builder<self> $query
      */
-    public function scopeByIdentifier($query, string $identifier): void
+    public function scopeByIdentifier(Builder $query, string $identifier): void
     {
         $query->whereHas('cart', function ($q) use ($identifier) {
             $q->where('identifier', $identifier);
@@ -116,32 +144,36 @@ class CartCondition extends Model
 
     /**
      * Scope to filter by condition type.
+     * @param Builder<self> $query
      */
-    public function scopeByType($query, string $type): void
+    public function scopeByType(Builder $query, string $type): void
     {
         $query->where('type', $type);
     }
 
     /**
      * Scope to filter by condition target.
+     * @param Builder<self> $query
      */
-    public function scopeByTarget($query, string $target): void
+    public function scopeByTarget(Builder $query, string $target): void
     {
         $query->where('target', $target);
     }
 
     /**
      * Scope to get cart-level conditions.
+     * @param Builder<self> $query
      */
-    public function scopeCartLevel($query): void
+    public function scopeCartLevel(Builder $query): void
     {
         $query->whereNull('cart_item_id')->whereNull('item_id');
     }
 
     /**
      * Scope to get item-level conditions.
+     * @param Builder<self> $query
      */
-    public function scopeItemLevel($query): void
+    public function scopeItemLevel(Builder $query): void
     {
         $query->where(function ($q) {
             $q->whereNotNull('cart_item_id')->orWhereNotNull('item_id');
@@ -150,32 +182,36 @@ class CartCondition extends Model
 
     /**
      * Scope to get discount conditions.
+     * @param Builder<self> $query
      */
-    public function scopeDiscounts($query): void
+    public function scopeDiscounts(Builder $query): void
     {
         $query->where('type', 'discount');
     }
 
     /**
      * Scope to get tax conditions.
+     * @param Builder<self> $query
      */
-    public function scopeTaxes($query): void
+    public function scopeTaxes(Builder $query): void
     {
         $query->where('type', 'tax');
     }
 
     /**
      * Scope to get fee conditions.
+     * @param Builder<self> $query
      */
-    public function scopeFees($query): void
+    public function scopeFees(Builder $query): void
     {
         $query->where('type', 'fee');
     }
 
     /**
      * Scope to get shipping conditions.
+     * @param Builder<self> $query
      */
-    public function scopeShipping($query): void
+    public function scopeShipping(Builder $query): void
     {
         $query->where('type', 'shipping');
     }
@@ -255,7 +291,7 @@ class CartCondition extends Model
 
         $rawValue = $this->value;
         $normalized = ltrim($rawValue, '+');
-        $money = Money::MYR($normalized);
+        $money = Money::{$this->resolveCurrency()}($normalized);
 
         return str_starts_with($rawValue, '+')
             ? '+'.$money
@@ -268,5 +304,10 @@ class CartCondition extends Model
     public function getAttributesCountAttribute(): int
     {
         return ! empty($this->attributes) && is_array($this->attributes) ? count($this->attributes) : 0;
+    }
+
+    private function resolveCurrency(): string
+    {
+        return strtoupper($this->cart->currency ?? config('cart.money.default_currency', 'USD'));
     }
 }

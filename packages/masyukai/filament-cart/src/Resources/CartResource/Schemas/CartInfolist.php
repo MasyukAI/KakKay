@@ -41,13 +41,32 @@ class CartInfolist
                             ->label('Total Items')
                             ->icon(Heroicon::OutlinedShoppingBag),
 
-                        TextEntry::make('total_quantity')
+                        TextEntry::make('quantity')
                             ->label('Total Quantity')
                             ->icon(Heroicon::OutlinedHashtag),
 
-                        TextEntry::make('formatted_subtotal')
+                        TextEntry::make('subtotal')
                             ->label('Subtotal')
+                            ->formatStateUsing(fn ($state, $record) => $record->formatMoney((int) $state))
                             ->icon(Heroicon::OutlinedCurrencyDollar),
+
+                        TextEntry::make('total')
+                            ->label('Total After Conditions')
+                            ->formatStateUsing(fn ($state, $record) => $record->formatMoney((int) $state))
+                            ->icon(Heroicon::OutlinedCurrencyDollar)
+                            ->color('success'),
+
+                        TextEntry::make('savings')
+                            ->label('Savings')
+                            ->formatStateUsing(fn ($state, $record) => $record->formatMoney((int) $state))
+                            ->icon(Heroicon::OutlinedBanknotes)
+                            ->color('success')
+                            ->visible(fn ($record) => $record->savings > 0),
+
+                        TextEntry::make('currency')
+                            ->label('Currency')
+                            ->badge()
+                            ->icon(Heroicon::OutlinedGlobeAsiaAustralia),
 
                         TextEntry::make('created_at')
                             ->label('Created')

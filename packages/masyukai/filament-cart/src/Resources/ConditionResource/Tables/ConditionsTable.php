@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MasyukAI\FilamentCart\Resources\ConditionResource\Tables;
 
 use Akaunting\Money\Money;
@@ -13,7 +15,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
-class ConditionsTable
+final class ConditionsTable
 {
     public static function configure(Table $table): Table
     {
@@ -65,7 +67,7 @@ class ConditionsTable
                         $state === null => Money::MYR(0),
                         str_contains($state, '%') => $state,
                         default => (str_starts_with($state, '+')
-                            ? '+'.Money::MYR(ltrim($state, '+'))
+                            ? '+'.Money::MYR(mb_ltrim($state, '+'))
                             : Money::MYR($state))
                     })
                     ->sortable(),
@@ -104,6 +106,14 @@ class ConditionsTable
                     ->label('Dynamic')
                     ->boolean()
                     ->toggleable(isToggledHiddenByDefault: true),
+
+                IconColumn::make('is_global')
+                    ->label('Global')
+                    ->boolean()
+                    ->trueIcon(Heroicon::OutlinedGlobeAsiaAustralia)
+                    ->falseIcon(Heroicon::OutlinedMinusCircle)
+                    ->tooltip('Applied automatically to every cart when active')
+                    ->toggleable(),
 
                 TextColumn::make('parsed_value')
                     ->label('Parsed Value')
@@ -186,6 +196,13 @@ class ConditionsTable
                     ->options([
                         1 => 'Charges Only',
                         0 => 'Non-Charges Only',
+                    ]),
+
+                SelectFilter::make('is_global')
+                    ->label('Global')
+                    ->options([
+                        1 => 'Global Only',
+                        0 => 'Non-Global Only',
                     ]),
             ])
             ->actions([

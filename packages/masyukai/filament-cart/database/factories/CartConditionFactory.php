@@ -24,18 +24,19 @@ class CartConditionFactory extends Factory
      */
     public function definition(): array
     {
-        $type = fake()->randomElement(['discount', 'tax', 'fee', 'shipping']);
+        $type = $this->faker->randomElement(['discount', 'tax', 'fee', 'shipping']);
 
         return [
             'cart_id' => Cart::factory(),
             'cart_item_id' => null, // Cart-level by default
-            'name' => fake()->words(2, true).'_'.$type,
+            'name' => $this->faker->words(2, true).'_'.$type,
             'type' => $type,
-            'target' => fake()->randomElement(['subtotal', 'total', 'price']),
+            'target' => $this->faker->randomElement(['subtotal', 'total', 'price']),
             'value' => $this->generateValue($type),
-            'order' => fake()->numberBetween(1, 10),
+            'order' => $this->faker->numberBetween(1, 10),
             'attributes' => $this->generateAttributes($type),
             'item_id' => null,
+            'is_global' => false,
         ];
     }
 
@@ -44,13 +45,12 @@ class CartConditionFactory extends Factory
      */
     public function discount(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn () => [
             'type' => 'discount',
-            'value' => '-'.fake()->numberBetween(5, 50).'%',
+            'value' => '-'.$this->faker->numberBetween(5, 50).'%',
             'attributes' => [
                 'description' => 'Promotional discount',
-                'promo_code' => fake()->regexify('[A-Z]{4}[0-9]{2}'),
-                'valid_until' => now()->addDays(30)->toDateString(),
+                'promo_code' => $this->faker->regexify('[A-Z]{4}[0-9]{2}'),
             ],
         ]);
     }
@@ -60,12 +60,12 @@ class CartConditionFactory extends Factory
      */
     public function tax(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn () => [
             'type' => 'tax',
-            'value' => fake()->randomFloat(2, 5, 15).'%',
+            'value' => $this->faker->randomFloat(2, 5, 15).'%',
             'attributes' => [
-                'tax_type' => fake()->randomElement(['VAT', 'Sales Tax', 'GST']),
-                'tax_region' => fake()->state(),
+                'tax_type' => $this->faker->randomElement(['VAT', 'Sales Tax', 'GST']),
+                'tax_region' => $this->faker->state(),
             ],
         ]);
     }
@@ -75,11 +75,11 @@ class CartConditionFactory extends Factory
      */
     public function fee(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn () => [
             'type' => 'fee',
-            'value' => fake()->randomFloat(2, 1, 25),
+            'value' => '+'.$this->faker->numberBetween(100, 2500),
             'attributes' => [
-                'fee_type' => fake()->randomElement(['Processing Fee', 'Service Fee', 'Handling Fee']),
+                'fee_type' => $this->faker->randomElement(['Processing Fee', 'Service Fee', 'Handling Fee']),
                 'description' => 'Additional processing fee',
             ],
         ]);
@@ -90,13 +90,13 @@ class CartConditionFactory extends Factory
      */
     public function shipping(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn () => [
             'type' => 'shipping',
-            'value' => fake()->randomFloat(2, 5, 50),
+            'value' => '+'.$this->faker->numberBetween(500, 5000),
             'attributes' => [
-                'shipping_method' => fake()->randomElement(['Standard', 'Express', 'Overnight']),
-                'carrier' => fake()->randomElement(['UPS', 'FedEx', 'USPS', 'DHL']),
-                'estimated_days' => fake()->numberBetween(1, 14),
+                'shipping_method' => $this->faker->randomElement(['Standard', 'Express', 'Overnight']),
+                'carrier' => $this->faker->randomElement(['UPS', 'FedEx', 'USPS', 'DHL']),
+                'estimated_days' => $this->faker->numberBetween(1, 14),
             ],
         ]);
     }
@@ -106,9 +106,9 @@ class CartConditionFactory extends Factory
      */
     public function itemLevel(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn () => [
             'cart_item_id' => CartItem::factory(),
-            'item_id' => fake()->uuid(),
+            'item_id' => $this->faker->uuid(),
         ]);
     }
 
@@ -117,10 +117,15 @@ class CartConditionFactory extends Factory
      */
     public function cartLevel(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn () => [
             'cart_item_id' => null,
             'item_id' => null,
         ]);
+    }
+
+    public function global(): static
+    {
+        return $this->state(fn () => ['is_global' => true]);
     }
 
     /**
@@ -128,8 +133,8 @@ class CartConditionFactory extends Factory
      */
     public function percentage(): static
     {
-        return $this->state(fn (array $attributes) => [
-            'value' => fake()->randomElement(['-', '+']).fake()->numberBetween(5, 50).'%',
+        return $this->state(fn () => [
+            'value' => $this->faker->randomElement(['-', '+']).$this->faker->numberBetween(5, 50).'%',
         ]);
     }
 
@@ -138,8 +143,8 @@ class CartConditionFactory extends Factory
      */
     public function fixedAmount(): static
     {
-        return $this->state(fn (array $attributes) => [
-            'value' => fake()->randomElement(['-', '+']).fake()->randomFloat(2, 1, 100),
+        return $this->state(fn () => [
+            'value' => $this->faker->randomElement(['-', '+']).$this->faker->numberBetween(100, 10000),
         ]);
     }
 
@@ -149,11 +154,11 @@ class CartConditionFactory extends Factory
     private function generateValue(string $type): string
     {
         return match ($type) {
-            'discount' => '-'.fake()->numberBetween(5, 50).'%',
-            'tax' => fake()->randomFloat(2, 5, 15).'%',
-            'fee' => (string) fake()->randomFloat(2, 1, 25),
-            'shipping' => (string) fake()->randomFloat(2, 5, 50),
-            default => (string) fake()->randomFloat(2, 1, 100),
+            'discount' => '-'.$this->faker->numberBetween(5, 50).'%',
+            'tax' => $this->faker->randomFloat(2, 5, 15).'%',
+            'fee' => '+'.$this->faker->numberBetween(100, 2500),
+            'shipping' => '+'.$this->faker->numberBetween(500, 5000),
+            default => '+'.$this->faker->numberBetween(100, 10000),
         };
     }
 
@@ -165,19 +170,19 @@ class CartConditionFactory extends Factory
         return match ($type) {
             'discount' => [
                 'description' => 'Promotional discount',
-                'promo_code' => fake()->regexify('[A-Z]{4}[0-9]{2}'),
+                'promo_code' => $this->faker->regexify('[A-Z]{4}[0-9]{2}'),
             ],
             'tax' => [
-                'tax_type' => fake()->randomElement(['VAT', 'Sales Tax', 'GST']),
-                'tax_region' => fake()->state(),
+                'tax_type' => $this->faker->randomElement(['VAT', 'Sales Tax', 'GST']),
+                'tax_region' => $this->faker->state(),
             ],
             'fee' => [
-                'fee_type' => fake()->randomElement(['Processing Fee', 'Service Fee']),
+                'fee_type' => $this->faker->randomElement(['Processing Fee', 'Service Fee']),
                 'description' => 'Additional fee',
             ],
             'shipping' => [
-                'shipping_method' => fake()->randomElement(['Standard', 'Express']),
-                'carrier' => fake()->randomElement(['UPS', 'FedEx', 'USPS']),
+                'shipping_method' => $this->faker->randomElement(['Standard', 'Express']),
+                'carrier' => $this->faker->randomElement(['UPS', 'FedEx', 'USPS']),
             ],
             default => [],
         };
