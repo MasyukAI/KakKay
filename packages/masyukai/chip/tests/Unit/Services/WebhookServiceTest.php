@@ -33,7 +33,7 @@ describe('WebhookService', function (): void {
     });
 
     afterEach(function (): void {
-        \Mockery::close();
+        Mockery::close();
     });
 
     it('verifies valid webhook signatures', function (): void {
@@ -73,6 +73,8 @@ describe('WebhookService', function (): void {
     it('throws when signature is not valid base64', function (): void {
         $service = new class extends WebhookService
         {
+            private ?string $pem = null;
+
             public function getPublicKey(?string $webhookId = null): string
             {
                 return $this->pem ??= openssl_pkey_get_details(openssl_pkey_new([
@@ -80,8 +82,6 @@ describe('WebhookService', function (): void {
                     'private_key_type' => OPENSSL_KEYTYPE_RSA,
                 ]))['key'];
             }
-
-            private ?string $pem = null;
         };
 
         expect(fn () => $service->verifySignature('payload', '***invalid***'))
@@ -178,28 +178,28 @@ describe('WebhookService', function (): void {
     it('retrieves and caches public keys from the collect service', function (): void {
         Cache::forget(config('chip.cache.prefix').'public_key');
 
-        $originalClient = app(\MasyukAI\Chip\Clients\ChipCollectClient::class);
-        $collectClient = \Mockery::mock(\MasyukAI\Chip\Clients\ChipCollectClient::class);
+        $originalClient = app(MasyukAI\Chip\Clients\ChipCollectClient::class);
+        $collectClient = Mockery::mock(MasyukAI\Chip\Clients\ChipCollectClient::class);
         $collectClient->shouldReceive('get')
             ->once()
             ->with('public_key/')
             ->andReturn('-----BEGIN PUBLIC KEY-----\ntest-cached-public-key\n-----END PUBLIC KEY-----');
 
-        app()->instance(\MasyukAI\Chip\Clients\ChipCollectClient::class, $collectClient);
+        app()->instance(MasyukAI\Chip\Clients\ChipCollectClient::class, $collectClient);
 
         try {
             // Create a new WebhookService instance after installing the mock
-            $webhookService = new \MasyukAI\Chip\Services\WebhookService;
+            $webhookService = new WebhookService;
             expect($webhookService->getPublicKey())->toBe('-----BEGIN PUBLIC KEY-----\ntest-cached-public-key\n-----END PUBLIC KEY-----');
             expect($webhookService->getPublicKey())->toBe('-----BEGIN PUBLIC KEY-----\ntest-cached-public-key\n-----END PUBLIC KEY-----'); // Second call uses cache
         } finally {
-            app()->instance(\MasyukAI\Chip\Clients\ChipCollectClient::class, $originalClient);
+            app()->instance(MasyukAI\Chip\Clients\ChipCollectClient::class, $originalClient);
         }
     });
 
     it('retrieves webhook specific public keys when webhook id provided', function (): void {
         $originalCollect = app(ChipCollectService::class);
-        $collectService = \Mockery::mock(ChipCollectService::class);
+        $collectService = Mockery::mock(ChipCollectService::class);
         $collectService->shouldReceive('getWebhook')
             ->once()
             ->with('wh_123')
@@ -218,8 +218,8 @@ describe('WebhookService', function (): void {
         config(['chip.webhooks.public_key' => 'fallback-key']);
 
         $originalCollect = app(ChipCollectService::class);
-        $collectService = \Mockery::mock(ChipCollectService::class);
-        $collectService->shouldReceive('getPublicKey')->andThrow(new \RuntimeException('network error'));
+        $collectService = Mockery::mock(ChipCollectService::class);
+        $collectService->shouldReceive('getPublicKey')->andThrow(new RuntimeException('network error'));
 
         app()->instance(ChipCollectService::class, $collectService);
 

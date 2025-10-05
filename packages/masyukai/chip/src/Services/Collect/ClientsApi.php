@@ -6,7 +6,7 @@ namespace MasyukAI\Chip\Services\Collect;
 
 use MasyukAI\Chip\DataObjects\Client;
 
-class ClientsApi extends CollectApi
+final class ClientsApi extends CollectApi
 {
     /**
      * @param  array<string, mixed>  $data

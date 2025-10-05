@@ -7,8 +7,9 @@ namespace MasyukAI\Chip\Commands;
 use Illuminate\Console\Command;
 use MasyukAI\Chip\Services\ChipCollectService;
 use MasyukAI\Chip\Services\ChipSendService;
+use Throwable;
 
-class ChipHealthCheckCommand extends Command
+final class ChipHealthCheckCommand extends Command
 {
     /**
      * The name and signature of the console command.
@@ -106,7 +107,7 @@ class ChipHealthCheckCommand extends Command
             }
 
             return true;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->error('   ❌ Connection failed');
 
             if ($this->option('verbose')) {
@@ -140,7 +141,7 @@ class ChipHealthCheckCommand extends Command
             }
 
             return true;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->error('   ❌ Connection failed');
 
             if ($this->option('verbose')) {

@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace MasyukAI\Chip\Services;
 
+use InvalidArgumentException;
 use MasyukAI\Chip\DataObjects\Purchase;
 use MasyukAI\Chip\Exceptions\ChipValidationException;
 
 class SubscriptionService
 {
     public function __construct(
-        protected ChipCollectService $chipService
+        private ChipCollectService $chipService
     ) {}
 
     /**
@@ -100,7 +101,7 @@ class SubscriptionService
         } elseif ($hasRegistrationFee) {
             $initialPurchase = $this->createWithRegistrationFee($data);
         } else {
-            throw new \InvalidArgumentException('Either registration_fee or trial_days must be provided');
+            throw new InvalidArgumentException('Either registration_fee or trial_days must be provided');
         }
 
         // Step 2: Create the recurring subscription purchase
@@ -120,7 +121,7 @@ class SubscriptionService
     /**
      * @param  array<string, mixed>  $data
      */
-    protected function resolveBrandId(array $data): string
+    private function resolveBrandId(array $data): string
     {
         $brandId = (string) ($data['brand_id'] ?? $this->chipService->getBrandId());
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use MasyukAI\Chip\Tests\Feature\FeatureTestCase;
 use MasyukAI\Chip\Tests\TestCase;
 
@@ -29,27 +31,27 @@ R1rBR7x4H2mZ6w2zT3vQ8qM1z0S2Fw
 
 // Custom expectations for CHIP package testing
 expect()->extend('toBeChipPurchase', function () {
-    return $this->toBeInstanceOf(\MasyukAI\Chip\DataObjects\Purchase::class);
+    return $this->toBeInstanceOf(MasyukAI\Chip\DataObjects\Purchase::class);
 });
 
 expect()->extend('toBeChipPayment', function () {
-    return $this->toBeInstanceOf(\MasyukAI\Chip\DataObjects\Payment::class);
+    return $this->toBeInstanceOf(MasyukAI\Chip\DataObjects\Payment::class);
 });
 
 expect()->extend('toBeChipSendInstruction', function () {
-    return $this->toBeInstanceOf(\MasyukAI\Chip\DataObjects\SendInstruction::class);
+    return $this->toBeInstanceOf(MasyukAI\Chip\DataObjects\SendInstruction::class);
 });
 
 expect()->extend('toBeChipBankAccount', function () {
-    return $this->toBeInstanceOf(\MasyukAI\Chip\DataObjects\BankAccount::class);
+    return $this->toBeInstanceOf(MasyukAI\Chip\DataObjects\BankAccount::class);
 });
 
 expect()->extend('toBeChipClient', function () {
-    return $this->toBeInstanceOf(\MasyukAI\Chip\DataObjects\Client::class);
+    return $this->toBeInstanceOf(MasyukAI\Chip\DataObjects\Client::class);
 });
 
 expect()->extend('toBeChipWebhook', function () {
-    return $this->toBeInstanceOf(\MasyukAI\Chip\DataObjects\Webhook::class);
+    return $this->toBeInstanceOf(MasyukAI\Chip\DataObjects\Webhook::class);
 });
 
 // Test data factories
@@ -145,7 +147,7 @@ function createWebhookData(string $event, array $data, array $overrides = []): a
 }
 
 // Test helpers for assertions
-function assertPurchaseEquals(array $expected, \MasyukAI\Chip\DataObjects\Purchase $actual): void
+function assertPurchaseEquals(array $expected, MasyukAI\Chip\DataObjects\Purchase $actual): void
 {
     expect($actual->id)->toBe($expected['id']);
     expect($actual->amountInCents)->toBe($expected['amount_in_cents']);
@@ -154,7 +156,7 @@ function assertPurchaseEquals(array $expected, \MasyukAI\Chip\DataObjects\Purcha
     expect($actual->status)->toBe($expected['status']);
 }
 
-function assertPaymentEquals(array $expected, \MasyukAI\Chip\DataObjects\Payment $actual): void
+function assertPaymentEquals(array $expected, MasyukAI\Chip\DataObjects\Payment $actual): void
 {
     expect($actual->id)->toBe($expected['id']);
     expect($actual->purchaseId)->toBe($expected['purchase_id']);
@@ -163,7 +165,7 @@ function assertPaymentEquals(array $expected, \MasyukAI\Chip\DataObjects\Payment
     expect($actual->status)->toBe($expected['status']);
 }
 
-function assertSendInstructionEquals(array $expected, \MasyukAI\Chip\DataObjects\SendInstruction $actual): void
+function assertSendInstructionEquals(array $expected, MasyukAI\Chip\DataObjects\SendInstruction $actual): void
 {
     expect($actual->id)->toBe($expected['id']);
     expect($actual->amountInCents)->toBe($expected['amount_in_cents']);
@@ -172,7 +174,7 @@ function assertSendInstructionEquals(array $expected, \MasyukAI\Chip\DataObjects
     expect($actual->status)->toBe($expected['status']);
 }
 
-function assertBankAccountEquals(array $expected, \MasyukAI\Chip\DataObjects\BankAccount $actual): void
+function assertBankAccountEquals(array $expected, MasyukAI\Chip\DataObjects\BankAccount $actual): void
 {
     expect($actual->id)->toBe($expected['id']);
     expect($actual->bankCode)->toBe($expected['bank_code']);
@@ -181,7 +183,7 @@ function assertBankAccountEquals(array $expected, \MasyukAI\Chip\DataObjects\Ban
     expect($actual->isActive)->toBe($expected['is_active']);
 }
 
-function assertClientEquals(array $expected, \MasyukAI\Chip\DataObjects\Client $actual): void
+function assertClientEquals(array $expected, MasyukAI\Chip\DataObjects\Client $actual): void
 {
     expect($actual->id)->toBe($expected['id']);
     expect($actual->fullName)->toBe($expected['full_name']);

@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace MasyukAI\Chip\Exceptions;
 
 use Illuminate\Contracts\Validation\Validator;
+use Throwable;
 
-class ChipValidationException extends ChipApiException
+final class ChipValidationException extends ChipApiException
 {
     /**
      * @var array<string, mixed>
@@ -20,11 +21,19 @@ class ChipValidationException extends ChipApiException
         string $message = 'Validation failed',
         array $fieldErrors = [],
         int $statusCode = 422,
-        ?\Throwable $previous = null
+        ?Throwable $previous = null
     ) {
         $this->fieldErrors = $fieldErrors;
         $errorData = ['validation_errors' => $fieldErrors];
         parent::__construct($message, $statusCode, $errorData, $previous);
+    }
+
+    public static function fromValidator(Validator $validator): self
+    {
+        return new self(
+            'Validation failed',
+            $validator->errors()->toArray()
+        );
     }
 
     /**
@@ -73,13 +82,5 @@ class ChipValidationException extends ChipApiException
     public function getFormattedErrors(): string
     {
         return $this->formatValidationErrors();
-    }
-
-    public static function fromValidator(Validator $validator): self
-    {
-        return new self(
-            'Validation failed',
-            $validator->errors()->toArray()
-        );
     }
 }

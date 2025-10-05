@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace MasyukAI\Chip\DataObjects;
 
-class TransactionData
+final class TransactionData
 {
     public function __construct(
         public readonly ?string $payment_method,

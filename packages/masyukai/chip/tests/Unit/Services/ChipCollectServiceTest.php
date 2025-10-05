@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use MasyukAI\Chip\Builders\PurchaseBuilder;
 use MasyukAI\Chip\Clients\ChipCollectClient;

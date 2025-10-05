@@ -14,7 +14,7 @@ use MasyukAI\Chip\Services\WebhookService;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class ChipServiceProvider extends PackageServiceProvider
+final class ChipServiceProvider extends PackageServiceProvider
 {
     public function configurePackage(Package $package): void
     {
@@ -39,22 +39,38 @@ class ChipServiceProvider extends PackageServiceProvider
         $this->registerClients();
     }
 
+    /**
+     * @return array<string>
+     */
+    public function provides(): array
+    {
+        return [
+            ChipCollectService::class,
+            ChipSendService::class,
+            WebhookService::class,
+            ChipCollectClient::class,
+            ChipSendClient::class,
+            'chip.collect',
+            'chip.send',
+        ];
+    }
+
     protected function registerServices(): void
     {
-        $this->app->singleton(function ($app): \MasyukAI\Chip\Services\ChipCollectService {
+        $this->app->singleton(function ($app): ChipCollectService {
             return new ChipCollectService(
                 $app->make(ChipCollectClient::class),
                 $app->make(CacheRepository::class)
             );
         });
 
-        $this->app->singleton(function ($app): \MasyukAI\Chip\Services\ChipSendService {
+        $this->app->singleton(function ($app): ChipSendService {
             return new ChipSendService(
                 $app->make(ChipSendClient::class)
             );
         });
 
-        $this->app->singleton(function ($app): \MasyukAI\Chip\Services\WebhookService {
+        $this->app->singleton(function ($app): WebhookService {
             return new WebhookService;
         });
 
@@ -65,7 +81,7 @@ class ChipServiceProvider extends PackageServiceProvider
 
     protected function registerClients(): void
     {
-        $this->app->singleton(function (): \MasyukAI\Chip\Clients\ChipCollectClient {
+        $this->app->singleton(function (): ChipCollectClient {
             $baseUrlConfig = config('chip.collect.base_url', 'https://gate.chip-in.asia/api/v1/');
             $environment = config('chip.collect.environment', 'sandbox');
 
@@ -87,7 +103,7 @@ class ChipServiceProvider extends PackageServiceProvider
             );
         });
 
-        $this->app->singleton(function (): \MasyukAI\Chip\Clients\ChipSendClient {
+        $this->app->singleton(function (): ChipSendClient {
             $environment = config('chip.send.environment', 'sandbox');
 
             return new ChipSendClient(
@@ -103,21 +119,5 @@ class ChipServiceProvider extends PackageServiceProvider
                 ])
             );
         });
-    }
-
-    /**
-     * @return array<string>
-     */
-    public function provides(): array
-    {
-        return [
-            ChipCollectService::class,
-            ChipSendService::class,
-            WebhookService::class,
-            ChipCollectClient::class,
-            ChipSendClient::class,
-            'chip.collect',
-            'chip.send',
-        ];
     }
 }

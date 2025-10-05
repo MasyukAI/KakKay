@@ -24,37 +24,6 @@ class ChipCollectClient extends BaseHttpClient
         parent::__construct($timeout, $retryConfig);
     }
 
-    protected function resolveBaseUrl(): string
-    {
-        return $this->baseUrl;
-    }
-
-    /**
-     * @param  array<string, mixed>  $data
-     * @param  array<string, string>  $headers
-     */
-    protected function sendRequest(string $method, string $url, array $data, array $headers = []): Response
-    {
-        $defaultHeaders = [
-            'Authorization' => "Bearer {$this->apiKey}",
-        ];
-
-        return Http::withHeaders(array_merge($this->defaultHeaders(), $defaultHeaders, $headers))
-            ->timeout($this->timeout)
-            ->send($method, $url, [
-                'json' => $data,
-            ]);
-    }
-
-    protected function handleFailedResponse(Response $response): never
-    {
-        $statusCode = $response->status();
-        $responseData = $response->json() ?? [];
-        $message = $responseData['message'] ?? $responseData['error'] ?? "API request failed with status {$statusCode}";
-
-        throw new ChipApiException($message, $statusCode, $responseData);
-    }
-
     /**
      * Get data from the API. Returns array for most endpoints, string for public_key/ endpoint.
      *
@@ -120,6 +89,37 @@ class ChipCollectClient extends BaseHttpClient
     public function getBrandId(): string
     {
         return $this->brandId;
+    }
+
+    protected function resolveBaseUrl(): string
+    {
+        return $this->baseUrl;
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @param  array<string, string>  $headers
+     */
+    protected function sendRequest(string $method, string $url, array $data, array $headers = []): Response
+    {
+        $defaultHeaders = [
+            'Authorization' => "Bearer {$this->apiKey}",
+        ];
+
+        return Http::withHeaders(array_merge($this->defaultHeaders(), $defaultHeaders, $headers))
+            ->timeout($this->timeout)
+            ->send($method, $url, [
+                'json' => $data,
+            ]);
+    }
+
+    protected function handleFailedResponse(Response $response): never
+    {
+        $statusCode = $response->status();
+        $responseData = $response->json() ?? [];
+        $message = $responseData['message'] ?? $responseData['error'] ?? "API request failed with status {$statusCode}";
+
+        throw new ChipApiException($message, $statusCode, $responseData);
     }
 
     /**

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace MasyukAI\Chip\DataObjects;
 
-class CurrencyConversion
+final class CurrencyConversion
 {
     public function __construct(
         public readonly string $original_currency,

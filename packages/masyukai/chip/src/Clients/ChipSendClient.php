@@ -26,6 +26,54 @@ class ChipSendClient extends BaseHttpClient
         parent::__construct($timeout, $retryConfig);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
+    public function get(string $endpoint): array
+    {
+        return $this->request('GET', $endpoint);
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    public function post(string $endpoint, array $data = []): array
+    {
+        return $this->request('POST', $endpoint, $data);
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    public function put(string $endpoint, array $data = []): array
+    {
+        return $this->request('PUT', $endpoint, $data);
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    public function patch(string $endpoint, array $data = []): array
+    {
+        return $this->request('PATCH', $endpoint, $data);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function delete(string $endpoint): array
+    {
+        return $this->request('DELETE', $endpoint);
+    }
+
+    public function getEnvironment(): string
+    {
+        return $this->environment;
+    }
+
     protected function resolveBaseUrl(): string
     {
         if (! empty($this->baseUrl)) {
@@ -78,54 +126,6 @@ class ChipSendClient extends BaseHttpClient
         }
 
         throw new ChipApiException($message, $statusCode, $responseData);
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    public function get(string $endpoint): array
-    {
-        return $this->request('GET', $endpoint);
-    }
-
-    /**
-     * @param  array<string, mixed>  $data
-     * @return array<string, mixed>
-     */
-    public function post(string $endpoint, array $data = []): array
-    {
-        return $this->request('POST', $endpoint, $data);
-    }
-
-    /**
-     * @param  array<string, mixed>  $data
-     * @return array<string, mixed>
-     */
-    public function put(string $endpoint, array $data = []): array
-    {
-        return $this->request('PUT', $endpoint, $data);
-    }
-
-    /**
-     * @param  array<string, mixed>  $data
-     * @return array<string, mixed>
-     */
-    public function patch(string $endpoint, array $data = []): array
-    {
-        return $this->request('PATCH', $endpoint, $data);
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    public function delete(string $endpoint): array
-    {
-        return $this->request('DELETE', $endpoint);
-    }
-
-    public function getEnvironment(): string
-    {
-        return $this->environment;
     }
 
     /**

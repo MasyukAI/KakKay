@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace MasyukAI\Chip\Http\Requests;
 
+use Exception;
 use Illuminate\Foundation\Http\FormRequest;
 use MasyukAI\Chip\Services\WebhookService;
 
-class WebhookRequest extends FormRequest
+final class WebhookRequest extends FormRequest
 {
     protected ?object $payload = null;
 
@@ -30,7 +31,7 @@ class WebhookRequest extends FormRequest
             $publicKey = $webhookService->getPublicKey($webhookId);
 
             return $webhookService->verifySignature($payload, $signature, $publicKey);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return false;
         }
     }

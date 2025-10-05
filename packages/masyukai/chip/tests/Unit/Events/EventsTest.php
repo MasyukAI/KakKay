@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use MasyukAI\Chip\DataObjects\Purchase;
 use MasyukAI\Chip\DataObjects\Webhook;
 use MasyukAI\Chip\Events\PurchaseCreated;

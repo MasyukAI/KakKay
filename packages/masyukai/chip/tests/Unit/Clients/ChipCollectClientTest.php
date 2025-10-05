@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Facades\Http;
 use MasyukAI\Chip\Clients\ChipCollectClient;
 use MasyukAI\Chip\Exceptions\ChipApiException;

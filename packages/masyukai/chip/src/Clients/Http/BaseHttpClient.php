@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MasyukAI\Chip\Clients\Http;
 
+use Exception;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use MasyukAI\Chip\Exceptions\ChipApiException;
 use MasyukAI\Chip\Exceptions\ChipValidationException;
+use Throwable;
 
 abstract class BaseHttpClient
 {
@@ -22,6 +24,22 @@ abstract class BaseHttpClient
         protected array $retryConfig = [],
     ) {}
 
+    abstract protected function resolveBaseUrl(): string;
+
+    /**
+     * Perform the low level request. Implementations may customise headers or payload handling.
+     */
+    /**
+     * @param  array<string, mixed>  $data
+     * @param  array<string, string>  $headers
+     */
+    abstract protected function sendRequest(string $method, string $url, array $data, array $headers = []): Response;
+
+    /**
+     * Convert non-successful responses into domain specific exceptions.
+     */
+    abstract protected function handleFailedResponse(Response $response): never;
+
     /**
      * Perform an HTTP request while handling retries, logging, and error wrapping.
      */
@@ -30,7 +48,7 @@ abstract class BaseHttpClient
      * @param  array<string, string>  $headers
      * @return array<string, mixed>
      */
-    public function request(string $method, string $endpoint, array $data = [], array $headers = []): array
+    final public function request(string $method, string $endpoint, array $data = [], array $headers = []): array
     {
         $url = $this->buildUrl($endpoint);
 
@@ -57,7 +75,7 @@ abstract class BaseHttpClient
                     }
 
                     break;
-                } catch (\Exception $exception) {
+                } catch (Exception $exception) {
                     if ($attempt >= $attempts || ! $this->shouldRetry($exception, null)) {
                         throw $exception;
                     }
@@ -69,17 +87,17 @@ abstract class BaseHttpClient
             $this->logResponse($response);
 
             return $response->json() ?? [];
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $this->handleException($exception);
         }
     }
 
     protected function buildUrl(string $endpoint): string
     {
-        return rtrim($this->resolveBaseUrl(), '/').'/'.ltrim($endpoint, '/');
+        return mb_rtrim($this->resolveBaseUrl(), '/').'/'.mb_ltrim($endpoint, '/');
     }
 
-    protected function shouldRetry(?\Throwable $exception, ?Response $response): bool
+    protected function shouldRetry(?Throwable $exception, ?Response $response): bool
     {
         if ($exception !== null) {
             return $this->shouldRetryOnException($exception);
@@ -92,7 +110,7 @@ abstract class BaseHttpClient
         return false;
     }
 
-    protected function shouldRetryOnException(\Throwable $exception): bool
+    protected function shouldRetryOnException(Throwable $exception): bool
     {
         if ($exception instanceof ChipValidationException) {
             return false;
@@ -205,7 +223,7 @@ abstract class BaseHttpClient
         return ['api_key', 'secret', 'password', 'token', 'card_number', 'cvv'];
     }
 
-    protected function handleException(\Exception $exception): never
+    protected function handleException(Exception $exception): never
     {
         if ($this->loggingEnabled()) {
             Log::channel($this->logChannel())
@@ -244,20 +262,4 @@ abstract class BaseHttpClient
     {
         return Http::withHeaders($headers);
     }
-
-    abstract protected function resolveBaseUrl(): string;
-
-    /**
-     * Perform the low level request. Implementations may customise headers or payload handling.
-     */
-    /**
-     * @param  array<string, mixed>  $data
-     * @param  array<string, string>  $headers
-     */
-    abstract protected function sendRequest(string $method, string $url, array $data, array $headers = []): Response;
-
-    /**
-     * Convert non-successful responses into domain specific exceptions.
-     */
-    abstract protected function handleFailedResponse(Response $response): never;
 }

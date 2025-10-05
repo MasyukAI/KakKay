@@ -6,7 +6,7 @@ namespace MasyukAI\Chip\DataObjects;
 
 use Carbon\Carbon;
 
-class Client
+final class Client
 {
     /**
      * @param  array<int, mixed>  $cc
@@ -47,6 +47,38 @@ class Client
     ) {}
 
     /**
+     * Magic property accessor for convenient camelCase access to snake_case properties
+     *
+     * @param  string  $name
+     * @return mixed
+     */
+    public function __get($name)
+    {
+        return match ($name) {
+            'fullName' => $this->full_name,
+            'personalCode' => $this->personal_code,
+            'streetAddress' => $this->street_address,
+            'zipCode' => $this->zip_code,
+            'legalName' => $this->legal_name,
+            'brandName' => $this->brand_name,
+            'registrationNumber' => $this->registration_number,
+            'taxNumber' => $this->tax_number,
+            'address' => $this->address_data,
+            'identityType' => $this->identity_type,
+            'identityNumber' => $this->identity_number,
+            default => null,
+        };
+    }
+
+    /**
+     * @param  string  $name
+     */
+    public function __isset($name): bool
+    {
+        return in_array($name, ['fullName', 'personalCode', 'streetAddress', 'zipCode', 'legalName', 'brandName', 'registrationNumber', 'taxNumber', 'address', 'identityType', 'identityNumber']);
+    }
+
+    /**
      * @param  array<string, mixed>  $data
      */
     public static function fromArray(array $data): self
@@ -82,38 +114,6 @@ class Client
             identity_type: $data['identity_type'] ?? null,
             identity_number: $data['identity_number'] ?? null,
         );
-    }
-
-    /**
-     * Magic property accessor for convenient camelCase access to snake_case properties
-     *
-     * @param  string  $name
-     * @return mixed
-     */
-    public function __get($name)
-    {
-        return match ($name) {
-            'fullName' => $this->full_name,
-            'personalCode' => $this->personal_code,
-            'streetAddress' => $this->street_address,
-            'zipCode' => $this->zip_code,
-            'legalName' => $this->legal_name,
-            'brandName' => $this->brand_name,
-            'registrationNumber' => $this->registration_number,
-            'taxNumber' => $this->tax_number,
-            'address' => $this->address_data,
-            'identityType' => $this->identity_type,
-            'identityNumber' => $this->identity_number,
-            default => null,
-        };
-    }
-
-    /**
-     * @param  string  $name
-     */
-    public function __isset($name): bool
-    {
-        return in_array($name, ['fullName', 'personalCode', 'streetAddress', 'zipCode', 'legalName', 'brandName', 'registrationNumber', 'taxNumber', 'address', 'identityType', 'identityNumber']);
     }
 
     public function getCreatedAt(): Carbon

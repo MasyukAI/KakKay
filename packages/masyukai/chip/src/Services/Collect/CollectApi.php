@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MasyukAI\Chip\Services\Collect;
 
+use Exception;
 use Illuminate\Support\Facades\Log;
 use MasyukAI\Chip\Clients\ChipCollectClient;
 
@@ -22,7 +23,7 @@ abstract class CollectApi
     {
         try {
             return $operation();
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             Log::error($message, array_merge($context, [
                 'error' => $exception->getMessage(),
             ]));

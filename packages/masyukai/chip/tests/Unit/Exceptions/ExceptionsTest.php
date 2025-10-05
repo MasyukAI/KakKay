@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use MasyukAI\Chip\Exceptions\ChipApiException;
 use MasyukAI\Chip\Exceptions\ChipValidationException;
 use MasyukAI\Chip\Exceptions\WebhookVerificationException;
@@ -213,14 +215,14 @@ describe('WebhookVerificationException', function (): void {
 
 describe('Exception Error Context', function (): void {
     it('preserves original exception context', function (): void {
-        $previous = new \Exception('Original error');
+        $previous = new Exception('Original error');
         $exception = new ChipApiException('API error', 500, [], $previous);
 
         expect($exception->getPrevious())->toBe($previous);
     });
 
     it('maintains error context through exception chain', function (): void {
-        $httpException = new \Exception('HTTP connection failed');
+        $httpException = new Exception('HTTP connection failed');
         $apiException = new ChipApiException('Request failed', 500, [], $httpException);
 
         expect($apiException->getPrevious())->toBe($httpException);

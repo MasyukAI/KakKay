@@ -7,15 +7,15 @@ namespace MasyukAI\Chip\Builders;
 use MasyukAI\Chip\DataObjects\Purchase;
 use MasyukAI\Chip\Services\ChipCollectService;
 
-class PurchaseBuilder
+final class PurchaseBuilder
 {
     /**
      * @var array<string, mixed>
      */
-    protected array $data = [];
+    private array $data = [];
 
     public function __construct(
-        protected ChipCollectService $service
+        private ChipCollectService $service
     ) {}
 
     /**

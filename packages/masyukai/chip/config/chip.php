@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -69,8 +71,8 @@ return [
             'send_instruction_status',
         ],
         'event_mapping' => [
-            'purchase.created' => \MasyukAI\Chip\Events\PurchaseCreated::class,
-            'purchase.paid' => \MasyukAI\Chip\Events\PurchasePaid::class,
+            'purchase.created' => MasyukAI\Chip\Events\PurchaseCreated::class,
+            'purchase.paid' => MasyukAI\Chip\Events\PurchasePaid::class,
         ],
     ],
 

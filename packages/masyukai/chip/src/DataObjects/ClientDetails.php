@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace MasyukAI\Chip\DataObjects;
 
-class ClientDetails
+final class ClientDetails
 {
     /**
      * @param  array<int, mixed>  $cc

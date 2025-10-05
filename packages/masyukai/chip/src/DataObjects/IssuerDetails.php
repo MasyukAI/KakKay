@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace MasyukAI\Chip\DataObjects;
 
-class IssuerDetails
+final class IssuerDetails
 {
     public function __construct(
         public readonly ?string $website,

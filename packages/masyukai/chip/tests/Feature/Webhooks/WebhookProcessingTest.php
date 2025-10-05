@@ -12,7 +12,7 @@ beforeEach(function (): void {
     config()->set('chip.webhooks.verify_signature', false);
     config()->set('logging.channels.chip_test', [
         'driver' => 'monolog',
-        'handler' => \Monolog\Handler\NullHandler::class,
+        'handler' => Monolog\Handler\NullHandler::class,
     ]);
     config()->set('chip.logging.channel', 'chip_test');
 });
@@ -70,7 +70,7 @@ describe('Webhook processing', function (): void {
 
 describe('Webhook controller interactions', function (): void {
     it('returns ok when webhook service processes request', function (): void {
-        $service = \Mockery::mock(WebhookService::class);
+        $service = Mockery::mock(WebhookService::class);
         $service->shouldReceive('processWebhook')->once()->andReturnTrue();
 
         $original = app(WebhookService::class);
@@ -92,10 +92,10 @@ describe('Webhook controller interactions', function (): void {
         Log::spy();
         Log::shouldReceive('channel')->andReturnSelf();
 
-        $service = \Mockery::mock(WebhookService::class);
+        $service = Mockery::mock(WebhookService::class);
         $service->shouldReceive('processWebhook')
             ->once()
-            ->andThrow(new \RuntimeException('unexpected failure'));
+            ->andThrow(new RuntimeException('unexpected failure'));
 
         $original = app(WebhookService::class);
         app()->instance(WebhookService::class, $service);
@@ -124,7 +124,7 @@ describe('Webhook controller interactions', function (): void {
     it('returns unauthorized when success callback signature is invalid', function (): void {
         $payload = ['event_type' => 'purchase.paid'];
 
-        $service = \Mockery::mock(WebhookService::class);
+        $service = Mockery::mock(WebhookService::class);
         $service->shouldReceive('getPublicKey')->once()->andReturn('public-key');
         $service->shouldReceive('verifySignature')
             ->once()
@@ -157,7 +157,7 @@ describe('Webhook controller interactions', function (): void {
             'data' => ['id' => 'purchase_123'],
         ];
 
-        $service = \Mockery::mock(WebhookService::class);
+        $service = Mockery::mock(WebhookService::class);
         $service->shouldReceive('getPublicKey')->once()->andReturn('public-key');
         $service->shouldReceive('verifySignature')
             ->once()
@@ -199,9 +199,9 @@ describe('Webhook controller interactions', function (): void {
 
         $payload = ['event_type' => 'purchase.paid'];
 
-        $service = \Mockery::mock(WebhookService::class);
+        $service = Mockery::mock(WebhookService::class);
         $service->shouldReceive('getPublicKey')->once()->andReturn('public-key');
-        $service->shouldReceive('verifySignature')->once()->andThrow(new \RuntimeException('signature failure'));
+        $service->shouldReceive('verifySignature')->once()->andThrow(new RuntimeException('signature failure'));
 
         $original = app(WebhookService::class);
         app()->instance(WebhookService::class, $service);

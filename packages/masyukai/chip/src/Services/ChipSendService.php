@@ -11,7 +11,7 @@ use MasyukAI\Chip\DataObjects\SendInstruction;
 class ChipSendService
 {
     public function __construct(
-        protected ChipSendClient $client
+        private ChipSendClient $client
     ) {}
 
     /**

@@ -8,12 +8,12 @@ use MasyukAI\Chip\Services\ChipCollectService;
 use MasyukAI\Chip\Services\SubscriptionService;
 
 beforeEach(function (): void {
-    $this->chipService = \Mockery::mock(ChipCollectService::class);
+    $this->chipService = Mockery::mock(ChipCollectService::class);
     $this->service = new SubscriptionService($this->chipService);
 });
 
 afterEach(function (): void {
-    \Mockery::close();
+    Mockery::close();
 });
 
 function subscriptionFakePurchase(string $id, array $overrides = []): Purchase
@@ -260,4 +260,4 @@ it('requires either trial days or registration fee when creating monthly subscri
         'amount' => 5000,
         'brand_id' => 'brand_invalid',
     ]);
-})->throws(\InvalidArgumentException::class);
+})->throws(InvalidArgumentException::class);

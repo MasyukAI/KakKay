@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MasyukAI\Chip\Exceptions;
 
 use Exception;
+use Throwable;
 
 class ChipApiException extends Exception
 {
@@ -20,10 +21,24 @@ class ChipApiException extends Exception
         string $message = '',
         protected int $statusCode = 0,
         array $errorData = [],
-        ?\Throwable $previous = null
+        ?Throwable $previous = null
     ) {
         $this->errorData = $errorData;
         parent::__construct($message, $statusCode, $previous);
+    }
+
+    /**
+     * @param  array<string, mixed>  $responseData
+     */
+    public static function fromResponse(array $responseData, int $statusCode): self
+    {
+        $message = $responseData['error'] ?? $responseData['message'] ?? 'Unknown API error';
+
+        // Extract the error details, excluding the message
+        $errorDetails = $responseData;
+        unset($errorDetails['error'], $errorDetails['message']);
+
+        return new self($message, $statusCode, $errorDetails);
     }
 
     public function getStatusCode(): int
@@ -79,20 +94,6 @@ class ChipApiException extends Exception
         }
 
         return $message;
-    }
-
-    /**
-     * @param  array<string, mixed>  $responseData
-     */
-    public static function fromResponse(array $responseData, int $statusCode): self
-    {
-        $message = $responseData['error'] ?? $responseData['message'] ?? 'Unknown API error';
-
-        // Extract the error details, excluding the message
-        $errorDetails = $responseData;
-        unset($errorDetails['error'], $errorDetails['message']);
-
-        return new self($message, $statusCode, $errorDetails);
     }
 
     /**

@@ -46,7 +46,7 @@ describe('Collect Webhooks API', function (): void {
             ->with('webhooks/wh_123/')
             ->andReturn([]);
 
-        expect(fn () => $this->api->delete('wh_123'))->not->toThrow(\Exception::class);
+        expect(fn () => $this->api->delete('wh_123'))->not->toThrow(Exception::class);
     });
 
     it('lists webhooks with filters and logs errors', function (): void {

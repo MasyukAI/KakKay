@@ -6,7 +6,7 @@ namespace MasyukAI\Chip\DataObjects;
 
 use Carbon\Carbon;
 
-class BankAccount
+final class BankAccount
 {
     public function __construct(
         public readonly int $id,

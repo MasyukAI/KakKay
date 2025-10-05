@@ -6,7 +6,7 @@ namespace MasyukAI\Chip\Exceptions;
 
 use Exception;
 
-class WebhookVerificationException extends Exception
+final class WebhookVerificationException extends Exception
 {
     public static function missingSignature(): self
     {

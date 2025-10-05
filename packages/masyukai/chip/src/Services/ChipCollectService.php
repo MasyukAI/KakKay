@@ -17,18 +17,18 @@ use MasyukAI\Chip\Services\Collect\WebhooksApi;
 
 class ChipCollectService
 {
-    protected PurchasesApi $purchases;
+    private PurchasesApi $purchases;
 
-    protected ClientsApi $clients;
+    private ClientsApi $clients;
 
-    protected AccountApi $account;
+    private AccountApi $account;
 
-    protected WebhooksApi $webhooks;
+    private WebhooksApi $webhooks;
 
-    protected ?SubscriptionService $subscriptionService = null;
+    private ?SubscriptionService $subscriptionService = null;
 
     public function __construct(
-        protected ChipCollectClient $client,
+        private ChipCollectClient $client,
         ?CacheRepository $cache = null,
     ) {
         $this->purchases = new PurchasesApi($cache, $client);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MasyukAI\Chip\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -13,7 +14,7 @@ use MasyukAI\Chip\Events\WebhookReceived;
 use MasyukAI\Chip\Http\Requests\WebhookRequest;
 use MasyukAI\Chip\Services\WebhookService;
 
-class WebhookController extends Controller
+final class WebhookController extends Controller
 {
     public function __construct(
         protected WebhookService $webhookService
@@ -25,7 +26,7 @@ class WebhookController extends Controller
             $this->webhookService->processWebhook($request);
 
             return response('OK', 200);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::channel(config('chip.logging.channel'))
                 ->error('CHIP Webhook processing failed', [
                     'error' => $e->getMessage(),
@@ -71,7 +72,7 @@ class WebhookController extends Controller
             }
 
             return response('OK', 200);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::channel(config('chip.logging.channel'))
                 ->error('CHIP Success callback processing failed', [
                     'error' => $e->getMessage(),

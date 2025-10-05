@@ -9,7 +9,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use MasyukAI\Chip\DataObjects\Webhook;
 
-class WebhookReceived implements ShouldQueue
+final class WebhookReceived implements ShouldQueue
 {
     use Dispatchable, SerializesModels;
 

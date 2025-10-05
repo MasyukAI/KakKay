@@ -9,12 +9,12 @@ use MasyukAI\Chip\Services\ChipSendService;
 
 describe('ChipSendService', function (): void {
     beforeEach(function (): void {
-        $this->client = \Mockery::mock(ChipSendClient::class);
+        $this->client = Mockery::mock(ChipSendClient::class);
         $this->service = new ChipSendService($this->client);
     });
 
     afterEach(function (): void {
-        \Mockery::close();
+        Mockery::close();
     });
 
     it('can create a send instruction', function (): void {

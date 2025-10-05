@@ -18,9 +18,9 @@ use MasyukAI\Chip\Services\ChipSendService;
  * @method static \MasyukAI\Chip\DataObjects\BankAccount updateBankAccount(string $id, array<string, mixed> $data)
  * @method static void deleteBankAccount(string $id)
  *
- * @see \MasyukAI\Chip\Services\ChipSendService
+ * @see ChipSendService
  */
-class ChipSend extends Facade
+final class ChipSend extends Facade
 {
     protected static function getFacadeAccessor(): string
     {

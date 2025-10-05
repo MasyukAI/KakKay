@@ -12,8 +12,9 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use MasyukAI\Chip\DataObjects\Webhook;
 use MasyukAI\Chip\Events\WebhookReceived;
+use Throwable;
 
-class ProcessChipWebhook implements ShouldQueue
+final class ProcessChipWebhook implements ShouldQueue
 {
     use Dispatchable;
     use InteractsWithQueue;
@@ -50,7 +51,7 @@ class ProcessChipWebhook implements ShouldQueue
                         'id' => $this->payload['id'] ?? null,
                     ]);
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Log::channel(config('chip.logging.channel', 'stack'))
                 ->error('CHIP webhook processing failed', [
                     'error' => $e->getMessage(),
@@ -62,7 +63,7 @@ class ProcessChipWebhook implements ShouldQueue
         }
     }
 
-    public function failed(\Throwable $exception): void
+    public function failed(Throwable $exception): void
     {
         Log::channel(config('chip.logging.channel', 'stack'))
             ->critical('CHIP webhook processing failed permanently', [

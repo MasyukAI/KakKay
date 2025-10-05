@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace MasyukAI\Chip\DataObjects;
 
-class Product
+final class Product
 {
     public function __construct(
         public readonly string $name,

@@ -6,7 +6,7 @@ namespace MasyukAI\Chip\DataObjects;
 
 use Carbon\Carbon;
 
-class Payment
+final class Payment
 {
     public function __construct(
         public readonly bool $is_outgoing,

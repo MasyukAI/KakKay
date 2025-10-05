@@ -96,7 +96,7 @@ describe('Webhook Queue Handler', function (): void {
             ->shouldReceive('channel')
             ->once()
             ->with(config('chip.logging.channel', 'stack'))
-            ->andReturn(tap(\Mockery::mock(), function ($mock): void {
+            ->andReturn(tap(Mockery::mock(), function ($mock): void {
                 $mock->shouldReceive('error')
                     ->once()
                     ->withArgs(function (string $message, array $context): bool {
@@ -127,7 +127,7 @@ describe('Webhook Queue Handler', function (): void {
             ->shouldReceive('channel')
             ->once()
             ->with(config('chip.logging.channel', 'stack'))
-            ->andReturn(tap(\Mockery::mock(), function ($mock): void {
+            ->andReturn(tap(Mockery::mock(), function ($mock): void {
                 $mock->shouldReceive('critical')
                     ->once()
                     ->withArgs(function (string $message, array $context): bool {

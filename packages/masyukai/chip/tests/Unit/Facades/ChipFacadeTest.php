@@ -20,7 +20,7 @@ it('proxies collect service helpers through the Chip facade', function (): void 
 });
 
 it('resolves subscription helper through the Chip facade', function (): void {
-    $subscriptionService = \Mockery::mock(SubscriptionService::class);
+    $subscriptionService = Mockery::mock(SubscriptionService::class);
 
     Chip::shouldReceive('subscriptions')
         ->once()

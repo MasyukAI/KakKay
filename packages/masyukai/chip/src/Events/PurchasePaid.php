@@ -11,7 +11,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use MasyukAI\Chip\DataObjects\Purchase;
 
-class PurchasePaid implements ShouldBroadcast
+final class PurchasePaid implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 

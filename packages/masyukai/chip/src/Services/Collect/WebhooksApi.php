@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace MasyukAI\Chip\Services\Collect;
 
-class WebhooksApi extends CollectApi
+final class WebhooksApi extends CollectApi
 {
     /**
      * @param  array<string, mixed>  $data

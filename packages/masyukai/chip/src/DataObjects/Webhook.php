@@ -6,7 +6,7 @@ namespace MasyukAI\Chip\DataObjects;
 
 use Carbon\Carbon;
 
-class Webhook
+final class Webhook
 {
     public function __construct(
         public readonly string $id,

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MasyukAI\Chip\Services;
 
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
@@ -62,7 +63,7 @@ class WebhookService
             $verified = openssl_verify($payload, $decodedSignature, $publicKeyResource, OPENSSL_ALGO_SHA256);
 
             return $verified === 1;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::channel(config('chip.logging.channel'))
                 ->error('Webhook signature verification failed', [
                     'error' => $e->getMessage(),
@@ -94,7 +95,7 @@ class WebhookService
                 }
 
                 return (string) $response;
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 // Fallback to configured public key if API call fails
                 return (string) config('chip.webhooks.public_key', '');
             }
@@ -161,12 +162,34 @@ class WebhookService
     }
 
     /**
+     * Check if webhook event is allowed.
+     */
+    public function isEventAllowed(string $event): bool
+    {
+        $allowedEvents = (array) config('chip.webhooks.allowed_events', []);
+
+        return in_array($event, $allowedEvents) || in_array('*', $allowedEvents);
+    }
+
+    /**
+     * Get webhook configuration.
+     *
+     * @return array<string, mixed>
+     */
+    public function getWebhookConfig(): array
+    {
+        $config = config('chip.webhooks', []);
+
+        return is_array($config) ? $config : [];
+    }
+
+    /**
      * Handle specific webhook events.
      */
     /**
      * @param  array<string, mixed>  $data
      */
-    protected function handleSpecificEvent(string $event, array $data): void
+    private function handleSpecificEvent(string $event, array $data): void
     {
         $eventMapping = config('chip.webhooks.event_mapping', []);
 
@@ -191,27 +214,5 @@ class WebhookService
                 }
                 break;
         }
-    }
-
-    /**
-     * Check if webhook event is allowed.
-     */
-    public function isEventAllowed(string $event): bool
-    {
-        $allowedEvents = (array) config('chip.webhooks.allowed_events', []);
-
-        return in_array($event, $allowedEvents) || in_array('*', $allowedEvents);
-    }
-
-    /**
-     * Get webhook configuration.
-     *
-     * @return array<string, mixed>
-     */
-    public function getWebhookConfig(): array
-    {
-        $config = config('chip.webhooks', []);
-
-        return is_array($config) ? $config : [];
     }
 }

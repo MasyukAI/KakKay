@@ -7,12 +7,12 @@ use MasyukAI\Chip\DataObjects\Client;
 use MasyukAI\Chip\Services\Collect\ClientsApi;
 
 beforeEach(function (): void {
-    $this->client = \Mockery::mock(ChipCollectClient::class);
+    $this->client = Mockery::mock(ChipCollectClient::class);
     $this->api = new ClientsApi($this->client);
 });
 
 afterEach(function (): void {
-    \Mockery::close();
+    Mockery::close();
 });
 
 describe('Collect Clients API', function (): void {

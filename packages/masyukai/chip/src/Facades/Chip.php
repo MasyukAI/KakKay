@@ -37,9 +37,9 @@ use MasyukAI\Chip\Services\ChipCollectService;
  * @method static string getPublicKey()
  * @method static \MasyukAI\Chip\Services\SubscriptionService subscriptions()
  *
- * @see \MasyukAI\Chip\Services\ChipCollectService
+ * @see ChipCollectService
  */
-class Chip extends Facade
+final class Chip extends Facade
 {
     protected static function getFacadeAccessor(): string
     {

@@ -11,7 +11,7 @@ use MasyukAI\Chip\DataObjects\Product;
 use MasyukAI\Chip\DataObjects\Purchase;
 use MasyukAI\Chip\Exceptions\ChipValidationException;
 
-class PurchasesApi extends CollectApi
+final class PurchasesApi extends CollectApi
 {
     protected ?CacheRepository $cache;
 
@@ -173,7 +173,7 @@ class PurchasesApi extends CollectApi
     }
 
     /**
-     * @param  array<int, \MasyukAI\Chip\DataObjects\Product>  $products
+     * @param  array<int, Product>  $products
      * @param  array<string, mixed>  $options
      */
     public function createCheckoutPurchase(array $products, ClientDetails $client, array $options = []): Purchase

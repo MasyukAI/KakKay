@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use MasyukAI\Chip\Http\Requests\WebhookRequest;
 use MasyukAI\Chip\Services\WebhookService;
 
@@ -118,7 +120,7 @@ describe('WebhookRequest Authorization', function (): void {
     it('verifies the signature using the webhook service', function (): void {
         $payload = json_encode(['event' => 'purchase.paid', 'data' => ['id' => 'purchase_123']]);
 
-        $service = \Mockery::mock(WebhookService::class);
+        $service = Mockery::mock(WebhookService::class);
         $service->shouldReceive('getPublicKey')
             ->once()
             ->with('wh_123')
@@ -144,7 +146,7 @@ describe('WebhookRequest Authorization', function (): void {
     });
 
     it('fails authorization when webhook service throws', function (): void {
-        $service = \Mockery::mock(WebhookService::class);
+        $service = Mockery::mock(WebhookService::class);
         $service->shouldReceive('getPublicKey')->andThrow(new Exception('Service unavailable'));
 
         app()->instance(WebhookService::class, $service);
@@ -240,7 +242,7 @@ describe('WebhookRequest Custom Methods', function (): void {
     it('parses webhook payload once and caches the object', function (): void {
         $payload = json_encode(['event_type' => 'purchase.paid']);
 
-        $service = \Mockery::mock(WebhookService::class);
+        $service = Mockery::mock(WebhookService::class);
         $service->shouldReceive('parsePayload')
             ->once()
             ->with($payload)

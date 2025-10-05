@@ -59,6 +59,33 @@ class Purchase
     ) {}
 
     /**
+     * Magic property accessor for convenient access to nested properties
+     *
+     * @param  string  $name
+     * @return mixed
+     */
+    public function __get($name)
+    {
+        return match ($name) {
+            'amountInCents' => $this->purchase->total,
+            'currency' => $this->purchase->currency,
+            'checkoutUrl' => $this->checkout_url,
+            'metadata' => ($this->purchase->metadata !== null && count($this->purchase->metadata) > 0) ? $this->purchase->metadata : null,
+            'clientId' => $this->client_id,
+            'isRecurring' => $this->is_recurring_token,
+            default => null,
+        };
+    }
+
+    /**
+     * @param  string  $name
+     */
+    public function __isset($name): bool
+    {
+        return in_array($name, ['amountInCents', 'currency', 'checkoutUrl', 'isRecurring', 'metadata', 'clientId']);
+    }
+
+    /**
      * @param  array<string, mixed>  $data
      */
     public static function fromArray(array $data): self
@@ -156,33 +183,6 @@ class Purchase
             marked_as_paid: $data['marked_as_paid'] ?? false,
             order_id: $data['order_id'] ?? null,
         );
-    }
-
-    /**
-     * Magic property accessor for convenient access to nested properties
-     *
-     * @param  string  $name
-     * @return mixed
-     */
-    public function __get($name)
-    {
-        return match ($name) {
-            'amountInCents' => $this->purchase->total,
-            'currency' => $this->purchase->currency,
-            'checkoutUrl' => $this->checkout_url,
-            'metadata' => ($this->purchase->metadata !== null && count($this->purchase->metadata) > 0) ? $this->purchase->metadata : null,
-            'clientId' => $this->client->clientId ?? null,
-            'isRecurring' => $this->is_recurring_token,
-            default => null,
-        };
-    }
-
-    /**
-     * @param  string  $name
-     */
-    public function __isset($name): bool
-    {
-        return in_array($name, ['amountInCents', 'currency', 'checkoutUrl', 'isRecurring', 'metadata', 'clientId']);
     }
 
     public function getAmountInMajorUnits(): float

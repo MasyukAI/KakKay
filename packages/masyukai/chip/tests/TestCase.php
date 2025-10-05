@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MasyukAI\Chip\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;

@@ -6,7 +6,7 @@ namespace MasyukAI\Chip\DataObjects;
 
 use Carbon\Carbon;
 
-class SendInstruction
+final class SendInstruction
 {
     public function __construct(
         public readonly int $id,

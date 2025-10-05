@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace MasyukAI\Chip\Services\Collect;
 
-class AccountApi extends CollectApi
+final class AccountApi extends CollectApi
 {
     /**
      * @return array<string, mixed>
