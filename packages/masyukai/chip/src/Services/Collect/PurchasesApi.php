@@ -189,10 +189,14 @@ final class PurchasesApi extends CollectApi
             ],
             'brand_id' => $this->client->getBrandId(),
             'send_receipt' => $options['send_receipt'] ?? true,
-            'reference' => $options['reference'] ?? null,
             'creator_agent' => config('chip.defaults.creator_agent', 'Laravel Package'),
             'platform' => config('chip.defaults.platform', 'api'),
         ];
+
+        // Only add reference if it's not null/empty
+        if (! empty($options['reference'])) {
+            $data['reference'] = $options['reference'];
+        }
 
         if (! empty($options['payment_method_whitelist'])) {
             $data['payment_method_whitelist'] = is_string($options['payment_method_whitelist'])

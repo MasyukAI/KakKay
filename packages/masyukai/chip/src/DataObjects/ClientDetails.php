@@ -71,7 +71,7 @@ final class ClientDetails
      */
     public function toArray(): array
     {
-        return [
+        $data = [
             'bank_account' => $this->bank_account,
             'bank_code' => $this->bank_code,
             'email' => $this->email,
@@ -95,5 +95,8 @@ final class ClientDetails
             'registration_number' => $this->registration_number,
             'tax_number' => $this->tax_number,
         ];
+
+        // Filter out null values, empty arrays, and empty strings to avoid sending unnecessary fields to CHIP API
+        return array_filter($data, fn ($value) => $value !== null && $value !== [] && $value !== '');
     }
 }

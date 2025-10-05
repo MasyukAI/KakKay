@@ -436,9 +436,8 @@ final class Checkout extends Component implements HasSchemas
                 'legal_name' => $formData['company'] ?? $formData['name'],
                 'registration_number' => $formData['vat_number'] ?? '',
                 'tax_number' => $formData['vat_number'] ?? '',
-                // Add bank account information (required by CHIP API)
-                'bank_account' => 'default',
-                'bank_code' => 'default',
+                // Bank account fields - leave null to allow CHIP to handle payment method selection
+                // Do not pass 'default' values as CHIP API will reject them
                 // Use empty array to let CHIP gateway handle payment method selection
                 'payment_method_whitelist' => [],
             ];

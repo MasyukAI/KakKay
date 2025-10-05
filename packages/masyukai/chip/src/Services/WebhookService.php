@@ -17,7 +17,7 @@ use MasyukAI\Chip\Events\WebhookReceived;
 use MasyukAI\Chip\Exceptions\WebhookVerificationException;
 use MasyukAI\Chip\Http\Requests\WebhookRequest;
 
-final class WebhookService
+class WebhookService
 {
     /**
      * Verify webhook signature using Request object

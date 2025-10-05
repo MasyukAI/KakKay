@@ -8,7 +8,8 @@
         "src/Services/ChipSendService.php",
         "src/Clients/ChipSendClient.php",
         "src/Services/SubscriptionService.php",
-        "src/DataObjects/Purchase.php"
+        "src/DataObjects/Purchase.php",
+        "src/Exceptions/ChipApiException.php"
     ],
     "rules": {
         "array_push": true,

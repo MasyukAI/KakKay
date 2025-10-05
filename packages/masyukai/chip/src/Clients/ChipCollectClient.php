@@ -6,6 +6,7 @@ namespace MasyukAI\Chip\Clients;
 
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use MasyukAI\Chip\Clients\Http\BaseHttpClient;
 use MasyukAI\Chip\Exceptions\ChipApiException;
 
@@ -118,6 +119,14 @@ final class ChipCollectClient extends BaseHttpClient
         $statusCode = $response->status();
         $responseData = $response->json() ?? [];
         $message = $responseData['message'] ?? $responseData['error'] ?? "API request failed with status {$statusCode}";
+
+        // Log the full error response for debugging
+        Log::error('CHIP API Error Response', [
+            'status' => $statusCode,
+            'message' => $message,
+            'response_data' => $responseData,
+            'response_body' => $response->body(),
+        ]);
 
         throw new ChipApiException($message, $statusCode, $responseData);
     }
