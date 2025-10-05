@@ -1,4 +1,4 @@
-# Laravel Cart Coding Guidelines
+# MasyukAI Cart Coding Guidelines
 
 These rules support AI-assisted development inside the `masyukai/cart` monorepo. Follow them before editing source, tests, or docs.
 

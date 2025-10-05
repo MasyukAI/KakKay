@@ -25,6 +25,10 @@ trait ManagesItems
 
     /**
      * Add item(s) to the cart
+     *
+     * @param  string|int|array<array<string, mixed>>  $id
+     * @param  array<string, mixed>  $attributes
+     * @param  array<string, mixed>|object|null  $conditions
      */
     public function add(
         string|int|array $id,
@@ -87,6 +91,8 @@ trait ManagesItems
 
     /**
      * Add multiple items to cart
+     *
+     * @param  array<array<string, mixed>>  $items
      */
     private function addMultiple(array $items): CartCollection
     {
@@ -112,6 +118,8 @@ trait ManagesItems
 
     /**
      * Update cart item
+     *
+     * @param  array<string, mixed>  $data
      */
     public function update(string|int $id, array $data): ?CartItem
     {
@@ -231,6 +239,8 @@ trait ManagesItems
 
     /**
      * Create a cart item from array data
+     *
+     * @param  array<string, mixed>  $data
      */
     private function createCartItem(array $data): CartItem
     {
@@ -249,6 +259,8 @@ trait ManagesItems
 
     /**
      * Validate cart item data
+     *
+     * @param  array<string, mixed>  $data
      */
     private function validateCartItem(array $data): void
     {

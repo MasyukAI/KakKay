@@ -9,14 +9,20 @@ use Exception;
 class ChipApiException extends Exception
 {
     /**
-     * @param array<string, mixed> $errorData
+     * @var array<string, mixed>
+     */
+    protected array $errorData = [];
+
+    /**
+     * @param  array<string, mixed>  $errorData
      */
     public function __construct(
         string $message = '',
         protected int $statusCode = 0,
-        protected array $errorData = [],
+        array $errorData = [],
         ?\Throwable $previous = null
     ) {
+        $this->errorData = $errorData;
         parent::__construct($message, $statusCode, $previous);
     }
 
@@ -69,16 +75,14 @@ class ChipApiException extends Exception
                 $details[] = "{$key}: {$value}";
             }
 
-            if (count($details) > 0) {
-                $message .= ' - '.implode(', ', $details);
-            }
+            $message .= ' - '.implode(', ', $details);
         }
 
         return $message;
     }
 
     /**
-     * @param array<string, mixed> $responseData
+     * @param  array<string, mixed>  $responseData
      */
     public static function fromResponse(array $responseData, int $statusCode): self
     {

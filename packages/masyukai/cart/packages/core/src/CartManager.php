@@ -98,7 +98,7 @@ class CartManager
     /**
      * Proxy all other method calls to the current cart instance
      *
-     * @param  array<mixed>  $arguments
+     * @param  array<string, mixed>  $arguments
      */
     public function __call(string $method, array $arguments): mixed
     {

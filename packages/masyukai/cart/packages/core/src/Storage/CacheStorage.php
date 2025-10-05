@@ -52,6 +52,8 @@ readonly class CacheStorage implements StorageInterface
 
     /**
      * Get all instances for a specific identifier
+     *
+     * @return array<string, mixed>
      */
     public function getInstances(string $identifier): array
     {
@@ -73,6 +75,8 @@ readonly class CacheStorage implements StorageInterface
 
     /**
      * Retrieve cart items from storage
+     *
+     * @return array<string, mixed>
      */
     public function getItems(string $identifier, string $instance): array
     {
@@ -87,6 +91,8 @@ readonly class CacheStorage implements StorageInterface
 
     /**
      * Retrieve cart conditions from storage
+     *
+     * @return array<string, mixed>
      */
     public function getConditions(string $identifier, string $instance): array
     {
@@ -101,6 +107,8 @@ readonly class CacheStorage implements StorageInterface
 
     /**
      * Store cart items in storage
+     *
+     * @param  array<string, mixed>  $items
      */
     public function putItems(string $identifier, string $instance, array $items): void
     {
@@ -115,6 +123,8 @@ readonly class CacheStorage implements StorageInterface
 
     /**
      * Store cart conditions in storage
+     *
+     * @param  array<string, mixed>  $conditions
      */
     public function putConditions(string $identifier, string $instance, array $conditions): void
     {
@@ -129,6 +139,9 @@ readonly class CacheStorage implements StorageInterface
 
     /**
      * Store both items and conditions in storage
+     *
+     * @param  array<string, mixed>  $items
+     * @param  array<string, mixed>  $conditions
      */
     public function putBoth(string $identifier, string $instance, array $items, array $conditions): void
     {
@@ -162,6 +175,8 @@ readonly class CacheStorage implements StorageInterface
 
     /**
      * Store items with locking to prevent concurrent modification
+     *
+     * @param  array<string, mixed>  $items
      */
     private function putItemsWithLock(string $identifier, string $instance, array $items): void
     {
@@ -183,6 +198,8 @@ readonly class CacheStorage implements StorageInterface
 
     /**
      * Store items without locking (simple/fast mode)
+     *
+     * @param  array<string, mixed>  $items
      */
     private function putItemsSimple(string $identifier, string $instance, array $items): void
     {
@@ -191,6 +208,8 @@ readonly class CacheStorage implements StorageInterface
 
     /**
      * Store conditions with locking to prevent concurrent modification
+     *
+     * @param  array<string, mixed>  $conditions
      */
     private function putConditionsWithLock(string $identifier, string $instance, array $conditions): void
     {
@@ -212,6 +231,8 @@ readonly class CacheStorage implements StorageInterface
 
     /**
      * Store conditions without locking (simple/fast mode)
+     *
+     * @param  array<string, mixed>  $conditions
      */
     private function putConditionsSimple(string $identifier, string $instance, array $conditions): void
     {
@@ -238,6 +259,8 @@ readonly class CacheStorage implements StorageInterface
 
     /**
      * Validate data size to prevent memory issues and DoS attacks
+     *
+     * @param  array<string, mixed>  $data
      */
     private function validateDataSize(array $data, string $type): void
     {

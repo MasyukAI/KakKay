@@ -9,7 +9,12 @@ use Illuminate\Contracts\Validation\Validator;
 class ChipValidationException extends ChipApiException
 {
     /**
-     * @param array<string, mixed> $fieldErrors
+     * @var array<string, mixed>
+     */
+    protected array $fieldErrors = [];
+
+    /**
+     * @param  array<string, mixed>  $fieldErrors
      */
     public function __construct(
         string $message = 'Validation failed',
@@ -17,6 +22,7 @@ class ChipValidationException extends ChipApiException
         int $statusCode = 422,
         ?\Throwable $previous = null
     ) {
+        $this->fieldErrors = $fieldErrors;
         $errorData = ['validation_errors' => $fieldErrors];
         parent::__construct($message, $statusCode, $errorData, $previous);
     }
@@ -45,7 +51,7 @@ class ChipValidationException extends ChipApiException
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<int, string>
      */
     public function getFieldErrors(string $field): array
     {

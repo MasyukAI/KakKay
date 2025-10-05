@@ -14,6 +14,8 @@ class CartMigrationService
 {
     /**
      * Configuration array for migration settings.
+     *
+     * @var array<string, mixed>
      */
     protected array $config = [];
 
@@ -24,6 +26,8 @@ class CartMigrationService
 
     /**
      * Create a new cart migration service instance.
+     *
+     * @param  array<string, mixed>  $config
      */
     public function __construct(array $config = [], ?StorageInterface $storage = null)
     {
@@ -238,6 +242,10 @@ class CartMigrationService
 
     /**
      * Merge cart conditions from guest to user cart.
+     *
+     * @param  array<string, mixed>  $guestConditions
+     * @param  array<string, mixed>  $userConditions
+     * @return array<string, mixed>
      */
     protected function mergeConditionsData(array $guestConditions, array $userConditions): array
     {
@@ -257,6 +265,10 @@ class CartMigrationService
 
     /**
      * Merge items arrays from guest cart and user cart.
+     *
+     * @param  array<string, mixed>  $guestItems
+     * @param  array<string, mixed>  $userItems
+     * @return array<string, mixed>
      */
     protected function mergeItemsArray(array $guestItems, array $userItems): array
     {

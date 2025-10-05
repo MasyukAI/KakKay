@@ -24,7 +24,7 @@ class PurchasesApi extends CollectApi
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function create(array $data): Purchase
     {
@@ -156,7 +156,7 @@ class PurchasesApi extends CollectApi
     }
 
     /**
-     * @param array<string, mixed> $filters
+     * @param  array<string, mixed>  $filters
      * @return array<string, mixed>
      */
     public function paymentMethods(array $filters = []): array
@@ -173,8 +173,8 @@ class PurchasesApi extends CollectApi
     }
 
     /**
-     * @param array<\MasyukAI\Chip\DataObjects\Product> $products
-     * @param array<string, mixed> $options
+     * @param  array<int, \MasyukAI\Chip\DataObjects\Product>  $products
+     * @param  array<string, mixed>  $options
      */
     public function createCheckoutPurchase(array $products, ClientDetails $client, array $options = []): Purchase
     {
@@ -231,7 +231,7 @@ class PurchasesApi extends CollectApi
     }
 
     /**
-     * @param array<string, mixed> $filters
+     * @param  array<string, mixed>  $filters
      * @return array<string, mixed>
      */
     protected function fetchPaymentMethods(array $filters): array
@@ -247,7 +247,7 @@ class PurchasesApi extends CollectApi
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     protected function validatePurchaseData(array $data): void
     {

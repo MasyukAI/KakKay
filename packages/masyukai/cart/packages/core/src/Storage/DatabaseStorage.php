@@ -31,6 +31,8 @@ readonly class DatabaseStorage implements StorageInterface
 
     /**
      * Retrieve cart items from storage
+     *
+     * @return array<string, mixed>
      */
     public function getItems(string $identifier, string $instance): array
     {
@@ -39,6 +41,8 @@ readonly class DatabaseStorage implements StorageInterface
 
     /**
      * Retrieve cart conditions from storage
+     *
+     * @return array<string, mixed>
      */
     public function getConditions(string $identifier, string $instance): array
     {
@@ -47,6 +51,8 @@ readonly class DatabaseStorage implements StorageInterface
 
     /**
      * Store cart items in storage
+     *
+     * @param  array<string, mixed>  $items
      */
     public function putItems(string $identifier, string $instance, array $items): void
     {
@@ -55,6 +61,8 @@ readonly class DatabaseStorage implements StorageInterface
 
     /**
      * Store cart conditions in storage
+     *
+     * @param  array<string, mixed>  $conditions
      */
     public function putConditions(string $identifier, string $instance, array $conditions): void
     {
@@ -63,6 +71,9 @@ readonly class DatabaseStorage implements StorageInterface
 
     /**
      * Store both items and conditions in storage
+     *
+     * @param  array<string, mixed>  $items
+     * @param  array<string, mixed>  $conditions
      */
     public function putBoth(string $identifier, string $instance, array $items, array $conditions): void
     {
@@ -117,6 +128,8 @@ readonly class DatabaseStorage implements StorageInterface
 
     /**
      * Get all instances for a specific identifier
+     *
+     * @return array<string>
      */
     public function getInstances(string $identifier): array
     {
@@ -217,6 +230,8 @@ readonly class DatabaseStorage implements StorageInterface
 
     /**
      * Validate data size to prevent memory issues and DoS attacks
+     *
+     * @param  array<string, mixed>  $data
      */
     private function validateDataSize(array $data, string $type): void
     {
@@ -243,6 +258,8 @@ readonly class DatabaseStorage implements StorageInterface
 
     /**
      * Retrieve and decode JSON column data
+     *
+     * @return array<string, mixed>
      */
     private function getJsonColumn(string $identifier, string $instance, string $column): array
     {
@@ -256,6 +273,8 @@ readonly class DatabaseStorage implements StorageInterface
 
     /**
      * Update a single JSON column with CAS
+     *
+     * @param  array<string, mixed>  $data
      */
     private function updateJsonColumn(string $identifier, string $instance, string $column, array $data, string $operationName): void
     {
@@ -271,6 +290,8 @@ readonly class DatabaseStorage implements StorageInterface
 
     /**
      * Encode data to JSON with error handling
+     *
+     * @param  array<string, mixed>  $data
      */
     private function encodeData(array $data, string $type): string
     {
@@ -283,6 +304,9 @@ readonly class DatabaseStorage implements StorageInterface
 
     /**
      * Decode JSON data with error handling and fallback
+     *
+     * @param  array<string, mixed>  $fallback
+     * @return array<string, mixed>
      */
     private function decodeData(?string $jsonData, string $type, array $fallback = []): array
     {
@@ -304,6 +328,8 @@ readonly class DatabaseStorage implements StorageInterface
 
     /**
      * Perform Compare-And-Swap update with optimistic locking
+     *
+     * @param  array<string, mixed>  $data
      */
     private function performCasUpdate(string $identifier, string $instance, array $data, string $operationName): void
     {

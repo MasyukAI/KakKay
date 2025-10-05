@@ -31,6 +31,8 @@ trait AssociatedModelTrait
 
     /**
      * Get associated model as array representation
+     *
+     * @return array<string, mixed>|string|null
      */
     private function getAssociatedModelArray(): array|string|null
     {

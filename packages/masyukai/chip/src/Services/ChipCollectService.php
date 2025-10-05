@@ -43,7 +43,7 @@ class ChipCollectService
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function createPurchase(array $data): Purchase
     {
@@ -66,7 +66,7 @@ class ChipCollectService
     }
 
     /**
-     * @param array<string, mixed> $filters
+     * @param  array<string, mixed>  $filters
      * @return array<string, mixed>
      */
     public function getPaymentMethods(array $filters = []): array
@@ -110,7 +110,7 @@ class ChipCollectService
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function createClient(array $data): Client
     {
@@ -123,7 +123,7 @@ class ChipCollectService
     }
 
     /**
-     * @param array<string, mixed> $filters
+     * @param  array<string, mixed>  $filters
      * @return array<string, mixed>
      */
     public function listClients(array $filters = []): array
@@ -132,7 +132,7 @@ class ChipCollectService
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function updateClient(string $clientId, array $data): Client
     {
@@ -140,7 +140,7 @@ class ChipCollectService
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function partialUpdateClient(string $clientId, array $data): Client
     {
@@ -174,8 +174,8 @@ class ChipCollectService
     }
 
     /**
-     * @param array<\MasyukAI\Chip\DataObjects\Product> $products
-     * @param array<string, mixed> $options
+     * @param  array<int, \MasyukAI\Chip\DataObjects\Product>  $products
+     * @param  array<string, mixed>  $options
      */
     public function createCheckoutPurchase(array $products, ClientDetails $clientDetails, array $options = []): Purchase
     {
@@ -196,7 +196,7 @@ class ChipCollectService
     }
 
     /**
-     * @param array<string, mixed> $filters
+     * @param  array<string, mixed>  $filters
      * @return array<string, mixed>
      */
     public function getAccountTurnover(array $filters = []): array
@@ -205,7 +205,7 @@ class ChipCollectService
     }
 
     /**
-     * @param array<string, mixed> $filters
+     * @param  array<string, mixed>  $filters
      * @return array<string, mixed>
      */
     public function listCompanyStatements(array $filters = []): array
@@ -230,7 +230,7 @@ class ChipCollectService
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      * @return array<string, mixed>
      */
     public function createWebhook(array $data): array
@@ -247,7 +247,7 @@ class ChipCollectService
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      * @return array<string, mixed>
      */
     public function updateWebhook(string $webhookId, array $data): array
@@ -261,7 +261,7 @@ class ChipCollectService
     }
 
     /**
-     * @param array<string, mixed> $filters
+     * @param  array<string, mixed>  $filters
      * @return array<string, mixed>
      */
     public function listWebhooks(array $filters = []): array

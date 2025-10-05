@@ -7,8 +7,8 @@ namespace MasyukAI\Chip\DataObjects;
 class ClientDetails
 {
     /**
-     * @param array<string> $cc
-     * @param array<string> $bcc
+     * @param  array<int, mixed>  $cc
+     * @param  array<int, mixed>  $bcc
      */
     public function __construct(
         public readonly ?string $bank_account,
@@ -36,7 +36,7 @@ class ClientDetails
     ) {}
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public static function fromArray(array $data): self
     {

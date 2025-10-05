@@ -9,7 +9,7 @@ use MasyukAI\Chip\DataObjects\Client;
 class ClientsApi extends CollectApi
 {
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function create(array $data): Client
     {
@@ -34,7 +34,7 @@ class ClientsApi extends CollectApi
     }
 
     /**
-     * @param array<string, mixed> $filters
+     * @param  array<string, mixed>  $filters
      * @return array<string, mixed>
      */
     public function list(array $filters = []): array
@@ -50,7 +50,7 @@ class ClientsApi extends CollectApi
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function update(string $clientId, array $data): Client
     {
@@ -64,7 +64,7 @@ class ClientsApi extends CollectApi
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function partialUpdate(string $clientId, array $data): Client
     {

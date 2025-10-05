@@ -9,9 +9,9 @@ use Carbon\Carbon;
 class Client
 {
     /**
-     * @param array<string> $cc
-     * @param array<string> $bcc
-     * @param array<string, mixed>|null $address_data
+     * @param  array<int, mixed>  $cc
+     * @param  array<int, mixed>  $bcc
+     * @param  array<string, mixed>|null  $address_data
      */
     public function __construct(
         public readonly string $id,
@@ -47,7 +47,7 @@ class Client
     ) {}
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public static function fromArray(array $data): self
     {
@@ -86,7 +86,8 @@ class Client
 
     /**
      * Magic property accessor for convenient camelCase access to snake_case properties
-     * @param string $name
+     *
+     * @param  string  $name
      * @return mixed
      */
     public function __get($name)
@@ -108,7 +109,7 @@ class Client
     }
 
     /**
-     * @param string $name
+     * @param  string  $name
      */
     public function __isset($name): bool
     {

@@ -9,11 +9,12 @@ use Illuminate\Contracts\Support\Jsonable;
 use JsonSerializable;
 use MasyukAI\Cart\Exceptions\InvalidCartConditionException;
 
-/**
- * @implements Arrayable<string, mixed>
- */
-class CartCondition implements Arrayable, Jsonable, JsonSerializable
+final class CartCondition implements Arrayable, Jsonable, JsonSerializable
 {
+    /**
+     * @param  array<string, mixed>  $attributes
+     * @param  array<string, mixed>|null  $rules
+     */
     public function __construct(
         private string $name,
         private string $type,
@@ -28,10 +29,12 @@ class CartCondition implements Arrayable, Jsonable, JsonSerializable
 
     /**
      * Create condition from array
+     *
+     * @param  array<string, mixed>  $data
      */
-    public static function fromArray(/** @var array<string, mixed> */ array $data): static
+    public static function fromArray(array $data): static
     {
-        return new static(
+        return new self(
             name: $data['name'] ?? throw new InvalidCartConditionException('Condition name is required'),
             type: $data['type'] ?? throw new InvalidCartConditionException('Condition type is required'),
             target: $data['target'] ?? 'subtotal',
@@ -167,8 +170,10 @@ class CartCondition implements Arrayable, Jsonable, JsonSerializable
 
     /**
      * Create a modified copy of the condition
+     *
+     * @param  array<string, mixed>  $changes
      */
-    public function with(/** @var array<string, mixed> */ array $changes): static
+    public function with(array $changes): static
     {
         return new static(
             name: $changes['name'] ?? $this->name,

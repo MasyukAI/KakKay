@@ -66,7 +66,7 @@ final class ItemConditionRemoved
     /**
      * Get event data for broadcasting or logging
      *
-     * @return array Event data suitable for serialization
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {

@@ -49,7 +49,8 @@ describe('ChipHealthCheckCommand', function (): void {
         $command->setLaravel(app());
 
         $definition = $command->getDefinition();
-        $input = new class([], $definition) extends ArrayInput {
+        $input = new class([], $definition) extends ArrayInput
+        {
             public function getOption(string $name): mixed
             {
                 if ($name === 'verbose') {
@@ -59,13 +60,13 @@ describe('ChipHealthCheckCommand', function (): void {
                 return parent::getOption($name);
             }
         };
-    $output = new BufferedOutput(OutputInterface::VERBOSITY_VERBOSE);
+        $output = new BufferedOutput(OutputInterface::VERBOSITY_VERBOSE);
 
-    $status = $command->run($input, $output);
+        $status = $command->run($input, $output);
 
         $buffer = $output->fetch();
 
-    expect($status)->toBe(0);
+        expect($status)->toBe(0);
         expect($buffer)->toContain('Environment:');
         expect($buffer)->toContain('Logging:');
         expect($buffer)->toContain('Webhook Events:');

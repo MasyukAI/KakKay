@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
+use MasyukAI\Chip\Clients\ChipCollectClient;
 use MasyukAI\Chip\DataObjects\Purchase;
 use MasyukAI\Chip\Events\PurchaseCreated;
 use MasyukAI\Chip\Events\PurchasePaid;
@@ -86,7 +87,7 @@ class WebhookService
                 }
 
                 // Get general public key for success callbacks
-                $response = app(ChipCollectService::class)->getPublicKey();
+                $response = app(ChipCollectClient::class)->get('public_key/');
 
                 if (is_array($response)) {
                     return (string) ($response['public_key'] ?? '');
@@ -112,7 +113,7 @@ class WebhookService
     }
 
     /**
-     * @param array<string, mixed> $eventConfig
+     * @param  array<string, mixed>  $eventConfig
      */
     public function shouldProcessWebhook(string $eventType, array $eventConfig = []): bool
     {
@@ -161,8 +162,9 @@ class WebhookService
 
     /**
      * Handle specific webhook events.
-     *
-     * @param array<string, mixed> $data
+     */
+    /**
+     * @param  array<string, mixed>  $data
      */
     protected function handleSpecificEvent(string $event, array $data): void
     {
@@ -209,6 +211,7 @@ class WebhookService
     public function getWebhookConfig(): array
     {
         $config = config('chip.webhooks', []);
+
         return is_array($config) ? $config : [];
     }
 }

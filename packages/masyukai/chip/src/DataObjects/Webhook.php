@@ -8,10 +8,6 @@ use Carbon\Carbon;
 
 class Webhook
 {
-    /**
-     * @param array<string> $events
-     * @param array<string, mixed>|null $data
-     */
     public function __construct(
         public readonly string $id,
         public readonly string $type,
@@ -20,21 +16,27 @@ class Webhook
         public readonly string $title,
         public readonly bool $all_events,
         public readonly string $public_key,
+        /** @var array<string, mixed> */
         public readonly array $events,
         public readonly string $callback,
         // Additional properties for webhook events
         public readonly ?string $event = null,
+        /** @var array<string, mixed>|null */
         public readonly ?array $data = null,
         public readonly ?string $timestamp = null,
     ) {}
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public static function fromArray(array $data): self
     {
         // Handle webhook event data (from webhook payload)
         if (isset($data['event'])) {
+            /** @var array<string, mixed> $events */
+            $events = is_array($data['event']) ? $data['event'] : [$data['event']];
+            $events = array_combine(array_map('strval', array_keys($events)), array_values($events));
+
             return new self(
                 id: $data['id'] ?? 'webhook_event_'.uniqid(),
                 type: 'webhook_event',
@@ -43,7 +45,7 @@ class Webhook
                 title: 'Webhook Event',
                 all_events: false,
                 public_key: '',
-                events: [$data['event']],
+                events: $events,
                 callback: '',
                 event: $data['event'],
                 data: $data['data'] ?? null,
@@ -52,6 +54,10 @@ class Webhook
         }
 
         // Handle webhook configuration data (for webhook endpoints)
+        /** @var array<string, mixed> $events */
+        $events = $data['events'] ?? [];
+        $events = array_combine(array_map('strval', array_keys($events)), array_values($events));
+
         return new self(
             id: $data['id'] ?? 'webhook_'.uniqid(),
             type: $data['type'] ?? 'webhook',
@@ -60,7 +66,7 @@ class Webhook
             title: $data['title'] ?? '',
             all_events: $data['all_events'] ?? false,
             public_key: $data['public_key'] ?? '',
-            events: $data['events'] ?? [],
+            events: $events,
             callback: $data['callback'] ?? '',
             event: null,
             data: null,

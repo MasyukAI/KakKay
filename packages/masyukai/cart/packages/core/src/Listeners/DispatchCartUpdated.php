@@ -107,6 +107,8 @@ class DispatchCartUpdated
 
     /**
      * Register the listeners for the subscriber
+     *
+     * @return array<string, string>
      */
     public function subscribe(\Illuminate\Events\Dispatcher $events): array
     {

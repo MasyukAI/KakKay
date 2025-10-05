@@ -61,6 +61,8 @@ readonly class SessionStorage implements StorageInterface
 
     /**
      * Get all instances for a specific identifier
+     *
+     * @return array<string>
      */
     public function getInstances(string $identifier): array
     {
@@ -96,6 +98,8 @@ readonly class SessionStorage implements StorageInterface
 
     /**
      * Retrieve cart items from storage
+     *
+     * @return array<string, mixed>
      */
     public function getItems(string $identifier, string $instance): array
     {
@@ -110,6 +114,8 @@ readonly class SessionStorage implements StorageInterface
 
     /**
      * Retrieve cart conditions from storage
+     *
+     * @return array<string, mixed>
      */
     public function getConditions(string $identifier, string $instance): array
     {
@@ -124,6 +130,8 @@ readonly class SessionStorage implements StorageInterface
 
     /**
      * Store cart items in storage
+     *
+     * @param  array<string, mixed>  $items
      */
     public function putItems(string $identifier, string $instance, array $items): void
     {
@@ -133,6 +141,8 @@ readonly class SessionStorage implements StorageInterface
 
     /**
      * Store cart conditions in storage
+     *
+     * @param  array<string, mixed>  $conditions
      */
     public function putConditions(string $identifier, string $instance, array $conditions): void
     {
@@ -141,7 +151,10 @@ readonly class SessionStorage implements StorageInterface
     }
 
     /**
-     * Store both items and conditions in storage
+     * Store both items and conditions for a cart instance
+     *
+     * @param  array<string, mixed>  $items
+     * @param  array<string, mixed>  $conditions
      */
     public function putBoth(string $identifier, string $instance, array $items, array $conditions): void
     {
@@ -170,6 +183,8 @@ readonly class SessionStorage implements StorageInterface
 
     /**
      * Validate data size to prevent memory issues and DoS attacks
+     *
+     * @param  array<string, mixed>  $data
      */
     private function validateDataSize(array $data, string $type): void
     {

@@ -11,10 +11,7 @@ use JsonSerializable;
 use MasyukAI\Cart\Collections\CartConditionCollection;
 use MasyukAI\Cart\Conditions\CartCondition;
 
-/**
- * @implements Arrayable<string, mixed>
- */
-readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
+final readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
 {
     use Traits\AssociatedModelTrait;
     use Traits\AttributeTrait;
@@ -32,6 +29,10 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
 
     public float|int $price;
 
+    /**
+     * @param  array<string, mixed>  $attributes
+     * @param  array<string, mixed>|Collection<string, CartCondition>  $conditions
+     */
     public function __construct(
         string|int $id,
         public string $name,
@@ -73,7 +74,7 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
             throw new \MasyukAI\Cart\Exceptions\InvalidCartItemException('Quantity must be at least 1');
         }
 
-        return new static(
+        return new self(
             $this->id,
             $this->name,
             $this->price,
@@ -94,6 +95,8 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
 
     /**
      * Create a copy of the item with modified properties
+     *
+     * @param  array<string, mixed>  $attributes
      */
     public function with(array $attributes): static
     {
@@ -111,7 +114,7 @@ readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
     /**
      * Normalize conditions to CartConditionCollection
      *
-     * @param  array|Collection<string, CartCondition>  $conditions
+     * @param  array<string, mixed>|Collection<string, CartCondition>  $conditions
      */
     private function normalizeConditions(array|Collection $conditions): CartConditionCollection
     {

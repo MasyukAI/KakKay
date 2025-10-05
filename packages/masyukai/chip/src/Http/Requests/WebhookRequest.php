@@ -37,6 +37,7 @@ class WebhookRequest extends FormRequest
 
     /**
      * Validation rules for webhook request
+     *
      * @return array<string, mixed>
      */
     public function rules(): array

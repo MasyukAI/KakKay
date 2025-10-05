@@ -53,6 +53,8 @@ trait ValidationTrait
 
     /**
      * Validate data size to prevent memory issues
+     *
+     * @param  array<string, mixed>  $data
      */
     private function validateDataSize(array $data, string $type): void
     {

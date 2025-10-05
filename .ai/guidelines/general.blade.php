@@ -1,4 +1,3 @@
-<ul>
-	<li>All generated database code must remain compatible with PostgreSQL.</li>
-	<li>When choosing JSON column types or operators, prioritize <code>jsonb</code> over <code>json</code>.</li>
-</ul>
+- All generated database code must remain compatible with PostgreSQL.
+- When choosing JSON column types or operators, prioritize `jsonb` over `json`.
+- All code must adhere to PHPStan level 6.

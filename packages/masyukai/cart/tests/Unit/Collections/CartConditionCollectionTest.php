@@ -5,341 +5,372 @@ declare(strict_types=1);
 use MasyukAI\Cart\Collections\CartConditionCollection;
 use MasyukAI\Cart\Conditions\CartCondition;
 
-beforeEach(function (): void {
-    $this->collection = new CartConditionCollection;
-    $this->condition1 = new CartCondition(
-        name: 'discount-10',
+it('can add conditions to collection', function () {
+    $collection = new CartConditionCollection;
+
+    $condition = new CartCondition(
+        name: 'Test Condition',
         type: 'discount',
         target: 'subtotal',
-        value: '-10%',
-        attributes: ['description' => '10% off'],
-        order: 1
-    );
-    $this->condition2 = new CartCondition(
-        name: 'shipping',
-        type: 'charge',
-        target: 'subtotal',
-        value: '+15',
-        attributes: ['description' => 'Shipping fee'],
-        order: 2
-    );
-    $this->condition3 = new CartCondition(
-        name: 'tax',
-        type: 'charge',
-        target: 'subtotal',
-        value: '+8%',
-        attributes: ['description' => 'Sales tax'],
-        order: 3
-    );
-});
-
-it('can be instantiated empty', function (): void {
-    expect($this->collection)->toBeInstanceOf(CartConditionCollection::class)
-        ->and($this->collection->count())->toBe(0)
-        ->and($this->collection->isEmpty())->toBeTrue();
-});
-
-it('can add conditions with put method', function (): void {
-    $this->collection->put('discount-10', $this->condition1);
-
-    expect($this->collection->count())->toBe(1)
-        ->and($this->collection->has('discount-10'))->toBeTrue()
-        ->and($this->collection->get('discount-10'))->toBe($this->condition1);
-});
-
-it('can add multiple conditions', function (): void {
-    $this->collection->put('discount-10', $this->condition1);
-    $this->collection->put('shipping', $this->condition2);
-    $this->collection->put('tax', $this->condition3);
-
-    expect($this->collection->count())->toBe(3)
-        ->and($this->collection->has('discount-10'))->toBeTrue()
-        ->and($this->collection->has('shipping'))->toBeTrue()
-        ->and($this->collection->has('tax'))->toBeTrue();
-});
-
-it('can remove conditions', function (): void {
-    $this->collection->put('discount-10', $this->condition1);
-    $this->collection->put('shipping', $this->condition2);
-
-    $this->collection->forget('discount-10');
-
-    expect($this->collection->count())->toBe(1)
-        ->and($this->collection->has('discount-10'))->toBeFalse()
-        ->and($this->collection->has('shipping'))->toBeTrue();
-});
-
-it('can filter conditions by type', function (): void {
-    $this->collection->put('discount-10', $this->condition1); // discount
-    $this->collection->put('shipping', $this->condition2);   // charge
-    $this->collection->put('tax', $this->condition3);        // charge
-
-    $discounts = $this->collection->filter(function ($condition) {
-        return $condition->getType() === 'discount';
-    });
-
-    $charges = $this->collection->filter(function ($condition) {
-        return $condition->getType() === 'charge';
-    });
-
-    expect($discounts->count())->toBe(1)
-        ->and($charges->count())->toBe(2);
-});
-
-it('can filter conditions by target', function (): void {
-    $itemCondition = new CartCondition(
-        name: 'item-discount',
-        type: 'discount',
-        target: 'item',
-        value: '-5%'
+        value: '-10%'
     );
 
-    $this->collection->put('discount-10', $this->condition1);  // subtotal
-    $this->collection->put('shipping', $this->condition2);     // subtotal
-    $this->collection->put('item-discount', $itemCondition);   // item
+    $collection->addCondition($condition);
 
-    $subtotalConditions = $this->collection->byTarget('subtotal');
-    $itemConditions = $this->collection->byTarget('item');
-
-    expect($subtotalConditions->count())->toBe(2)
-        ->and($itemConditions->count())->toBe(1)
-        ->and($itemConditions->first())->toBe($itemCondition);
+    expect($collection->count())->toBe(1);
+    expect($collection->hasCondition('Test Condition'))->toBeTrue();
+    expect($collection->getCondition('Test Condition'))->toBe($condition);
 });
 
-it('can filter conditions by value', function (): void {
-    $condition4 = new CartCondition(
-        name: 'special-discount',
-        type: 'discount',
-        target: 'subtotal',
-        value: '-10%' // Same value as condition1
-    );
+it('can filter conditions by type', function () {
+    $collection = new CartConditionCollection;
 
-    $this->collection->put('discount-10', $this->condition1);     // -10%
-    $this->collection->put('shipping', $this->condition2);        // +15
-    $this->collection->put('tax', $this->condition3);             // +8%
-    $this->collection->put('special-discount', $condition4);      // -10%
+    $discount = new CartCondition('Discount', 'discount', 'subtotal', '-10%');
+    $tax = new CartCondition('Tax', 'tax', 'subtotal', '8%');
+    $shipping = new CartCondition('Shipping', 'shipping', 'subtotal', '+15');
 
-    $tenPercentConditions = $this->collection->byValue('-10%');
-    $fifteenFlatConditions = $this->collection->byValue('+15');
-    $eightPercentConditions = $this->collection->byValue('+8%');
+    $collection->addCondition($discount);
+    $collection->addCondition($tax);
+    $collection->addCondition($shipping);
 
-    expect($tenPercentConditions->count())->toBe(2)
-        ->and($fifteenFlatConditions->count())->toBe(1)
-        ->and($eightPercentConditions->count())->toBe(1)
-        ->and($tenPercentConditions->keys()->toArray())->toContain('discount-10', 'special-discount')
-        ->and($fifteenFlatConditions->first())->toBe($this->condition2);
+    $discounts = $collection->byType('discount');
+    expect($discounts->count())->toBe(1);
+    expect($discounts->first())->toBe($discount);
 });
 
-it('can sort conditions by order', function (): void {
-    // Add in random order
-    $this->collection->put('tax', $this->condition3);       // order: 3
-    $this->collection->put('discount-10', $this->condition1); // order: 1
-    $this->collection->put('shipping', $this->condition2);   // order: 2
+it('can filter conditions by target', function () {
+    $collection = new CartConditionCollection;
 
-    $sorted = $this->collection->sortBy(function ($condition) {
-        return $condition->getOrder();
-    });
+    $subtotalCondition = new CartCondition('Subtotal Tax', 'tax', 'subtotal', '8%');
+    $totalCondition = new CartCondition('Total Fee', 'fee', 'total', '+5');
 
-    $sortedKeys = $sorted->keys()->toArray();
-    expect($sortedKeys)->toBe(['discount-10', 'shipping', 'tax']);
+    $collection->addCondition($subtotalCondition);
+    $collection->addCondition($totalCondition);
+
+    $subtotalConditions = $collection->byTarget('subtotal');
+    expect($subtotalConditions->count())->toBe(1);
+    expect($subtotalConditions->first())->toBe($subtotalCondition);
 });
 
-it('can find conditions by name', function (): void {
-    $this->collection->put('discount-10', $this->condition1);
-    $this->collection->put('shipping', $this->condition2);
+it('can get only discount conditions', function () {
+    $collection = new CartConditionCollection;
 
-    $found = $this->collection->first(function ($condition) {
-        return $condition->getName() === 'shipping';
-    });
+    $discount = new CartCondition('Discount', 'discount', 'subtotal', '-10%');
+    $charge = new CartCondition('Charge', 'fee', 'subtotal', '+5');
 
-    expect($found)->toBe($this->condition2)
-        ->and($found->getName())->toBe('shipping');
+    $collection->addCondition($discount);
+    $collection->addCondition($charge);
+
+    $discounts = $collection->discounts();
+    expect($discounts->count())->toBe(1);
+    expect($discounts->first())->toBe($discount);
 });
 
-it('can calculate total charge amount', function (): void {
-    $this->collection->put('shipping', $this->condition2);  // +15
-    $this->collection->put('tax', $this->condition3);       // +8%
+it('can get only charge conditions', function () {
+    $collection = new CartConditionCollection;
 
-    $subtotal = 100;
-    $total = 0;
+    $discount = new CartCondition('Discount', 'discount', 'subtotal', '-10%');
+    $charge = new CartCondition('Charge', 'fee', 'subtotal', '+5');
 
-    foreach ($this->collection as $condition) {
-        if ($condition->getType() === 'charge') {
-            $value = $condition->getValue();
-            if (str_contains($value, '%')) {
-                $percentage = (float) str_replace(['%', '+'], '', $value);
-                $total += $subtotal * ($percentage / 100);
-            } else {
-                $total += (float) str_replace('+', '', $value);
-            }
-        }
-    }
+    $collection->addCondition($discount);
+    $collection->addCondition($charge);
 
-    expect($total)->toBe(23.0); // 15 + (100 * 8%)
+    $charges = $collection->charges();
+    expect($charges->count())->toBe(1);
+    expect($charges->first())->toBe($charge);
 });
 
-it('can get discount conditions only', function (): void {
-    $this->collection->put('discount-10', $this->condition1); // discount
-    $this->collection->put('shipping', $this->condition2);     // charge
+it('can apply all conditions to a value', function () {
+    $collection = new CartConditionCollection;
 
-    $discounts = $this->collection->filter(fn ($condition) => $condition->getType() === 'discount');
+    // Create conditions with specific order
+    $discount = new CartCondition('Discount', 'discount', 'subtotal', '-10%', [], 1);
+    $tax = new CartCondition('Tax', 'tax', 'subtotal', '8%', [], 2);
 
-    expect($discounts->count())->toBe(1)
-        ->and($discounts->first()->getName())->toBe('discount-10');
+    $collection->addCondition($discount);
+    $collection->addCondition($tax);
+
+    // Start with $100
+    // Apply 10% discount: $100 * 0.9 = $90
+    // Apply 8% tax: $90 * 1.08 = $97.20
+    $result = $collection->applyAll(100.0);
+    expect($result->getAmount())->toBe(97.2);
 });
 
-it('can group conditions by type', function (): void {
-    $this->collection->put('discount-10', $this->condition1); // discount
-    $this->collection->put('shipping', $this->condition2);     // charge
-    $this->collection->put('tax', $this->condition3);          // charge
+it('can create collection from array', function () {
+    $conditions = [
+        [
+            'name' => 'Discount',
+            'type' => 'discount',
+            'target' => 'subtotal',
+            'value' => '-10%',
+        ],
+        [
+            'name' => 'Tax',
+            'type' => 'tax',
+            'target' => 'subtotal',
+            'value' => '8%',
+        ],
+    ];
 
-    $grouped = $this->collection->groupBy(function ($condition) {
-        return $condition->getType();
-    });
+    $collection = CartConditionCollection::fromArray($conditions);
 
-    expect($grouped->has('discount'))->toBeTrue()
-        ->and($grouped->has('charge'))->toBeTrue()
-        ->and($grouped->get('discount')->count())->toBe(1)
-        ->and($grouped->get('charge')->count())->toBe(2);
+    expect($collection->count())->toBe(2);
+    expect($collection->hasCondition('Discount'))->toBeTrue();
+    expect($collection->hasCondition('Tax'))->toBeTrue();
 });
 
-it('can check if condition exists by name', function (): void {
-    $this->collection->put('discount-10', $this->condition1);
+it('can get collection summary', function () {
+    $collection = new CartConditionCollection;
 
-    $existsByKey = $this->collection->has('discount-10');
-    $existsByValue = $this->collection->contains(function ($condition) {
-        return $condition->getName() === 'discount-10';
-    });
+    $discount = new CartCondition('Discount', 'discount', 'subtotal', '-10%');
+    $tax = new CartCondition('Tax', 'tax', 'subtotal', '8%');
 
-    expect($existsByKey)->toBeTrue()
-        ->and($existsByValue)->toBeTrue();
+    $collection->addCondition($discount);
+    $collection->addCondition($tax);
+
+    $summary = $collection->getSummary(100.0);
+
+    expect($summary)->toHaveKeys([
+        'total_conditions', 'discounts', 'charges', 'percentages',
+        'total_discount_amount', 'total_charges_amount', 'net_adjustment',
+    ]);
+
+    expect($summary['total_conditions'])->toBe(2);
+    expect($summary['discounts'])->toBe(1);
+    expect($summary['charges'])->toBe(1);
+    expect($summary['percentages'])->toBe(2);
 });
 
-it('can reject conditions by criteria', function (): void {
-    $this->collection->put('discount-10', $this->condition1);
-    $this->collection->put('shipping', $this->condition2);
-    $this->collection->put('tax', $this->condition3);
+it('can group conditions by type', function () {
+    $collection = new CartConditionCollection;
 
-    $nonCharges = $this->collection->reject(function ($condition) {
-        return $condition->getType() === 'charge';
-    });
+    $discount1 = new CartCondition('Discount 1', 'discount', 'subtotal', '-10%');
+    $discount2 = new CartCondition('Discount 2', 'discount', 'subtotal', '-5%');
+    $tax = new CartCondition('Tax', 'tax', 'subtotal', '8%');
 
-    expect($nonCharges->count())->toBe(1)
-        ->and($nonCharges->first()->getType())->toBe('discount');
+    $collection->addCondition($discount1);
+    $collection->addCondition($discount2);
+    $collection->addCondition($tax);
+
+    $grouped = $collection->groupByType();
+
+    expect($grouped->has('discount'))->toBeTrue();
+    expect($grouped->has('tax'))->toBeTrue();
+    expect($grouped->get('discount')->count())->toBe(2);
+    expect($grouped->get('tax')->count())->toBe(1);
 });
 
-it('can map conditions to array format', function (): void {
-    $this->collection->put('discount-10', $this->condition1);
-    $this->collection->put('shipping', $this->condition2);
+it('can remove conditions', function () {
+    $collection = new CartConditionCollection;
 
-    $mapped = $this->collection->map(function ($condition) {
-        return [
-            'name' => $condition->getName(),
-            'type' => $condition->getType(),
-            'value' => $condition->getValue(),
-        ];
-    });
+    $condition = new CartCondition('Test', 'discount', 'subtotal', '-10%');
+    $collection->addCondition($condition);
 
-    expect($mapped->count())->toBe(2)
-        ->and($mapped->first()['name'])->toBe('discount-10')
-        ->and($mapped->first()['type'])->toBe('discount')
-        ->and($mapped->first()['value'])->toBe('-10%');
+    expect($collection->hasCondition('Test'))->toBeTrue();
+
+    $collection = $collection->removeCondition('Test');
+
+    expect($collection->hasCondition('Test'))->toBeFalse();
 });
 
-it('can convert to array', function (): void {
-    $this->collection->put('discount-10', $this->condition1);
-    $this->collection->put('shipping', $this->condition2);
+it('can filter conditions by value', function () {
+    $collection = new CartConditionCollection;
 
-    $array = $this->collection->toArray();
+    $discount1 = new CartCondition('Discount 1', 'discount', 'subtotal', '-10%');
+    $discount2 = new CartCondition('Discount 2', 'discount', 'subtotal', '-5%');
+    $discount3 = new CartCondition('Discount 3', 'discount', 'subtotal', '-10%');
 
-    expect($array)->toBeArray()
-        ->and($array)->toHaveKey('discount-10')
-        ->and($array)->toHaveKey('shipping')
-        ->and($array['discount-10'])->toBeArray()
-        ->and($array['discount-10']['name'])->toBe('discount-10');
+    $collection->addCondition($discount1);
+    $collection->addCondition($discount2);
+    $collection->addCondition($discount3);
+
+    $tenPercent = $collection->byValue('-10%');
+
+    expect($tenPercent->count())->toBe(2);
 });
 
-it('can convert to JSON', function (): void {
-    $this->collection->put('discount-10', $this->condition1);
+it('can filter percentage conditions', function () {
+    $collection = new CartConditionCollection;
 
-    $json = $this->collection->toJson();
-    $decoded = json_decode($json, true);
+    $percent = new CartCondition('Percent', 'discount', 'subtotal', '-10%');
+    $fixed = new CartCondition('Fixed', 'discount', 'subtotal', -5.0);
 
-    expect($json)->toBeJson()
-        ->and($decoded)->toHaveKey('discount-10');
+    $collection->addCondition($percent);
+    $collection->addCondition($fixed);
+
+    $percentages = $collection->percentages();
+
+    expect($percentages->count())->toBe(1);
+    expect($percentages->first()->getName())->toBe('Percent');
 });
 
-it('can handle empty operations gracefully', function (): void {
-    expect($this->collection->first())->toBeNull()
-        ->and($this->collection->isEmpty())->toBeTrue()
-        ->and($this->collection->isNotEmpty())->toBeFalse()
-        ->and($this->collection->filter(fn ($c) => true)->count())->toBe(0);
+it('can sort conditions by order', function () {
+    $collection = new CartConditionCollection;
+
+    $condition1 = new CartCondition('First', 'discount', 'subtotal', '-10%', [], 3);
+    $condition2 = new CartCondition('Second', 'tax', 'subtotal', '5%', [], 1);
+    $condition3 = new CartCondition('Third', 'fee', 'subtotal', '+10', [], 2);
+
+    $collection->addCondition($condition1);
+    $collection->addCondition($condition2);
+    $collection->addCondition($condition3);
+
+    $sorted = $collection->sortByOrder();
+    $values = $sorted->values();
+
+    expect($values->first()->getName())->toBe('Second');
+    expect($values->last()->getName())->toBe('First');
 });
 
-it('can pluck specific values from conditions', function (): void {
-    $this->collection->put('discount-10', $this->condition1);
-    $this->collection->put('shipping', $this->condition2);
+it('can get total discount amount', function () {
+    $collection = new CartConditionCollection;
 
-    $names = $this->collection->map(fn ($c) => $c->getName())->values();
-    $types = $this->collection->map(fn ($c) => $c->getType())->values();
+    $discount1 = new CartCondition('Discount 1', 'discount', 'subtotal', '-10%');
+    $discount2 = new CartCondition('Discount 2', 'discount', 'subtotal', '-5');
 
-    expect($names->toArray())->toContain('discount-10')
-        ->and($names->toArray())->toContain('shipping')
-        ->and($types->toArray())->toContain('discount')
-        ->and($types->toArray())->toContain('charge');
+    $collection->addCondition($discount1);
+    $collection->addCondition($discount2);
+
+    $totalDiscount = $collection->getTotalDiscount(100.0);
+
+    expect($totalDiscount)->toBeGreaterThan(0);
 });
 
-it('can determine unique conditions by name', function (): void {
-    $duplicateCondition = new CartCondition(
-        name: 'discount-10', // Same name as condition1
-        type: 'discount',
-        target: 'subtotal',
-        value: '-15%' // Different value
-    );
+it('can get total charges amount', function () {
+    $collection = new CartConditionCollection;
 
-    $this->collection->put('discount-10-1', $this->condition1);
-    $this->collection->put('shipping', $this->condition2);
-    $this->collection->put('discount-10-2', $duplicateCondition);
+    $charge1 = new CartCondition('Charge 1', 'fee', 'subtotal', '+5%');
+    $charge2 = new CartCondition('Charge 2', 'tax', 'subtotal', '+10');
 
-    $uniqueByName = $this->collection->unique(function ($condition) {
-        return $condition->getName();
-    });
+    $collection->addCondition($charge1);
+    $collection->addCondition($charge2);
 
-    expect($uniqueByName->count())->toBe(2); // discount-10 and shipping
+    $totalCharges = $collection->getTotalCharges(100.0);
+
+    expect($totalCharges)->toBeGreaterThan(0);
 });
 
-it('can validate condition types', function (): void {
-    $this->collection->put('discount-10', $this->condition1);
-    $this->collection->put('shipping', $this->condition2);
-    $this->collection->put('tax', $this->condition3);
+it('can convert to detailed array', function () {
+    $collection = new CartConditionCollection;
 
-    $hasValidTypes = $this->collection->every(function ($condition) {
-        return in_array($condition->getType(), ['discount', 'charge']);
-    });
+    $discount = new CartCondition('Discount', 'discount', 'subtotal', '-10%');
+    $collection->addCondition($discount);
 
-    expect($hasValidTypes)->toBeTrue();
+    $detailed = $collection->toDetailedArray(100.0);
+
+    expect($detailed)->toBeArray();
+    expect($detailed)->toHaveKeys(['conditions', 'summary']);
+    expect($detailed['conditions'])->toBeArray();
+    expect($detailed['summary'])->toBeArray();
 });
 
-it('can partition conditions by type', function (): void {
-    $this->collection->put('discount-10', $this->condition1);
-    $this->collection->put('shipping', $this->condition2);
-    $this->collection->put('tax', $this->condition3);
+it('can group conditions by target', function () {
+    $collection = new CartConditionCollection;
 
-    [$discounts, $charges] = $this->collection->partition(function ($condition) {
-        return $condition->getType() === 'discount';
-    });
+    $subtotal1 = new CartCondition('Subtotal 1', 'discount', 'subtotal', '-10%');
+    $subtotal2 = new CartCondition('Subtotal 2', 'tax', 'subtotal', '5%');
+    $total1 = new CartCondition('Total 1', 'fee', 'total', '+10');
 
-    expect($discounts->count())->toBe(1)
-        ->and($charges->count())->toBe(2);
+    $collection->addCondition($subtotal1);
+    $collection->addCondition($subtotal2);
+    $collection->addCondition($total1);
+
+    $grouped = $collection->groupByTarget();
+
+    expect($grouped->has('subtotal'))->toBeTrue();
+    expect($grouped->has('total'))->toBeTrue();
+    expect($grouped->get('subtotal')->count())->toBe(2);
+    expect($grouped->get('total')->count())->toBe(1);
 });
 
-it('can slice conditions collection', function (): void {
-    $this->collection->put('discount-10', $this->condition1);
-    $this->collection->put('shipping', $this->condition2);
-    $this->collection->put('tax', $this->condition3);
+it('can check if collection has discounts', function () {
+    $collection = new CartConditionCollection;
 
-    $sliced = $this->collection->slice(1, 1);
+    expect($collection->hasDiscounts())->toBeFalse();
 
-    expect($sliced->count())->toBe(1)
-        ->and($sliced->values()->first())->toBe($this->condition2);
+    $discount = new CartCondition('Discount', 'discount', 'subtotal', '-10%');
+    $collection->addCondition($discount);
+
+    expect($collection->hasDiscounts())->toBeTrue();
+});
+
+it('can check if collection has charges', function () {
+    $collection = new CartConditionCollection;
+
+    expect($collection->hasCharges())->toBeFalse();
+
+    $charge = new CartCondition('Charge', 'fee', 'subtotal', '+10');
+    $collection->addCondition($charge);
+
+    expect($collection->hasCharges())->toBeTrue();
+});
+
+it('can filter conditions with specific attribute', function () {
+    $collection = new CartConditionCollection;
+
+    $condition1 = new CartCondition('Condition 1', 'discount', 'subtotal', '-10%', ['featured' => true]);
+    $condition2 = new CartCondition('Condition 2', 'tax', 'subtotal', '5%', ['featured' => false]);
+    $condition3 = new CartCondition('Condition 3', 'fee', 'subtotal', '+10');
+
+    $collection->addCondition($condition1);
+    $collection->addCondition($condition2);
+    $collection->addCondition($condition3);
+
+    $featured = $collection->withAttribute('featured', true);
+    expect($featured->count())->toBe(1);
+
+    $hasFeatured = $collection->withAttribute('featured');
+    expect($hasFeatured->count())->toBe(2);
+});
+
+it('can find condition by attribute', function () {
+    $collection = new CartConditionCollection;
+
+    $condition1 = new CartCondition('Condition 1', 'discount', 'subtotal', '-10%', ['code' => 'SAVE10']);
+    $condition2 = new CartCondition('Condition 2', 'tax', 'subtotal', '5%', ['code' => 'TAX5']);
+
+    $collection->addCondition($condition1);
+    $collection->addCondition($condition2);
+
+    $found = $collection->findByAttribute('code', 'SAVE10');
+
+    expect($found)->not->toBeNull();
+    expect($found->getName())->toBe('Condition 1');
+});
+
+it('can remove conditions by type', function () {
+    $collection = new CartConditionCollection;
+
+    $discount = new CartCondition('Discount', 'discount', 'subtotal', '-10%');
+    $tax = new CartCondition('Tax', 'tax', 'subtotal', '5%');
+    $fee = new CartCondition('Fee', 'fee', 'subtotal', '+10');
+
+    $collection->addCondition($discount);
+    $collection->addCondition($tax);
+    $collection->addCondition($fee);
+
+    $filtered = $collection->removeByType('discount');
+
+    expect($filtered->count())->toBe(2);
+    expect($filtered->hasCondition('Discount'))->toBeFalse();
+    expect($filtered->hasCondition('Tax'))->toBeTrue();
+});
+
+it('can remove conditions by target', function () {
+    $collection = new CartConditionCollection;
+
+    $subtotal = new CartCondition('Subtotal', 'discount', 'subtotal', '-10%');
+    $total = new CartCondition('Total', 'tax', 'total', '5%');
+    $item = new CartCondition('Item', 'fee', 'item', '+10');
+
+    $collection->addCondition($subtotal);
+    $collection->addCondition($total);
+    $collection->addCondition($item);
+
+    $filtered = $collection->removeByTarget('subtotal');
+
+    expect($filtered->count())->toBe(2);
+    expect($filtered->hasCondition('Subtotal'))->toBeFalse();
+    expect($filtered->hasCondition('Total'))->toBeTrue();
 });

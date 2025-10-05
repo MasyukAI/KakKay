@@ -11,12 +11,16 @@ class CartConflictException extends CartException
 {
     private ?Cart $conflictedCart = null;
 
+    /** @var array<string, mixed>|null */
     private ?array $conflictedData = null;
 
     private int $attemptedVersion;
 
     private int $currentVersion;
 
+    /**
+     * @param  array<string, mixed>|null  $conflictedData
+     */
     public function __construct(
         string $message,
         int $attemptedVersion,
@@ -43,6 +47,8 @@ class CartConflictException extends CartException
 
     /**
      * Get the data that caused the conflict
+     *
+     * @return array<string, mixed>|null
      */
     public function getConflictedData(): ?array
     {
@@ -83,6 +89,8 @@ class CartConflictException extends CartException
 
     /**
      * Get conflict resolution suggestions
+     *
+     * @return array<string>
      */
     public function getResolutionSuggestions(): array
     {
@@ -105,6 +113,8 @@ class CartConflictException extends CartException
 
     /**
      * Convert to array for API responses
+     *
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {

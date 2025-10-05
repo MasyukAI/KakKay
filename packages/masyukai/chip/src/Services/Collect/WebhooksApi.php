@@ -7,7 +7,7 @@ namespace MasyukAI\Chip\Services\Collect;
 class WebhooksApi extends CollectApi
 {
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      * @return array<string, mixed>
      */
     public function create(array $data): array
@@ -32,7 +32,7 @@ class WebhooksApi extends CollectApi
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      * @return array<string, mixed>
      */
     public function update(string $webhookId, array $data): array
@@ -54,7 +54,7 @@ class WebhooksApi extends CollectApi
     }
 
     /**
-     * @param array<string, mixed> $filters
+     * @param  array<string, mixed>  $filters
      * @return array<string, mixed>
      */
     public function list(array $filters = []): array

@@ -176,17 +176,24 @@ describe('WebhookService', function (): void {
     });
 
     it('retrieves and caches public keys from the collect service', function (): void {
-        $originalCollect = app(ChipCollectService::class);
-        $collectService = \Mockery::mock(ChipCollectService::class);
-        $collectService->shouldReceive('getPublicKey')->once()->andReturn('cached-key');
+        Cache::forget(config('chip.cache.prefix').'public_key');
 
-        app()->instance(ChipCollectService::class, $collectService);
+        $originalClient = app(\MasyukAI\Chip\Clients\ChipCollectClient::class);
+        $collectClient = \Mockery::mock(\MasyukAI\Chip\Clients\ChipCollectClient::class);
+        $collectClient->shouldReceive('get')
+            ->once()
+            ->with('public_key/')
+            ->andReturn('-----BEGIN PUBLIC KEY-----\ntest-cached-public-key\n-----END PUBLIC KEY-----');
+
+        app()->instance(\MasyukAI\Chip\Clients\ChipCollectClient::class, $collectClient);
 
         try {
-            expect($this->webhookService->getPublicKey())->toBe('cached-key');
-            expect($this->webhookService->getPublicKey())->toBe('cached-key');
+            // Create a new WebhookService instance after installing the mock
+            $webhookService = new \MasyukAI\Chip\Services\WebhookService;
+            expect($webhookService->getPublicKey())->toBe('-----BEGIN PUBLIC KEY-----\ntest-cached-public-key\n-----END PUBLIC KEY-----');
+            expect($webhookService->getPublicKey())->toBe('-----BEGIN PUBLIC KEY-----\ntest-cached-public-key\n-----END PUBLIC KEY-----'); // Second call uses cache
         } finally {
-            app()->instance(ChipCollectService::class, $originalCollect);
+            app()->instance(\MasyukAI\Chip\Clients\ChipCollectClient::class, $originalClient);
         }
     });
 

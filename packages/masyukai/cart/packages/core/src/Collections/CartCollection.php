@@ -7,9 +7,6 @@ namespace MasyukAI\Cart\Collections;
 use Illuminate\Support\Collection;
 use MasyukAI\Cart\Models\CartItem;
 
-/**
- * @extends Collection<string, CartItem>
- */
 class CartCollection extends Collection
 {
     /**

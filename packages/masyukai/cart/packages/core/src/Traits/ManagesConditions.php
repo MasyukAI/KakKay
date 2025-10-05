@@ -32,6 +32,8 @@ trait ManagesConditions
 
     /**
      * Add condition to cart
+     *
+     * @param  CartCondition|array<string, mixed>  $condition
      */
     public function addCondition(CartCondition|array $condition): static
     {
@@ -269,7 +271,7 @@ trait ManagesConditions
      * @param  string  $name  The name of the shipping condition
      * @param  string|float  $value  The value of the shipping fee (e.g. '15.00', '+15', etc.)
      * @param  string  $method  The shipping method identifier (e.g. 'standard', 'express')
-     * @param  array  $attributes  Additional attributes to store with the condition
+     * @param  array<string, mixed>  $attributes  Additional attributes to store with the condition
      */
     public function addShipping(string $name, string|float $value, string $method = 'standard', array $attributes = []): static
     {

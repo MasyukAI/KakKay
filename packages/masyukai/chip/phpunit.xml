@@ -6,7 +6,7 @@
          stopOnFailure="false"
          processIsolation="false"
          backupGlobals="false"
-         cacheDirectory=".phpunit.cache"
+         cacheDirectory="/tmp/.phpunit.cache"
          backupStaticProperties="false">
     <testsuites>
         <testsuite name="CHIP Package Test Suite">
@@ -36,9 +36,4 @@
         <env name="CHIP_SEND_SECRET_KEY" value="test_send_secret"/>
         <env name="CHIP_IS_SANDBOX" value="true"/>
     </php>
-    <logging>
-        <junit outputFile="build/logs/junit.xml"/>
-        <testdoxHtml outputFile="build/logs/testdox.html"/>
-        <testdoxText outputFile="build/logs/testdox.txt"/>
-    </logging>
 </phpunit>

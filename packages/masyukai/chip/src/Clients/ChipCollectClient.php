@@ -12,7 +12,7 @@ use MasyukAI\Chip\Exceptions\ChipApiException;
 class ChipCollectClient extends BaseHttpClient
 {
     /**
-     * @param array<string, mixed> $retryConfig
+     * @param  array<string, mixed>  $retryConfig
      */
     public function __construct(
         protected string $apiKey,
@@ -30,8 +30,8 @@ class ChipCollectClient extends BaseHttpClient
     }
 
     /**
-     * @param array<string, mixed> $data
-     * @param array<string, mixed> $headers
+     * @param  array<string, mixed>  $data
+     * @param  array<string, string>  $headers
      */
     protected function sendRequest(string $method, string $url, array $data, array $headers = []): Response
     {
@@ -57,6 +57,7 @@ class ChipCollectClient extends BaseHttpClient
 
     /**
      * Get data from the API. Returns array for most endpoints, string for public_key/ endpoint.
+     *
      * @return array<string, mixed>|string
      */
     public function get(string $endpoint): array|string
@@ -81,8 +82,8 @@ class ChipCollectClient extends BaseHttpClient
     }
 
     /**
-     * @param array<string, mixed> $data
-     * @param array<string, mixed> $headers
+     * @param  array<string, mixed>  $data
+     * @param  array<string, string>  $headers
      * @return array<string, mixed>
      */
     public function post(string $endpoint, array $data = [], array $headers = []): array
@@ -91,7 +92,7 @@ class ChipCollectClient extends BaseHttpClient
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      * @return array<string, mixed>
      */
     public function put(string $endpoint, array $data = []): array
@@ -100,7 +101,7 @@ class ChipCollectClient extends BaseHttpClient
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      * @return array<string, mixed>
      */
     public function patch(string $endpoint, array $data = []): array
@@ -122,7 +123,7 @@ class ChipCollectClient extends BaseHttpClient
     }
 
     /**
-     * @return array<string>
+     * @return array<int, string>
      */
     protected function sensitiveFields(): array
     {

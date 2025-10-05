@@ -31,7 +31,7 @@ interface StorageInterface
      * Get all instances for a specific identifier
      *
      * @param  string  $identifier  User/session identifier
-     * @return array Array of instance names
+     * @return array<string> Array of instance names
      */
     public function getInstances(string $identifier): array;
 
@@ -47,7 +47,7 @@ interface StorageInterface
      *
      * @param  string  $identifier  User/session identifier
      * @param  string  $instance  Cart instance name
-     * @return array Cart items array
+     * @return array<string, mixed> Cart items array
      */
     public function getItems(string $identifier, string $instance): array;
 
@@ -56,7 +56,7 @@ interface StorageInterface
      *
      * @param  string  $identifier  User/session identifier
      * @param  string  $instance  Cart instance name
-     * @return array Cart conditions array
+     * @return array<string, mixed> Cart conditions array
      */
     public function getConditions(string $identifier, string $instance): array;
 
@@ -65,7 +65,7 @@ interface StorageInterface
      *
      * @param  string  $identifier  User/session identifier
      * @param  string  $instance  Cart instance name
-     * @param  array  $items  Cart items array
+     * @param  array<string, mixed>  $items  Cart items array
      */
     public function putItems(string $identifier, string $instance, array $items): void;
 
@@ -74,7 +74,7 @@ interface StorageInterface
      *
      * @param  string  $identifier  User/session identifier
      * @param  string  $instance  Cart instance name
-     * @param  array  $conditions  Cart conditions array
+     * @param  array<string, mixed>  $conditions  Cart conditions array
      */
     public function putConditions(string $identifier, string $instance, array $conditions): void;
 
@@ -83,8 +83,8 @@ interface StorageInterface
      *
      * @param  string  $identifier  User/session identifier
      * @param  string  $instance  Cart instance name
-     * @param  array  $items  Cart items array
-     * @param  array  $conditions  Cart conditions array
+     * @param  array<string, mixed>  $items  Cart items array
+     * @param  array<string, mixed>  $conditions  Cart conditions array
      */
     public function putBoth(string $identifier, string $instance, array $items, array $conditions): void;
 

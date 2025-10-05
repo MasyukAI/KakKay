@@ -8,10 +8,6 @@ use Carbon\Carbon;
 
 class Purchase
 {
-    /**
-     * @param array<string, mixed> $status_history
-     * @param array<string> $payment_method_whitelist
-     */
     public function __construct(
         public readonly string $id, // UUID as string
         public readonly string $type,
@@ -24,6 +20,7 @@ class Purchase
         public readonly IssuerDetails $issuer_details,
         public readonly TransactionData $transaction_data,
         public readonly string $status,
+        /** @var array<string, mixed> */
         public readonly array $status_history,
         public readonly ?int $viewed_on, // Unix timestamp or null
         public readonly string $company_id, // UUID as string
@@ -44,6 +41,7 @@ class Purchase
         public readonly string $refund_availability,
         public readonly int $refundable_amount,
         public readonly ?CurrencyConversion $currency_conversion,
+        /** @var array<string, mixed> */
         public readonly array $payment_method_whitelist,
         public readonly ?string $success_redirect,
         public readonly ?string $failure_redirect,
@@ -61,7 +59,7 @@ class Purchase
     ) {}
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public static function fromArray(array $data): self
     {
@@ -162,7 +160,8 @@ class Purchase
 
     /**
      * Magic property accessor for convenient access to nested properties
-     * @param string $name
+     *
+     * @param  string  $name
      * @return mixed
      */
     public function __get($name)
@@ -179,7 +178,7 @@ class Purchase
     }
 
     /**
-     * @param string $name
+     * @param  string  $name
      */
     public function __isset($name): bool
     {

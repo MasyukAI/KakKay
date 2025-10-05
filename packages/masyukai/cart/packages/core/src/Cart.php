@@ -15,7 +15,7 @@ use MasyukAI\Cart\Traits\ManagesItems;
 use MasyukAI\Cart\Traits\ManagesMetadata;
 use MasyukAI\Cart\Traits\ManagesStorage;
 
-class Cart
+final class Cart
 {
     use CalculatesTotals;
     use ManagesConditions;

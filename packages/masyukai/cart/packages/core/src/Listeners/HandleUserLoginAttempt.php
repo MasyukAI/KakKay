@@ -33,6 +33,8 @@ class HandleUserLoginAttempt
 
     /**
      * Extract user identifier from login credentials.
+     *
+     * @param  array<string, mixed>  $credentials
      */
     private function getUserIdentifier(array $credentials): ?string
     {

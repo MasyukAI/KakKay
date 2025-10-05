@@ -6,13 +6,9 @@ namespace MasyukAI\Chip\DataObjects;
 
 class PurchaseDetails
 {
-    /**
-     * @param array<Product> $products
-     * @param array<string, mixed> $request_client_details
-     * @param array<string, mixed>|null $metadata
-     */
     public function __construct(
         public readonly string $currency,
+        /** @var array<int, Product> */
         public readonly array $products,
         public readonly int $total,
         public readonly string $language,
@@ -22,15 +18,17 @@ class PurchaseDetails
         public readonly ?int $total_tax_override,
         public readonly ?int $total_discount_override,
         public readonly ?int $total_override,
+        /** @var array<string, mixed> */
         public readonly array $request_client_details,
         public readonly string $timezone,
         public readonly bool $due_strict,
         public readonly ?string $email_message,
+        /** @var array<string, mixed>|null */
         public readonly ?array $metadata,
     ) {}
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public static function fromArray(array $data): self
     {
@@ -45,7 +43,7 @@ class PurchaseDetails
             total_tax_override: $data['total_tax_override'] ?? null,
             total_discount_override: $data['total_discount_override'] ?? null,
             total_override: $data['total_override'] ?? null,
-            request_client_details: $data['request_client_details'] ?? [],
+            request_client_details: is_array($data['request_client_details'] ?? null) ? $data['request_client_details'] : [],
             timezone: $data['timezone'] ?? 'Asia/Kuala_Lumpur',
             due_strict: $data['due_strict'] ?? false,
             email_message: $data['email_message'] ?? null,

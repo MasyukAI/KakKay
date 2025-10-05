@@ -63,9 +63,9 @@ describe('WebhookRequest Validation', function (): void {
             'timestamp' => '2024-01-01T12:00:00Z',
         ]);
 
-    $validator = validator($request->all(), $request->rules());
+        $validator = validator($request->all(), $request->rules());
 
-    expect($validator->fails())->toBeFalse();
+        expect($validator->fails())->toBeFalse();
     });
 
     it('allows optional timestamp field', function (): void {
@@ -76,9 +76,9 @@ describe('WebhookRequest Validation', function (): void {
             'timestamp' => '2024-01-01T12:00:00Z',
         ]);
 
-    $validator = validator($request->all(), $request->rules());
+        $validator = validator($request->all(), $request->rules());
 
-    expect($validator->fails())->toBeFalse();
+        expect($validator->fails())->toBeFalse();
     });
 
     it('validates timestamp format when provided', function (): void {
@@ -132,7 +132,8 @@ describe('WebhookRequest Authorization', function (): void {
 
         $request = WebhookRequest::create('/', 'POST', [], [], [], [], $payload);
         $request->headers->set('X-Signature', 'signature-123');
-        $request->setRouteResolver(fn () => new class {
+        $request->setRouteResolver(fn () => new class
+        {
             public function parameter(string $key, $default = null)
             {
                 return $key === 'webhook_id' ? 'wh_123' : $default;

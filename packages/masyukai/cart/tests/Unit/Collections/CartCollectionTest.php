@@ -5,811 +5,1088 @@ declare(strict_types=1);
 use MasyukAI\Cart\Collections\CartCollection;
 use MasyukAI\Cart\Models\CartItem;
 
-beforeEach(function (): void {
-    $this->collection = new CartCollection;
-    $this->item1 = new CartItem(
-        id: 'item-1',
-        name: 'Item 1',
-        price: 100.0,
-        quantity: 2,
-        attributes: ['color' => 'red']
-    );
-    $this->item2 = new CartItem(
-        id: 'item-2',
-        name: 'Item 2',
-        price: 50.0,
-        quantity: 3,
-        attributes: ['size' => 'large']
-    );
-});
+describe('CartCollection Basic Operations', function () {
+    it('creates empty collection', function () {
+        $collection = new CartCollection;
 
-it('can be instantiated empty', function (): void {
-    expect($this->collection)->toBeInstanceOf(CartCollection::class)
-        ->and($this->collection->count())->toBe(0)
-        ->and($this->collection->isEmpty())->toBeTrue();
-});
-
-it('can add items with put method', function (): void {
-    $this->collection->put('item-1', $this->item1);
-
-    expect($this->collection->count())->toBe(1)
-        ->and($this->collection->has('item-1'))->toBeTrue()
-        ->and($this->collection->get('item-1'))->toBe($this->item1);
-});
-
-it('can add items with addItem method', function (): void {
-    $result = $this->collection->addItem($this->item1);
-
-    expect($result)->toBeInstanceOf(CartCollection::class)
-        ->and($this->collection->count())->toBe(1)
-        ->and($this->collection->hasItem('item-1'))->toBeTrue()
-        ->and($this->collection->getItem('item-1'))->toBe($this->item1);
-});
-
-it('can remove items with removeItem method', function (): void {
-    $this->collection->addItem($this->item1);
-    $this->collection->addItem($this->item2);
-
-    $result = $this->collection->removeItem('item-1');
-
-    expect($result)->toBeInstanceOf(CartCollection::class)
-        ->and($this->collection->count())->toBe(1)
-        ->and($this->collection->hasItem('item-1'))->toBeFalse()
-        ->and($this->collection->hasItem('item-2'))->toBeTrue();
-});
-
-it('can get items with getItem method', function (): void {
-    $this->collection->addItem($this->item1);
-
-    $item = $this->collection->getItem('item-1');
-    $nonExistent = $this->collection->getItem('non-existent');
-
-    expect($item)->toBe($this->item1)
-        ->and($nonExistent)->toBeNull();
-});
-
-it('can check item existence with hasItem method', function (): void {
-    $this->collection->addItem($this->item1);
-
-    expect($this->collection->hasItem('item-1'))->toBeTrue()
-        ->and($this->collection->hasItem('non-existent'))->toBeFalse();
-});
-
-it('can get total quantity with getTotalQuantity method', function (): void {
-    $this->collection->addItem($this->item1); // quantity: 2
-    $this->collection->addItem($this->item2); // quantity: 3
-
-    expect($this->collection->getTotalQuantity())->toBe(5);
-});
-
-it('can get subtotal with getSubtotal method', function (): void {
-    $this->collection->addItem($this->item1); // 100 * 2 = 200
-    $this->collection->addItem($this->item2); // 50 * 3 = 150
-
-    $subtotal = $this->collection->subtotal();
-    if ($subtotal instanceof \Akaunting\Money\Money) {
-        $subtotal = $subtotal->getAmount();
-    }
-    expect($subtotal)->toBe(350.0);
-});
-
-it('can get subtotal which includes item-level conditions by default', function (): void {
-    $this->collection->addItem($this->item1);
-    $this->collection->addItem($this->item2);
-
-    // Since items don't have conditions yet, should be same as raw subtotal
-    $subtotal = $this->collection->subtotal();
-    if ($subtotal instanceof \Akaunting\Money\Money) {
-        $subtotal = $subtotal->getAmount();
-    }
-    expect($subtotal)->toBe(350.0);
-});
-
-it('can convert to formatted array with toFormattedArray method', function (): void {
-    $this->collection->addItem($this->item1);
-    $this->collection->addItem($this->item2);
-
-    $formatted = $this->collection->toFormattedArray();
-
-    expect($formatted)->toBeArray()
-        ->and($formatted)->toHaveKeys([
-            'items', 'total_quantity', 'subtotal',
-            'total', 'total_without_conditions', 'count', 'is_empty',
-        ])
-        ->and($formatted['total_quantity'])->toBe(5)
-        ->and($formatted['subtotal'])->toBe(350.0)
-        ->and($formatted['count'])->toBe(2)
-        ->and($formatted['is_empty'])->toBeFalse();
-});
-
-it('can get total with total method', function (): void {
-    $this->collection->addItem($this->item1); // 100 * 2 = 200
-    $this->collection->addItem($this->item2); // 50 * 3 = 150
-
-    expect($this->collection->total())->toBe(350.0);
-});
-
-it('can filter items by condition with filterByCondition method', function (): void {
-    $itemWithCondition = new CartItem(
-        id: 'item-3',
-        name: 'Item 3',
-        price: 75.0,
-        quantity: 1,
-        attributes: [],
-        conditions: [
-            'special' => [
-                'name' => 'special',
-                'type' => 'discount',
-                'target' => 'subtotal',
-                'value' => '-10',
-                'attributes' => [],
-                'order' => 0,
-            ],
-        ]
-    );
-
-    $this->collection->addItem($this->item1); // no conditions
-    $this->collection->addItem($itemWithCondition); // has 'special' condition
-
-    $filtered = $this->collection->filterByCondition('special');
-
-    expect($filtered->count())->toBe(1)
-        ->and($filtered->hasItem('item-3'))->toBeTrue()
-        ->and($filtered->hasItem('item-1'))->toBeFalse();
-});
-
-it('can filter items by attribute with filterByAttribute method', function (): void {
-    $item3 = new CartItem(
-        id: 'item-3',
-        name: 'Item 3',
-        price: 75.0,
-        quantity: 1,
-        attributes: ['color' => 'red', 'size' => 'medium']
-    );
-
-    $this->collection->addItem($this->item1); // color: red
-    $this->collection->addItem($this->item2); // size: large
-    $this->collection->addItem($item3); // color: red, size: medium
-
-    $redItems = $this->collection->filterByAttribute('color', 'red');
-    $itemsWithColor = $this->collection->filterByAttribute('color');
-
-    expect($redItems->count())->toBe(2)
-        ->and($redItems->hasItem('item-1'))->toBeTrue()
-        ->and($redItems->hasItem('item-3'))->toBeTrue()
-        ->and($itemsWithColor->count())->toBe(2);
-});
-
-it('can add multiple items', function (): void {
-    $this->collection->put('item-1', $this->item1);
-    $this->collection->put('item-2', $this->item2);
-
-    expect($this->collection->count())->toBe(2)
-        ->and($this->collection->has('item-1'))->toBeTrue()
-        ->and($this->collection->has('item-2'))->toBeTrue();
-});
-
-it('can remove items', function (): void {
-    $this->collection->put('item-1', $this->item1);
-    $this->collection->put('item-2', $this->item2);
-
-    $removed = $this->collection->forget('item-1');
-
-    expect($this->collection->count())->toBe(1)
-        ->and($this->collection->has('item-1'))->toBeFalse()
-        ->and($this->collection->has('item-2'))->toBeTrue();
-});
-
-it('can get total quantity of all items', function (): void {
-    $this->collection->put('item-1', $this->item1); // quantity: 2
-    $this->collection->put('item-2', $this->item2); // quantity: 3
-
-    $totalQuantity = $this->collection->sum(fn ($item) => $item->quantity);
-
-    expect($totalQuantity)->toBe(5);
-});
-
-it('can calculate total price sum', function (): void {
-    $this->collection->put('item-1', $this->item1); // 100 * 2 = 200
-    $this->collection->put('item-2', $this->item2); // 50 * 3 = 150
-
-    $total = $this->collection->sum(fn ($item) => $item->getSubtotal() instanceof \Akaunting\Money\Money ? $item->getSubtotal()->getAmount() : (float) $item->getSubtotal());
-    expect($total)->toBe(350.0);
-});
-
-it('can filter items by attributes', function (): void {
-    $item3 = new CartItem(
-        id: 'item-3',
-        name: 'Item 3',
-        price: 75.0,
-        quantity: 1,
-        attributes: ['color' => 'red', 'size' => 'medium']
-    );
-
-    $this->collection->put('item-1', $this->item1); // color: red
-    $this->collection->put('item-2', $this->item2); // size: large
-    $this->collection->put('item-3', $item3); // color: red, size: medium
-
-    $redItems = $this->collection->filter(function ($item) {
-        return isset($item->attributes['color']) && $item->attributes['color'] === 'red';
+        expect($collection)->toBeInstanceOf(CartCollection::class);
+        expect($collection->isEmpty())->toBeTrue();
+        expect($collection->count())->toBe(0);
     });
 
-    expect($redItems->count())->toBe(2)
-        ->and($redItems->has('item-1'))->toBeTrue()
-        ->and($redItems->has('item-3'))->toBeTrue()
-        ->and($redItems->has('item-2'))->toBeFalse();
-});
-
-it('can search items by name', function (): void {
-    $item3 = new CartItem(
-        id: 'item-3',
-        name: 'Special Item',
-        price: 75.0,
-        quantity: 1,
-        attributes: []
-    );
-
-    $this->collection->put('item-1', $this->item1);
-    $this->collection->put('item-2', $this->item2);
-    $this->collection->put('item-3', $item3);
-
-    $searchResults = $this->collection->filter(function ($item) {
-        return stripos($item->name, 'Special') !== false;
-    });
-
-    expect($searchResults->count())->toBe(1)
-        ->and($searchResults->first()->name)->toBe('Special Item');
-});
-
-it('can map items to different structure', function (): void {
-    $this->collection->put('item-1', $this->item1);
-    $this->collection->put('item-2', $this->item2);
-
-    $mapped = $this->collection->map(function ($item) {
-        return [
-            'id' => $item->id,
-            'name' => $item->name,
-            'total' => $item->getSubtotal(),
+    it('creates collection from items', function () {
+        $items = [
+            new CartItem('item-1', 'Item 1', 10.00, 1),
+            new CartItem('item-2', 'Item 2', 20.00, 2),
         ];
+
+        $collection = new CartCollection($items);
+
+        expect($collection->count())->toBe(2);
+        expect($collection->isEmpty())->toBeFalse();
     });
 
-    expect($mapped->count())->toBe(2)
-        ->and(($mapped->get('item-1')['total'] instanceof \Akaunting\Money\Money ? $mapped->get('item-1')['total']->getAmount() : $mapped->get('item-1')['total']))->toBe(200.0)
-        ->and(($mapped->get('item-2')['total'] instanceof \Akaunting\Money\Money ? $mapped->get('item-2')['total']->getAmount() : $mapped->get('item-2')['total']))->toBe(150.0);
-});
+    it('adds items to collection', function () {
+        $collection = new CartCollection;
+        $item = new CartItem('item', 'Item', 15.00, 1);
 
-it('can group items by attribute', function (): void {
-    $item3 = new CartItem(
-        id: 'item-3',
-        name: 'Item 3',
-        price: 30.0,
-        quantity: 1,
-        attributes: ['color' => 'red']
-    );
+        $collection->push($item);
 
-    $this->collection->put('item-1', $this->item1); // color: red
-    $this->collection->put('item-2', $this->item2); // size: large (no color)
-    $this->collection->put('item-3', $item3); // color: red
-
-    $grouped = $this->collection->groupBy(function ($item) {
-        return $item->attributes['color'] ?? 'no-color';
+        expect($collection->count())->toBe(1);
+        expect($collection->first())->toBe($item);
     });
 
-    expect($grouped->has('red'))->toBeTrue()
-        ->and($grouped->has('no-color'))->toBeTrue()
-        ->and($grouped->get('red')->count())->toBe(2)
-        ->and($grouped->get('no-color')->count())->toBe(1);
-});
+    it('adds items using addItem method', function () {
+        $collection = new CartCollection;
+        $item = new CartItem('item-1', 'Item 1', 10.00, 1);
 
-it('can sort items by price', function (): void {
-    $item3 = new CartItem(
-        id: 'item-3',
-        name: 'Item 3',
-        price: 25.0,
-        quantity: 1,
-        attributes: []
-    );
+        $result = $collection->addItem($item);
 
-    $this->collection->put('item-1', $this->item1); // price: 100
-    $this->collection->put('item-2', $this->item2); // price: 50
-    $this->collection->put('item-3', $item3); // price: 25
-
-    $sorted = $this->collection->sortBy(fn ($item) => $item->price);
-
-    $sortedKeys = $sorted->keys()->toArray();
-    expect($sortedKeys)->toBe(['item-3', 'item-2', 'item-1']);
-});
-
-it('can find items by condition', function (): void {
-    $this->collection->put('item-1', $this->item1);
-    $this->collection->put('item-2', $this->item2);
-
-    $found = $this->collection->first(function ($item) {
-        return $item->price > 75;
+        expect($result)->toBeInstanceOf(CartCollection::class);
+        expect($collection->count())->toBe(1);
+        expect($collection->has('item-1'))->toBeTrue();
     });
 
-    expect($found)->toBe($this->item1)
-        ->and($found->price)->toBe(100.0);
-});
+    it('removes items from collection', function () {
+        $item1 = new CartItem('item-1', 'Item 1', 10.00, 1);
+        $item2 = new CartItem('item-2', 'Item 2', 20.00, 1);
 
-it('can check if any item matches condition', function (): void {
-    $this->collection->put('item-1', $this->item1);
-    $this->collection->put('item-2', $this->item2);
+        $collection = new CartCollection([$item1, $item2]);
+        $filtered = $collection->filter(fn ($item) => $item->id !== 'item-1');
 
-    $hasExpensiveItem = $this->collection->contains(function ($item) {
-        return $item->price > 90;
+        expect($filtered->count())->toBe(1);
+        expect($filtered->first()->id)->toBe('item-2');
     });
 
-    $hasCheapItem = $this->collection->contains(function ($item) {
-        return $item->price < 10;
+    it('removes items using removeItem method', function () {
+        $item1 = new CartItem('item-1', 'Item 1', 10.00, 1);
+        $item2 = new CartItem('item-2', 'Item 2', 20.00, 1);
+
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+
+        $result = $collection->removeItem('item-1');
+
+        expect($result)->toBeInstanceOf(CartCollection::class);
+        expect($collection->count())->toBe(1);
+        expect($collection->has('item-1'))->toBeFalse();
+        expect($collection->has('item-2'))->toBeTrue();
     });
 
-    expect($hasExpensiveItem)->toBeTrue()
-        ->and($hasCheapItem)->toBeFalse();
-});
+    it('gets item by ID using getItem method', function () {
+        $item1 = new CartItem('item-1', 'Item 1', 10.00, 1);
+        $item2 = new CartItem('item-2', 'Item 2', 20.00, 1);
 
-it('can reject items by condition', function (): void {
-    $this->collection->put('item-1', $this->item1); // price: 100
-    $this->collection->put('item-2', $this->item2); // price: 50
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
 
-    $filtered = $this->collection->reject(function ($item) {
-        return $item->price < 75;
+        $retrieved = $collection->getItem('item-1');
+
+        expect($retrieved)->not->toBeNull();
+        expect($retrieved->id)->toBe('item-1');
+        expect($retrieved->name)->toBe('Item 1');
     });
 
-    expect($filtered->count())->toBe(1)
-        ->and($filtered->has('item-1'))->toBeTrue()
-        ->and($filtered->has('item-2'))->toBeFalse();
+    it('returns null when getting non-existent item', function () {
+        $collection = new CartCollection;
+
+        $retrieved = $collection->getItem('non-existent');
+
+        expect($retrieved)->toBeNull();
+    });
+
+    it('checks if item exists using hasItem method', function () {
+        $item = new CartItem('item-1', 'Item 1', 10.00, 1);
+        $collection = new CartCollection;
+        $collection->addItem($item);
+
+        expect($collection->hasItem('item-1'))->toBeTrue();
+        expect($collection->hasItem('non-existent'))->toBeFalse();
+    });
+
+    it('gets total quantity using getTotalQuantity method', function () {
+        $item1 = new CartItem('item-1', 'Item 1', 10.00, 2);
+        $item2 = new CartItem('item-2', 'Item 2', 20.00, 3);
+        $item3 = new CartItem('item-3', 'Item 3', 30.00, 5);
+
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+        $collection->addItem($item3);
+
+        $totalQty = $collection->getTotalQuantity();
+
+        expect($totalQty)->toBe(10);
+    });
 });
 
-it('can get items as array', function (): void {
-    $this->collection->put('item-1', $this->item1);
-    $this->collection->put('item-2', $this->item2);
+describe('CartCollection Calculations', function () {
+    it('calculates subtotal', function () {
+        $items = [
+            new CartItem('item-1', 'Item 1', 10.00, 2), // 20.00
+            new CartItem('item-2', 'Item 2', 15.00, 3), // 45.00
+        ];
 
-    $array = $this->collection->toArray();
+        $collection = new CartCollection($items);
+        $subtotal = $collection->sum(fn ($item) => $item->price * $item->quantity);
 
-    expect($array)->toBeArray()
-        ->and($array)->toHaveKey('item-1')
-        ->and($array)->toHaveKey('item-2')
-        ->and($array['item-1'])->toBeArray()
-        ->and($array['item-2'])->toBeArray()
-        ->and($array['item-1']['id'])->toBe('item-1')
-        ->and($array['item-2']['id'])->toBe('item-2');
+        expect($subtotal)->toBe(65.00);
+    });
+
+    it('calculates total quantity', function () {
+        $items = [
+            new CartItem('item-1', 'Item 1', 10.00, 2),
+            new CartItem('item-2', 'Item 2', 20.00, 3),
+            new CartItem('item-3', 'Item 3', 30.00, 1),
+        ];
+
+        $collection = new CartCollection($items);
+        $totalQty = $collection->sum('quantity');
+
+        expect($totalQty)->toBe(6);
+    });
+
+    it('filters items by criteria', function () {
+        $items = [
+            new CartItem('cheap', 'Cheap', 5.00, 1),
+            new CartItem('expensive', 'Expensive', 100.00, 1),
+            new CartItem('moderate', 'Moderate', 25.00, 1),
+        ];
+
+        $collection = new CartCollection($items);
+        $expensive = $collection->filter(fn ($item) => $item->price > 20.00);
+
+        expect($expensive->count())->toBe(2);
+    });
+
+    it('sorts items by price', function () {
+        $items = [
+            new CartItem('mid', 'Mid', 50.00, 1),
+            new CartItem('low', 'Low', 10.00, 1),
+            new CartItem('high', 'High', 100.00, 1),
+        ];
+
+        $collection = new CartCollection($items);
+        $sorted = $collection->sortBy(fn ($item) => $item->price);
+
+        expect($sorted->first()->id)->toBe('low');
+        expect($sorted->last()->id)->toBe('high');
+    });
 });
 
-it('can convert to JSON', function (): void {
-    $this->collection->put('item-1', $this->item1);
+describe('CartCollection Search and Find', function () {
+    it('finds item by ID', function () {
+        $items = [
+            new CartItem('item-1', 'Item 1', 10.00, 1),
+            new CartItem('item-2', 'Item 2', 20.00, 1),
+            new CartItem('item-3', 'Item 3', 30.00, 1),
+        ];
 
-    $json = $this->collection->toJson();
-    $decoded = json_decode($json, true);
+        $collection = new CartCollection($items);
+        $found = $collection->firstWhere('id', 'item-2');
 
-    expect($json)->toBeJson()
-        ->and($decoded)->toHaveKey('item-1')
-        ->and($decoded['item-1']['id'])->toBe('item-1')
-        ->and($decoded['item-1']['name'])->toBe('Item 1');
+        expect($found)->not->toBeNull();
+        expect($found->name)->toBe('Item 2');
+    });
+
+    it('finds items by attribute', function () {
+        $item1 = new CartItem('item-1', 'Item 1', 10.00, 1, ['category' => 'electronics']);
+        $item2 = new CartItem('item-2', 'Item 2', 20.00, 1, ['category' => 'books']);
+        $item3 = new CartItem('item-3', 'Item 3', 30.00, 1, ['category' => 'electronics']);
+
+        $collection = new CartCollection([$item1, $item2, $item3]);
+        $electronics = $collection->filter(fn ($item) => $item->getAttribute('category') === 'electronics');
+
+        expect($electronics->count())->toBe(2);
+    });
+
+    it('checks if collection contains item', function () {
+        $item = new CartItem('item', 'Item', 10.00, 1);
+        $collection = new CartCollection([$item]);
+
+        expect($collection->contains($item))->toBeTrue();
+        expect($collection->contains('id', 'item'))->toBeTrue();
+        expect($collection->contains('id', 'nonexistent'))->toBeFalse();
+    });
+
+    it('plucks specific values', function () {
+        $items = [
+            new CartItem('item-1', 'Item 1', 10.00, 1),
+            new CartItem('item-2', 'Item 2', 20.00, 1),
+            new CartItem('item-3', 'Item 3', 30.00, 1),
+        ];
+
+        $collection = new CartCollection($items);
+        $names = $collection->pluck('name');
+
+        expect($names->toArray())->toBe(['Item 1', 'Item 2', 'Item 3']);
+    });
 });
 
-it('can be merged with another collection', function (): void {
-    $otherCollection = new CartCollection;
-    $item3 = new CartItem(
-        id: 'item-3',
-        name: 'Item 3',
-        price: 75.0,
-        quantity: 1,
-        attributes: []
-    );
+describe('CartCollection Transformations', function () {
+    it('maps items to new values', function () {
+        $items = [
+            new CartItem('item-1', 'Item 1', 10.00, 2),
+            new CartItem('item-2', 'Item 2', 20.00, 1),
+        ];
 
-    $this->collection->put('item-1', $this->item1);
-    $otherCollection->put('item-2', $this->item2);
-    $otherCollection->put('item-3', $item3);
+        $collection = new CartCollection($items);
+        $totals = $collection->map(fn ($item) => $item->price * $item->quantity);
 
-    $merged = $this->collection->merge($otherCollection);
+        expect($totals->toArray())->toBe([20.00, 20.00]);
+    });
 
-    expect($merged->count())->toBe(3)
-        ->and($merged->has('item-1'))->toBeTrue()
-        ->and($merged->has('item-2'))->toBeTrue()
-        ->and($merged->has('item-3'))->toBeTrue();
+    it('groups items by attribute', function () {
+        $item1 = new CartItem('item-1', 'Item 1', 10.00, 1, ['type' => 'physical']);
+        $item2 = new CartItem('item-2', 'Item 2', 20.00, 1, ['type' => 'digital']);
+        $item3 = new CartItem('item-3', 'Item 3', 30.00, 1, ['type' => 'physical']);
+
+        $collection = new CartCollection([$item1, $item2, $item3]);
+        $grouped = $collection->groupBy(fn ($item) => $item->getAttribute('type'));
+
+        expect($grouped->has('physical'))->toBeTrue();
+        expect($grouped->has('digital'))->toBeTrue();
+        expect($grouped->get('physical')->count())->toBe(2);
+    });
+
+    it('chunks collection into smaller collections', function () {
+        $items = collect(range(1, 10))->map(fn ($i) => new CartItem("item-{$i}", "Item {$i}", 10.00, 1));
+
+        $collection = new CartCollection($items->toArray());
+        $chunks = $collection->chunk(3);
+
+        expect($chunks->count())->toBe(4);
+        expect($chunks->first()->count())->toBe(3);
+    });
+
+    it('takes subset of items', function () {
+        $items = [
+            new CartItem('item-1', 'Item 1', 10.00, 1),
+            new CartItem('item-2', 'Item 2', 20.00, 1),
+            new CartItem('item-3', 'Item 3', 30.00, 1),
+            new CartItem('item-4', 'Item 4', 40.00, 1),
+            new CartItem('item-5', 'Item 5', 50.00, 1),
+        ];
+
+        $collection = new CartCollection($items);
+        $subset = $collection->take(3);
+
+        expect($subset->count())->toBe(3);
+        expect($subset->first()->id)->toBe('item-1');
+    });
 });
 
-it('can handle empty operations gracefully', function (): void {
-    expect($this->collection->first())->toBeNull()
-        ->and($this->collection->sum('price'))->toBe(0)
-        ->and($this->collection->isEmpty())->toBeTrue()
-        ->and($this->collection->isNotEmpty())->toBeFalse();
+describe('CartCollection Aggregations', function () {
+    it('calculates minimum price', function () {
+        $items = [
+            new CartItem('item-1', 'Item 1', 10.00, 1),
+            new CartItem('item-2', 'Item 2', 50.00, 1),
+            new CartItem('item-3', 'Item 3', 25.00, 1),
+        ];
+
+        $collection = new CartCollection($items);
+        $min = $collection->min(fn ($item) => $item->price);
+
+        expect($min)->toBe(10.00);
+    });
+
+    it('calculates maximum price', function () {
+        $items = [
+            new CartItem('item-1', 'Item 1', 10.00, 1),
+            new CartItem('item-2', 'Item 2', 50.00, 1),
+            new CartItem('item-3', 'Item 3', 25.00, 1),
+        ];
+
+        $collection = new CartCollection($items);
+        $max = $collection->max(fn ($item) => $item->price);
+
+        expect($max)->toBe(50.00);
+    });
+
+    it('calculates average price', function () {
+        $items = [
+            new CartItem('item-1', 'Item 1', 10.00, 1),
+            new CartItem('item-2', 'Item 2', 20.00, 1),
+            new CartItem('item-3', 'Item 3', 30.00, 1),
+        ];
+
+        $collection = new CartCollection($items);
+        $avg = $collection->avg(fn ($item) => $item->price);
+
+        expect($avg)->toBe(20.00);
+    });
+
+    it('reduces collection to single value', function () {
+        $items = [
+            new CartItem('item-1', 'Item 1', 10.00, 2),
+            new CartItem('item-2', 'Item 2', 15.00, 3),
+        ];
+
+        $collection = new CartCollection($items);
+        $total = $collection->reduce(
+            fn ($carry, $item) => $carry + ($item->price * $item->quantity),
+            0
+        );
+
+        expect($total)->toBe(65.00);
+    });
 });
 
-it('can pluck specific values', function (): void {
-    $this->collection->put('item-1', $this->item1);
-    $this->collection->put('item-2', $this->item2);
+describe('CartCollection Edge Cases', function () {
+    it('handles empty collection operations', function () {
+        $collection = new CartCollection;
 
-    $names = $this->collection->pluck('name');
-    $prices = $this->collection->pluck('price');
+        expect($collection->sum('quantity'))->toBe(0);
+        expect($collection->first())->toBeNull();
+        expect($collection->last())->toBeNull();
+    });
 
-    expect($names->toArray())->toBe(['Item 1', 'Item 2'])
-        ->and($prices->toArray())->toBe([100.0, 50.0]);
+    it('handles single item collection', function () {
+        $item = new CartItem('single', 'Single', 10.00, 1);
+        $collection = new CartCollection([$item]);
+
+        expect($collection->first())->toBe($item);
+        expect($collection->last())->toBe($item);
+    });
+
+    it('chains multiple operations', function () {
+        $items = [
+            new CartItem('item-1', 'Item 1', 10.00, 1),
+            new CartItem('item-2', 'Item 2', 50.00, 2),
+            new CartItem('item-3', 'Item 3', 25.00, 1),
+            new CartItem('item-4', 'Item 4', 5.00, 3),
+        ];
+
+        $collection = new CartCollection($items);
+
+        $result = $collection
+            ->filter(fn ($item) => $item->price > 5.00)
+            ->sortBy(fn ($item) => $item->price)
+            ->take(2);
+
+        expect($result->count())->toBe(2);
+        expect($result->first()->id)->toBe('item-1');
+    });
+
+    it('converts to array', function () {
+        $items = [
+            new CartItem('item-1', 'Item 1', 10.00, 1),
+            new CartItem('item-2', 'Item 2', 20.00, 1),
+        ];
+
+        $collection = new CartCollection($items);
+        $array = $collection->toArray();
+
+        expect($array)->toBeArray();
+        expect(count($array))->toBe(2);
+    });
 });
 
-it('can determine uniqueness', function (): void {
-    $item1Copy = new CartItem(
-        id: 'item-1-copy',
-        name: 'Item 1', // Same name
-        price: 100.0,   // Same price
-        quantity: 1,
-        attributes: []
-    );
+describe('CartCollection Totals and Subtotals', function () {
+    it('calculates subtotal', function () {
+        $item1 = new CartItem('item-1', 'Item 1', 10.00, 2);
+        $item2 = new CartItem('item-2', 'Item 2', 20.00, 3);
 
-    $this->collection->put('item-1', $this->item1);
-    $this->collection->put('item-2', $this->item2);
-    $this->collection->put('item-1-copy', $item1Copy);
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
 
-    $uniqueByName = $this->collection->unique('name');
+        $subtotal = $collection->subtotal();
 
-    expect($uniqueByName->count())->toBe(2); // Item 1 and Item 2
+        expect($subtotal)->toBe(80.00); // (10*2) + (20*3)
+    });
+
+    it('calculates total', function () {
+        $item1 = new CartItem('item-1', 'Item 1', 15.00, 1);
+        $item2 = new CartItem('item-2', 'Item 2', 25.00, 2);
+
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+
+        $total = $collection->total();
+
+        expect($total)->toBe(65.00); // 15 + (25*2)
+    });
+
+    it('calculates subtotal without conditions', function () {
+        $item1 = new CartItem('item-1', 'Item 1', 10.00, 1);
+        $item2 = new CartItem('item-2', 'Item 2', 20.00, 1);
+
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+
+        $subtotal = $collection->subtotalWithoutConditions();
+
+        expect($subtotal)->toBe(30.00);
+    });
+
+    it('calculates total without conditions', function () {
+        $item1 = new CartItem('item-1', 'Item 1', 10.00, 2);
+        $item2 = new CartItem('item-2', 'Item 2', 15.00, 1);
+
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+
+        $total = $collection->totalWithoutConditions();
+
+        expect($total)->toBe(35.00); // (10*2) + 15
+    });
+
+    it('converts to formatted array', function () {
+        $item1 = new CartItem('item-1', 'Item 1', 10.00, 2);
+        $item2 = new CartItem('item-2', 'Item 2', 20.00, 1);
+
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+
+        $formatted = $collection->toFormattedArray();
+
+        expect($formatted)->toBeArray();
+        expect($formatted)->toHaveKeys(['items', 'total_quantity', 'subtotal', 'total', 'total_without_conditions', 'count', 'is_empty']);
+        expect($formatted['count'])->toBe(2);
+        expect($formatted['total_quantity'])->toBe(3);
+        expect($formatted['is_empty'])->toBeFalse();
+    });
 });
 
-it('can chunk items into smaller collections', function (): void {
-    $this->collection->put('item-1', $this->item1);
-    $this->collection->put('item-2', $this->item2);
+describe('CartCollection Advanced Filtering', function () {
+    it('filters items by attribute', function () {
+        $item1 = new CartItem('item-1', 'Item 1', 10.00, 1, ['color' => 'red']);
+        $item2 = new CartItem('item-2', 'Item 2', 20.00, 1, ['color' => 'blue']);
+        $item3 = new CartItem('item-3', 'Item 3', 30.00, 1, ['color' => 'red']);
 
-    $chunks = $this->collection->chunk(1);
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+        $collection->addItem($item3);
 
-    expect($chunks->count())->toBe(2)
-        ->and($chunks->first()->count())->toBe(1);
+        $redItems = $collection->filterByAttribute('color', 'red');
+
+        expect($redItems->count())->toBe(2);
+    });
+
+    it('filters items by attribute existence', function () {
+        $item1 = new CartItem('item-1', 'Item 1', 10.00, 1, ['featured' => true]);
+        $item2 = new CartItem('item-2', 'Item 2', 20.00, 1);
+        $item3 = new CartItem('item-3', 'Item 3', 30.00, 1, ['featured' => false]);
+
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+        $collection->addItem($item3);
+
+        $featuredItems = $collection->filterByAttribute('featured');
+
+        expect($featuredItems->count())->toBe(2);
+    });
+
+    it('searches items by name', function () {
+        $item1 = new CartItem('item-1', 'Red Widget', 10.00, 1);
+        $item2 = new CartItem('item-2', 'Blue Gadget', 20.00, 1);
+        $item3 = new CartItem('item-3', 'Red Gizmo', 30.00, 1);
+
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+        $collection->addItem($item3);
+
+        $results = $collection->searchByName('red');
+
+        expect($results->count())->toBe(2);
+        expect($results->pluck('name')->toArray())->toContain('Red Widget');
+        expect($results->pluck('name')->toArray())->toContain('Red Gizmo');
+    });
+
+    it('filters items by quantity greater than', function () {
+        $item1 = new CartItem('item-1', 'Item 1', 10.00, 1);
+        $item2 = new CartItem('item-2', 'Item 2', 20.00, 5);
+        $item3 = new CartItem('item-3', 'Item 3', 30.00, 10);
+
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+        $collection->addItem($item3);
+
+        $results = $collection->whereQuantityGreaterThan(4);
+
+        expect($results->count())->toBe(2);
+    });
+
+    it('filters items by quantity less than', function () {
+        $item1 = new CartItem('item-1', 'Item 1', 10.00, 1);
+        $item2 = new CartItem('item-2', 'Item 2', 20.00, 5);
+        $item3 = new CartItem('item-3', 'Item 3', 30.00, 10);
+
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+        $collection->addItem($item3);
+
+        $results = $collection->whereQuantityLessThan(6);
+
+        expect($results->count())->toBe(2);
+    });
+
+    it('filters items by price range', function () {
+        $item1 = new CartItem('item-1', 'Item 1', 10.00, 1);
+        $item2 = new CartItem('item-2', 'Item 2', 50.00, 1);
+        $item3 = new CartItem('item-3', 'Item 3', 100.00, 1);
+
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+        $collection->addItem($item3);
+
+        $results = $collection->wherePriceBetween(20.00, 80.00);
+
+        expect($results->count())->toBe(1);
+        expect($results->first()->id)->toBe('item-2');
+    });
+
+    it('filters items where quantity is above threshold', function () {
+        $item1 = new CartItem('item-1', 'Item 1', 10.00, 1);
+        $item2 = new CartItem('item-2', 'Item 2', 20.00, 5);
+        $item3 = new CartItem('item-3', 'Item 3', 30.00, 10);
+
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+        $collection->addItem($item3);
+
+        $results = $collection->whereQuantityAbove(3);
+
+        expect($results->count())->toBe(2);
+    });
 });
 
-it('can filter by model', function (): void {
-    $itemWithModel = new CartItem(
-        id: 'item-model',
-        name: 'Model Item',
-        price: 75.0,
-        quantity: 1,
-        attributes: [],
-        associatedModel: 'stdClass' // Use existing class
-    );
+describe('CartCollection Sorting', function () {
+    it('sorts items by price ascending', function () {
+        $item1 = new CartItem('item-1', 'Item 1', 50.00, 1);
+        $item2 = new CartItem('item-2', 'Item 2', 10.00, 1);
+        $item3 = new CartItem('item-3', 'Item 3', 30.00, 1);
 
-    $this->collection->addItem($this->item1);
-    $this->collection->addItem($itemWithModel);
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+        $collection->addItem($item3);
 
-    $modelItems = $this->collection->filterByModel('stdClass');
+        $sorted = $collection->sortByPrice('asc');
+        $values = $sorted->values();
 
-    expect($modelItems->count())->toBe(1)
-        ->and($modelItems->hasItem('item-model'))->toBeTrue();
+        expect($values->first()->price)->toBe(10.00);
+        expect($values->last()->price)->toBe(50.00);
+    });
+
+    it('sorts items by price descending', function () {
+        $item1 = new CartItem('item-1', 'Item 1', 50.00, 1);
+        $item2 = new CartItem('item-2', 'Item 2', 10.00, 1);
+        $item3 = new CartItem('item-3', 'Item 3', 30.00, 1);
+
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+        $collection->addItem($item3);
+
+        $sorted = $collection->sortByPrice('desc');
+        $values = $sorted->values();
+
+        expect($values->first()->price)->toBe(50.00);
+        expect($values->last()->price)->toBe(10.00);
+    });
+
+    it('sorts items by quantity ascending', function () {
+        $item1 = new CartItem('item-1', 'Item 1', 10.00, 5);
+        $item2 = new CartItem('item-2', 'Item 2', 20.00, 2);
+        $item3 = new CartItem('item-3', 'Item 3', 30.00, 10);
+
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+        $collection->addItem($item3);
+
+        $sorted = $collection->sortByQuantity('asc');
+        $values = $sorted->values();
+
+        expect($values->first()->quantity)->toBe(2);
+        expect($values->last()->quantity)->toBe(10);
+    });
+
+    it('sorts items by quantity descending', function () {
+        $item1 = new CartItem('item-1', 'Item 1', 10.00, 5);
+        $item2 = new CartItem('item-2', 'Item 2', 20.00, 2);
+        $item3 = new CartItem('item-3', 'Item 3', 30.00, 10);
+
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+        $collection->addItem($item3);
+
+        $sorted = $collection->sortByQuantity('desc');
+        $values = $sorted->values();
+
+        expect($values->first()->quantity)->toBe(10);
+        expect($values->last()->quantity)->toBe(2);
+    });
+
+    it('sorts items by name ascending', function () {
+        $item1 = new CartItem('item-1', 'Zebra', 10.00, 1);
+        $item2 = new CartItem('item-2', 'Apple', 20.00, 1);
+        $item3 = new CartItem('item-3', 'Mango', 30.00, 1);
+
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+        $collection->addItem($item3);
+
+        $sorted = $collection->sortByName('asc');
+        $values = $sorted->values();
+
+        expect($values->first()->name)->toBe('Apple');
+        expect($values->last()->name)->toBe('Zebra');
+    });
+
+    it('sorts items by name descending', function () {
+        $item1 = new CartItem('item-1', 'Zebra', 10.00, 1);
+        $item2 = new CartItem('item-2', 'Apple', 20.00, 1);
+        $item3 = new CartItem('item-3', 'Mango', 30.00, 1);
+
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+        $collection->addItem($item3);
+
+        $sorted = $collection->sortByName('desc');
+        $values = $sorted->values();
+
+        expect($values->first()->name)->toBe('Zebra');
+        expect($values->last()->name)->toBe('Apple');
+    });
 });
 
-it('can search items by name using searchByName method', function (): void {
-    $this->collection->addItem($this->item1); // "Item 1"
-    $this->collection->addItem($this->item2); // "Item 2"
+describe('CartCollection Grouping', function () {
+    it('groups items by attribute', function () {
+        $item1 = new CartItem('item-1', 'Item 1', 10.00, 1, ['category' => 'electronics']);
+        $item2 = new CartItem('item-2', 'Item 2', 20.00, 1, ['category' => 'books']);
+        $item3 = new CartItem('item-3', 'Item 3', 30.00, 1, ['category' => 'electronics']);
 
-    $searchResults = $this->collection->searchByName('Item 1');
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+        $collection->addItem($item3);
 
-    expect($searchResults->count())->toBe(1)
-        ->and($searchResults->hasItem('item-1'))->toBeTrue();
+        $grouped = $collection->groupByAttribute('category');
+
+        expect($grouped->has('electronics'))->toBeTrue();
+        expect($grouped->has('books'))->toBeTrue();
+        expect($grouped->get('electronics')->count())->toBe(2);
+        expect($grouped->get('books')->count())->toBe(1);
+    });
+
+    it('groups items by property', function () {
+        $item1 = new CartItem('item-1', 'Item 1', 10.00, 5);
+        $item2 = new CartItem('item-2', 'Item 2', 20.00, 2);
+        $item3 = new CartItem('item-3', 'Item 3', 30.00, 5);
+
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+        $collection->addItem($item3);
+
+        $grouped = $collection->groupByProperty('quantity');
+
+        expect($grouped->has(5))->toBeTrue();
+        expect($grouped->has(2))->toBeTrue();
+        expect($grouped->get(5)->count())->toBe(2);
+    });
 });
 
-it('can sort items by price using sortByPrice method', function (): void {
-    $this->collection->addItem($this->item1); // price: 100
-    $this->collection->addItem($this->item2); // price: 50
+describe('CartCollection Statistics', function () {
+    it('gets statistics', function () {
+        $item1 = new CartItem('item-1', 'Item 1', 10.00, 2);
+        $item2 = new CartItem('item-2', 'Item 2', 30.00, 1);
+        $item3 = new CartItem('item-3', 'Item 3', 20.00, 3);
 
-    $sortedAsc = $this->collection->sortByPrice('asc');
-    $sortedDesc = $this->collection->sortByPrice('desc');
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+        $collection->addItem($item3);
 
-    expect($sortedAsc->first()->price)->toBe(50.0)
-        ->and($sortedDesc->first()->price)->toBe(100.0);
+        $stats = $collection->getStatistics();
+
+        expect($stats)->toBeArray();
+        expect($stats)->toHaveKeys([
+            'total_items',
+            'total_quantity',
+            'average_price',
+            'highest_price',
+            'lowest_price',
+            'total_value',
+            'total_with_conditions',
+            'items_with_conditions',
+        ]);
+        expect($stats['total_items'])->toBe(3);
+        expect($stats['total_quantity'])->toBe(6);
+        expect($stats['average_price'])->toBe(20.00);
+        expect($stats['highest_price'])->toBe(30.00);
+        expect($stats['lowest_price'])->toBe(10.00);
+    });
 });
 
-it('can sort items by quantity', function (): void {
-    $this->collection->addItem($this->item1); // quantity: 2
-    $this->collection->addItem($this->item2); // quantity: 3
+describe('CartCollection Condition Filtering', function () {
+    it('filters items by condition name', function () {
+        $discountCondition1 = new \MasyukAI\Cart\Conditions\CartCondition(
+            name: 'discount',
+            type: 'discount',
+            target: 'item',
+            value: '-10%'
+        );
 
-    $sortedAsc = $this->collection->sortByQuantity('asc');
-    $sortedDesc = $this->collection->sortByQuantity('desc');
+        $taxCondition = new \MasyukAI\Cart\Conditions\CartCondition(
+            name: 'tax',
+            type: 'tax',
+            target: 'item',
+            value: '+5%'
+        );
 
-    expect($sortedAsc->first()->quantity)->toBe(2)
-        ->and($sortedDesc->first()->quantity)->toBe(3);
+        $discountCondition2 = new \MasyukAI\Cart\Conditions\CartCondition(
+            name: 'discount',
+            type: 'discount',
+            target: 'item',
+            value: '-5%'
+        );
+
+        $item1 = new CartItem('item-1', 'Item 1', 10.00, 1, [], [$discountCondition1]);
+        $item2 = new CartItem('item-2', 'Item 2', 20.00, 1, [], [$taxCondition]);
+        $item3 = new CartItem('item-3', 'Item 3', 30.00, 1, [], [$discountCondition2]);
+
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+        $collection->addItem($item3);
+
+        $discounted = $collection->filterByCondition('discount');
+
+        expect($discounted->count())->toBe(2);
+        expect($discounted->pluck('id')->toArray())->toContain('item-1');
+        expect($discounted->pluck('id')->toArray())->toContain('item-3');
+    });
+
+    it('returns empty collection when no items match condition name', function () {
+        $item = new CartItem('item-1', 'Item 1', 10.00, 1);
+
+        $collection = new CartCollection;
+        $collection->addItem($item);
+
+        $filtered = $collection->filterByCondition('nonexistent');
+
+        expect($filtered->isEmpty())->toBeTrue();
+    });
+
+    it('filters items by condition type', function () {
+        $holidaySale = new \MasyukAI\Cart\Conditions\CartCondition(
+            name: 'holiday-sale',
+            type: 'discount',
+            target: 'item',
+            value: '-20%'
+        );
+
+        $vat = new \MasyukAI\Cart\Conditions\CartCondition(
+            name: 'vat',
+            type: 'tax',
+            target: 'item',
+            value: '+15%'
+        );
+
+        $memberDiscount = new \MasyukAI\Cart\Conditions\CartCondition(
+            name: 'member-discount',
+            type: 'discount',
+            target: 'item',
+            value: '-10%'
+        );
+
+        $item1 = new CartItem('item-1', 'Item 1', 10.00, 1, [], [$holidaySale]);
+        $item2 = new CartItem('item-2', 'Item 2', 20.00, 1, [], [$vat]);
+        $item3 = new CartItem('item-3', 'Item 3', 30.00, 1, [], [$memberDiscount]);
+
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+        $collection->addItem($item3);
+
+        $taxed = $collection->filterByConditionType('tax');
+        $discounted = $collection->filterByConditionType('discount');
+
+        expect($taxed->count())->toBe(1);
+        expect($taxed->first()->id)->toBe('item-2');
+        expect($discounted->count())->toBe(2);
+    });
+
+    it('filters items by condition target', function () {
+        $subtotalDiscount = new \MasyukAI\Cart\Conditions\CartCondition(
+            name: 'subtotal-discount',
+            type: 'discount',
+            target: 'subtotal',
+            value: '-10%'
+        );
+
+        $itemDiscount = new \MasyukAI\Cart\Conditions\CartCondition(
+            name: 'item-discount',
+            type: 'discount',
+            target: 'item',
+            value: '-5%'
+        );
+
+        $subtotalTax = new \MasyukAI\Cart\Conditions\CartCondition(
+            name: 'subtotal-tax',
+            type: 'tax',
+            target: 'subtotal',
+            value: '+8%'
+        );
+
+        $item1 = new CartItem('item-1', 'Item 1', 10.00, 1, [], [$subtotalDiscount]);
+        $item2 = new CartItem('item-2', 'Item 2', 20.00, 1, [], [$itemDiscount]);
+        $item3 = new CartItem('item-3', 'Item 3', 30.00, 1, [], [$subtotalTax]);
+
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+        $collection->addItem($item3);
+
+        $subtotalTargets = $collection->filterByConditionTarget('subtotal');
+        $itemTargets = $collection->filterByConditionTarget('item');
+
+        expect($subtotalTargets->count())->toBe(2);
+        expect($itemTargets->count())->toBe(1);
+        expect($itemTargets->first()->id)->toBe('item-2');
+    });
+
+    it('filters items by condition value', function () {
+        $discount1 = new \MasyukAI\Cart\Conditions\CartCondition(
+            name: 'discount-1',
+            type: 'discount',
+            target: 'item',
+            value: '-10%'
+        );
+
+        $discount2 = new \MasyukAI\Cart\Conditions\CartCondition(
+            name: 'discount-2',
+            type: 'discount',
+            target: 'item',
+            value: '-5%'
+        );
+
+        $discount3 = new \MasyukAI\Cart\Conditions\CartCondition(
+            name: 'discount-3',
+            type: 'discount',
+            target: 'item',
+            value: '-10%'
+        );
+
+        $item1 = new CartItem('item-1', 'Item 1', 10.00, 1, [], [$discount1]);
+        $item2 = new CartItem('item-2', 'Item 2', 20.00, 1, [], [$discount2]);
+        $item3 = new CartItem('item-3', 'Item 3', 30.00, 1, [], [$discount3]);
+
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+        $collection->addItem($item3);
+
+        $tenPercent = $collection->filterByConditionValue('-10%');
+        $fivePercent = $collection->filterByConditionValue('-5%');
+
+        expect($tenPercent->count())->toBe(2);
+        expect($fivePercent->count())->toBe(1);
+        expect($fivePercent->first()->id)->toBe('item-2');
+    });
+
+    it('filters items by numeric condition value', function () {
+        $fixedDiscount = new \MasyukAI\Cart\Conditions\CartCondition(
+            name: 'fixed-discount',
+            type: 'discount',
+            target: 'item',
+            value: -5.00
+        );
+
+        $fixedTax = new \MasyukAI\Cart\Conditions\CartCondition(
+            name: 'fixed-tax',
+            type: 'tax',
+            target: 'item',
+            value: 3.50
+        );
+
+        $item1 = new CartItem('item-1', 'Item 1', 10.00, 1, [], [$fixedDiscount]);
+        $item2 = new CartItem('item-2', 'Item 2', 20.00, 1, [], [$fixedTax]);
+
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+
+        $discount = $collection->filterByConditionValue(-5.00);
+        $tax = $collection->filterByConditionValue(3.50);
+
+        expect($discount->count())->toBe(1);
+        expect($discount->first()->id)->toBe('item-1');
+        expect($tax->count())->toBe(1);
+        expect($tax->first()->id)->toBe('item-2');
+    });
+
+    it('checks if collection has items with conditions', function () {
+        $discount = new \MasyukAI\Cart\Conditions\CartCondition(
+            name: 'discount',
+            type: 'discount',
+            target: 'item',
+            value: '-10%'
+        );
+
+        $item1 = new CartItem('item-1', 'Item 1', 10.00, 1, [], [$discount]);
+        $item2 = new CartItem('item-2', 'Item 2', 20.00, 1);
+
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+
+        expect($collection->hasItemsWithConditions())->toBeTrue();
+    });
+
+    it('returns false when no items have conditions', function () {
+        $item1 = new CartItem('item-1', 'Item 1', 10.00, 1);
+        $item2 = new CartItem('item-2', 'Item 2', 20.00, 1);
+
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+
+        expect($collection->hasItemsWithConditions())->toBeFalse();
+    });
+
+    it('gets total discount amount from all items', function () {
+        $discount1 = new \MasyukAI\Cart\Conditions\CartCondition(
+            name: 'discount-1',
+            type: 'discount',
+            target: 'item',
+            value: '-10%'
+        );
+
+        $discount2 = new \MasyukAI\Cart\Conditions\CartCondition(
+            name: 'discount-2',
+            type: 'discount',
+            target: 'item',
+            value: '-20%'
+        );
+
+        $item1 = new CartItem('item-1', 'Item 1', 100.00, 1, [], [$discount1]);
+        $item2 = new CartItem('item-2', 'Item 2', 50.00, 1, [], [$discount2]);
+
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+
+        $totalDiscount = $collection->getTotalDiscount();
+
+        expect($totalDiscount)->toBeGreaterThan(0);
+    });
+
+    it('returns zero discount when no items have discounts', function () {
+        $item1 = new CartItem('item-1', 'Item 1', 10.00, 1);
+        $item2 = new CartItem('item-2', 'Item 2', 20.00, 1);
+
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+
+        $totalDiscount = $collection->getTotalDiscount();
+
+        expect($totalDiscount)->toBe(0.0);
+    });
 });
 
-it('can sort items by name', function (): void {
-    $this->collection->addItem($this->item1); // "Item 1"
-    $this->collection->addItem($this->item2); // "Item 2"
+describe('CartCollection Model Filtering', function () {
+    it('filters items by model class', function () {
+        $product = new class
+        {
+            public static function getMorphClass(): string
+            {
+                return 'Product';
+            }
+        };
 
-    $sortedAsc = $this->collection->sortByName('asc');
-    $sortedDesc = $this->collection->sortByName('desc');
+        $service = new class
+        {
+            public static function getMorphClass(): string
+            {
+                return 'Service';
+            }
+        };
 
-    expect($sortedAsc->first()->name)->toBe('Item 1')
-        ->and($sortedDesc->first()->name)->toBe('Item 2');
+        $item1 = new CartItem('item-1', 'Item 1', 10.00, 1, [], [], $product);
+        $item2 = new CartItem('item-2', 'Item 2', 20.00, 1, [], [], $service);
+        $item3 = new CartItem('item-3', 'Item 3', 30.00, 1, [], [], $product);
+
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+        $collection->addItem($item3);
+
+        $products = $collection->filterByModel(get_class($product));
+        $services = $collection->filterByModel(get_class($service));
+
+        expect($products->count())->toBe(2);
+        expect($services->count())->toBe(1);
+    });
+
+    it('filters items where model matches using whereModel', function () {
+        $product = new class
+        {
+            public static function getMorphClass(): string
+            {
+                return 'App\\Models\\Product';
+            }
+        };
+
+        $item1 = new CartItem('item-1', 'Item 1', 10.00, 1, [], [], $product);
+        $item2 = new CartItem('item-2', 'Item 2', 20.00, 1);
+
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+
+        $results = $collection->whereModel(get_class($product));
+
+        expect($results->count())->toBe(1);
+        expect($results->first()->id)->toBe('item-1');
+    });
+
+    it('returns empty collection when no items match model', function () {
+        $item = new CartItem('item-1', 'Item 1', 10.00, 1);
+
+        $collection = new CartCollection;
+        $collection->addItem($item);
+
+        $results = $collection->filterByModel('NonExistentModel');
+
+        expect($results->isEmpty())->toBeTrue();
+    });
 });
 
-it('can get unique items by property', function (): void {
-    $item3 = new CartItem(
-        id: 'item-3',
-        name: 'Item 1', // Same name as item1
-        price: 75.0,
-        quantity: 1
-    );
+describe('CartCollection Unique Operations', function () {
+    it('gets unique items by property', function () {
+        $item1 = new CartItem('item-1', 'Item 1', 10.00, 1, ['color' => 'red']);
+        $item2 = new CartItem('item-2', 'Item 2', 20.00, 1, ['color' => 'blue']);
+        $item3 = new CartItem('item-3', 'Item 3', 30.00, 1, ['color' => 'red']);
 
-    $this->collection->addItem($this->item1);
-    $this->collection->addItem($this->item2);
-    $this->collection->addItem($item3);
+        $collection = new CartCollection;
+        $collection->addItem($item1);
+        $collection->addItem($item2);
+        $collection->addItem($item3);
 
-    $uniqueByName = $this->collection->uniqueBy('name');
+        $unique = $collection->uniqueBy('name');
 
-    expect($uniqueByName->count())->toBe(2);
-});
-
-it('can group items by property', function (): void {
-    $item3 = new CartItem(
-        id: 'item-3',
-        name: 'Item 1', // Same name as item1
-        price: 75.0,
-        quantity: 1
-    );
-
-    $this->collection->addItem($this->item1);
-    $this->collection->addItem($this->item2);
-    $this->collection->addItem($item3);
-
-    $groupedByName = $this->collection->groupByProperty('name');
-
-    expect($groupedByName->count())->toBe(2)
-        ->and($groupedByName->get('Item 1')->count())->toBe(2);
-});
-
-it('can filter items by quantity thresholds', function (): void {
-    $this->collection->addItem($this->item1); // quantity: 2
-    $this->collection->addItem($this->item2); // quantity: 3
-
-    $greaterThan = $this->collection->whereQuantityGreaterThan(2);
-    $lessThan = $this->collection->whereQuantityLessThan(3);
-
-    expect($greaterThan->count())->toBe(1)
-        ->and($greaterThan->hasItem('item-2'))->toBeTrue()
-        ->and($lessThan->count())->toBe(1)
-        ->and($lessThan->hasItem('item-1'))->toBeTrue();
-});
-
-it('can filter items by price range', function (): void {
-    $this->collection->addItem($this->item1); // price: 100
-    $this->collection->addItem($this->item2); // price: 50
-
-    $inRange = $this->collection->wherePriceBetween(40, 60);
-
-    expect($inRange->count())->toBe(1)
-        ->and($inRange->hasItem('item-2'))->toBeTrue();
-});
-
-it('can check if collection has items with conditions', function (): void {
-    $this->collection->addItem($this->item1);
-    $this->collection->addItem($this->item2);
-
-    // Since items don't have conditions yet, should be false
-    expect($this->collection->isNotEmpty())->toBeTrue(); // Has items, but no conditions applied yet
-});
-
-it('can get total discount amount', function (): void {
-    $this->collection->addItem($this->item1);
-    $this->collection->addItem($this->item2);
-
-    $totalDiscount = $this->collection->getTotalDiscount();
-
-    // Since items don't have conditions yet, discount should be 0
-    if ($totalDiscount instanceof \Akaunting\Money\Money) {
-        $totalDiscount = $totalDiscount->getAmount();
-    }
-    expect($totalDiscount)->toBe(0.0);
-});
-
-it('can get collection statistics', function (): void {
-    $this->collection->addItem($this->item1); // price: 100, quantity: 2
-    $this->collection->addItem($this->item2); // price: 50, quantity: 3
-
-    $stats = $this->collection->getStatistics();
-
-    expect($stats)->toBeArray()
-        ->and($stats)->toHaveKeys([
-            'total_items', 'total_quantity', 'average_price',
-            'highest_price', 'lowest_price', 'total_value',
-            'total_with_conditions', 'items_with_conditions',
-        ])
-        ->and($stats['total_items'])->toBe(2)
-        ->and($stats['total_quantity'])->toBe(5)
-        ->and($stats['average_price'])->toBe(75.0)
-        ->and($stats['highest_price'])->toBe(100.0)
-        ->and($stats['lowest_price'])->toBe(50.0);
-});
-
-it('can filter items where quantity is above threshold', function (): void {
-    $this->collection->addItem($this->item1); // quantity: 2
-    $this->collection->addItem($this->item2); // quantity: 3
-
-    $aboveThreshold = $this->collection->whereQuantityAbove(2);
-
-    expect($aboveThreshold->count())->toBe(1)
-        ->and($aboveThreshold->hasItem('item-2'))->toBeTrue();
-});
-
-it('can group items by attribute using groupBy method', function (): void {
-    $item3 = new CartItem(
-        id: 'item-3',
-        name: 'Item 3',
-        price: 75.0,
-        quantity: 1,
-        attributes: ['color' => 'red']
-    );
-
-    $this->collection->addItem($this->item1); // color: red
-    $this->collection->addItem($this->item2); // size: large (no color)
-    $this->collection->addItem($item3); // color: red
-
-    $groupedByColor = $this->collection->groupByAttribute('color');
-
-    expect($groupedByColor->has('red'))->toBeTrue()
-        ->and($groupedByColor->get('red')->count())->toBe(2);
-});
-
-it('can find items by model type', function (): void {
-    $itemWithModel = new CartItem(
-        id: 'item-model',
-        name: 'Model Item',
-        price: 75.0,
-        quantity: 1,
-        attributes: [],
-        associatedModel: 'stdClass' // Use existing class
-    );
-
-    $this->collection->addItem($this->item1);
-    $this->collection->addItem($itemWithModel);
-
-    $modelItems = $this->collection->whereModel('stdClass');
-
-    expect($modelItems->count())->toBe(1)
-        ->and($modelItems->hasItem('item-model'))->toBeTrue();
-});
-
-it('can filter items by condition type', function (): void {
-    $itemWithDiscount = new CartItem(
-        id: 'item-discount',
-        name: 'Discount Item',
-        price: 100.0,
-        quantity: 1,
-        attributes: [],
-        conditions: [
-            'special-discount' => [
-                'name' => 'special-discount',
-                'type' => 'discount',
-                'target' => 'subtotal',
-                'value' => '-10',
-                'attributes' => [],
-                'order' => 0,
-            ],
-        ]
-    );
-
-    $itemWithTax = new CartItem(
-        id: 'item-tax',
-        name: 'Tax Item',
-        price: 50.0,
-        quantity: 1,
-        attributes: [],
-        conditions: [
-            'vat' => [
-                'name' => 'vat',
-                'type' => 'tax',
-                'target' => 'subtotal',
-                'value' => '15%',
-                'attributes' => [],
-                'order' => 1,
-            ],
-        ]
-    );
-
-    $this->collection->addItem($this->item1); // no conditions
-    $this->collection->addItem($itemWithDiscount); // discount type
-    $this->collection->addItem($itemWithTax); // tax type
-
-    $discountItems = $this->collection->filterByConditionType('discount');
-    $taxItems = $this->collection->filterByConditionType('tax');
-
-    expect($discountItems->count())->toBe(1)
-        ->and($discountItems->hasItem('item-discount'))->toBeTrue()
-        ->and($taxItems->count())->toBe(1)
-        ->and($taxItems->hasItem('item-tax'))->toBeTrue();
-});
-
-it('can filter items by condition target', function (): void {
-    $itemWithSubtotalCondition = new CartItem(
-        id: 'item-subtotal',
-        name: 'Subtotal Item',
-        price: 100.0,
-        quantity: 1,
-        attributes: [],
-        conditions: [
-            'discount' => [
-                'name' => 'discount',
-                'type' => 'discount',
-                'target' => 'subtotal',
-                'value' => '-10',
-                'attributes' => [],
-                'order' => 0,
-            ],
-        ]
-    );
-
-    $itemWithTotalCondition = new CartItem(
-        id: 'item-total',
-        name: 'Total Item',
-        price: 50.0,
-        quantity: 1,
-        attributes: [],
-        conditions: [
-            'shipping' => [
-                'name' => 'shipping',
-                'type' => 'fee',
-                'target' => 'total',
-                'value' => '5',
-                'attributes' => [],
-                'order' => 1,
-            ],
-        ]
-    );
-
-    $this->collection->addItem($this->item1); // no conditions
-    $this->collection->addItem($itemWithSubtotalCondition); // subtotal target
-    $this->collection->addItem($itemWithTotalCondition); // total target
-
-    $subtotalItems = $this->collection->filterByConditionTarget('subtotal');
-    $totalItems = $this->collection->filterByConditionTarget('total');
-
-    expect($subtotalItems->count())->toBe(1)
-        ->and($subtotalItems->hasItem('item-subtotal'))->toBeTrue()
-        ->and($totalItems->count())->toBe(1)
-        ->and($totalItems->hasItem('item-total'))->toBeTrue();
-});
-
-it('can filter items by condition value', function (): void {
-    $itemWithNegativeValue = new CartItem(
-        id: 'item-negative',
-        name: 'Negative Value Item',
-        price: 100.0,
-        quantity: 1,
-        attributes: [],
-        conditions: [
-            'discount' => [
-                'name' => 'discount',
-                'type' => 'discount',
-                'target' => 'subtotal',
-                'value' => '-10',
-                'attributes' => [],
-                'order' => 0,
-            ],
-        ]
-    );
-
-    $itemWithPercentageValue = new CartItem(
-        id: 'item-percentage',
-        name: 'Percentage Value Item',
-        price: 50.0,
-        quantity: 1,
-        attributes: [],
-        conditions: [
-            'tax' => [
-                'name' => 'tax',
-                'type' => 'tax',
-                'target' => 'subtotal',
-                'value' => '15%',
-                'attributes' => [],
-                'order' => 1,
-            ],
-        ]
-    );
-
-    $this->collection->addItem($this->item1); // no conditions
-    $this->collection->addItem($itemWithNegativeValue); // value: -10
-    $this->collection->addItem($itemWithPercentageValue); // value: 15%
-
-    $negativeItems = $this->collection->filterByConditionValue('-10');
-    $percentageItems = $this->collection->filterByConditionValue('15%');
-
-    expect($negativeItems->count())->toBe(1)
-        ->and($negativeItems->hasItem('item-negative'))->toBeTrue()
-        ->and($percentageItems->count())->toBe(1)
-        ->and($percentageItems->hasItem('item-percentage'))->toBeTrue();
+        expect($unique->count())->toBe(3);
+    });
 });

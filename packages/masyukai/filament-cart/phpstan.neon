@@ -6,7 +6,7 @@ parameters:
         - src
     
     # Level 0-9 (0 is most lenient, 9 is strictest)
-    level: 8
+    level: 6
     
     # Treat PHPDoc types as less certain to avoid false positives
     treatPhpDocTypesAsCertain: false

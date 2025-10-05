@@ -267,3 +267,68 @@ it('preserves event data immutability', function (): void {
     expect($event->cart)->toBe($cart)
         ->and($event->reason)->toBe($reason);
 });
+
+it('converts event to array with all cart data', function (): void {
+    $cart = new Cart(
+        identifier: 'cart-123',
+        storage: app(\MasyukAI\Cart\Storage\StorageInterface::class),
+        events: app('events'),
+        instanceName: 'shopping',
+        eventsEnabled: true
+    );
+    $cart->add('product-1', 'Product 1', 50.00, 2);
+    $cart->add('product-2', 'Product 2', 30.00, 1);
+
+    $event = new CartUpdated($cart, 'items_added');
+    $array = $event->toArray();
+
+    expect($array)->toBeArray()
+        ->and($array)->toHaveKey('identifier', 'cart-123')
+        ->and($array)->toHaveKey('instance_name', 'shopping')
+        ->and($array)->toHaveKey('reason', 'items_added')
+        ->and($array)->toHaveKey('items_count', 2)
+        ->and($array)->toHaveKey('total_quantity', 3)
+        ->and($array)->toHaveKey('subtotal', 130.00)
+        ->and($array)->toHaveKey('total', 130.00)
+        ->and($array)->toHaveKey('conditions_count', 0)
+        ->and($array)->toHaveKey('timestamp');
+});
+
+it('converts event to array without reason', function (): void {
+    $cart = new Cart(
+        identifier: 'cart-456',
+        storage: app(\MasyukAI\Cart\Storage\StorageInterface::class),
+        events: app('events'),
+        instanceName: 'default',
+        eventsEnabled: true
+    );
+
+    $event = new CartUpdated($cart);
+    $array = $event->toArray();
+
+    expect($array)->toBeArray()
+        ->and($array)->toHaveKey('identifier', 'cart-456')
+        ->and($array)->toHaveKey('reason')
+        ->and($array['reason'])->toBeNull()
+        ->and($array)->toHaveKey('items_count', 0)
+        ->and($array)->toHaveKey('timestamp');
+});
+
+it('includes conditions count in array', function (): void {
+    $cart = new Cart(
+        identifier: 'cart-789',
+        storage: app(\MasyukAI\Cart\Storage\StorageInterface::class),
+        events: app('events'),
+        instanceName: 'default',
+        eventsEnabled: true
+    );
+    $cart->add('product-1', 'Product 1', 100.00, 1);
+    $cart->addCondition(new \MasyukAI\Cart\Conditions\CartCondition('tax', 'percentage', 'total', '5.0'));
+    $cart->addCondition(new \MasyukAI\Cart\Conditions\CartCondition('discount', 'percentage', 'subtotal', '-10.0'));
+
+    $event = new CartUpdated($cart, 'conditions_applied');
+    $array = $event->toArray();
+
+    expect($array)->toHaveKey('conditions_count', 2)
+        ->and($array)->toHaveKey('reason', 'conditions_applied');
+});

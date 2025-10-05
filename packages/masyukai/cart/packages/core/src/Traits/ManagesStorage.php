@@ -56,6 +56,8 @@ trait ManagesStorage
 
     /**
      * Get complete cart content (items, conditions, totals, etc.)
+     *
+     * @return array<string, mixed>
      */
     public function content(): array
     {
@@ -73,6 +75,8 @@ trait ManagesStorage
 
     /**
      * Get complete cart content (alias for content())
+     *
+     * @return array<string, mixed>
      */
     public function getContent(): array
     {
@@ -81,6 +85,8 @@ trait ManagesStorage
 
     /**
      * Convert cart to array (alias for content())
+     *
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {

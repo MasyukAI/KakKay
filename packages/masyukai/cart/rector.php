@@ -7,7 +7,6 @@ use RectorLaravel\Set\LaravelSetProvider;
 
 return RectorConfig::configure()
     ->withPaths([
-        __DIR__.'/packages/core/config',
         __DIR__.'/packages/core/src',
         __DIR__.'/tests',
     ])

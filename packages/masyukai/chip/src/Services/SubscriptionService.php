@@ -14,7 +14,7 @@ class SubscriptionService
     ) {}
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function createWithFreeTrial(array $data): Purchase
     {
@@ -37,7 +37,7 @@ class SubscriptionService
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function createWithRegistrationFee(array $data): Purchase
     {
@@ -60,7 +60,7 @@ class SubscriptionService
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function createSubscriptionPayment(array $data): Purchase
     {
@@ -86,7 +86,7 @@ class SubscriptionService
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      * @return array<string, mixed>
      */
     public function createMonthlySubscription(array $data): array
@@ -118,7 +118,7 @@ class SubscriptionService
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     protected function resolveBrandId(array $data): string
     {

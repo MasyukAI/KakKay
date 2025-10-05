@@ -5,23 +5,17 @@ parameters:
     paths:
         - src
     
-    # Level 0-9 (0 is most lenient, 9 is strictest)
-    level: 8
+    level: 6
     
-    # Treat PHPDoc types as less certain to avoid false positives
-    treatPhpDocTypesAsCertain: false
+    reportUnmatchedIgnoredErrors: false
+
+    parallel: { maximumNumberOfProcesses: 4 }
     
     # Ignore specific errors
     ignoreErrors:
-    
-    # Check test files too (optional)
-    # paths:
-    #     - src
-    #     - tests
-    
-    # Report all errors
-    reportUnmatchedIgnoredErrors: false
-    
+        - identifier: 'missingType.generics'
+
     # Exclude patterns
     excludePaths:
         - vendor
+

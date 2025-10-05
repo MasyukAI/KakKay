@@ -38,6 +38,8 @@ trait SerializationTrait
 
     /**
      * JSON serialize
+     *
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {

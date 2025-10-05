@@ -55,6 +55,8 @@ trait ManagesMetadata
 
     /**
      * Set multiple metadata values at once
+     *
+     * @param  array<string, mixed>  $metadata
      */
     public function setMetadataBatch(array $metadata): static
     {

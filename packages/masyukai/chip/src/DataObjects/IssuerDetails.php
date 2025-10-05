@@ -6,9 +6,6 @@ namespace MasyukAI\Chip\DataObjects;
 
 class IssuerDetails
 {
-    /**
-     * @param array<string, mixed> $bank_accounts
-     */
     public function __construct(
         public readonly ?string $website,
         public readonly ?string $legal_street_address,
@@ -16,6 +13,7 @@ class IssuerDetails
         public readonly ?string $legal_city,
         public readonly ?string $legal_zip_code,
         public readonly ?string $legal_state,
+        /** @var array<string, mixed> */
         public readonly array $bank_accounts,
         public readonly ?string $legal_name,
         public readonly ?string $brand_name,
@@ -24,7 +22,7 @@ class IssuerDetails
     ) {}
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public static function fromArray(array $data): self
     {

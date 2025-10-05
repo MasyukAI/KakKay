@@ -16,7 +16,7 @@ abstract class CollectApi
     /**
      * Execute the given operation while logging any thrown exception.
      *
-     * @param array<string, mixed> $context
+     * @param  array<string, mixed>  $context
      */
     protected function attempt(callable $operation, string $message, array $context = []): mixed
     {

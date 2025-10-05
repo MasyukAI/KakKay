@@ -15,7 +15,7 @@ use MasyukAI\Chip\Exceptions\ChipValidationException;
 abstract class BaseHttpClient
 {
     /**
-     * @param array<string, mixed> $retryConfig
+     * @param  array<string, mixed>  $retryConfig
      */
     public function __construct(
         protected int $timeout = 30,
@@ -24,8 +24,10 @@ abstract class BaseHttpClient
 
     /**
      * Perform an HTTP request while handling retries, logging, and error wrapping.
-     * @param array<string, mixed> $data
-     * @param array<string, mixed> $headers
+     */
+    /**
+     * @param  array<string, mixed>  $data
+     * @param  array<string, string>  $headers
      * @return array<string, mixed>
      */
     public function request(string $method, string $endpoint, array $data = [], array $headers = []): array
@@ -66,7 +68,7 @@ abstract class BaseHttpClient
 
             $this->logResponse($response);
 
-            return $response?->json() ?? [];
+            return $response->json() ?? [];
         } catch (\Exception $exception) {
             $this->handleException($exception);
         }
@@ -109,7 +111,7 @@ abstract class BaseHttpClient
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     protected function logRequest(string $method, string $url, array $data): void
     {
@@ -169,7 +171,7 @@ abstract class BaseHttpClient
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      * @return array<string, mixed>
      */
     protected function maskSensitiveData(array $data): array
@@ -196,7 +198,7 @@ abstract class BaseHttpClient
     }
 
     /**
-     * @return array<string>
+     * @return array<int, string>
      */
     protected function sensitiveFields(): array
     {
@@ -234,7 +236,9 @@ abstract class BaseHttpClient
 
     /**
      * This method is only used for test setup - not actual API calls
-     * @param array<string, string> $headers
+     */
+    /**
+     * @param  array<string, string>  $headers
      */
     protected function httpWithHeaders(array $headers): PendingRequest
     {
@@ -245,8 +249,10 @@ abstract class BaseHttpClient
 
     /**
      * Perform the low level request. Implementations may customise headers or payload handling.
-     * @param array<string, mixed> $data
-     * @param array<string, mixed> $headers
+     */
+    /**
+     * @param  array<string, mixed>  $data
+     * @param  array<string, string>  $headers
      */
     abstract protected function sendRequest(string $method, string $url, array $data, array $headers = []): Response;
 

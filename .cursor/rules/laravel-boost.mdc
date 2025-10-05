@@ -705,7 +705,7 @@ These guidelines ensure packages are reliable and modern, with no backward compa
 
 === .ai/cart rules ===
 
-# Laravel Cart Coding Guidelines
+# MasyukAI Cart Coding Guidelines
 
 These rules support AI-assisted development inside the `masyukai/cart` monorepo. Follow them before editing source, tests, or docs.
 
@@ -732,12 +732,10 @@ These rules support AI-assisted development inside the `masyukai/cart` monorepo.
 
 ## Events & Metrics
 - Guard code paths that dispatch events with `eventsEnabled` and `$events` checks.
-- Wrap new cart operations with metrics when routed through `CartManager`.
-- `CartMetricsService` now supports optional log channels and early exits when metrics are disabled—reuse helpers (`metricsEnabled()`, `writeLog()`).
 
 ## Concurrency
 - Database driver uses optimistic locking with version numbers; ensure new writes increment versions and throw `CartConflictException` on conflicts.
-- Use `CartRetryService` for retry logic; do not implement ad hoc loops.
+- Handle conflicts explicitly at the application level with try/catch blocks.
 
 ## Testing
 - All tests use Pest. Place feature specs under `tests/Feature`, unit specs under `tests/Unit`.
@@ -751,14 +749,14 @@ These rules support AI-assisted development inside the `masyukai/cart` monorepo.
 
 ## Documentation
 - Docs live under `docs/`. Keep them aligned with the rewritten structure (see `docs/index.md`). Update docs when behaviours change.
-- Troubleshooting and configuration sections must remain accurate for metrics logging, storage drivers, and migration flows.
+- Troubleshooting and configuration sections must remain accurate for storage drivers and migration flows.
 
 ## Pull Request Ready Checklist
 1. No TODOs or commented-out code.
 2. Tests updated & passing locally.
 3. Pint formatting applied.
 4. Documentation updated when public behaviour changes.
-5. Metrics, events, and retry logic considered for new cart operations.
+5. Events properly guarded with config checks.
 
 
 === .ai/testing rules ===
@@ -834,9 +832,17 @@ it('verifies user can login', function () {
 });
 
 
+=== .ai/general rules ===
+
+- All generated database code must remain compatible with PostgreSQL.
+- When choosing JSON column types or operators, prioritize `jsonb` over `json`.
+- All code must adhere to PHPStan level 6.
+
+
 === .ai/chip rules ===
 
-# CHIP Integration – Engineering Playbook
+# CHIP Integr1. **Configuration** lives in `config/chip.php`. Do not add new environment variables unless the official CHIP docs require them. Respect existing keys such as `collect.api_key`, `collect.brand_id`, `collect.environment`, `send.api_key`, `send.api_secret`, `webhooks.public_key`, etc. Note that CHIP Collect uses the same base URL (`https://gate.chip-in.asia/api/v1/`) for both sandbox and production – the API key determines the environment. CHIP Send uses different URLs for sandbox and production.
+2. **HTTP clients** already implement authentication, retry and logging. Reuse `ChipCollectClient` and `ChipSendClient`; do not create ad‑hoc Guzzle calls. Clients retry only on connection or 5xx errors – CHIP does not emit HTTP 429, so do not add logic for it.ion – Engineering Playbook
 
 These instructions guide automated agents working with the `masyukai/chip` package. Follow them when adding or modifying code.
 

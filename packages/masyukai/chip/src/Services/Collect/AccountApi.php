@@ -18,7 +18,7 @@ class AccountApi extends CollectApi
     }
 
     /**
-     * @param array<string, mixed> $filters
+     * @param  array<string, mixed>  $filters
      * @return array<string, mixed>
      */
     public function turnover(array $filters = []): array
@@ -34,7 +34,7 @@ class AccountApi extends CollectApi
     }
 
     /**
-     * @param array<string, mixed> $filters
+     * @param  array<string, mixed>  $filters
      * @return array<string, mixed>
      */
     public function companyStatements(array $filters = []): array
