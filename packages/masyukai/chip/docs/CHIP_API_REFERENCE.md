@@ -45,14 +45,15 @@ Both services share the same authentication style (Bearer tokens) but live on di
 
 ## Base URLs & Authentication
 
-| Environment | Collect Base URL                     | Send Base URL                            |
-|-------------|---------------------------------------|-------------------------------------------|
-| Production  | `https://gate.chip-in.asia/api/v1/`   | `https://api.chip-in.asia/api/`           |
-| Sandbox     | `https://gate-sandbox.chip-in.asia/api/v1/` | `https://staging-api.chip-in.asia/api/` |
+| Service      | Base URL                              | Environment Handling                     |
+|--------------|---------------------------------------|-------------------------------------------|
+| CHIP Collect | `https://gate.chip-in.asia/api/v1/`   | Same URL for both sandbox and production. Use different API keys to differentiate environments. |
+| CHIP Send    | **Sandbox:** `https://staging-api.chip-in.asia/api/`  
+  **Production:** `https://api.chip-in.asia/api/` | Different URLs for sandbox and production environments. |
 
 **Authentication**
 
-- CHIP Collect: HTTP `Authorization: Bearer {API_KEY}` header.  
+- CHIP Collect: HTTP `Authorization: Bearer {API_KEY}` header. The API key determines whether you're in sandbox or production mode.
 - CHIP Send: HTTP `Authorization: Bearer {API_KEY}` header + custom headers:  
   - `epoch`: current Unix timestamp (seconds).  
   - `checksum`: `hash_hmac('sha256', (string) $epoch, API_SECRET)`.

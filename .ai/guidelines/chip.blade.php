@@ -1,4 +1,5 @@
-# CHIP Integration – Engineering Playbook
+# CHIP Integr1. **Configuration** lives in `config/chip.php`. Do not add new environment variables unless the official CHIP docs require them. Respect existing keys such as `collect.api_key`, `collect.brand_id`, `collect.environment`, `send.api_key`, `send.api_secret`, `webhooks.public_key`, etc. Note that CHIP Collect uses the same base URL (`https://gate.chip-in.asia/api/v1/`) for both sandbox and production – the API key determines the environment. CHIP Send uses different URLs for sandbox and production.
+2. **HTTP clients** already implement authentication, retry and logging. Reuse `ChipCollectClient` and `ChipSendClient`; do not create ad‑hoc Guzzle calls. Clients retry only on connection or 5xx errors – CHIP does not emit HTTP 429, so do not add logic for it.ion – Engineering Playbook
 
 These instructions guide automated agents working with the `masyukai/chip` package. Follow them when adding or modifying code.
 

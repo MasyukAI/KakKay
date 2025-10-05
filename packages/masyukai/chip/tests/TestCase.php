@@ -40,17 +40,14 @@ abstract class TestCase extends Orchestra
         $app['config']->set('chip.collect.brand_id', 'test_brand_12345');
         $app['config']->set('chip.collect.secret_key', 'test_secret_key');
         $app['config']->set('chip.collect.environment', 'sandbox');
-        $app['config']->set('chip.collect.base_url', [
-            'sandbox' => 'https://gate-sandbox.chip-in.asia/api/v1',
-            'production' => 'https://gate.chip-in.asia/api/v1',
-        ]);
+        $app['config']->set('chip.collect.base_url', 'https://gate.chip-in.asia/api/v1/');
         $app['config']->set('chip.collect.timeout', 30);
         $app['config']->set('chip.collect.retry', ['times' => 3, 'sleep' => 1000]);
         $app['config']->set('chip.send.api_key', 'test_api_key');
         $app['config']->set('chip.send.secret_key', 'test_send_secret');
         $app['config']->set('chip.send.base_url', [
-            'sandbox' => 'https://gate-sandbox.chip-in.asia/api/v1',
-            'production' => 'https://gate.chip-in.asia/api/v1',
+            'sandbox' => 'https://staging-api.chip-in.asia/api',
+            'production' => 'https://api.chip-in.asia/api',
         ]);
         $app['config']->set('chip.is_sandbox', true);
         $app['config']->set('chip.webhook.public_key', $this->getTestPublicKey());

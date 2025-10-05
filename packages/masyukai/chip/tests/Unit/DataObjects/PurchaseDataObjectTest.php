@@ -11,7 +11,7 @@ describe('Purchase data object', function (): void {
             'amount_in_cents' => 10000,
             'currency' => 'MYR',
             'reference' => 'ORDER_001',
-            'checkout_url' => 'https://gate-sandbox.chip-in.asia/checkout/purchase_123',
+            'checkout_url' => 'https://gate.chip-in.asia/checkout/purchase_123',
             'status' => 'created',
             'is_recurring' => false,
             'metadata' => ['order_id' => '123'],
@@ -25,7 +25,7 @@ describe('Purchase data object', function (): void {
         expect($purchase->amountInCents)->toBe(10000);
         expect($purchase->currency)->toBe('MYR');
         expect($purchase->reference)->toBe('ORDER_001');
-        expect($purchase->checkoutUrl)->toBe('https://gate-sandbox.chip-in.asia/checkout/purchase_123');
+        expect($purchase->checkoutUrl)->toBe('https://gate.chip-in.asia/checkout/purchase_123');
         expect($purchase->status)->toBe('created');
         expect($purchase->isRecurring)->toBeFalse();
         expect($purchase->metadata)->toBe(['order_id' => '123']);

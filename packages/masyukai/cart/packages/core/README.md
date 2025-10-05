@@ -47,7 +47,7 @@ Use Pest filters (`--group`, `--filter`) to target specific areas.
 
 ## Contributing
 
-Please review the [Laravel Cart Coding Guidelines](../../.ai/guidelines/laravel-cart.md) before submitting PRs. Contributions from the community are welcome—issues, bug reports, and feature suggestions keep the project healthy.
+Please review the [Laravel Cart Coding Guidelines](../../.ai/guidelines/cart.blade.php) before submitting PRs. Contributions from the community are welcome—issues, bug reports, and feature suggestions keep the project healthy.
 
 ## License
 
