@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MasyukAI\FilamentCart\Actions;
 
+use Exception;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Support\Icons\Heroicon;
@@ -11,13 +12,8 @@ use MasyukAI\Cart\Facades\Cart;
 use MasyukAI\FilamentCart\Models\Cart as CartModel;
 use MasyukAI\FilamentCart\Models\CartCondition;
 
-class RemoveConditionAction extends Action
+final class RemoveConditionAction extends Action
 {
-    public static function getDefaultName(): ?string
-    {
-        return 'removeCondition';
-    }
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -52,10 +48,10 @@ class RemoveConditionAction extends Action
                             ->success()
                             ->send();
                     } else {
-                        throw new \Exception('Condition not found or could not be removed');
+                        throw new Exception('Condition not found or could not be removed');
                     }
 
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     Notification::make()
                         ->title('Failed to Remove Condition')
                         ->body('An error occurred while removing the condition: '.$e->getMessage())
@@ -65,12 +61,17 @@ class RemoveConditionAction extends Action
             });
     }
 
+    public static function getDefaultName(): string
+    {
+        return 'removeCondition';
+    }
+
     /**
      * Create action for clearing all conditions from cart
      */
     public static function makeClearAll(): static
     {
-        return static::make('clearAllConditions')
+        return self::make('clearAllConditions')
             ->label('Clear All Conditions')
             ->icon(Heroicon::OutlinedTrash)
             ->color('danger')
@@ -101,7 +102,7 @@ class RemoveConditionAction extends Action
                         ->success()
                         ->send();
 
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     Notification::make()
                         ->title('Failed to Clear Conditions')
                         ->body('An error occurred while clearing conditions: '.$e->getMessage())
@@ -155,7 +156,7 @@ class RemoveConditionAction extends Action
                         ->success()
                         ->send();
 
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     Notification::make()
                         ->title('Failed to Clear Conditions')
                         ->body('An error occurred while clearing conditions: '.$e->getMessage())

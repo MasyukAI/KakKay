@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MasyukAI\FilamentCart\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use MasyukAI\FilamentCart\Models\Cart;
 
-class CartSeeder extends Seeder
+final class CartSeeder extends Seeder
 {
     /**
      * Run the database seeds.

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MasyukAI\FilamentCart\Resources\CartResource\Pages;
 
 use Filament\Actions;
@@ -9,13 +11,51 @@ use MasyukAI\Cart\Facades\Cart as CartFacade;
 use MasyukAI\FilamentCart\Models\Cart;
 use MasyukAI\FilamentCart\Resources\CartResource;
 
-class ViewCart extends ViewRecord
+use function assert;
+
+final class ViewCart extends ViewRecord
 {
     protected static string $resource = CartResource::class;
 
+    public function getTitle(): string
+    {
+        /** @phpstan-ignore-next-line */
+        return 'Cart: '.$this->record->identifier;
+    }
+
+    public function getSubheading(): string
+    {
+        /** @phpstan-ignore-next-line */
+        if ($this->record->isEmpty()) {
+            return 'This cart is empty';
+        }
+
+        /** @phpstan-ignore-next-line */
+        $itemCount = $this->record->items_count;
+        /** @phpstan-ignore-next-line */
+        $totalQty = $this->record->quantity;
+
+        $summary = "{$itemCount} ".str('item')->plural($itemCount).
+            " ({$totalQty} ".str('unit')->plural($totalQty).')';
+
+        /** @phpstan-ignore-next-line */
+        $summary .= ' • Subtotal '.$this->record->formatMoney($this->record->subtotal);
+
+        /** @phpstan-ignore-next-line */
+        if ($this->record->savings > 0) {
+            /** @phpstan-ignore-next-line */
+            $summary .= ' • Savings '.$this->record->formatMoney($this->record->savings);
+        }
+
+        /** @phpstan-ignore-next-line */
+        $summary .= ' • Total '.$this->record->formatMoney($this->record->total);
+
+        return $summary;
+    }
+
     protected function getHeaderActions(): array
     {
-        \assert($this->record instanceof Cart);
+        assert($this->record instanceof Cart);
 
         return [
             Actions\EditAction::make()
@@ -43,6 +83,7 @@ class ViewCart extends ViewRecord
                 ->action(function () {
                     /** @var Cart $record */
                     $record = $this->record;
+
                     return response()->download(
                         storage_path('app/temp/cart_'.$record->identifier.'.json'),
                         'cart_'.$record->identifier.'.json',
@@ -75,41 +116,5 @@ class ViewCart extends ViewRecord
             Actions\DeleteAction::make()
                 ->icon(Heroicon::OutlinedTrash),
         ];
-    }
-
-    public function getTitle(): string
-    {
-        /** @phpstan-ignore-next-line */
-        return 'Cart: '.$this->record->identifier;
-    }
-
-    public function getSubheading(): ?string
-    {
-        /** @phpstan-ignore-next-line */
-        if ($this->record->isEmpty()) {
-            return 'This cart is empty';
-        }
-
-        /** @phpstan-ignore-next-line */
-        $itemCount = $this->record->items_count;
-        /** @phpstan-ignore-next-line */
-        $totalQty = $this->record->quantity;
-
-        $summary = "{$itemCount} ".str('item')->plural($itemCount).
-            " ({$totalQty} ".str('unit')->plural($totalQty).')';
-
-        /** @phpstan-ignore-next-line */
-        $summary .= ' • Subtotal '.$this->record->formatMoney($this->record->subtotal);
-
-        /** @phpstan-ignore-next-line */
-        if ($this->record->savings > 0) {
-            /** @phpstan-ignore-next-line */
-            $summary .= ' • Savings '.$this->record->formatMoney($this->record->savings);
-        }
-
-        /** @phpstan-ignore-next-line */
-        $summary .= ' • Total '.$this->record->formatMoney($this->record->total);
-
-        return $summary;
     }
 }

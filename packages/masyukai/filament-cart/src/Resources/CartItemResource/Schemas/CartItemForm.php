@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MasyukAI\FilamentCart\Resources\CartItemResource\Schemas;
 
 use Filament\Forms\Components\TextInput;
@@ -7,7 +9,7 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
-class CartItemForm
+final class CartItemForm
 {
     public static function configure(Schema $schema): Schema
     {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MasyukAI\FilamentCart\Actions;
 
+use Exception;
 use Filament\Actions\Action;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
@@ -17,13 +18,8 @@ use MasyukAI\FilamentCart\Models\Cart as CartModel;
 use MasyukAI\FilamentCart\Models\Condition;
 use MasyukAI\FilamentCart\Services\RuleConverter;
 
-class ApplyConditionAction extends Action
+final class ApplyConditionAction extends Action
 {
-    public static function getDefaultName(): ?string
-    {
-        return 'applyCondition';
-    }
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -80,7 +76,7 @@ class ApplyConditionAction extends Action
                         ->success()
                         ->send();
 
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     Notification::make()
                         ->title('Failed to Apply Condition')
                         ->body('An error occurred while applying the condition: '.$e->getMessage())
@@ -90,12 +86,17 @@ class ApplyConditionAction extends Action
             });
     }
 
+    public static function getDefaultName(): string
+    {
+        return 'applyCondition';
+    }
+
     /**
      * Create action for applying condition to specific cart item
      */
     public static function makeForItem(): static
     {
-        return static::make('applyItemCondition')
+        return self::make('applyItemCondition')
             ->label('Apply Item Condition')
             ->modalHeading('Apply Condition to Item')
             ->modalDescription('Select a condition to apply to this specific item.')
@@ -144,10 +145,10 @@ class ApplyConditionAction extends Action
                             ->success()
                             ->send();
                     } else {
-                        throw new \Exception('Item not found in cart');
+                        throw new Exception('Item not found in cart');
                     }
 
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     Notification::make()
                         ->title('Failed to Apply Item Condition')
                         ->body('An error occurred while applying the condition: '.$e->getMessage())
@@ -251,7 +252,7 @@ class ApplyConditionAction extends Action
                     if (! empty($data['is_dynamic']) && ! empty($data['rules'])) {
                         $parsedRules = json_decode($data['rules'], true);
                         if (json_last_error() !== JSON_ERROR_NONE) {
-                            throw new \Exception('Invalid JSON format for rules');
+                            throw new Exception('Invalid JSON format for rules');
                         }
                         $rules = RuleConverter::convertRules($parsedRules);
                     }
@@ -282,7 +283,7 @@ class ApplyConditionAction extends Action
                         ->success()
                         ->send();
 
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     Notification::make()
                         ->title('Failed to Apply Custom Condition')
                         ->body('An error occurred while applying the condition: '.$e->getMessage())

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MasyukAI\FilamentCart\Resources\CartResource\Pages;
 
 use Filament\Actions;
@@ -8,7 +10,7 @@ use Filament\Support\Icons\Heroicon;
 use MasyukAI\Cart\Facades\Cart as CartFacade;
 use MasyukAI\FilamentCart\Resources\CartResource;
 
-class EditCart extends EditRecord
+final class EditCart extends EditRecord
 {
     protected static string $resource = CartResource::class;
 

@@ -27,19 +27,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property array<mixed>|null $conditions
  * @property string|null $associated_model
  */
-class CartItem extends Model
+final class CartItem extends Model
 {
     /** @use HasFactory<\MasyukAI\FilamentCart\Database\Factories\CartItemFactory> */
     use HasFactory;
+
     use HasUuids;
 
     /**
-     * Create a new factory instance for the model.
+     * Indicates if the model should be timestamped.
      */
-    protected static function newFactory(): \MasyukAI\FilamentCart\Database\Factories\CartItemFactory
-    {
-        return \MasyukAI\FilamentCart\Database\Factories\CartItemFactory::new();
-    }
+    public $timestamps = true;
 
     /**
      * The table associated with the model.
@@ -73,11 +71,6 @@ class CartItem extends Model
     ];
 
     /**
-     * Indicates if the model should be timestamped.
-     */
-    public $timestamps = true;
-
-    /**
      * Get the computed subtotal (price × quantity).
      */
     public function getSubtotalAttribute(): int
@@ -87,82 +80,13 @@ class CartItem extends Model
 
     /**
      * Get the cart that owns this item.
+     *
      * @return BelongsTo<Cart, CartItem>
      */
     /** @phpstan-ignore return.type, missingType.generics */
     public function cart(): BelongsTo
     {
         return $this->belongsTo(Cart::class);
-    }
-
-    /**
-     * Scope to filter by cart instance.
-     * @param Builder<self> $query
-     */
-    public function scopeInstance(Builder $query, string $instance): void
-    {
-        $query->whereHas('cart', function ($q) use ($instance) {
-            $q->where('instance', $instance);
-        });
-    }
-
-    /**
-     * Scope to filter by cart identifier.
-     * @param Builder<self> $query
-     */
-    public function scopeByIdentifier(Builder $query, string $identifier): void
-    {
-        $query->whereHas('cart', function ($q) use ($identifier) {
-            $q->where('identifier', $identifier);
-        });
-    }
-
-    /**
-     * Scope to filter by item name.
-     * @param Builder<self> $query
-     */
-    public function scopeByName(Builder $query, string $name): void
-    {
-        $query->where('name', 'like', "%{$name}%");
-    }
-
-    /**
-     * Scope to filter by price range.
-     * @param Builder<self> $query
-     */
-    public function scopePriceBetween(Builder $query, float $min, float $max): void
-    {
-        // Convert dollars to cents for comparison
-        $query->whereBetween('price', [$min * 100, $max * 100]);
-    }
-
-    /**
-     * Scope to filter by quantity range.
-     * @param Builder<self> $query
-     */
-    public function scopeQuantityBetween(Builder $query, int $min, int $max): void
-    {
-        $query->whereBetween('quantity', [$min, $max]);
-    }
-
-    /**
-     * Scope to get items with conditions.
-     * @param Builder<self> $query
-     */
-    public function scopeWithConditions(Builder $query): void
-    {
-        $query->whereNotNull('conditions')
-            ->whereJsonLength('conditions', '>', 0);
-    }
-
-    /**
-     * Scope to get items without conditions.
-     * @param Builder<self> $query
-     */
-    public function scopeWithoutConditions(Builder $query): void
-    {
-        $query->whereNull('conditions')
-            ->orWhereJsonLength('conditions', '=', 0);
     }
 
     /**
@@ -221,9 +145,101 @@ class CartItem extends Model
         return ! empty($this->attributes) && is_array($this->attributes) ? count($this->attributes) : 0;
     }
 
+    /**
+     * Create a new factory instance for the model.
+     */
+    protected static function newFactory(): \MasyukAI\FilamentCart\Database\Factories\CartItemFactory
+    {
+        return \MasyukAI\FilamentCart\Database\Factories\CartItemFactory::new();
+    }
+
+    /**
+     * Scope to filter by cart instance.
+     *
+     * @param  Builder<self>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function instance(Builder $query, string $instance): void
+    {
+        $query->whereHas('cart', function ($q) use ($instance) {
+            $q->where('instance', $instance);
+        });
+    }
+
+    /**
+     * Scope to filter by cart identifier.
+     *
+     * @param  Builder<self>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function byIdentifier(Builder $query, string $identifier): void
+    {
+        $query->whereHas('cart', function ($q) use ($identifier) {
+            $q->where('identifier', $identifier);
+        });
+    }
+
+    /**
+     * Scope to filter by item name.
+     *
+     * @param  Builder<self>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function byName(Builder $query, string $name): void
+    {
+        $query->where('name', 'like', "%{$name}%");
+    }
+
+    /**
+     * Scope to filter by price range.
+     *
+     * @param  Builder<self>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function priceBetween(Builder $query, float $min, float $max): void
+    {
+        // Convert dollars to cents for comparison
+        $query->whereBetween('price', [$min * 100, $max * 100]);
+    }
+
+    /**
+     * Scope to filter by quantity range.
+     *
+     * @param  Builder<self>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function quantityBetween(Builder $query, int $min, int $max): void
+    {
+        $query->whereBetween('quantity', [$min, $max]);
+    }
+
+    /**
+     * Scope to get items with conditions.
+     *
+     * @param  Builder<self>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function withConditions(Builder $query): void
+    {
+        $query->whereNotNull('conditions')
+            ->whereJsonLength('conditions', '>', 0);
+    }
+
+    /**
+     * Scope to get items without conditions.
+     *
+     * @param  Builder<self>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function withoutConditions(Builder $query): void
+    {
+        $query->whereNull('conditions')
+            ->orWhereJsonLength('conditions', '=', 0);
+    }
+
     private function formatMoney(int $amount): string
     {
-        $currency = strtoupper($this->cart->currency ?? config('cart.money.default_currency', 'USD'));
+        $currency = mb_strtoupper($this->cart->currency ?? config('cart.money.default_currency', 'USD'));
 
         return (string) Money::{$currency}($amount);
     }

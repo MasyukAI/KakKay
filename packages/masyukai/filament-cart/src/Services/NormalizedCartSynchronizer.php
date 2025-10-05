@@ -13,6 +13,8 @@ use MasyukAI\FilamentCart\Models\Cart;
 use MasyukAI\FilamentCart\Models\CartCondition;
 use MasyukAI\FilamentCart\Models\CartItem;
 
+use function assert;
+
 final class NormalizedCartSynchronizer
 {
     public function syncFromCart(BaseCart $cart): void
@@ -88,7 +90,7 @@ final class NormalizedCartSynchronizer
         $storedItemIds = [];
 
         foreach ($items as $item) {
-            \assert($item instanceof BaseCartItem);
+            assert($item instanceof BaseCartItem);
 
             $attributes = $item->attributes->toArray();
             $conditions = $item->conditions->isEmpty() ? null : $item->conditions->toArray();
@@ -130,7 +132,7 @@ final class NormalizedCartSynchronizer
         $persistedKeys = [];
 
         foreach ($conditions as $condition) {
-            \assert($condition instanceof BaseCartCondition);
+            assert($condition instanceof BaseCartCondition);
             $persistedKeys[] = $this->persistCondition(
                 cartModel: $cartModel,
                 condition: $condition,
@@ -140,14 +142,14 @@ final class NormalizedCartSynchronizer
         }
 
         foreach ($originalItems as $item) {
-            \assert($item instanceof BaseCartItem);
+            assert($item instanceof BaseCartItem);
 
             if (! isset($itemModels[$item->id])) {
                 continue;
             }
 
             foreach ($item->conditions as $condition) {
-                \assert($condition instanceof BaseCartCondition);
+                assert($condition instanceof BaseCartCondition);
 
                 $persistedKeys[] = $this->persistCondition(
                     cartModel: $cartModel,
@@ -216,7 +218,7 @@ final class NormalizedCartSynchronizer
 
     private function resolveCurrency(): string
     {
-        return strtoupper(config('cart.money.default_currency', 'USD'));
+        return mb_strtoupper(config('cart.money.default_currency', 'USD'));
     }
 
     private function resolveAssociatedModel(string|object|null $associatedModel): ?string

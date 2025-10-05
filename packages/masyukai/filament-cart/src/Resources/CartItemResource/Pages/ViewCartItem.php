@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MasyukAI\FilamentCart\Resources\CartItemResource\Pages;
 
 use Filament\Resources\Pages\ViewRecord;
 use MasyukAI\FilamentCart\Resources\CartItemResource;
 
-class ViewCartItem extends ViewRecord
+final class ViewCartItem extends ViewRecord
 {
     protected static string $resource = CartItemResource::class;
 

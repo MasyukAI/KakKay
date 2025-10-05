@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MasyukAI\FilamentCart\Resources;
 
 use BackedEnum;
@@ -14,7 +16,7 @@ use MasyukAI\FilamentCart\Resources\CartItemResource\Schemas\CartItemForm;
 use MasyukAI\FilamentCart\Resources\CartItemResource\Tables\CartItemsTable;
 use UnitEnum;
 
-class CartItemResource extends Resource
+final class CartItemResource extends Resource
 {
     protected static ?string $model = CartItem::class;
 
@@ -57,12 +59,12 @@ class CartItemResource extends Resource
         ];
     }
 
-    public static function getNavigationBadge(): ?string
+    public static function getNavigationBadge(): string
     {
-        return (string) static::getModel()::count();
+        return (string) self::getModel()::count();
     }
 
-    public static function getNavigationBadgeColor(): string|array|null
+    public static function getNavigationBadgeColor(): string
     {
         return 'info';
     }
@@ -73,7 +75,7 @@ class CartItemResource extends Resource
     }
 
     /**
-     * @param \MasyukAI\FilamentCart\Models\CartItem $record
+     * @param  CartItem  $record
      */
     public static function canEdit($record): bool
     {
@@ -81,7 +83,7 @@ class CartItemResource extends Resource
     }
 
     /**
-     * @param \MasyukAI\FilamentCart\Models\CartItem $record
+     * @param  CartItem  $record
      */
     public static function canDelete($record): bool
     {

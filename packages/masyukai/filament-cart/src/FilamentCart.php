@@ -12,8 +12,21 @@ use MasyukAI\FilamentCart\Resources\CartResource;
 use MasyukAI\FilamentCart\Resources\ConditionResource;
 use MasyukAI\FilamentCart\Widgets\CartStatsWidget;
 
-class FilamentCart implements Plugin
+final class FilamentCart implements Plugin
 {
+    public static function make(): static
+    {
+        return app(self::class);
+    }
+
+    public static function get(): static
+    {
+        /** @var static $plugin */
+        $plugin = filament(app(static::class)->getId());
+
+        return $plugin;
+    }
+
     public function getId(): string
     {
         return 'masyukai-filament-cart';
@@ -36,18 +49,5 @@ class FilamentCart implements Plugin
     public function boot(Panel $panel): void
     {
         //
-    }
-
-    public static function make(): static
-    {
-        return app(static::class);
-    }
-
-    public static function get(): static
-    {
-        /** @var static $plugin */
-        $plugin = filament(app(static::class)->getId());
-
-        return $plugin;
     }
 }

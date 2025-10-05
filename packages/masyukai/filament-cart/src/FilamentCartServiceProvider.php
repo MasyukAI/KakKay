@@ -27,7 +27,7 @@ use MasyukAI\FilamentCart\Listeners\SyncCompleteCart;
 use MasyukAI\FilamentCart\Services\CartSyncManager;
 use MasyukAI\FilamentCart\Services\NormalizedCartSynchronizer;
 
-class FilamentCartServiceProvider extends ServiceProvider
+final class FilamentCartServiceProvider extends ServiceProvider
 {
     public function register(): void
     {

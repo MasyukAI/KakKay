@@ -34,6 +34,7 @@ final class Cart extends Model
 {
     /** @use HasFactory<\MasyukAI\FilamentCart\Database\Factories\CartFactory> */
     use HasFactory;
+
     use HasUuids;
 
     protected $table = 'cart_snapshots';
@@ -107,46 +108,6 @@ final class Cart extends Model
         return $this->savings / 100;
     }
 
-    /**
-     * @param Builder<self> $query
-     */
-    public function scopeInstance(Builder $query, string $instance): void
-    {
-        $query->where('instance', $instance);
-    }
-
-    /**
-     * @param Builder<self> $query
-     */
-    public function scopeByIdentifier(Builder $query, string $identifier): void
-    {
-        $query->where('identifier', $identifier);
-    }
-
-    /**
-     * @param Builder<self> $query
-     */
-    public function scopeNotEmpty(Builder $query): void
-    {
-        $query->where('items_count', '>', 0);
-    }
-
-    /**
-     * @param Builder<self> $query
-     */
-    public function scopeRecent(Builder $query, int $days = 7): void
-    {
-        $query->where('updated_at', '>=', now()->subDays($days));
-    }
-
-    /**
-     * @param Builder<self> $query
-     */
-    public function scopeWithSavings(Builder $query): void
-    {
-        $query->where('savings', '>', 0);
-    }
-
     /** @return HasMany<CartItem, Cart> */
     /** @phpstan-ignore return.type, missingType.generics */
     public function cartItems(): HasMany
@@ -194,9 +155,61 @@ final class Cart extends Model
         return $this->items_count === 0 || $this->quantity === 0;
     }
 
+    public function formatMoney(int $amount): string
+    {
+        $currency = mb_strtoupper($this->currency ?: config('cart.money.default_currency', 'USD'));
+
+        return (string) Money::{$currency}($amount);
+    }
+
     protected static function newFactory(): \MasyukAI\FilamentCart\Database\Factories\CartFactory
     {
         return \MasyukAI\FilamentCart\Database\Factories\CartFactory::new();
+    }
+
+    /**
+     * @param  Builder<self>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function instance(Builder $query, string $instance): void
+    {
+        $query->where('instance', $instance);
+    }
+
+    /**
+     * @param  Builder<self>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function byIdentifier(Builder $query, string $identifier): void
+    {
+        $query->where('identifier', $identifier);
+    }
+
+    /**
+     * @param  Builder<self>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function notEmpty(Builder $query): void
+    {
+        $query->where('items_count', '>', 0);
+    }
+
+    /**
+     * @param  Builder<self>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function recent(Builder $query, int $days = 7): void
+    {
+        $query->where('updated_at', '>=', now()->subDays($days));
+    }
+
+    /**
+     * @param  Builder<self>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function withSavings(Builder $query): void
+    {
+        $query->where('savings', '>', 0);
     }
 
     /** @return Attribute<string, never> */
@@ -215,12 +228,5 @@ final class Cart extends Model
     protected function formattedSavings(): Attribute
     {
         return Attribute::get(fn (): string => $this->formatMoney($this->savings));
-    }
-
-    public function formatMoney(int $amount): string
-    {
-        $currency = strtoupper($this->currency ?: config('cart.money.default_currency', 'USD'));
-
-        return (string) Money::{$currency}($amount);
     }
 }

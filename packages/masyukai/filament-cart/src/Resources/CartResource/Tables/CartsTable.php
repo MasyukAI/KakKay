@@ -176,7 +176,7 @@ final class CartsTable
                     ->requiresConfirmation()
                     ->action(function (Collection $records): void {
                         /** @var Collection<int|string, Cart> $records */
-                        $records->each(/** @param Cart $record */ function (Cart $record): void {
+                        $records->each(function (Cart $record): void {
                             /** @phpstan-ignore property.notFound */
                             $cart = CartFacade::getCartInstance($record->instance, $record->identifier);
                             $cart->clear();
@@ -190,7 +190,7 @@ final class CartsTable
                     ->requiresConfirmation()
                     ->action(function (Collection $records): void {
                         /** @var Collection<int|string, Cart> $records */
-                        $records->each(/** @param Cart $record */ function (Cart $record): void {
+                        $records->each(function (Cart $record): void {
                             /** @phpstan-ignore property.notFound */
                             $cart = CartFacade::getCartInstance($record->instance, $record->identifier);
                             $cart->clear();

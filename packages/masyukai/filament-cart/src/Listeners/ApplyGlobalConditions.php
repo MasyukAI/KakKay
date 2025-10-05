@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MasyukAI\FilamentCart\Listeners;
 
 use MasyukAI\Cart\Events\CartCreated;
 use MasyukAI\FilamentCart\Models\Condition;
 use MasyukAI\FilamentCart\Services\RuleConverter;
 
-class ApplyGlobalConditions
+final class ApplyGlobalConditions
 {
     public function __construct(
-        protected RuleConverter $ruleConverter
+        private RuleConverter $ruleConverter
     ) {}
 
     /**
@@ -37,7 +39,7 @@ class ApplyGlobalConditions
     /**
      * Apply all global conditions to the cart.
      */
-    protected function applyGlobalConditions(\MasyukAI\Cart\Cart $cart): void
+    private function applyGlobalConditions(\MasyukAI\Cart\Cart $cart): void
     {
         $globalConditions = Condition::global()->get();
         $hasDynamicConditions = false;

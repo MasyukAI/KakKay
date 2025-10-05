@@ -5,14 +5,16 @@ declare(strict_types=1);
 namespace MasyukAI\FilamentCart\Services;
 
 use Illuminate\Support\Facades\Auth;
+use InvalidArgumentException;
 use MasyukAI\Cart\Cart;
 use MasyukAI\Cart\Models\CartItem;
 
-class RuleConverter
+final class RuleConverter
 {
     /**
      * Convert JSON rule definitions to callable functions
-     * @param array<string, mixed> $rules
+     *
+     * @param  array<string, mixed>  $rules
      * @return array<callable>
      */
     public static function convertRules(array $rules): array
@@ -41,7 +43,7 @@ class RuleConverter
             'specific_items' => fn (Cart $cart) => self::cartHasSpecificItems($cart, $ruleValue),
             'item_quantity' => fn (Cart $cart, ?CartItem $item = null) => $item && $item->quantity >= (int) $ruleValue,
             'item_price' => fn (Cart $cart, ?CartItem $item = null) => $item && $item->price >= (float) $ruleValue,
-            default => throw new \InvalidArgumentException("Unknown rule type: {$ruleKey}")
+            default => throw new InvalidArgumentException("Unknown rule type: {$ruleKey}")
         };
     }
 
@@ -71,7 +73,8 @@ class RuleConverter
 
     /**
      * Check if cart contains specific items (by ID or SKU)
-     * @param array<string> $itemIds
+     *
+     * @param  array<string>  $itemIds
      */
     private static function cartHasSpecificItems(Cart $cart, array $itemIds): bool
     {

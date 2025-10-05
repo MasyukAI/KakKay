@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MasyukAI\FilamentCart\Resources\CartItemResource\Tables;
 
 use Akaunting\Money\Money;
@@ -12,7 +14,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use MasyukAI\FilamentCart\Actions\ApplyConditionAction;
 
-class CartItemsTable
+final class CartItemsTable
 {
     public static function configure(Table $table): Table
     {

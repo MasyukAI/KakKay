@@ -12,7 +12,7 @@ use MasyukAI\FilamentCart\Models\CartItem;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\MasyukAI\FilamentCart\Models\CartCondition>
  */
-class CartConditionFactory extends Factory
+final class CartConditionFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.

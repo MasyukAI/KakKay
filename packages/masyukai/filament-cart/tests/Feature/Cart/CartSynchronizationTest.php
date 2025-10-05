@@ -22,7 +22,7 @@ describe('cart synchronization', function () {
         expect($snapshot->quantity)->toBe(2);
         expect($snapshot->subtotal)->toBe(3000);
         expect($snapshot->total)->toBe(3000);
-        expect($snapshot->currency)->toBe(strtoupper(config('cart.money.default_currency', 'USD')));
+        expect($snapshot->currency)->toBe(mb_strtoupper(config('cart.money.default_currency', 'USD')));
 
         $item = CartItem::first();
         expect($item)->not->toBeNull();

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MasyukAI\FilamentCart\Resources\CartResource\Schemas;
 
 use Filament\Forms\Components\KeyValue;
@@ -12,7 +14,7 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
-class CartForm
+final class CartForm
 {
     public static function configure(Schema $schema): Schema
     {

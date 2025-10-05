@@ -35,19 +35,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $parsed_value
  * @property array<mixed>|null $rules
  */
-class CartCondition extends Model
+final class CartCondition extends Model
 {
     /** @use HasFactory<\MasyukAI\FilamentCart\Database\Factories\CartConditionFactory> */
     use HasFactory;
+
     use HasUuids;
 
     /**
-     * Create a new factory instance for the model.
+     * Indicates if the model should be timestamped.
      */
-    protected static function newFactory(): \MasyukAI\FilamentCart\Database\Factories\CartConditionFactory
-    {
-        return \MasyukAI\FilamentCart\Database\Factories\CartConditionFactory::new();
-    }
+    public $timestamps = true;
 
     /**
      * The table associated with the model.
@@ -96,12 +94,8 @@ class CartCondition extends Model
     ];
 
     /**
-     * Indicates if the model should be timestamped.
-     */
-    public $timestamps = true;
-
-    /**
      * Get the cart that owns this condition.
+     *
      * @return BelongsTo<Cart, CartCondition>
      */
     /** @phpstan-ignore return.type, missingType.generics */
@@ -112,108 +106,13 @@ class CartCondition extends Model
 
     /**
      * Get the cart item this condition applies to (if item-level).
+     *
      * @return BelongsTo<CartItem, CartCondition>
      */
     /** @phpstan-ignore return.type, missingType.generics */
     public function cartItem(): BelongsTo
     {
         return $this->belongsTo(CartItem::class);
-    }
-
-    /**
-     * Scope to filter by cart instance.
-     * @param Builder<self> $query
-     */
-    public function scopeInstance(Builder $query, string $instance): void
-    {
-        $query->whereHas('cart', function ($q) use ($instance) {
-            $q->where('instance', $instance);
-        });
-    }
-
-    /**
-     * Scope to filter by cart identifier.
-     * @param Builder<self> $query
-     */
-    public function scopeByIdentifier(Builder $query, string $identifier): void
-    {
-        $query->whereHas('cart', function ($q) use ($identifier) {
-            $q->where('identifier', $identifier);
-        });
-    }
-
-    /**
-     * Scope to filter by condition type.
-     * @param Builder<self> $query
-     */
-    public function scopeByType(Builder $query, string $type): void
-    {
-        $query->where('type', $type);
-    }
-
-    /**
-     * Scope to filter by condition target.
-     * @param Builder<self> $query
-     */
-    public function scopeByTarget(Builder $query, string $target): void
-    {
-        $query->where('target', $target);
-    }
-
-    /**
-     * Scope to get cart-level conditions.
-     * @param Builder<self> $query
-     */
-    public function scopeCartLevel(Builder $query): void
-    {
-        $query->whereNull('cart_item_id')->whereNull('item_id');
-    }
-
-    /**
-     * Scope to get item-level conditions.
-     * @param Builder<self> $query
-     */
-    public function scopeItemLevel(Builder $query): void
-    {
-        $query->where(function ($q) {
-            $q->whereNotNull('cart_item_id')->orWhereNotNull('item_id');
-        });
-    }
-
-    /**
-     * Scope to get discount conditions.
-     * @param Builder<self> $query
-     */
-    public function scopeDiscounts(Builder $query): void
-    {
-        $query->where('type', 'discount');
-    }
-
-    /**
-     * Scope to get tax conditions.
-     * @param Builder<self> $query
-     */
-    public function scopeTaxes(Builder $query): void
-    {
-        $query->where('type', 'tax');
-    }
-
-    /**
-     * Scope to get fee conditions.
-     * @param Builder<self> $query
-     */
-    public function scopeFees(Builder $query): void
-    {
-        $query->where('type', 'fee');
-    }
-
-    /**
-     * Scope to get shipping conditions.
-     * @param Builder<self> $query
-     */
-    public function scopeShipping(Builder $query): void
-    {
-        $query->where('type', 'shipping');
     }
 
     /**
@@ -290,7 +189,7 @@ class CartCondition extends Model
         }
 
         $rawValue = $this->value;
-        $normalized = ltrim($rawValue, '+');
+        $normalized = mb_ltrim($rawValue, '+');
         $money = Money::{$this->resolveCurrency()}($normalized);
 
         return str_starts_with($rawValue, '+')
@@ -306,8 +205,132 @@ class CartCondition extends Model
         return ! empty($this->attributes) && is_array($this->attributes) ? count($this->attributes) : 0;
     }
 
+    /**
+     * Create a new factory instance for the model.
+     */
+    protected static function newFactory(): \MasyukAI\FilamentCart\Database\Factories\CartConditionFactory
+    {
+        return \MasyukAI\FilamentCart\Database\Factories\CartConditionFactory::new();
+    }
+
+    /**
+     * Scope to filter by cart instance.
+     *
+     * @param  Builder<self>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function instance(Builder $query, string $instance): void
+    {
+        $query->whereHas('cart', function ($q) use ($instance) {
+            $q->where('instance', $instance);
+        });
+    }
+
+    /**
+     * Scope to filter by cart identifier.
+     *
+     * @param  Builder<self>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function byIdentifier(Builder $query, string $identifier): void
+    {
+        $query->whereHas('cart', function ($q) use ($identifier) {
+            $q->where('identifier', $identifier);
+        });
+    }
+
+    /**
+     * Scope to filter by condition type.
+     *
+     * @param  Builder<self>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function byType(Builder $query, string $type): void
+    {
+        $query->where('type', $type);
+    }
+
+    /**
+     * Scope to filter by condition target.
+     *
+     * @param  Builder<self>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function byTarget(Builder $query, string $target): void
+    {
+        $query->where('target', $target);
+    }
+
+    /**
+     * Scope to get cart-level conditions.
+     *
+     * @param  Builder<self>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function cartLevel(Builder $query): void
+    {
+        $query->whereNull('cart_item_id')->whereNull('item_id');
+    }
+
+    /**
+     * Scope to get item-level conditions.
+     *
+     * @param  Builder<self>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function itemLevel(Builder $query): void
+    {
+        $query->where(function ($q) {
+            $q->whereNotNull('cart_item_id')->orWhereNotNull('item_id');
+        });
+    }
+
+    /**
+     * Scope to get discount conditions.
+     *
+     * @param  Builder<self>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function discounts(Builder $query): void
+    {
+        $query->where('type', 'discount');
+    }
+
+    /**
+     * Scope to get tax conditions.
+     *
+     * @param  Builder<self>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function taxes(Builder $query): void
+    {
+        $query->where('type', 'tax');
+    }
+
+    /**
+     * Scope to get fee conditions.
+     *
+     * @param  Builder<self>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function fees(Builder $query): void
+    {
+        $query->where('type', 'fee');
+    }
+
+    /**
+     * Scope to get shipping conditions.
+     *
+     * @param  Builder<self>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function shipping(Builder $query): void
+    {
+        $query->where('type', 'shipping');
+    }
+
     private function resolveCurrency(): string
     {
-        return strtoupper($this->cart->currency ?? config('cart.money.default_currency', 'USD'));
+        return mb_strtoupper($this->cart->currency ?? config('cart.money.default_currency', 'USD'));
     }
 }

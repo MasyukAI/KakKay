@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MasyukAI\FilamentCart\Resources\CartResource\RelationManagers;
 
 use Filament\Resources\RelationManagers\RelationManager;
@@ -8,7 +10,7 @@ use MasyukAI\FilamentCart\Actions\ApplyConditionAction;
 use MasyukAI\FilamentCart\Actions\RemoveConditionAction;
 use MasyukAI\FilamentCart\Resources\CartConditionResource;
 
-class ConditionsRelationManager extends RelationManager
+final class ConditionsRelationManager extends RelationManager
 {
     protected static string $relationship = 'cartConditions';
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MasyukAI\FilamentCart\Resources;
 
 use BackedEnum;
@@ -15,7 +17,7 @@ use MasyukAI\FilamentCart\Resources\ConditionResource\Schemas\ConditionForm;
 use MasyukAI\FilamentCart\Resources\ConditionResource\Tables\ConditionsTable;
 use UnitEnum;
 
-class ConditionResource extends Resource
+final class ConditionResource extends Resource
 {
     protected static ?string $model = Condition::class;
 
@@ -59,12 +61,12 @@ class ConditionResource extends Resource
         ];
     }
 
-    public static function getNavigationBadge(): ?string
+    public static function getNavigationBadge(): string
     {
-        return (string) static::getModel()::where('is_active', true)->count();
+        return (string) self::getModel()::where('is_active', true)->count();
     }
 
-    public static function getNavigationBadgeColor(): string|array|null
+    public static function getNavigationBadgeColor(): string
     {
         return 'primary';
     }

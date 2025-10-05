@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MasyukAI\FilamentCart\Resources\CartResource\Schemas;
 
 use Filament\Infolists\Components\KeyValueEntry;
@@ -10,7 +12,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 
-class CartInfolist
+final class CartInfolist
 {
     public static function configure(Schema $schema): Schema
     {

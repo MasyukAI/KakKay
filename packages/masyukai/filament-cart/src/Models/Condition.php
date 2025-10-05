@@ -35,19 +35,17 @@ use MasyukAI\FilamentCart\Services\RuleConverter;
  * @property bool $is_active
  * @property bool $is_global
  */
-class Condition extends Model
+final class Condition extends Model
 {
     /** @use HasFactory<\MasyukAI\FilamentCart\Database\Factories\ConditionFactory> */
     use HasFactory;
+
     use HasUuids;
 
     /**
-     * Create a new factory instance for the model.
+     * Indicates if the model should be timestamped.
      */
-    protected static function newFactory(): \MasyukAI\FilamentCart\Database\Factories\ConditionFactory
-    {
-        return \MasyukAI\FilamentCart\Database\Factories\ConditionFactory::new();
-    }
+    public $timestamps = true;
 
     /**
      * The table associated with the model.
@@ -95,21 +93,6 @@ class Condition extends Model
     ];
 
     /**
-     * Indicates if the model should be timestamped.
-     */
-    public $timestamps = true;
-
-    /**
-     * Boot the model and set up event listeners.
-     */
-    protected static function booted(): void
-    {
-        static::saving(function (Condition $condition) {
-            $condition->computeDerivedFields();
-        });
-    }
-
-    /**
      * Compute derived fields from the value.
      */
     public function computeDerivedFields(): void
@@ -121,11 +104,11 @@ class Condition extends Model
         if (str_contains($value, '%')) {
             $this->operator = '%';
             $this->is_percentage = true;
-            $this->parsed_value = (string) ((float) rtrim($value, '%') / 100);
+            $this->parsed_value = (string) ((float) mb_rtrim($value, '%') / 100);
         } elseif (str_starts_with($value, '+')) {
             $this->operator = '+';
             $this->is_percentage = false;
-            $this->parsed_value = ltrim($value, '+');
+            $this->parsed_value = mb_ltrim($value, '+');
         } elseif (str_starts_with($value, '-')) {
             $this->operator = '-';
             $this->is_percentage = false;
@@ -133,11 +116,11 @@ class Condition extends Model
         } elseif (str_starts_with($value, '*')) {
             $this->operator = '*';
             $this->is_percentage = false;
-            $this->parsed_value = ltrim($value, '*');
+            $this->parsed_value = mb_ltrim($value, '*');
         } elseif (str_starts_with($value, '/')) {
             $this->operator = '/';
             $this->is_percentage = false;
-            $this->parsed_value = ltrim($value, '/');
+            $this->parsed_value = mb_ltrim($value, '/');
         } else {
             // No operator, assume addition
             $this->operator = '+';
@@ -157,79 +140,6 @@ class Condition extends Model
 
         // Check if dynamic (has rules)
         $this->is_dynamic = ! empty($this->rules);
-    }
-
-    /**
-     * Scope to filter active conditions.
-     * @param Builder<self> $query
-     */
-    public function scopeActive(Builder $query): void
-    {
-        $query->where('is_active', true);
-    }
-
-    /**
-     * Scope to filter by condition type.
-     * @param Builder<self> $query
-     */
-    public function scopeOfType(Builder $query, string $type): void
-    {
-        $query->where('type', $type);
-    }
-
-    /**
-     * Scope to filter by condition target.
-     * @param Builder<self> $query
-     */
-    public function scopeForItems(Builder $query): void
-    {
-        $query->where('target', 'item');
-    }
-
-    /**
-     * Scope to filter discounts.
-     * @param Builder<self> $query
-     */
-    public function scopeDiscounts(Builder $query): void
-    {
-        $query->where('is_discount', true);
-    }
-
-    /**
-     * Scope to filter charges/fees.
-     * @param Builder<self> $query
-     */
-    public function scopeCharges(Builder $query): void
-    {
-        $query->where('is_charge', true);
-    }
-
-    /**
-     * Scope to filter dynamic conditions.
-     * @param Builder<self> $query
-     */
-    public function scopeDynamic(Builder $query): void
-    {
-        $query->where('is_dynamic', true);
-    }
-
-    /**
-     * Scope to filter global conditions.
-     * @param Builder<self> $query
-     */
-    public function scopeGlobal(Builder $query): void
-    {
-        $query->where('is_global', true)
-            ->where('is_active', true);
-    }
-
-    /**
-     * Scope to filter percentage-based conditions.
-     * @param Builder<self> $query
-     */
-    public function scopePercentageBased(Builder $query): void
-    {
-        $query->where('is_percentage', true);
     }
 
     /**
@@ -306,7 +216,7 @@ class Condition extends Model
         }
 
         $rawValue = $this->value;
-        $normalized = ltrim($rawValue, '+');
+        $normalized = mb_ltrim($rawValue, '+');
         $money = Money::{$this->resolveCurrency()}($normalized);
 
         return str_starts_with($rawValue, '+')
@@ -362,8 +272,115 @@ class Condition extends Model
         );
     }
 
+    /**
+     * Create a new factory instance for the model.
+     */
+    protected static function newFactory(): \MasyukAI\FilamentCart\Database\Factories\ConditionFactory
+    {
+        return \MasyukAI\FilamentCart\Database\Factories\ConditionFactory::new();
+    }
+
+    /**
+     * Boot the model and set up event listeners.
+     */
+    protected static function booted(): void
+    {
+        self::saving(function (Condition $condition) {
+            $condition->computeDerivedFields();
+        });
+    }
+
+    /**
+     * Scope to filter active conditions.
+     *
+     * @param  Builder<self>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function active(Builder $query): void
+    {
+        $query->where('is_active', true);
+    }
+
+    /**
+     * Scope to filter by condition type.
+     *
+     * @param  Builder<self>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function ofType(Builder $query, string $type): void
+    {
+        $query->where('type', $type);
+    }
+
+    /**
+     * Scope to filter by condition target.
+     *
+     * @param  Builder<self>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function forItems(Builder $query): void
+    {
+        $query->where('target', 'item');
+    }
+
+    /**
+     * Scope to filter discounts.
+     *
+     * @param  Builder<self>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function discounts(Builder $query): void
+    {
+        $query->where('is_discount', true);
+    }
+
+    /**
+     * Scope to filter charges/fees.
+     *
+     * @param  Builder<self>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function charges(Builder $query): void
+    {
+        $query->where('is_charge', true);
+    }
+
+    /**
+     * Scope to filter dynamic conditions.
+     *
+     * @param  Builder<self>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function dynamic(Builder $query): void
+    {
+        $query->where('is_dynamic', true);
+    }
+
+    /**
+     * Scope to filter global conditions.
+     *
+     * @param  Builder<self>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function global(Builder $query): void
+    {
+        $query->where('is_global', true)
+            ->where('is_active', true);
+    }
+
+    /**
+     * Scope to filter percentage-based conditions.
+     *
+     * @param  Builder<self>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function percentageBased(Builder $query): void
+    {
+        $query->where('is_percentage', true);
+    }
+
     private function resolveCurrency(): string
     {
-        return strtoupper(config('cart.money.default_currency', 'USD'));
+        return mb_strtoupper(config('cart.money.default_currency', 'USD'));
     }
 }

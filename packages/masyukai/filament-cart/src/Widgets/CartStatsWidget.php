@@ -44,7 +44,7 @@ final class CartStatsWidget extends BaseWidget
 
     private function formatMoney(int $amount): string
     {
-        $currency = strtoupper(config('cart.money.default_currency', 'USD'));
+        $currency = mb_strtoupper(config('cart.money.default_currency', 'USD'));
 
         return (string) Money::{$currency}($amount);
     }

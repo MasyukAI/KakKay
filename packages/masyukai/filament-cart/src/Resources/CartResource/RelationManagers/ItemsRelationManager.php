@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MasyukAI\FilamentCart\Resources\CartResource\RelationManagers;
 
 use Filament\Actions\CreateAction;
@@ -7,7 +9,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Table;
 use MasyukAI\FilamentCart\Resources\CartItemResource;
 
-class ItemsRelationManager extends RelationManager
+final class ItemsRelationManager extends RelationManager
 {
     protected static string $relationship = 'cartItems';
 

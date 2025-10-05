@@ -30,15 +30,6 @@ final class ConditionFactory extends Factory
         ];
     }
 
-    private function generateValue(): string
-    {
-        return match ($this->faker->randomElement(['percentage', 'fixed_positive', 'fixed_negative'])) {
-            'percentage' => $this->faker->numberBetween(1, 50).'%',
-            'fixed_positive' => '+'.$this->faker->numberBetween(100, 10000),
-            'fixed_negative' => '-'.$this->faker->numberBetween(100, 10000),
-        };
-    }
-
     public function discount(): static
     {
         return $this->state(fn () => [
@@ -97,5 +88,14 @@ final class ConditionFactory extends Factory
     public function withAttributes(array $attributes): static
     {
         return $this->state(fn () => ['attributes' => $attributes]);
+    }
+
+    private function generateValue(): string
+    {
+        return match ($this->faker->randomElement(['percentage', 'fixed_positive', 'fixed_negative'])) {
+            'percentage' => $this->faker->numberBetween(1, 50).'%',
+            'fixed_positive' => '+'.$this->faker->numberBetween(100, 10000),
+            'fixed_negative' => '-'.$this->faker->numberBetween(100, 10000),
+        };
     }
 }

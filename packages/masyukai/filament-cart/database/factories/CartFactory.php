@@ -31,7 +31,7 @@ final class CartFactory extends Factory
             'subtotal' => $subtotal,
             'total' => $subtotal,
             'savings' => 0,
-            'currency' => strtoupper(config('cart.money.default_currency', 'USD')),
+            'currency' => mb_strtoupper(config('cart.money.default_currency', 'USD')),
         ];
     }
 

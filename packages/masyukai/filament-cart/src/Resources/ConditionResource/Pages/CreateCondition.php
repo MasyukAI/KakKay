@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MasyukAI\FilamentCart\Resources\ConditionResource\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
 use MasyukAI\FilamentCart\Resources\ConditionResource;
 
-class CreateCondition extends CreateRecord
+final class CreateCondition extends CreateRecord
 {
     protected static string $resource = ConditionResource::class;
 
