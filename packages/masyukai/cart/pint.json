@@ -2,7 +2,8 @@
     "preset": "laravel",
     "notPath": [
         "packages/core/src/Exceptions/CartException.php",
-        "packages/core/src/Services/CartMigrationService.php"
+        "packages/core/src/Services/CartMigrationService.php",
+        "packages/core/src/CartManager.php"
     ],
     "rules": {
         "array_push": true,

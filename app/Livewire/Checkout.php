@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire;
 
 use Akaunting\Money\Money;
 use App\Data\StateData;
 use App\Services\CheckoutService;
+use Exception;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
@@ -18,7 +21,7 @@ use Livewire\Component;
 use MasyukAI\Cart\Facades\Cart as CartFacade;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
-class Checkout extends Component implements HasSchemas
+final class Checkout extends Component implements HasSchemas
 {
     use InteractsWithSchemas;
 
@@ -80,7 +83,7 @@ class Checkout extends Component implements HasSchemas
             // Initialize form with default values
             $this->form->fill();
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Log error but don't crash - might be in testing environment
             Log::warning('Checkout mount error: '.$e->getMessage());
 
@@ -263,7 +266,7 @@ class Checkout extends Component implements HasSchemas
                     'attributes' => $item->attributes->toArray(),
                 ];
             })->values()->toArray();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Checkout loading error: '.$e->getMessage());
             $this->cartItems = [];
             $this->redirect(route('cart'));
@@ -276,7 +279,7 @@ class Checkout extends Component implements HasSchemas
             $paymentService = app(\App\Services\PaymentService::class);
             $this->availablePaymentMethods = $paymentService->getAvailablePaymentMethods();
             // No need to set default payment methods - let CHIP gateway handle selection
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Failed to load payment methods: '.$e->getMessage());
             // Use fallback payment methods for reference (not used in checkout)
             $this->availablePaymentMethods = [
@@ -331,7 +334,7 @@ class Checkout extends Component implements HasSchemas
     }
 
     #[Computed]
-    public function getSubtotal(): \Akaunting\Money\Money
+    public function getSubtotal(): Money
     {
         return CartFacade::subtotal(); // Return Money object directly for formatting
     }
@@ -343,13 +346,13 @@ class Checkout extends Component implements HasSchemas
     }
 
     #[Computed]
-    public function getTotal(): \Akaunting\Money\Money
+    public function getTotal(): Money
     {
         return CartFacade::total(); // Cart total already includes all conditions (including shipping)
     }
 
     #[Computed]
-    public function getShipping(): \Akaunting\Money\Money
+    public function getShipping(): Money
     {
         // Check if there's a shipping condition applied to the cart
         $shippingCondition = CartFacade::getCondition('shipping');
@@ -357,13 +360,13 @@ class Checkout extends Component implements HasSchemas
         if ($shippingCondition) {
             $currency = config('cart.money.default_currency', 'MYR');
 
-            return \Akaunting\Money\Money::{$currency}((int) $shippingCondition->getValue());
+            return Money::{$currency}((int) $shippingCondition->getValue());
         }
 
         // Return zero if no shipping condition exists
         $currency = config('cart.money.default_currency', 'MYR');
 
-        return \Akaunting\Money\Money::{$currency}(0);
+        return Money::{$currency}(0);
     }
 
     public function applyVoucher(): void
@@ -384,47 +387,6 @@ class Checkout extends Component implements HasSchemas
         }
 
         return $grouped;
-    }
-
-    protected function getPaymentGroupOptions(): array
-    {
-        return collect($this->getPaymentMethodsByGroup())
-            ->mapWithKeys(fn ($methods, $group) => [
-                $group => $this->getGroupDisplayName($group),
-            ])
-            ->toArray();
-    }
-
-    protected function getPaymentMethodOptions(?string $group): array
-    {
-        $group = $group ?: $this->determineDefaultGroup();
-
-        if (! $group) {
-            return [];
-        }
-
-        return collect($this->getPaymentMethodsByGroup()[$group] ?? [])
-            ->mapWithKeys(fn ($method) => [
-                $method['id'] => $method['name'],
-            ])->toArray();
-    }
-
-    protected function determineDefaultGroup(): ?string
-    {
-        return array_key_first($this->getPaymentMethodsByGroup()) ?: null;
-    }
-
-    protected function determineDefaultMethod(?string $group): ?string
-    {
-        $group = $group ?: $this->determineDefaultGroup();
-
-        if (! $group) {
-            return null;
-        }
-
-        $methods = $this->getPaymentMethodsByGroup()[$group] ?? [];
-
-        return $methods[0]['id'] ?? null;
     }
 
     public function getGroupDisplayName(string $group): string
@@ -498,10 +460,10 @@ class Checkout extends Component implements HasSchemas
 
                 // Redirect to CHIP checkout
                 return $this->redirect($result['checkout_url']);
-            } else {
-                session()->flash('error', 'Gagal memproses pembayaran: '.$result['error']);
             }
-        } catch (\Exception $e) {
+            session()->flash('error', 'Gagal memproses pembayaran: '.$result['error']);
+
+        } catch (Exception $e) {
             Log::error('Checkout processing failed', [
                 'error' => $e->getMessage(),
                 'form_data' => $formData ?? [],
@@ -519,5 +481,46 @@ class Checkout extends Component implements HasSchemas
             'showCartChangeWarning' => $this->showCartChangeWarning,
             'activePaymentIntent' => $this->activePaymentIntent,
         ])->layout('components.layouts.app');
+    }
+
+    protected function getPaymentGroupOptions(): array
+    {
+        return collect($this->getPaymentMethodsByGroup())
+            ->mapWithKeys(fn ($methods, $group) => [
+                $group => $this->getGroupDisplayName($group),
+            ])
+            ->toArray();
+    }
+
+    protected function getPaymentMethodOptions(?string $group): array
+    {
+        $group = $group ?: $this->determineDefaultGroup();
+
+        if (! $group) {
+            return [];
+        }
+
+        return collect($this->getPaymentMethodsByGroup()[$group] ?? [])
+            ->mapWithKeys(fn ($method) => [
+                $method['id'] => $method['name'],
+            ])->toArray();
+    }
+
+    protected function determineDefaultGroup(): ?string
+    {
+        return array_key_first($this->getPaymentMethodsByGroup()) ?: null;
+    }
+
+    protected function determineDefaultMethod(?string $group): ?string
+    {
+        $group = $group ?: $this->determineDefaultGroup();
+
+        if (! $group) {
+            return null;
+        }
+
+        $methods = $this->getPaymentMethodsByGroup()[$group] ?? [];
+
+        return $methods[0]['id'] ?? null;
     }
 }

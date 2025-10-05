@@ -7,7 +7,7 @@ namespace MasyukAI\Chip\Exceptions;
 use Exception;
 use Throwable;
 
-class ChipApiException extends Exception
+final class ChipApiException extends Exception
 {
     /**
      * @var array<string, mixed>

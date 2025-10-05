@@ -14,7 +14,7 @@ test('checkout prevents duplicate orders when purchase already exists', function
     Cart::add('1', 'Test Product', 2999, 1);
 
     // Mock the payment gateway to return a purchase (indicating existing purchase)
-    $this->mock(\App\Contracts\PaymentGatewayInterface::class, function ($mock) {
+    $this->mock(App\Contracts\PaymentGatewayInterface::class, function ($mock) {
         $mock->shouldReceive('getPurchaseStatus')
             ->andReturn([
                 'id' => 'existing-purchase-id',
@@ -51,7 +51,7 @@ test('checkout proceeds normally when no existing purchase', function () {
     Cart::add('1', 'Test Product', 2999, 1);
 
     // Mock the payment gateway to return no existing purchase
-    $this->mock(\App\Contracts\PaymentGatewayInterface::class, function ($mock) {
+    $this->mock(App\Contracts\PaymentGatewayInterface::class, function ($mock) {
         $mock->shouldReceive('getAvailablePaymentMethods')
             ->andReturn([
                 [
@@ -95,10 +95,10 @@ test('checkout proceeds normally when no existing purchase', function () {
     // Verify that an order was created since no existing purchase was found
     // Note: Order creation happens after successful payment, not during checkout submission
     // The test should check for payment intent creation instead
-    expect(\App\Models\Order::count())->toBe(0); // Order is not created yet during checkout
+    expect(App\Models\Order::count())->toBe(0); // Order is not created yet during checkout
 
     // Verify payment intent was created in cart metadata
-    $cart = \MasyukAI\Cart\Facades\Cart::getCurrentCart();
+    $cart = Cart::getCurrentCart();
     $paymentIntent = $cart->getMetadata('payment_intent');
     expect($paymentIntent)->not->toBeNull();
     expect($paymentIntent)->toBeArray();

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Providers;
 
 use App\Listeners\HandlePaymentSuccess;
@@ -9,7 +11,7 @@ use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 use MasyukAI\Chip\Events\PurchasePaid;
 
-class AppServiceProvider extends ServiceProvider
+final class AppServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.

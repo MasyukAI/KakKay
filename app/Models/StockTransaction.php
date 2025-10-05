@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -7,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class StockTransaction extends Model
+final class StockTransaction extends Model
 {
     use HasFactory, HasUuids;
 
@@ -21,14 +23,6 @@ class StockTransaction extends Model
         'note',
         'transaction_date',
     ];
-
-    protected function casts(): array
-    {
-        return [
-            'transaction_date' => 'datetime',
-            'quantity' => 'integer',
-        ];
-    }
 
     public function product(): BelongsTo
     {
@@ -90,5 +84,13 @@ class StockTransaction extends Model
     public function isAdjustment(): bool
     {
         return $this->reason === 'adjustment';
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'transaction_date' => 'datetime',
+            'quantity' => 'integer',
+        ];
     }
 }

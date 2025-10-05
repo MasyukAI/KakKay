@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\Payment;
 use App\Services\CheckoutService;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
@@ -12,7 +15,7 @@ use MasyukAI\Chip\Events\PurchaseCreated;
 use MasyukAI\Chip\Events\PurchasePaid;
 use MasyukAI\Chip\Services\WebhookService;
 
-class ChipWebhookController extends Controller
+final class ChipWebhookController extends Controller
 {
     public function __construct(
         protected WebhookService $webhookService,
@@ -68,7 +71,7 @@ class ChipWebhookController extends Controller
             }
 
             return response('OK', 200);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('CHIP webhook processing failed', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),

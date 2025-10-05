@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\Cart;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use MasyukAI\Cart\Facades\Cart as CartFacade;
@@ -23,7 +25,7 @@ test('cart model can be instantiated', function () {
     expect($cart->instance)->toBe('default');
     // Items count should be 1 (one unique item with quantity 2)
     expect($cart->items_count)->toBeGreaterThanOrEqual(1); // At least 1 item
-    expect($cart->total_quantity)->toBeGreaterThanOrEqual(2); // At least 2 quantity
+    expect($cart->quantity)->toBeGreaterThanOrEqual(2); // At least 2 quantity
     expect($cart->subtotal)->toBeGreaterThan(0);
     expect($cart->isEmpty())->toBeFalse();
 });
@@ -53,8 +55,17 @@ test('cart model scopes work correctly', function () {
         ->first();
 
     expect($cart)->not->toBeNull();
-    expect(method_exists($cart, 'scopeInstance'))->toBeTrue();
-    expect(method_exists($cart, 'scopeByIdentifier'))->toBeTrue();
-    expect(method_exists($cart, 'scopeNotEmpty'))->toBeTrue();
-    expect(method_exists($cart, 'scopeRecent'))->toBeTrue();
+
+    // Test that scopes work on the query builder
+    $scopedCart = Cart::instance('default')->byIdentifier(CartFacade::getIdentifier())->first();
+    expect($scopedCart)->not->toBeNull();
+    expect($scopedCart->id)->toBe($cart->id);
+
+    // Test notEmpty scope
+    $notEmptyCarts = Cart::notEmpty()->get();
+    expect($notEmptyCarts)->toHaveCount(1);
+
+    // Test recent scope
+    $recentCarts = Cart::recent(1)->get();
+    expect($recentCarts)->toHaveCount(1);
 });

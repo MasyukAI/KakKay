@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire;
 
 use Livewire\Attributes\On;
 use Livewire\Component;
 use MasyukAI\Cart\Facades\Cart as CartFacade;
 
-class CartCounter extends Component
+final class CartCounter extends Component
 {
     public int $count = 0;
 

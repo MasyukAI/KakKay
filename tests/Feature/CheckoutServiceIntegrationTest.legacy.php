@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\User;
@@ -37,7 +39,7 @@ test('checkout service creates order with optimized code generation', function (
     ];
 
     // Mock the payment gateway to return success
-    $paymentGateway = mock(\App\Contracts\PaymentGatewayInterface::class);
+    $paymentGateway = mock(App\Contracts\PaymentGatewayInterface::class);
     $paymentGateway->shouldReceive('createPurchase')
         ->once()
         ->andReturn([
@@ -48,7 +50,7 @@ test('checkout service creates order with optimized code generation', function (
         ]);
 
     // Create PaymentService with mocked gateway
-    $paymentService = new \App\Services\PaymentService($paymentGateway, app(\App\Services\CodeGeneratorService::class));
+    $paymentService = new App\Services\PaymentService($paymentGateway, app(App\Services\CodeGeneratorService::class));
     // Create checkout service with mocked PaymentService
     $checkoutService = new CheckoutService(null, null, null, $paymentService);
 
@@ -110,7 +112,7 @@ test('checkout service handles duplicate order number gracefully', function () {
     ];
 
     // Mock payment gateway
-    $paymentGateway = mock(\App\Contracts\PaymentGatewayInterface::class);
+    $paymentGateway = mock(App\Contracts\PaymentGatewayInterface::class);
     $paymentGateway->shouldReceive('createPurchase')
         ->times(5)
         ->andReturn([
@@ -120,7 +122,7 @@ test('checkout service handles duplicate order number gracefully', function () {
             'gateway_response' => ['status' => 'created'],
         ]);
 
-    $paymentService = new \App\Services\PaymentService($paymentGateway, app(\App\Services\CodeGeneratorService::class));
+    $paymentService = new App\Services\PaymentService($paymentGateway, app(App\Services\CodeGeneratorService::class));
     $checkoutService = new CheckoutService(null, null, null, $paymentService);
 
     // Create multiple orders and ensure they all get unique numbers
@@ -171,7 +173,7 @@ test('checkout service performance is optimized', function () {
     ];
 
     // Mock payment gateway
-    $paymentGateway = mock(\App\Contracts\PaymentGatewayInterface::class);
+    $paymentGateway = mock(App\Contracts\PaymentGatewayInterface::class);
     $paymentGateway->shouldReceive('createPurchase')
         ->once()
         ->andReturn([
@@ -181,7 +183,7 @@ test('checkout service performance is optimized', function () {
             'gateway_response' => ['status' => 'created'],
         ]);
 
-    $paymentService = new \App\Services\PaymentService($paymentGateway, app(\App\Services\CodeGeneratorService::class));
+    $paymentService = new App\Services\PaymentService($paymentGateway, app(App\Services\CodeGeneratorService::class));
     $checkoutService = new CheckoutService(null, null, null, $paymentService);
 
     // Measure query count (approximate)

@@ -30,7 +30,7 @@ use Throwable;
  * @property int $savings
  * @property string $currency
  */
-final class Cart extends Model
+class Cart extends Model
 {
     /** @use HasFactory<\MasyukAI\FilamentCart\Database\Factories\CartFactory> */
     use HasFactory;

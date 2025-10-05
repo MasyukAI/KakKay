@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Livewire\Cart;
 use App\Models\Category;
 use App\Models\Product;
@@ -19,7 +21,7 @@ beforeEach(function () {
     app()->forgetInstance('cart.transformer');
 
     // Seed a global shipping condition for tests
-    \MasyukAI\FilamentCart\Models\Condition::factory()
+    MasyukAI\FilamentCart\Models\Condition::factory()
         ->shipping()
         ->active()
         ->state([

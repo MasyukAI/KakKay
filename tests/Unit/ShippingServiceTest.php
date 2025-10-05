@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Services\ShippingService;
 
 it('can calculate shipping cost by method', function () {

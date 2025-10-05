@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\Pages\Schemas;
 
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
-class PageForm
+final class PageForm
 {
     public static function configure(Schema $schema): Schema
     {
@@ -30,7 +32,7 @@ class PageForm
                         if ($state) {
                             $set('slug', \Illuminate\Support\Str::slug($state));
                         }
-                    })
+                    }),
                 // Toggle::make('is_published')
                 //     ->label('Published')
                 //     ->helperText('Published pages are visible to visitors.')

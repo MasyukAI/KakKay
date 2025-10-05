@@ -8,7 +8,7 @@ use InvalidArgumentException;
 use MasyukAI\Chip\DataObjects\Purchase;
 use MasyukAI\Chip\Exceptions\ChipValidationException;
 
-class SubscriptionService
+final class SubscriptionService
 {
     public function __construct(
         private ChipCollectService $chipService

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\StockTransactions\Schemas;
 
 use Filament\Forms\Components\DateTimePicker;
@@ -10,7 +12,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
 
-class StockTransactionForm
+final class StockTransactionForm
 {
     public static function configure(Schema $schema): Schema
     {

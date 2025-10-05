@@ -1,7 +1,10 @@
 {
     "preset": "laravel",
     "notPath": [
-
+        "packages/*",
+        "app/Services/CodeGeneratorService.php",
+        "app/Services/StockService.php",
+        "app/Models/Payment.php"
     ],
     "rules": {
         "array_push": true,

@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Providers;
 
 use App\Contracts\PaymentGatewayInterface;
 use App\Services\ChipPaymentGateway;
 use Illuminate\Support\ServiceProvider;
 
-class PaymentServiceProvider extends ServiceProvider
+final class PaymentServiceProvider extends ServiceProvider
 {
     /**
      * Register services.

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\Orders\RelationManagers;
 
 use App\Filament\Resources\Orders\OrderResource;
@@ -12,7 +14,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class OrderItemsRelationManager extends RelationManager
+final class OrderItemsRelationManager extends RelationManager
 {
     protected static string $relationship = 'orderItems';
 

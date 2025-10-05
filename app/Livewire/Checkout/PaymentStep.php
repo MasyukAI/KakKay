@@ -1,14 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Checkout;
 
-use Livewire\Component;
-use Livewire\Attributes\Validate;
-use App\Models\Order;
-use App\Models\Payment;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Validate;
+use Livewire\Component;
 
-class PaymentStep extends Component
+final class PaymentStep extends Component
 {
     public array $checkoutData;
 
@@ -45,7 +45,7 @@ class PaymentStep extends Component
     public function mount(array $checkoutData = []): void
     {
         $this->checkoutData = $checkoutData;
-        
+
         // Pre-fill with user data if available
         if (Auth::check()) {
             $user = Auth::user();
@@ -56,7 +56,7 @@ class PaymentStep extends Component
 
     public function applyVoucher(): void
     {
-        if (!empty($this->voucherCode)) {
+        if (! empty($this->voucherCode)) {
             // Validate voucher code logic here
             session()->flash('success', "Voucher '{$this->voucherCode}' applied successfully!");
             $this->voucherCode = '';
@@ -92,7 +92,7 @@ class PaymentStep extends Component
 
     public function getDeliveryFee(): int
     {
-        return match($this->deliveryMethod) {
+        return match ($this->deliveryMethod) {
             'dhl' => 1500, // RM 15
             'fedex' => 0, // Free
             'express' => 4900, // RM 49
@@ -102,7 +102,7 @@ class PaymentStep extends Component
 
     public function getPaymentFee(): int
     {
-        return match($this->paymentMethod) {
+        return match ($this->paymentMethod) {
             'pay-on-delivery' => 1500, // RM 15
             default => 0
         };
@@ -120,10 +120,10 @@ class PaymentStep extends Component
 
     public function getTotal(): int
     {
-        return $this->getSubtotal() 
-            - $this->getSavings() 
-            + $this->getDeliveryFee() 
-            + $this->getPaymentFee() 
+        return $this->getSubtotal()
+            - $this->getSavings()
+            + $this->getDeliveryFee()
+            + $this->getPaymentFee()
             + $this->getTax();
     }
 
@@ -134,7 +134,7 @@ class PaymentStep extends Component
 
     public function formatPrice(int $cents): string
     {
-        return 'RM ' . number_format($cents / 100, 2);
+        return 'RM '.number_format($cents / 100, 2);
     }
 
     public function render()

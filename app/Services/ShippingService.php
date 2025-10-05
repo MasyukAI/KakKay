@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
-class ShippingService
+final class ShippingService
 {
     /**
      * Calculate shipping cost based on delivery method
@@ -82,7 +84,7 @@ class ShippingService
             $extraWeight = $totalWeight - 2000;
             $weightSurcharge = ceil($extraWeight / 1000) * 500; // RM5 per extra kg
 
-            return $baseShipping + $weightSurcharge;
+            return (int) ($baseShipping + $weightSurcharge);
         }
 
         return $baseShipping;

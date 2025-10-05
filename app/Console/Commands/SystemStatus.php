@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
-use App\Models\StockTransaction;
-use App\Models\Product;
 use App\Models\Order;
 use App\Models\Payment;
+use App\Models\Product;
+use App\Models\StockTransaction;
 use App\Services\StockService;
 use Illuminate\Console\Command;
 
-class SystemStatus extends Command
+final class SystemStatus extends Command
 {
     /**
      * The name and signature of the console command.
@@ -35,16 +37,16 @@ class SystemStatus extends Command
 
         // Database Stats
         $this->info('📊 DATABASE STATISTICS');
-        $this->line("   Products: " . Product::count());
-        $this->line("   Orders: " . Order::count());
-        $this->line("   Payments: " . Payment::count());
-        $this->line("   Stock Transactions: " . StockTransaction::count());
+        $this->line('   Products: '.Product::count());
+        $this->line('   Orders: '.Order::count());
+        $this->line('   Payments: '.Payment::count());
+        $this->line('   Stock Transactions: '.StockTransaction::count());
         $this->newLine();
 
         // Stock Management Status
         $this->info('📦 STOCK MANAGEMENT SYSTEM');
         $stockService = app(StockService::class);
-        
+
         $products = Product::where('is_active', true)->take(5)->get();
         foreach ($products as $product) {
             $currentStock = $stockService->getCurrentStock($product);
@@ -58,10 +60,10 @@ class SystemStatus extends Command
             ->latest()
             ->take(3)
             ->get();
-            
+
         foreach ($recentTransactions as $transaction) {
             $this->line(sprintf(
-                "   • %s: %s%d units (%s) - %s",
+                '   • %s: %s%d units (%s) - %s',
                 $transaction->product->name,
                 $transaction->type === 'in' ? '+' : '-',
                 $transaction->quantity,
@@ -97,7 +99,7 @@ class SystemStatus extends Command
         $this->newLine();
 
         $this->comment('💡 All systems operational and ready for production!');
-        
+
         return Command::SUCCESS;
     }
 }

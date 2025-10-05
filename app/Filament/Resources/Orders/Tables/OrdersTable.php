@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\Orders\Tables;
 
 use Akaunting\Money\Money;
@@ -10,7 +12,7 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class OrdersTable
+final class OrdersTable
 {
     public static function configure(Table $table): Table
     {
@@ -34,7 +36,7 @@ class OrdersTable
                             return $record->orderItems->sum('quantity');
                         }
                         // Fallback to cart_items JSON data
-                        elseif (! empty($record->cart_items)) {
+                        if (! empty($record->cart_items)) {
                             return collect($record->cart_items)->sum('quantity');
                         }
 

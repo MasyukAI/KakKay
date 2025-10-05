@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire;
 
 use App\Models\Product;
@@ -8,7 +10,7 @@ use Livewire\Component;
 use MasyukAI\Cart\Facades\Cart as CartFacade;
 
 #[Layout('components.layouts.home')]
-class Home extends Component
+final class Home extends Component
 {
     public function render()
     {

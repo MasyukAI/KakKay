@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
 use App\Models\District;
 use Illuminate\Console\Command;
 
-class ShowDistrictsCommand extends Command
+final class ShowDistrictsCommand extends Command
 {
     /**
      * The name and signature of the console command.
@@ -32,12 +34,13 @@ class ShowDistrictsCommand extends Command
             $this->info("Districts for state ID: {$stateId}");
             $districts = District::getByState($stateId);
         } else {
-            $this->info("All districts:");
+            $this->info('All districts:');
             $districts = District::orderBy('name')->get();
         }
 
         if ($districts->isEmpty()) {
             $this->warn('No districts found.');
+
             return;
         }
 

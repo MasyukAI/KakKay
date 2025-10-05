@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -7,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-class Address extends Model
+final class Address extends Model
 {
     use HasFactory, HasUuids;
 
@@ -30,6 +32,36 @@ class Address extends Model
     protected $casts = [
         'is_primary' => 'boolean',
     ];
+
+    /**
+     * Create or update address for an addressable model
+     */
+    public static function createOrUpdateFor($addressable, array $data, ?string $type = 'billing'): self
+    {
+        $query = $addressable->addresses();
+
+        if ($type !== null) {
+            $query = $query->where('type', $type);
+        }
+
+        $address = $query->first();
+
+        if ($address) {
+            $address->update($data);
+        } else {
+            $addressData = array_merge($data, [
+                'is_primary' => $addressable->addresses()->count() === 0,
+            ]);
+
+            if ($type !== null) {
+                $addressData['type'] = $type;
+            }
+
+            $address = $addressable->addresses()->create($addressData);
+        }
+
+        return $address;
+    }
 
     /**
      * Get the addressable model (User, Order, etc.)
@@ -89,36 +121,6 @@ class Address extends Model
 
         if ($this->name) {
             $address = $this->name."\n".$address;
-        }
-
-        return $address;
-    }
-
-    /**
-     * Create or update address for an addressable model
-     */
-    public static function createOrUpdateFor($addressable, array $data, ?string $type = 'billing'): self
-    {
-        $query = $addressable->addresses();
-
-        if ($type !== null) {
-            $query = $query->where('type', $type);
-        }
-
-        $address = $query->first();
-
-        if ($address) {
-            $address->update($data);
-        } else {
-            $addressData = array_merge($data, [
-                'is_primary' => $addressable->addresses()->count() === 0,
-            ]);
-
-            if ($type !== null) {
-                $addressData['type'] = $type;
-            }
-
-            $address = $addressable->addresses()->create($addressData);
         }
 
         return $address;

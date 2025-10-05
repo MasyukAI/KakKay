@@ -12,7 +12,7 @@ use Throwable;
 /**
  * Cart Manager handles global instance switching for the Cart facade
  */
-final class CartManager
+class CartManager
 {
     private Cart $currentCart;
 

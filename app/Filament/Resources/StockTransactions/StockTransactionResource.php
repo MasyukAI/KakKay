@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\StockTransactions;
 
 use App\Filament\Resources\StockTransactions\Pages\CreateStockTransaction;
@@ -14,7 +16,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class StockTransactionResource extends Resource
+final class StockTransactionResource extends Resource
 {
     protected static ?string $model = StockTransaction::class;
 

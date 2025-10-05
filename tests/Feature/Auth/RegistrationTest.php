@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 use Livewire\Volt\Volt;
 
-uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 test('registration screen can be rendered', function () {
     $response = $this->get('/register');
@@ -14,7 +16,7 @@ test('new users can register', function () {
     // Set a dummy cart migration cache value to avoid null sessionId error
     $dummySessionId = 'dummy-session-id-123';
     $dummyEmail = 'test@example.com';
-    \Illuminate\Support\Facades\Cache::put("cart_migration_{$dummyEmail}", $dummySessionId);
+    Illuminate\Support\Facades\Cache::put("cart_migration_{$dummyEmail}", $dummySessionId);
 
     $response = Volt::test('auth.register')
         ->set('name', 'Test User')

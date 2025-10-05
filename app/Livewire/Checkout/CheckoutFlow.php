@@ -1,15 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Checkout;
 
-use Livewire\Component;
 use Livewire\Attributes\On;
+use Livewire\Component;
 
-class CheckoutFlow extends Component
+final class CheckoutFlow extends Component
 {
     public int $currentStep = 1;
+
     public array $checkoutData = [];
-    
+
     public function mount(): void
     {
         $this->checkoutData = [
@@ -25,7 +28,7 @@ class CheckoutFlow extends Component
     {
         // Store step data
         $this->updateStepData($stepData);
-        
+
         if ($this->currentStep < 3) {
             $this->currentStep++;
         }
@@ -50,7 +53,7 @@ class CheckoutFlow extends Component
     #[On('update-step-data')]
     public function updateStepData(array $data): void
     {
-        $stepKey = match($this->currentStep) {
+        $stepKey = match ($this->currentStep) {
             1 => 'cart',
             2 => 'payment',
             3 => 'order',
@@ -65,7 +68,7 @@ class CheckoutFlow extends Component
 
     public function getStepTitle(): string
     {
-        return match($this->currentStep) {
+        return match ($this->currentStep) {
             1 => 'Shopping Cart',
             2 => 'Payment & Delivery',
             3 => 'Order Summary',

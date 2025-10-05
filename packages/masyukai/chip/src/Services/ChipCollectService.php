@@ -15,7 +15,7 @@ use MasyukAI\Chip\Services\Collect\ClientsApi;
 use MasyukAI\Chip\Services\Collect\PurchasesApi;
 use MasyukAI\Chip\Services\Collect\WebhooksApi;
 
-class ChipCollectService
+final class ChipCollectService
 {
     private PurchasesApi $purchases;
 

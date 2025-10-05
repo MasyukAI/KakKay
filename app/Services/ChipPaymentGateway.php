@@ -1,17 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Contracts\PaymentGatewayInterface;
 use App\Models\Product;
+use Exception;
 use Illuminate\Support\Facades\Log;
 use MasyukAI\Chip\DataObjects\ClientDetails;
 use MasyukAI\Chip\DataObjects\Product as ChipProduct;
 use MasyukAI\Chip\Services\ChipCollectService;
 
-class ChipPaymentGateway implements PaymentGatewayInterface
+final class ChipPaymentGateway implements PaymentGatewayInterface
 {
-    protected ChipCollectService $chipService;
+    private ChipCollectService $chipService;
 
     public function __construct(?ChipCollectService $chipService = null)
     {
@@ -60,7 +63,7 @@ class ChipPaymentGateway implements PaymentGatewayInterface
                 'checkout_url' => $purchase->checkout_url,
                 'gateway_response' => $purchase->toArray(),
             ];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('CHIP payment creation failed', [
                 'error' => $e->getMessage(),
                 'customer_data' => $customerData,
@@ -98,7 +101,7 @@ class ChipPaymentGateway implements PaymentGatewayInterface
                     ];
                 })
                 ->toArray();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Failed to load CHIP payment methods', [
                 'error' => $e->getMessage(),
             ]);
@@ -145,7 +148,7 @@ class ChipPaymentGateway implements PaymentGatewayInterface
                 'created_at' => $purchase->created_at,
                 'updated_at' => $purchase->updated_at,
             ];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Failed to get CHIP purchase status', [
                 'purchase_id' => $purchaseId,
                 'error' => $e->getMessage(),
@@ -161,7 +164,7 @@ class ChipPaymentGateway implements PaymentGatewayInterface
      * @param  array  $items  Cart items
      * @return array CHIP product objects
      */
-    protected function convertToChipProducts(array $items): array
+    private function convertToChipProducts(array $items): array
     {
         $chipProducts = [];
 
@@ -200,7 +203,7 @@ class ChipPaymentGateway implements PaymentGatewayInterface
      * @param  array  $customerData  Customer details
      * @return ClientDetails CHIP client details object
      */
-    protected function createClientDetails(array $customerData): ClientDetails
+    private function createClientDetails(array $customerData): ClientDetails
     {
         return ClientDetails::fromArray([
             'full_name' => $customerData['name'],
@@ -234,7 +237,7 @@ class ChipPaymentGateway implements PaymentGatewayInterface
      * @param  string  $methodId  Payment method ID
      * @return string Description
      */
-    protected function getPaymentMethodDescription(string $methodId): string
+    private function getPaymentMethodDescription(string $methodId): string
     {
         $descriptions = [
             'fpx_b2c' => 'Bayar dengan Internet Banking Malaysia',
@@ -259,7 +262,7 @@ class ChipPaymentGateway implements PaymentGatewayInterface
      * @param  string  $methodId  Payment method ID
      * @return string Icon name
      */
-    protected function mapPaymentMethodToIcon(string $methodId): string
+    private function mapPaymentMethodToIcon(string $methodId): string
     {
         $iconMap = [
             'fpx_b2c' => 'building-office',
@@ -283,7 +286,7 @@ class ChipPaymentGateway implements PaymentGatewayInterface
      * @param  string  $methodId  Payment method ID
      * @return string Group name
      */
-    protected function getPaymentMethodGroup(string $methodId): string
+    private function getPaymentMethodGroup(string $methodId): string
     {
         $bankingMethods = ['fpx_b2c', 'fpx_b2b', 'fpx_m2e'];
         $cardMethods = ['visa', 'mastercard', 'amex', 'unionpay'];
@@ -293,13 +296,17 @@ class ChipPaymentGateway implements PaymentGatewayInterface
 
         if (in_array($methodId, $bankingMethods)) {
             return 'banking';
-        } elseif (in_array($methodId, $cardMethods)) {
+        }
+        if (in_array($methodId, $cardMethods)) {
             return 'card';
-        } elseif (in_array($methodId, $ewalletMethods)) {
+        }
+        if (in_array($methodId, $ewalletMethods)) {
             return 'ewallet';
-        } elseif (in_array($methodId, $qrMethods)) {
+        }
+        if (in_array($methodId, $qrMethods)) {
             return 'qr';
-        } elseif (in_array($methodId, $bnplMethods)) {
+        }
+        if (in_array($methodId, $bnplMethods)) {
             return 'bnpl';
         }
 

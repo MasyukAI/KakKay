@@ -1,14 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Data\DistrictData;
 use Illuminate\Database\Eloquent\Model;
 use Sushi\Sushi;
 
-class District extends Model
+final class District extends Model
 {
     use Sushi;
+
+    /**
+     * Indicates if the model's ID is auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
 
     /**
      * The attributes that are mass assignable.
@@ -39,18 +48,30 @@ class District extends Model
     protected $primaryKey = 'id';
 
     /**
-     * Indicates if the model's ID is auto-incrementing.
-     *
-     * @var bool
-     */
-    public $incrementing = false;
-
-    /**
      * The data type of the auto-incrementing ID.
      *
      * @var string
      */
     protected $keyType = 'string';
+
+    /**
+     * Get districts by state name.
+     */
+    public static function getByState(string $state): \Illuminate\Database\Eloquent\Collection
+    {
+        return self::forState($state)->orderBy('name')->get();
+    }
+
+    /**
+     * Get districts options for a specific state (for select dropdowns).
+     */
+    public static function getByStateOptions(string $state): array
+    {
+        return self::forState($state)
+            ->orderBy('name')
+            ->pluck('name', 'name')
+            ->toArray();
+    }
 
     /**
      * Get the district data for Sushi.
@@ -79,24 +100,5 @@ class District extends Model
     public function scopeForState($query, string $state)
     {
         return $query->where('state', $state);
-    }
-
-    /**
-     * Get districts by state name.
-     */
-    public static function getByState(string $state): \Illuminate\Database\Eloquent\Collection
-    {
-        return static::forState($state)->orderBy('name')->get();
-    }
-
-    /**
-     * Get districts options for a specific state (for select dropdowns).
-     */
-    public static function getByStateOptions(string $state): array
-    {
-        return static::forState($state)
-            ->orderBy('name')
-            ->pluck('name', 'name')
-            ->toArray();
     }
 }

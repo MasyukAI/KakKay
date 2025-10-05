@@ -8,7 +8,7 @@ use MasyukAI\Chip\Clients\ChipSendClient;
 use MasyukAI\Chip\DataObjects\BankAccount;
 use MasyukAI\Chip\DataObjects\SendInstruction;
 
-class ChipSendService
+final class ChipSendService
 {
     public function __construct(
         private ChipSendClient $client

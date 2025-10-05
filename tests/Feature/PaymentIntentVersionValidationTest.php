@@ -11,7 +11,7 @@ uses(RefreshDatabase::class);
 
 beforeEach(function () {
     // Mock the payment gateway
-    $this->mock(\App\Contracts\PaymentGatewayInterface::class, function ($mock) {
+    $this->mock(App\Contracts\PaymentGatewayInterface::class, function ($mock) {
         $mock->shouldReceive('createPurchase')
             ->andReturn([
                 'success' => true,
@@ -20,6 +20,32 @@ beforeEach(function () {
                 'gateway_response' => ['test' => 'response'],
             ]);
     });
+
+    // Register cart sync event listeners (mimic FilamentCartServiceProvider)
+    Illuminate\Support\Facades\Event::listen(
+        MasyukAI\Cart\Events\CartCreated::class,
+        MasyukAI\FilamentCart\Listeners\SyncCompleteCart::class
+    );
+    Illuminate\Support\Facades\Event::listen(
+        MasyukAI\Cart\Events\CartUpdated::class,
+        MasyukAI\FilamentCart\Listeners\SyncCompleteCart::class
+    );
+    Illuminate\Support\Facades\Event::listen(
+        MasyukAI\Cart\Events\CartCleared::class,
+        MasyukAI\FilamentCart\Listeners\SyncCartOnClear::class
+    );
+    Illuminate\Support\Facades\Event::listen(
+        MasyukAI\Cart\Events\ItemAdded::class,
+        MasyukAI\FilamentCart\Listeners\SyncCartItemOnAdd::class
+    );
+    Illuminate\Support\Facades\Event::listen(
+        MasyukAI\Cart\Events\ItemUpdated::class,
+        MasyukAI\FilamentCart\Listeners\SyncCartItemOnUpdate::class
+    );
+    Illuminate\Support\Facades\Event::listen(
+        MasyukAI\Cart\Events\ItemRemoved::class,
+        MasyukAI\FilamentCart\Listeners\SyncCartItemOnRemove::class
+    );
 });
 
 test('payment intent stores correct cart version that matches database version', function () {

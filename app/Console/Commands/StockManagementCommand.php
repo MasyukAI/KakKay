@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
 use App\Models\Product;
@@ -7,7 +9,7 @@ use App\Models\User;
 use App\Services\StockService;
 use Illuminate\Console\Command;
 
-class StockManagementCommand extends Command
+final class StockManagementCommand extends Command
 {
     /**
      * The name and signature of the console command.
@@ -114,7 +116,7 @@ class StockManagementCommand extends Command
             $history->map(function ($transaction) {
                 return [
                     $transaction->transaction_date->format('Y-m-d H:i'),
-                    strtoupper($transaction->type),
+                    mb_strtoupper($transaction->type),
                     $transaction->quantity,
                     $transaction->reason,
                     $transaction->note,

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Livewire\Checkout;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -12,7 +14,7 @@ test('checkout component class exists', function () {
 test('checkout component implements required interfaces', function () {
     $reflection = new ReflectionClass(Checkout::class);
 
-    expect($reflection->implementsInterface(\Filament\Schemas\Contracts\HasSchemas::class))->toBeTrue();
+    expect($reflection->implementsInterface(Filament\Schemas\Contracts\HasSchemas::class))->toBeTrue();
 });
 
 test('checkout component has required methods', function () {

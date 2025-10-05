@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -11,7 +13,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 
-class User extends Authenticatable
+final class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, HasUuids, Notifiable;
@@ -40,17 +42,15 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
+     * Create a guest user
      */
-    protected function casts(): array
+    public static function createGuest(array $data = []): self
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'is_guest' => 'boolean',
-        ];
+        return self::create(array_merge([
+            'is_guest' => true,
+            'guest_token' => Str::random(32),
+            'password' => bcrypt(Str::random(20)), // Random password for security
+        ], $data));
     }
 
     /**
@@ -120,18 +120,6 @@ class User extends Authenticatable
     }
 
     /**
-     * Create a guest user
-     */
-    public static function createGuest(array $data = []): self
-    {
-        return static::create(array_merge([
-            'is_guest' => true,
-            'guest_token' => Str::random(32),
-            'password' => bcrypt(Str::random(20)), // Random password for security
-        ], $data));
-    }
-
-    /**
      * Convert guest to registered user
      */
     public function convertToRegistered(string $password): bool
@@ -158,5 +146,19 @@ class User extends Authenticatable
     public function isRegistered(): bool
     {
         return ! $this->is_guest;
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+            'is_guest' => 'boolean',
+        ];
     }
 }

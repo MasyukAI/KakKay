@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\Page;
 
-class PageController extends Controller
+final class PageController extends Controller
 {
     /**
      * Display the specified page by slug.

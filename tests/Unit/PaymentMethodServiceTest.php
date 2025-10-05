@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Services\PaymentMethodService;
 
 it('can get available payment methods', function () {

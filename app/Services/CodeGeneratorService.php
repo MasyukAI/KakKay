@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Shipment;
+use Exception;
 use Illuminate\Database\QueryException;
 
 class CodeGeneratorService
@@ -14,7 +17,7 @@ class CodeGeneratorService
      */
     public static function generateOrderCode(): string
     {
-        return 'ORD'.now()->format('y').'-'.strtoupper(substr(uniqid(), -6));
+        return 'ORD'.now()->format('y').'-'.mb_strtoupper(mb_substr(uniqid(), -6));
     }
 
     /**
@@ -27,7 +30,7 @@ class CodeGeneratorService
         $retries = 0;
 
         do {
-            $code = static::generateOrderCode();
+            $code = self::generateOrderCode();
 
             try {
                 // Quick check - only if we've had collisions
@@ -38,12 +41,12 @@ class CodeGeneratorService
                 return $code;
             } catch (QueryException $e) {
                 if (++$retries >= $maxRetries) {
-                    throw new \Exception("Unable to generate unique order code after {$maxRetries} attempts");
+                    throw new Exception("Unable to generate unique order code after {$maxRetries} attempts");
                 }
             }
         } while ($retries < $maxRetries);
 
-        throw new \Exception('Unable to generate unique order code');
+        throw new Exception('Unable to generate unique order code');
     }
 
     /**
@@ -51,7 +54,7 @@ class CodeGeneratorService
      */
     public static function generateInvoiceCode(): string
     {
-        return 'INV'.now()->format('y').'-'.strtoupper(substr(uniqid(), -6));
+        return 'INV'.now()->format('y').'-'.mb_strtoupper(mb_substr(uniqid(), -6));
     }
 
     /**
@@ -59,7 +62,7 @@ class CodeGeneratorService
      */
     public static function generatePaymentCode(): string
     {
-        return 'PMT'.now()->format('y').'-'.strtoupper(substr(uniqid(), -6));
+        return 'PMT'.now()->format('y').'-'.mb_strtoupper(mb_substr(uniqid(), -6));
     }
 
     /**
@@ -67,7 +70,7 @@ class CodeGeneratorService
      */
     public static function generateRefundCode(): string
     {
-        return 'RFD'.now()->format('y').'-'.strtoupper(substr(uniqid(), -6));
+        return 'RFD'.now()->format('y').'-'.mb_strtoupper(mb_substr(uniqid(), -6));
     }
 
     /**
@@ -75,7 +78,7 @@ class CodeGeneratorService
      */
     public static function generateShipmentCode(): string
     {
-        return 'SHP'.now()->format('y').'-'.strtoupper(substr(uniqid(), -6));
+        return 'SHP'.now()->format('y').'-'.mb_strtoupper(mb_substr(uniqid(), -6));
     }
 
     /**
@@ -84,7 +87,7 @@ class CodeGeneratorService
      */
     public static function generateCode(string $prefix): string
     {
-        return strtoupper($prefix).now()->format('y').'-'.strtoupper(substr(uniqid(), -6));
+        return mb_strtoupper($prefix).now()->format('y').'-'.mb_strtoupper(mb_substr(uniqid(), -6));
     }
 
     /**
@@ -100,7 +103,7 @@ class CodeGeneratorService
         }
 
         // If prefix is provided, check it matches
-        if ($prefix && ! str_starts_with($code, strtoupper($prefix))) {
+        if ($prefix && ! str_starts_with($code, mb_strtoupper($prefix))) {
             return false;
         }
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -9,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Product extends Model implements HasMedia
+final class Product extends Model implements HasMedia
 {
     use HasFactory, HasUuids, InteractsWithMedia;
 
@@ -65,7 +67,6 @@ class Product extends Model implements HasMedia
     // {
     //     return $this->price / 100;
     // }
-
 
     public function primaryImage()
     {

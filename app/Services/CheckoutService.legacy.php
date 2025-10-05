@@ -1,20 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Models\Address;
 use App\Models\User;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use MasyukAI\Cart\Facades\Cart;
 
-class CheckoutService
+final class CheckoutService
 {
-    protected ShippingService $shippingService;
+    private ShippingService $shippingService;
 
-    protected OrderService $orderService;
+    private OrderService $orderService;
 
-    protected PaymentService $paymentService;
+    private PaymentService $paymentService;
 
     public function __construct(
         ?PaymentMethodService $paymentMethodService = null,
@@ -70,7 +73,7 @@ class CheckoutService
                     'checkout_url' => $gatewayResult['checkout_url'],
                 ];
             });
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Payment creation failed', [
                 'error' => $e->getMessage(),
                 'customer_data' => $customerData,
@@ -81,50 +84,6 @@ class CheckoutService
                 'error' => $e->getMessage(),
             ];
         }
-    }
-
-    /**
-     * Create or find user record (guest or registered)
-     */
-    protected function createOrFindUser(array $customerData): User
-    {
-        // First try to find existing user by email
-        $user = User::where('email', $customerData['email'])->first();
-
-        if (! $user) {
-            // Create new guest user
-            $user = User::create([
-                'name' => $customerData['name'] ?? null,
-                'email' => $customerData['email'],
-                'phone' => $customerData['phone'] ?? null,
-                'is_guest' => true,
-                'password' => null, // Guest users don't have passwords
-            ]);
-        }
-
-        return $user;
-    }
-
-    /**
-     * Create address record
-     */
-    protected function createAddress(User $user, array $customerData): Address
-    {
-        return Address::create([
-            'addressable_type' => User::class,
-            'addressable_id' => $user->id,
-            'name' => $customerData['name'] ?? '',
-            'company' => $customerData['company'] ?? null,
-            'street1' => $customerData['street1'] ?? '',
-            'street2' => $customerData['street2'] ?? null,
-            'city' => $customerData['city'] ?? '',
-            'state' => $customerData['state'] ?? '',
-            'postcode' => $customerData['postcode'] ?? '',
-            'country' => $customerData['country'] ?? 'Malaysia',
-            'phone' => $customerData['phone'] ?? null,
-            'type' => $customerData['address_type'] ?? 'shipping',
-            'is_primary' => true,
-        ]);
     }
 
     /**
@@ -193,9 +152,61 @@ class CheckoutService
     }
 
     /**
+     * Get purchase status from payment gateway
+     */
+    public function getPurchaseStatus(string $purchaseId): ?array
+    {
+        return $this->paymentService->getPurchaseStatus($purchaseId);
+    }
+
+    /**
+     * Create or find user record (guest or registered)
+     */
+    private function createOrFindUser(array $customerData): User
+    {
+        // First try to find existing user by email
+        $user = User::where('email', $customerData['email'])->first();
+
+        if (! $user) {
+            // Create new guest user
+            $user = User::create([
+                'name' => $customerData['name'] ?? null,
+                'email' => $customerData['email'],
+                'phone' => $customerData['phone'] ?? null,
+                'is_guest' => true,
+                'password' => null, // Guest users don't have passwords
+            ]);
+        }
+
+        return $user;
+    }
+
+    /**
+     * Create address record
+     */
+    private function createAddress(User $user, array $customerData): Address
+    {
+        return Address::create([
+            'addressable_type' => User::class,
+            'addressable_id' => $user->id,
+            'name' => $customerData['name'] ?? '',
+            'company' => $customerData['company'] ?? null,
+            'street1' => $customerData['street1'] ?? '',
+            'street2' => $customerData['street2'] ?? null,
+            'city' => $customerData['city'] ?? '',
+            'state' => $customerData['state'] ?? '',
+            'postcode' => $customerData['postcode'] ?? '',
+            'country' => $customerData['country'] ?? 'Malaysia',
+            'phone' => $customerData['phone'] ?? null,
+            'type' => $customerData['address_type'] ?? 'shipping',
+            'is_primary' => true,
+        ]);
+    }
+
+    /**
      * Calculate total amount from cart using built-in cart calculations
      */
-    protected function calculateCartTotal(array $cartItems): int
+    private function calculateCartTotal(array $cartItems): int
     {
         // Use cart's built-in total calculation which includes all conditions
         $cartTotal = (int) Cart::getRawTotal();
@@ -218,13 +229,5 @@ class CheckoutService
         }
 
         return $itemsTotal;
-    }
-
-    /**
-     * Get purchase status from payment gateway
-     */
-    public function getPurchaseStatus(string $purchaseId): ?array
-    {
-        return $this->paymentService->getPurchaseStatus($purchaseId);
     }
 }

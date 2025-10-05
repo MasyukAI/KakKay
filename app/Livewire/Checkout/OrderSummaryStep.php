@@ -1,15 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Checkout;
 
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Payment;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
-class OrderSummaryStep extends Component
+final class OrderSummaryStep extends Component
 {
     public array $checkoutData;
 
@@ -62,7 +65,7 @@ class OrderSummaryStep extends Component
                 'status' => 'pending',
             ]);
 
-            $this->orderNumber = 'ORD-'.str_pad($this->order->id, 6, '0', STR_PAD_LEFT);
+            $this->orderNumber = 'ORD-'.mb_str_pad($this->order->id, 6, '0', STR_PAD_LEFT);
             $this->orderProcessed = true;
 
             DB::commit();
@@ -70,7 +73,7 @@ class OrderSummaryStep extends Component
             // Dispatch success event
             $this->dispatch('order-created', ['order_id' => $this->order->id]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             session()->flash('error', 'Failed to process your order. Please try again.');
             $this->dispatch('previous-step');

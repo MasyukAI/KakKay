@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
 use App\Listeners\HandlePaymentSuccess;
@@ -9,6 +11,7 @@ use App\Models\Payment;
 use App\Models\Product;
 use App\Models\User;
 use App\Services\StockService;
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use MasyukAI\Chip\DataObjects\ClientDetails;
@@ -16,7 +19,7 @@ use MasyukAI\Chip\DataObjects\Purchase;
 use MasyukAI\Chip\DataObjects\PurchaseDetails;
 use MasyukAI\Chip\Events\PurchasePaid;
 
-class TestPaymentSuccessCommand extends Command
+final class TestPaymentSuccessCommand extends Command
 {
     protected $signature = 'test:payment-success';
 
@@ -212,7 +215,7 @@ class TestPaymentSuccessCommand extends Command
                 }
             });
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error('❌ Test failed with error: '.$e->getMessage());
             $this->error('Stack trace: '.$e->getTraceAsString());
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Listeners\HandlePaymentSuccess;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -19,7 +21,7 @@ uses(RefreshDatabase::class);
 beforeEach(function () {
     // Mock the StockService
     $this->stockService = Mockery::mock(StockService::class);
-    $this->stockService->shouldReceive('recordSale')->andReturn(new \App\Models\StockTransaction);
+    $this->stockService->shouldReceive('recordSale')->andReturn(new App\Models\StockTransaction);
 
     $this->listener = new HandlePaymentSuccess($this->stockService);
 });
@@ -98,8 +100,8 @@ test('cart is cleared after successful payment', function () {
         ]),
         brand_id: 'test_brand',
         payment: null,
-        issuer_details: \MasyukAI\Chip\DataObjects\IssuerDetails::fromArray(['legal_name' => 'Test Bank']),
-        transaction_data: \MasyukAI\Chip\DataObjects\TransactionData::fromArray([
+        issuer_details: MasyukAI\Chip\DataObjects\IssuerDetails::fromArray(['legal_name' => 'Test Bank']),
+        transaction_data: MasyukAI\Chip\DataObjects\TransactionData::fromArray([
             'payment_method' => 'fpx',
             'extra' => [],
             'country' => 'MY',

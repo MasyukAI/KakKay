@@ -1,15 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire;
 
 use App\Models\Product;
+use Exception;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use MasyukAI\Cart\Facades\Cart as CartFacade;
 
-class Cart extends Component
+final class Cart extends Component
 {
     public array $cartItems = [];
 
@@ -46,7 +49,7 @@ class Cart extends Component
                 ];
             })->values()->toArray();
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->cartItems = [];
             Log::error('Cart loading error: '.$e->getMessage());
         }
@@ -55,7 +58,7 @@ class Cart extends Component
     public function loadSuggestedProducts(): void
     {
         $cartProductIds = collect($this->cartItems)->pluck('id')->toArray();
-        $this->suggestedProducts = \App\Models\Product::where('is_active', true)
+        $this->suggestedProducts = Product::where('is_active', true)
             ->whereNotIn('id', $cartProductIds)
             ->inRandomOrder()
             ->limit(3)

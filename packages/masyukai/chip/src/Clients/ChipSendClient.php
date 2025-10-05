@@ -10,7 +10,7 @@ use MasyukAI\Chip\Clients\Http\BaseHttpClient;
 use MasyukAI\Chip\Exceptions\ChipApiException;
 use MasyukAI\Chip\Exceptions\ChipValidationException;
 
-class ChipSendClient extends BaseHttpClient
+final class ChipSendClient extends BaseHttpClient
 {
     /**
      * @param  array<string, mixed>  $retryConfig

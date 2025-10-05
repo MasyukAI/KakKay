@@ -1,7 +1,7 @@
 {
     "preset": "laravel",
     "notPath": [
-
+        "src/Models/Cart.php"
     ],
     "rules": {
         "array_push": true,

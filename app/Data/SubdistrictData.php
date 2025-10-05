@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Data;
 
-class SubdistrictData
+final class SubdistrictData
 {
     /**
      * Subdistricts organized by district.

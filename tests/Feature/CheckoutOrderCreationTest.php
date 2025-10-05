@@ -23,7 +23,7 @@ test('checkout creates payment intent and redirects to payment page', function (
     $initialOrderCount = Order::count();
 
     // Mock the payment gateway to return success
-    $this->mock(\App\Contracts\PaymentGatewayInterface::class, function ($mock) {
+    $this->mock(App\Contracts\PaymentGatewayInterface::class, function ($mock) {
         $mock->shouldReceive('getAvailablePaymentMethods')
             ->andReturn([
                 [
@@ -117,7 +117,7 @@ test('checkout handles payment gateway errors gracefully', function () {
     Cart::add('1', 'Test Product', 1000, 1);
 
     // Mock payment gateway to return error
-    $this->mock(\App\Contracts\PaymentGatewayInterface::class, function ($mock) {
+    $this->mock(App\Contracts\PaymentGatewayInterface::class, function ($mock) {
         $mock->shouldReceive('createPurchase')
             ->andReturn([
                 'success' => false,

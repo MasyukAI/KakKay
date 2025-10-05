@@ -1,16 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Pages\Auth;
 
-use Filament\Facades\Filament;
-use Filament\Models\Contracts\FilamentUser;
-use Filament\Auth\Pages\Login as PagesLogin;
-use Illuminate\Contracts\Auth\Authenticatable;
+use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 use Filament\Auth\Http\Responses\Contracts\LoginResponse;
 use Filament\Auth\MultiFactor\Contracts\HasBeforeChallengeHook;
-use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
+use Filament\Auth\Pages\Login as PagesLogin;
+use Filament\Facades\Filament;
+use Filament\Models\Contracts\FilamentUser;
+use Illuminate\Contracts\Auth\Authenticatable;
 
-class Login extends PagesLogin
+final class Login extends PagesLogin
 {
     public function authenticate(): ?LoginResponse
     {

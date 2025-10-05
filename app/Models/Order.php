@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Services\CodeGeneratorService;
@@ -9,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Order extends Model
+final class Order extends Model
 {
     use HasFactory, HasUuids;
 
@@ -29,6 +31,14 @@ class Order extends Model
         'checkout_form_data' => 'array',
         'total' => 'integer',
     ];
+
+    /**
+     * Generate order number
+     */
+    public static function generateOrderNumber(): string
+    {
+        return CodeGeneratorService::generateOrderCode();
+    }
 
     /**
      * Get the user that owns this order
@@ -108,14 +118,6 @@ class Order extends Model
     public function hasFailedPayments(): bool
     {
         return $this->payments()->where('status', 'failed')->exists();
-    }
-
-    /**
-     * Generate order number
-     */
-    public static function generateOrderNumber(): string
-    {
-        return CodeGeneratorService::generateOrderCode();
     }
 
     /**

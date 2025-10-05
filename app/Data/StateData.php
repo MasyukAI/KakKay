@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Data;
 
-class StateData
+final class StateData
 {
     /**
      * Malaysian states.

@@ -1,19 +1,20 @@
 <?php
 
-use App\Livewire\Home;
-use Livewire\Volt\Volt;
+declare(strict_types=1);
+
 use Akaunting\Money\Money;
-use MasyukAI\Cart\Facades\Cart;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PageController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ChipWebhookController;
+use App\Http\Controllers\PageController;
+use App\Livewire\Home;
+use Illuminate\Support\Facades\Route;
+use Livewire\Volt\Volt;
 
 Route::get('/', Home::class)->name('home');
 
 Volt::route('/cart', 'cart')->name('cart');
 
-Route::get('/checkout', \App\Livewire\Checkout::class)->name('checkout');
+Route::get('/checkout', App\Livewire\Checkout::class)->name('checkout');
 
 // Checkout success/failure routes
 Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');

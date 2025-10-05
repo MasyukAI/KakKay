@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
-class PaymentMethodService
+final class PaymentMethodService
 {
     /**
      * Get available payment methods for Malaysia

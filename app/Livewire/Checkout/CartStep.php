@@ -1,13 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Checkout;
 
+use Exception;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use MasyukAI\Cart\Facades\Cart;
 
-class CartStep extends Component
+final class CartStep extends Component
 {
     public array $checkoutData;
 
@@ -43,7 +46,7 @@ class CartStep extends Component
                     'imageUrl' => $item->attributes->get('imageUrl', 'https://flowbite.s3.amazonaws.com/blocks/e-commerce/book-placeholder.svg'),
                 ];
             })->values()->toArray();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Fallback to empty cart if there's an error
             $this->cartItems = [];
             Log::error('Cart loading error: '.$e->getMessage());

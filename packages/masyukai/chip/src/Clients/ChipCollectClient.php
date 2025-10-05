@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Http;
 use MasyukAI\Chip\Clients\Http\BaseHttpClient;
 use MasyukAI\Chip\Exceptions\ChipApiException;
 
-class ChipCollectClient extends BaseHttpClient
+final class ChipCollectClient extends BaseHttpClient
 {
     /**
      * @param  array<string, mixed>  $retryConfig

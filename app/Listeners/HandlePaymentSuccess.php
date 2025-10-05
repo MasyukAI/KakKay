@@ -1,18 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Listeners;
 
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Services\StockService;
+use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use MasyukAI\Cart\Facades\Cart;
 use MasyukAI\Chip\Events\PurchasePaid;
+use Throwable;
 
-class HandlePaymentSuccess implements ShouldQueue
+final class HandlePaymentSuccess implements ShouldQueue
 {
     use InteractsWithQueue;
 
@@ -86,7 +90,7 @@ class HandlePaymentSuccess implements ShouldQueue
                 }
 
                 // Clear the cart after successful payment
-                \MasyukAI\Cart\Facades\Cart::clear();
+                Cart::clear();
             });
 
             Log::info('Payment success processed successfully', [
@@ -94,7 +98,7 @@ class HandlePaymentSuccess implements ShouldQueue
                 'purchase_id' => $purchase->id,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Failed to process payment success', [
                 'purchase_id' => $purchase->id ?? null,
                 'error' => $e->getMessage(),
@@ -104,6 +108,17 @@ class HandlePaymentSuccess implements ShouldQueue
             // Re-throw to trigger retry mechanism
             throw $e;
         }
+    }
+
+    /**
+     * Handle a job failure.
+     */
+    public function failed(PurchasePaid $event, Throwable $exception): void
+    {
+        Log::error('Payment success handling failed permanently', [
+            'purchase_id' => $event->purchase->id ?? null,
+            'error' => $exception->getMessage(),
+        ]);
     }
 
     /**
@@ -180,7 +195,7 @@ class HandlePaymentSuccess implements ShouldQueue
                 'stock_transaction_id' => $stockTransaction->id,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Failed to deduct stock for order item', [
                 'order_item_id' => $orderItem->id,
                 'product_id' => $orderItem->product_id ?? null,
@@ -189,16 +204,5 @@ class HandlePaymentSuccess implements ShouldQueue
 
             throw $e;
         }
-    }
-
-    /**
-     * Handle a job failure.
-     */
-    public function failed(PurchasePaid $event, \Throwable $exception): void
-    {
-        Log::error('Payment success handling failed permanently', [
-            'purchase_id' => $event->purchase->id ?? null,
-            'error' => $exception->getMessage(),
-        ]);
     }
 }
