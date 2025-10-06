@@ -224,24 +224,31 @@ final class CheckoutService
     }
 
     /**
-     * Find cart by purchase ID using database lookup
-     * This is critical for webhook processing where no session exists
+     * Find cart by reference (cart ID) using direct primary key lookup
+     * Much faster than JSONB query - uses primary key index
      */
     private function findCartByPurchaseId(string $purchaseId): ?Cart
     {
-        // Query database for cart with this purchase_id in metadata
-        // Uses JSONB operators for efficient PostgreSQL querying
-        $cartData = DB::table('carts')
-            ->whereRaw(
-                "metadata->>'payment_intent' IS NOT NULL AND ".
-                "(metadata::jsonb->'payment_intent'->>'purchase_id')::text = ?",
-                [$purchaseId]
-            )
-            ->first();
+        // First, get the purchase from CHIP to extract the reference (cart ID)
+        $purchaseStatus = $this->paymentService->getPurchaseStatus($purchaseId);
+
+        if (! $purchaseStatus || ! isset($purchaseStatus['reference'])) {
+            Log::warning('Purchase status missing or no reference found', [
+                'purchase_id' => $purchaseId,
+            ]);
+
+            return null;
+        }
+
+        $cartId = $purchaseStatus['reference'];
+
+        // Direct primary key lookup - blazing fast!
+        $cartData = DB::table('carts')->where('id', $cartId)->first();
 
         if (! $cartData) {
-            Log::warning('Cart not found for purchase ID', [
+            Log::warning('Cart not found for reference', [
                 'purchase_id' => $purchaseId,
+                'cart_id' => $cartId,
             ]);
 
             return null;

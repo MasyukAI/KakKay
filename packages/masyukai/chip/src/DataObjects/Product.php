@@ -8,7 +8,7 @@ final class Product
 {
     public function __construct(
         public readonly string $name,
-        public readonly int $quantity,
+        public readonly string $quantity,
         public readonly int $price,
         public readonly int $discount,
         public readonly float $tax_percent,
@@ -22,7 +22,7 @@ final class Product
     {
         return new self(
             name: $data['name'],
-            quantity: (int) ($data['quantity'] ?? 1),
+            quantity: (string) ($data['quantity'] ?? '1'),
             price: (int) $data['price'],
             discount: (int) ($data['discount'] ?? 0),
             tax_percent: (float) ($data['tax_percent'] ?? 0.0),
@@ -42,7 +42,7 @@ final class Product
 
     public function getTotalPrice(): float
     {
-        return ($this->price - $this->discount) * $this->quantity;
+        return ($this->price - $this->discount) * (float) $this->quantity;
     }
 
     public function getTotalPriceInCurrency(): float

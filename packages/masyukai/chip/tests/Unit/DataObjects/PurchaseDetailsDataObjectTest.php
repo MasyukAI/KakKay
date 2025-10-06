@@ -38,7 +38,7 @@ describe('PurchaseDetails data object', function (): void {
     it('exports to array with nested products', function (): void {
         $details = new PurchaseDetails(
             currency: 'MYR',
-            products: [new Product('Custom', 1, 1000, 0, 0.0, null)],
+            products: [new Product('Custom', '1', 1000, 0, 0.0, null)],
             total: 1000,
             language: 'en',
             notes: null,
@@ -58,7 +58,7 @@ describe('PurchaseDetails data object', function (): void {
             'currency' => 'MYR',
             'products' => [[
                 'name' => 'Custom',
-                'quantity' => 1,
+                'quantity' => '1',
                 'price' => 1000,
                 'discount' => 0,
                 'tax_percent' => 0.0,

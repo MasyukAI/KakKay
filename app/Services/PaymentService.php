@@ -8,7 +8,6 @@ use App\Contracts\PaymentGatewayInterface;
 use App\Models\Payment;
 use Exception;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use MasyukAI\Cart\Cart;
 use Psr\Log\LoggerInterface;
@@ -209,7 +208,10 @@ final class PaymentService
     public function createPaymentIntent(Cart $cart, array $customerData): array
     {
         $cartItems = $cart->getItems()->toArray();
-        $cartVersion = $this->getCartVersion($cart) + 1; // Add +1 to account for metadata update
+        $cartVersion = $cart->getVersion() + 1; // Add +1 to account for metadata update
+
+        // Add cart ID as reference for fast lookup on webhook/redirect
+        $customerData['reference'] = (string) $cart->getId();
 
         // Create payment with gateway
         $result = $this->gateway->createPurchase($customerData, $cartItems);
@@ -258,7 +260,7 @@ final class PaymentService
             ];
         }
 
-        $currentVersion = $this->getCartVersion($cart);
+        $currentVersion = $cart->getVersion();
         $cartChanged = $intent['cart_version'] !== $currentVersion;
 
         return [
@@ -371,16 +373,5 @@ final class PaymentService
                 'savings' => $cart->savings()->getAmount(),
             ],
         ];
-    }
-
-    /**
-     * Get the current version of the cart from database
-     */
-    private function getCartVersion(Cart $cart): int
-    {
-        return DB::table('carts')
-            ->where('identifier', $cart->getIdentifier())
-            ->where('instance', $cart->instance())
-            ->value('version') ?? 1;
     }
 }

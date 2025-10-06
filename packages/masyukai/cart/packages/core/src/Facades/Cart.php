@@ -62,6 +62,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static self setMetadataBatch(array<string, mixed> $metadata)
  * @method static bool swap(string $oldIdentifier, string $newIdentifier, string $instance = 'default')
  * @method static int|null getVersion()
+ * @method static string|null getId()
  *
  * @see \MasyukAI\Cart\CartManager
  */

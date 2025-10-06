@@ -200,6 +200,17 @@ final readonly class DatabaseStorage implements StorageInterface
     }
 
     /**
+     * Get cart ID (primary key) from storage
+     */
+    public function getId(string $identifier, string $instance): ?string
+    {
+        return $this->database->table($this->table)
+            ->where('identifier', $identifier)
+            ->where('instance', $instance)
+            ->value('id');
+    }
+
+    /**
      * Swap cart identifier by directly updating the identifier column.
      * This transfers cart ownership from old identifier to new identifier.
      * The objective is to change ownership to ensure target has an active cart.

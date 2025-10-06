@@ -46,4 +46,15 @@ final class Cart
     {
         return $this->storage->getVersion($this->getIdentifier(), $this->instance());
     }
+
+    /**
+     * Get cart ID (primary key) from storage
+     * Useful for linking carts to external systems like payment gateways, orders, etc.
+     *
+     * @return string|null Cart UUID or null if not supported by storage driver
+     */
+    public function getId(): ?string
+    {
+        return $this->storage->getId($this->getIdentifier(), $this->instance());
+    }
 }

@@ -47,7 +47,6 @@ final class ChipPaymentGateway implements PaymentGatewayInterface
                 $chipProducts,
                 $clientDetails,
                 [
-                    'reference' => $customerData['reference'] ?? null,
                     'success_redirect' => $successUrl,
                     'failure_redirect' => $failureUrl,
                     'cancel_redirect' => $failureUrl,
@@ -187,7 +186,7 @@ final class ChipPaymentGateway implements PaymentGatewayInterface
             $chipProducts[] = ChipProduct::fromArray([
                 'name' => $item['name'],
                 'price' => (int) $item['price'], // Ensure price is integer (cents)
-                'quantity' => (float) $item['quantity'], // CHIP expects float quantity
+                'quantity' => (string) $item['quantity'], // CHIP expects string<float> quantity
                 'discount' => 0,
                 'tax_percent' => 0.0,
                 'category' => $category,

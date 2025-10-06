@@ -209,6 +209,15 @@ final readonly class CacheStorage implements StorageInterface
     }
 
     /**
+     * Get cart ID (primary key) from storage
+     * Cache storage doesn't have IDs, returns null
+     */
+    public function getId(string $identifier, string $instance): ?string
+    {
+        return null;
+    }
+
+    /**
      * Store items with locking to prevent concurrent modification
      *
      * @param  array<string, mixed>  $items

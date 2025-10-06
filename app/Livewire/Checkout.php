@@ -169,7 +169,7 @@ final class Checkout extends Component implements HasSchemas
 
                                 TextInput::make('postcode')
                                     ->required()
-                                    ->integer()
+                                    ->numeric()
                                     ->label('Poskod')
                                     ->placeholder('Contoh: 40000')
                                     ->length(5)
@@ -423,7 +423,7 @@ final class Checkout extends Component implements HasSchemas
                 'city' => $formData['city'] ?? null,
                 'state' => $formData['state'],
                 'country' => $formData['country'],
-                'postcode' => $formData['postcode'],
+                'postcode' => (string) $formData['postcode'], // Ensure string for leading zeros
                 'company' => $formData['company'] ?? null,
 
                 // Optional fields - only include if provided

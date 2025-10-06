@@ -217,6 +217,15 @@ final readonly class SessionStorage implements StorageInterface
     }
 
     /**
+     * Get cart ID (primary key) from storage
+     * Session storage doesn't have IDs, returns null
+     */
+    public function getId(string $identifier, string $instance): ?string
+    {
+        return null;
+    }
+
+    /**
      * Validate data size to prevent memory issues and DoS attacks
      *
      * @param  array<string, mixed>  $data

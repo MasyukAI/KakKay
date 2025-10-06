@@ -138,6 +138,16 @@ beforeEach(function (): void {
 
             return true;
         }
+
+        public function getVersion(string $identifier, string $instance): ?int
+        {
+            return null;
+        }
+
+        public function getId(string $identifier, string $instance): ?string
+        {
+            return null;
+        }
     };
 
     app()->bind(StorageInterface::class, fn () => $storage);

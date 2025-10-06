@@ -119,6 +119,16 @@ interface StorageInterface
     public function getVersion(string $identifier, string $instance): ?int;
 
     /**
+     * Get cart ID (primary key) from storage
+     * Useful for linking carts to external systems (payment gateways, orders, etc.)
+     *
+     * @param  string  $identifier  User/session identifier
+     * @param  string  $instance  Cart instance name
+     * @return string|null Cart UUID or null if cart doesn't exist
+     */
+    public function getId(string $identifier, string $instance): ?string;
+
+    /**
      * Swap cart identifier to transfer cart ownership.
      * This changes cart ownership from old identifier to new identifier by updating the identifier column.
      * The objective is to ensure the new identifier has an active cart, preventing cart abandonment.

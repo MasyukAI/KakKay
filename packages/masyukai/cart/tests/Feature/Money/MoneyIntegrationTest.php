@@ -85,6 +85,16 @@ function createTestCart(string $instance = 'test'): Cart
 
                 return false;
             }
+
+            public function getVersion(string $identifier, string $instance): ?int
+            {
+                return null;
+            }
+
+            public function getId(string $identifier, string $instance): ?string
+            {
+                return null;
+            }
         },
         identifier: 'test-identifier',
         instanceName: $instance
