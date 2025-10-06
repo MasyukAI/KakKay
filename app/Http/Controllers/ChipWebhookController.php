@@ -6,11 +6,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\Payment;
+use App\Notifications\OrderCreationFailed;
+use App\Notifications\WebhookProcessingFailed;
 use App\Services\CheckoutService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use MasyukAI\Chip\Events\PurchaseCreated;
 use MasyukAI\Chip\Events\PurchasePaid;
 use MasyukAI\Chip\Services\WebhookService;
@@ -78,6 +81,18 @@ final class ChipWebhookController extends Controller
                 'request_data' => $request->all(),
             ]);
 
+            // Notify admin of webhook processing failure
+            $eventType = $request->input('event', 'unknown');
+            $purchaseId = $request->input('data.id');
+
+            Notification::route('mail', config('mail.from.address'))
+                ->notify(new WebhookProcessingFailed(
+                    $eventType,
+                    $e->getMessage(),
+                    $purchaseId,
+                    $request->all()
+                ));
+
             return response('Internal Server Error', 500);
         }
     }
@@ -108,6 +123,19 @@ final class ChipWebhookController extends Controller
 
             return;
         }
+
+        // If order creation failed, notify admin
+        Log::warning('Order creation failed from cart payment intent', [
+            'purchase_id' => $purchaseId,
+            'amount' => $purchaseData['amount'] ?? null,
+        ]);
+
+        Notification::route('mail', config('mail.from.address'))
+            ->notify(new OrderCreationFailed(
+                $purchaseId,
+                'Failed to create order from cart payment intent. Check if cart exists or has valid payment intent metadata.',
+                $purchaseData
+            ));
 
         // Fallback: Try to find existing payment record (for backward compatibility)
         $this->handleExistingPaymentRecord($purchaseData);
@@ -160,6 +188,14 @@ final class ChipWebhookController extends Controller
                 'purchase_id' => $purchaseId,
                 'reference' => $reference,
             ]);
+
+            // Notify admin that payment/order could not be found
+            Notification::route('mail', config('mail.from.address'))
+                ->notify(new OrderCreationFailed(
+                    $purchaseId,
+                    'Payment or order not found for completed purchase. The payment was successful but no matching payment record exists in the database.',
+                    $purchaseData
+                ));
         }
     }
 

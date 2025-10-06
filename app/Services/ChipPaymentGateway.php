@@ -18,7 +18,7 @@ final class ChipPaymentGateway implements PaymentGatewayInterface
 
     public function __construct(?ChipCollectService $chipService = null)
     {
-        $this->chipService = $chipService ?? new ChipCollectService;
+        $this->chipService = $chipService ?? app(ChipCollectService::class);
     }
 
     /**
@@ -199,35 +199,26 @@ final class ChipPaymentGateway implements PaymentGatewayInterface
 
     /**
      * Create CHIP client details from customer data
+     * Send ONLY required fields to CHIP API (email is the only required field)
      *
      * @param  array  $customerData  Customer details
      * @return ClientDetails CHIP client details object
      */
     private function createClientDetails(array $customerData): ClientDetails
     {
+        // CHIP API requires only email. Send minimal data.
         return ClientDetails::fromArray([
-            'full_name' => $customerData['name'],
-            'email' => $customerData['email'],
-            'phone' => $customerData['phone'] ?? '',
-            'personal_code' => $customerData['personal_code'] ?? $customerData['id_number'] ?? '',
-            'legal_name' => $customerData['company_name'] ?? $customerData['name'],
-            'brand_name' => $customerData['brand_name'] ?? $customerData['company_name'] ?? $customerData['name'],
-            'street_address' => $customerData['address'] ?? '',
-            'country' => $customerData['country'] ?? 'MY',
-            'city' => $customerData['city'] ?? '',
-            'zip_code' => (string) ($customerData['zip'] ?? $customerData['postal_code'] ?? ''),
-            'state' => $customerData['state'] ?? '',
-            'registration_number' => $customerData['registration_number'] ?? '',
-            'tax_number' => $customerData['tax_number'] ?? '',
-            // Optional fields - leave as null if not provided
-            'bank_account' => $customerData['bank_account'] ?? null,
-            'bank_code' => $customerData['bank_code'] ?? null,
-            // Shipping details
-            'shipping_street_address' => $customerData['shipping_address'] ?? $customerData['address'] ?? '',
-            'shipping_country' => $customerData['shipping_country'] ?? $customerData['country'] ?? 'MY',
-            'shipping_city' => $customerData['shipping_city'] ?? $customerData['city'] ?? '',
-            'shipping_zip_code' => (string) ($customerData['shipping_zip'] ?? $customerData['zip'] ?? $customerData['postal_code'] ?? ''),
-            'shipping_state' => $customerData['shipping_state'] ?? $customerData['state'] ?? '',
+            'email' => $customerData['email'], // REQUIRED by CHIP API
+            'full_name' => $customerData['name'] ?? null,
+            'phone' => $customerData['phone'] ?? null,
+            // All other fields are optional - only send if explicitly provided
+            'street_address' => isset($customerData['street1'])
+                ? $customerData['street1'].(isset($customerData['street2']) ? ', '.$customerData['street2'] : '')
+                : null,
+            'country' => $customerData['country'] ?? null,
+            'city' => $customerData['city'] ?? null,
+            'zip_code' => isset($customerData['postcode']) ? (string) $customerData['postcode'] : null,
+            'state' => $customerData['state'] ?? null,
         ]);
     }
 

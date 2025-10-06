@@ -410,36 +410,26 @@ final class Checkout extends Component implements HasSchemas
         try {
             $checkoutService = app(CheckoutService::class);
 
-            // Prepare customer data aligned with addresses table columns
+            // Prepare customer data - send only required email to CHIP
             $customerData = [
-                // Core address fields (matching addresses table)
+                // Required for CHIP API
+                'email' => $formData['email'],
+
+                // Required for User creation/lookup
                 'name' => $formData['name'],
-                'company' => $formData['company'] ?? '',
+                'phone' => $formData['phone'],
+
+                // Required for Address creation (following database schema)
                 'street1' => $formData['street1'],
-                'street2' => $formData['street2'] ?? '',
-                'city' => $formData['city'] ?? '', // Using city field (Mukim, Bandar, Pekan)
+                'street2' => $formData['street2'] ?? null,
+                'city' => $formData['city'] ?? null,
                 'state' => $formData['state'],
                 'country' => $formData['country'],
                 'postcode' => $formData['postcode'],
-                'phone' => $formData['phone'], // PhoneInput component already includes country code
+                'company' => $formData['company'] ?? null,
 
-                // Additional fields for checkout (not in addresses table)
-                'email' => $formData['email'],
-
-                // CHIP API specific fields
-                'address' => $formData['street1'].($formData['street2'] ? ', '.$formData['street2'] : ''), // Combined address for CHIP
-                'zip' => $formData['postcode'],
-
-                // Required CHIP fields - use defaults if not provided by user
-                'personal_code' => $formData['vat_number'] ?? 'PERSONAL',
-                'brand_name' => $formData['company'] ?? $formData['name'],
-                'legal_name' => $formData['company'] ?? $formData['name'],
-                'registration_number' => $formData['vat_number'] ?? '',
-                'tax_number' => $formData['vat_number'] ?? '',
-                // Bank account fields - leave null to allow CHIP to handle payment method selection
-                // Do not pass 'default' values as CHIP API will reject them
-                // Use empty array to let CHIP gateway handle payment method selection
-                'payment_method_whitelist' => [],
+                // Optional fields - only include if provided
+                'type' => 'billing', // Address type for database
             ];
 
             // Process checkout using cart metadata-based payment intents
