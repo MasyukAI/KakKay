@@ -6,9 +6,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\Payment;
+use Illuminate\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\View\View;
 
 final class CheckoutController extends Controller
 {

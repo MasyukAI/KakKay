@@ -23,7 +23,7 @@ new class extends Component {
             ]
         );
         
-        $this->dispatch('product-added-to-cart');
+        $this->dispatch('cart-updated');
         
         session()->flash('success', "'{$this->product->name}' has been added to your cart!");
     }

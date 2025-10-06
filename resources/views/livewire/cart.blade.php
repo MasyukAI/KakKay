@@ -134,7 +134,7 @@
                                         <hr class="my-6 border-white/15">
                                         <div class="flex items-center justify-end gap-2">
                                             <span class="text-xs uppercase">Jumlah</span>
-                                            <span class="text-sm font-semibold text-white">{{ $item['subtotal_formatted'] }}</span>
+                                            <span class="text-sm font-semibold text-white">{{ $item['subtotal'] }}</span>
                                         </div>
                                     </div>
                                     {{-- Removed extra divider between cards --}}

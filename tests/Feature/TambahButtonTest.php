@@ -37,7 +37,7 @@ it('can add product to cart using product ID (Tambah button functionality)', fun
     expect($cartItems[0]['quantity'])->toBe(1);
 
     // Verify the event was dispatched
-    $cart->assertDispatched('product-added-to-cart');
+    $cart->assertDispatched('cart-updated');
 });
 
 it('can add product to cart using Product object (backward compatibility)', function () {
@@ -62,5 +62,5 @@ it('can add product to cart using Product object (backward compatibility)', func
     expect($cartItems[0]['quantity'])->toBe(1);
 
     // Verify the event was dispatched
-    $cart->assertDispatched('product-added-to-cart');
+    $cart->assertDispatched('cart-updated');
 });

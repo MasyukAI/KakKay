@@ -47,7 +47,7 @@ class extends Component {
             ->duration(3000)
             ->send();
 
-        $this->dispatch('product-added-to-cart');
+        $this->dispatch('cart-updated');
 
         return $this->redirect('/cart', navigate: true);
     }

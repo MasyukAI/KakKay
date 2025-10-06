@@ -26,7 +26,7 @@ final class Cart extends Component
         $this->loadSuggestedProducts();
     }
 
-    #[On('product-added-to-cart')]
+    #[On('cart-updated')]
     public function refreshCart(): void
     {
         $this->loadCartItems();
@@ -43,7 +43,7 @@ final class Cart extends Component
                     'id' => (string) $item->id,
                     'name' => (string) $item->name,
                     'price' => $item->getPrice()->format(),
-                    'subtotal_formatted' => $item->getSubtotal()->format(),
+                    'subtotal' => $item->getSubtotal()->format(),
                     'quantity' => (int) $item->quantity,
                     'slug' => $item->attributes->get('slug', 'cara-bercinta'),
                 ];
@@ -82,7 +82,7 @@ final class Cart extends Component
         }
 
         $this->loadCartItems();
-        $this->dispatch('product-added-to-cart');
+        $this->dispatch('cart-updated');
     }
 
     public function incrementQuantity($itemId)
@@ -92,7 +92,7 @@ final class Cart extends Component
             $newQuantity = $item->quantity + 1;
             CartFacade::update($itemId, ['quantity' => ['value' => $newQuantity]]);
             $this->loadCartItems();
-            $this->dispatch('product-added-to-cart');
+            $this->dispatch('cart-updated');
             Notification::make()
                 ->title('Buku Ditambah')
                 ->body("Kuantiti '{$item->name}' telah ditambah.")
@@ -124,7 +124,7 @@ final class Cart extends Component
             }
 
             $this->loadCartItems();
-            $this->dispatch('product-added-to-cart');
+            $this->dispatch('cart-updated');
             Notification::make()
                 ->title('Buku Dikurangkan')
                 ->body("Kuantiti '{$item->name}' telah dikurangkan.")
@@ -148,7 +148,7 @@ final class Cart extends Component
 
         $this->loadCartItems();
         $this->loadSuggestedProducts();
-        $this->dispatch('product-added-to-cart'); // Refresh cart counter
+        $this->dispatch('cart-updated'); // Refresh cart counter
         Notification::make()
             ->title('Buku Dikeluarkan!')
             ->body("'{$itemName}' telah dikeluarkan.")
@@ -199,7 +199,7 @@ final class Cart extends Component
         $this->loadSuggestedProducts();
 
         // Dispatch consistent event for UI feedback
-        $this->dispatch('product-added-to-cart', [
+        $this->dispatch('cart-updated', [
             'product' => $product->name,
             'quantity' => $quantity,
         ]);

@@ -17,7 +17,7 @@ final class CartCounter extends Component
         $this->updateCartCount();
     }
 
-    #[On('product-added-to-cart')]
+    #[On('cart-updated')]
     public function updateCartCount(): void
     {
         $this->count = CartFacade::getTotalQuantity();

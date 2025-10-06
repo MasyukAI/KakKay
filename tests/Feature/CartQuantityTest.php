@@ -66,17 +66,17 @@ it('dispatches proper events for cart counter updates', function () {
 
     // Add product should dispatch event
     $cart->call('addToCart', $product, 1)
-        ->assertDispatched('product-added-to-cart');
+        ->assertDispatched('cart-updated');
 
     // Increment should dispatch event
     $cart->call('incrementQuantity', (string) $product->id)
-        ->assertDispatched('product-added-to-cart');
+        ->assertDispatched('cart-updated');
 
     // Decrement should dispatch event
     $cart->call('decrementQuantity', (string) $product->id)
-        ->assertDispatched('product-added-to-cart');
+        ->assertDispatched('cart-updated');
 
     // Remove should dispatch event
     $cart->call('removeItem', (string) $product->id)
-        ->assertDispatched('product-added-to-cart');
+        ->assertDispatched('cart-updated');
 });
