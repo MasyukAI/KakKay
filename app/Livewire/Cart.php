@@ -219,6 +219,11 @@ final class Cart extends Component
         return CartFacade::subtotal(); // Return Money object directly for formatting
     }
 
+    public function getSavings(): \Akaunting\Money\Money
+    {
+        return CartFacade::savings(); // Returns Money object with calculated savings from conditions
+    }
+
     public function getShipping(): \Akaunting\Money\Money
     {
         // Check if there's a shipping condition applied to the cart

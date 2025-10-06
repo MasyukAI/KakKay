@@ -55,8 +55,9 @@ final class Checkout extends Component implements HasSchemas
                 return;
             }
 
-            $currentCartHash = md5(serialize($cartItems->toArray()));
-            $sessionCartHash = session('cart_hash');
+            // Get current cart version from database for change detection
+            $currentCartVersion = CartFacade::getCurrentCart()->getVersion();
+            $sessionCartVersion = session('cart_version');
 
             // Check for cart changes and active payment intents
             $checkoutService = app(CheckoutService::class);
@@ -66,16 +67,13 @@ final class Checkout extends Component implements HasSchemas
             $this->cartChangedSinceIntent = $cartStatus['cart_changed'];
             $this->showCartChangeWarning = $cartStatus['cart_changed'] && $cartStatus['has_active_intent'];
 
-            // Store current cart hash in session
-            session(['cart_hash' => $currentCartHash]);
+            // Store current cart version in session
+            session(['cart_version' => $currentCartVersion]);
 
-            if ($sessionCartHash && $sessionCartHash !== $currentCartHash) {
-                // Cart has changed, clear old purchase session
-                session()->forget(['chip_purchase_id', 'checkout_data', 'cart_hash']);
+            if ($sessionCartVersion && $sessionCartVersion !== $currentCartVersion) {
+                // Cart has changed, clear old cart version from session
+                session()->forget('cart_version');
             }
-
-            // Store current cart hash
-            session(['cart_hash' => $currentCartHash]);
 
             $this->loadCartItems();
             $this->loadPaymentMethods();
@@ -340,9 +338,9 @@ final class Checkout extends Component implements HasSchemas
     }
 
     #[Computed]
-    public function getSavings(): int
+    public function getSavings(): Money
     {
-        return 0; // No savings for now
+        return CartFacade::savings(); // Returns Money object with calculated savings from conditions
     }
 
     #[Computed]
@@ -429,19 +427,13 @@ final class Checkout extends Component implements HasSchemas
                 'company' => $formData['company'] ?? null,
 
                 // Optional fields - only include if provided
-                'type' => 'billing', // Address type for database
+                'type' => 'shipping', // Address type for database
             ];
 
             // Process checkout using cart metadata-based payment intents
             $result = $checkoutService->processCheckout($customerData);
 
             if ($result['success']) {
-                // Store purchase info in session for backward compatibility
-                session([
-                    'chip_purchase_id' => $result['purchase_id'],
-                    'checkout_data' => $formData,
-                ]);
-
                 // Show appropriate message if intent was reused
                 if ($result['reused_intent'] ?? false) {
                     session()->flash('info', 'Menggunakan pembayaran yang telah dibuat sebelumnya.');

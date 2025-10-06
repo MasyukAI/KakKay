@@ -187,6 +187,19 @@ final readonly class DatabaseStorage implements StorageInterface
     }
 
     /**
+     * Get cart version for change tracking
+     */
+    public function getVersion(string $identifier, string $instance): ?int
+    {
+        $version = $this->database->table($this->table)
+            ->where('identifier', $identifier)
+            ->where('instance', $instance)
+            ->value('version');
+
+        return $version !== null ? (int) $version : null;
+    }
+
+    /**
      * Swap cart identifier by directly updating the identifier column.
      * This transfers cart ownership from old identifier to new identifier.
      * The objective is to change ownership to ensure target has an active cart.

@@ -208,6 +208,15 @@ final readonly class SessionStorage implements StorageInterface
     }
 
     /**
+     * Get cart version for change tracking
+     * Session storage doesn't support versioning, returns null
+     */
+    public function getVersion(string $identifier, string $instance): ?int
+    {
+        return null;
+    }
+
+    /**
      * Validate data size to prevent memory issues and DoS attacks
      *
      * @param  array<string, mixed>  $data

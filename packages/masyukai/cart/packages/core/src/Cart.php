@@ -35,4 +35,15 @@ final class Cart
     ) {
         // Cart is now created when first item is added, not during instantiation
     }
+
+    /**
+     * Get cart version for change tracking
+     * Useful for detecting cart modifications and optimistic locking
+     *
+     * @return int|null Version number or null if not supported by storage driver
+     */
+    public function getVersion(): ?int
+    {
+        return $this->storage->getVersion($this->getIdentifier(), $this->instance());
+    }
 }

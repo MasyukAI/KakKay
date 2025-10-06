@@ -6,53 +6,77 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\Payment;
-use Illuminate\View\View;
+use App\Services\CheckoutService;
+use App\Services\PaymentService;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\View\View;
 
 final class CheckoutController extends Controller
 {
     /**
      * Show checkout success page
+     *
+     * Hybrid approach:
+     * 1. Try to create order immediately from cart metadata (better UX)
+     * 2. If webhook already created it, use existing order
+     * 3. Webhook serves as fallback and verification
      */
     public function success(Request $request): View
     {
-        // Get order info from query parameters or session
-        $purchaseId = $request->get('purchase_id') ?? session('chip_purchase_id');
+        // CHIP always includes purchase_id in redirect URL
+        $purchaseId = $request->get('purchase_id');
         $orderNumber = $request->get('reference') ?? $request->get('order_number');
 
         $order = null;
         $payment = null;
 
         if ($purchaseId) {
-            // Find payment by CHIP purchase ID
+            // First, check if webhook already created the order
             $payment = Payment::where('gateway_payment_id', $purchaseId)->first();
             $order = $payment?->order;
+
+            // If no order yet, try to create it immediately (better UX!)
+            if (! $order) {
+                $checkoutService = app(CheckoutService::class);
+                $paymentService = app(PaymentService::class);
+
+                try {
+                    // Fetch payment details from CHIP to verify it's actually paid
+                    $chipPurchase = $paymentService->getPurchaseStatus($purchaseId);
+
+                    if ($chipPurchase && $chipPurchase['status'] === 'paid') {
+                        // Create order immediately from cart metadata
+                        $order = $checkoutService->handlePaymentSuccess($purchaseId, $chipPurchase);
+                        $payment = $order?->payments()->first();
+
+                        Log::info('Order created on redirect (before webhook)', [
+                            'purchase_id' => $purchaseId,
+                            'order_id' => $order?->id,
+                            'source' => 'redirect',
+                        ]);
+                    }
+                } catch (Exception $e) {
+                    // If immediate creation fails, webhook will handle it
+                    Log::warning('Could not create order on redirect, webhook will handle', [
+                        'purchase_id' => $purchaseId,
+                        'error' => $e->getMessage(),
+                    ]);
+                }
+            }
         } elseif ($orderNumber) {
             // Find order by order number
             $order = Order::where('order_number', $orderNumber)->first();
             $payment = $order?->latestPayment();
         }
 
-        // If we have an order but it's still pending, check if we should update it
-        if ($order && $payment && $payment->status === 'pending') {
-            // This could be a redirect back from CHIP before webhook is processed
-            // We'll keep it as pending until webhook confirms payment
-            Log::info('Order accessed via success URL but payment still pending', [
-                'order_id' => $order->id,
-                'payment_id' => $payment->id,
-                'purchase_id' => $purchaseId,
-            ]);
-        }
-
-        // Clear session data
-        session()->forget(['chip_purchase_id', 'checkout_data']);
-
         return view('checkout.success', [
             'order' => $order ?? null,
             'payment' => $payment ?? null,
             'purchaseId' => $purchaseId ?? null,
             'isCompleted' => $payment && $payment->status === 'completed',
+            'isPending' => ! $order, // Show "processing" if no order yet
         ]);
     }
 
@@ -63,7 +87,8 @@ final class CheckoutController extends Controller
     {
         // Get error info from query parameters
         $error = $request->get('error', 'Masalah teknikal dengan pembayaran');
-        $purchaseId = $request->get('purchase_id') ?? session('chip_purchase_id');
+        // CHIP always includes purchase_id in redirect URL
+        $purchaseId = $request->get('purchase_id');
 
         $order = null;
         $payment = null;

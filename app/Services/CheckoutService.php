@@ -117,7 +117,7 @@ final class CheckoutService
                 return null;
             }
 
-            $order = DB::transaction(function () use ($cart, $paymentIntent, $webhookData, $purchaseId) {
+            $order = DB::transaction(function () use ($paymentIntent, $webhookData, $purchaseId) {
                 // Create order from cart snapshot
                 $order = $this->createOrderFromCartSnapshot(
                     $paymentIntent['cart_snapshot'],
@@ -126,13 +126,6 @@ final class CheckoutService
 
                 // Create payment record
                 $payment = $this->createPaymentRecord($order, $paymentIntent, $webhookData);
-
-                // Update payment intent status
-                $this->paymentService->updatePaymentIntentStatus($cart, 'completed', [
-                    'order_id' => $order->id,
-                    'payment_id' => $payment->id,
-                    'completed_at' => now()->toISOString(),
-                ]);
 
                 Log::info('Order created successfully from cart payment intent', [
                     'order_id' => $order->id,

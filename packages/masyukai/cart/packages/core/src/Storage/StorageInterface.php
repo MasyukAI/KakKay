@@ -109,6 +109,16 @@ interface StorageInterface
     public function getMetadata(string $identifier, string $instance, string $key): mixed;
 
     /**
+     * Get cart version for change tracking
+     * Returns the version number used for optimistic locking and change detection
+     *
+     * @param  string  $identifier  User/session identifier
+     * @param  string  $instance  Cart instance name
+     * @return int|null Version number or null if cart doesn't exist
+     */
+    public function getVersion(string $identifier, string $instance): ?int;
+
+    /**
      * Swap cart identifier to transfer cart ownership.
      * This changes cart ownership from old identifier to new identifier by updating the identifier column.
      * The objective is to ensure the new identifier has an active cart, preventing cart abandonment.

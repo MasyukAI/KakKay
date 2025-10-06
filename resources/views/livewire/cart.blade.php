@@ -158,6 +158,15 @@
                                                 <span>Jumlah Harga</span>
                                                 <span class="font-semibold text-white">{{ $this->getSubtotal()->format() }}</span>
                                             </div>
+                                            @if($this->getSavings()->getAmount() > 0)
+                                                <div class="flex justify-between text-green-400">
+                                                    <span class="flex items-center gap-1.5">
+                                                        <flux:icon.tag class="h-4 w-4" />
+                                                        Jimat
+                                                    </span>
+                                                    <span class="font-semibold">-{{ $this->getSavings()->format() }}</span>
+                                                </div>
+                                            @endif
                                             <div class="flex justify-between">
                                                 <span>Penghantaran</span>
                                                 <span class="font-semibold text-white">{{ $this->getShipping()->format() }}</span>

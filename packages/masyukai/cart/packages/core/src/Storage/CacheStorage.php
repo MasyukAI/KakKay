@@ -200,6 +200,15 @@ final readonly class CacheStorage implements StorageInterface
     }
 
     /**
+     * Get cart version for change tracking
+     * Cache storage doesn't support versioning, returns null
+     */
+    public function getVersion(string $identifier, string $instance): ?int
+    {
+        return null;
+    }
+
+    /**
      * Store items with locking to prevent concurrent modification
      *
      * @param  array<string, mixed>  $items
