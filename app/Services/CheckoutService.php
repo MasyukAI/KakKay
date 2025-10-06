@@ -175,16 +175,21 @@ final class CheckoutService
         $validation = $this->paymentService->validateCartPaymentIntent($cart);
 
         return [
-            'has_active_intent' => isset($validation['intent']),
+            'is_valid' => $validation['is_valid'],
             'cart_changed' => $validation['cart_changed'] ?? false,
-            'amount_changed' => $validation['amount_changed'] ?? false,
-            'expired' => $validation['expired'] ?? false,
             'intent' => $validation['intent'] ?? null,
         ];
     }
 
     /**
      * Create order from cart snapshot stored in payment intent
+     *
+     * Cart snapshot structure:
+     * [
+     *   'items' => [...],
+     *   'conditions' => [...],
+     *   'totals' => ['subtotal' => 0, 'total' => 0, 'savings' => 0]
+     * ]
      */
     private function createOrderFromCartSnapshot(array $cartSnapshot, array $customerData): Order
     {
@@ -194,8 +199,11 @@ final class CheckoutService
         // Create address record
         $address = $this->createAddress($user, $customerData);
 
-        // Create order using OrderService with cart snapshot
-        return $this->orderService->createOrder($user, $address, $customerData, $cartSnapshot);
+        // Extract items from snapshot (handles both old and new format)
+        $cartItems = $cartSnapshot['items'] ?? $cartSnapshot;
+
+        // Create order using OrderService with cart items
+        return $this->orderService->createOrder($user, $address, $customerData, $cartItems);
     }
 
     /**

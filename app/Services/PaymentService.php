@@ -218,12 +218,11 @@ final class PaymentService
             // Store intent in cart metadata
             $cart->setMetadata('payment_intent', [
                 'purchase_id' => $result['purchase_id'],
-                'amount' => $cart->total()->getAmount(), // Calculate after potential condition changes
+                'amount' => $cart->total()->getAmount(),
                 'cart_version' => $cartVersion,
-                'cart_snapshot' => $cartItems,
+                'cart_snapshot' => $this->createCartSnapshot($cart),
                 'customer_data' => $customerData,
                 'created_at' => now()->toISOString(),
-                'expires_at' => now()->addMinutes(30)->toISOString(),
                 'status' => 'created',
                 'checkout_url' => $result['checkout_url'],
             ]);
@@ -240,6 +239,13 @@ final class PaymentService
 
     /**
      * Validate if cart payment intent is still valid
+     *
+     * Validation based on:
+     * 1. Cart version (has cart changed since intent created?)
+     * 2. Status (is payment intent in 'created' state?)
+     *
+     * Note: Expiry removed - CHIP doesn't expire purchases, cart version already handles staleness
+     * Note: Amount check removed - cart version changes whenever items/quantities/conditions change
      */
     public function validateCartPaymentIntent(Cart $cart): array
     {
@@ -249,21 +255,15 @@ final class PaymentService
                 'is_valid' => false,
                 'reason' => 'no_intent',
                 'cart_changed' => false,
-                'expired' => false,
             ];
         }
 
         $currentVersion = $this->getCartVersion($cart);
-        $currentTotal = $cart->total()->getAmount(); // Use amount (cents) for consistency
-        $expired = now()->isAfter(\Carbon\Carbon::parse($intent['expires_at']));
+        $cartChanged = $intent['cart_version'] !== $currentVersion;
 
         return [
-            'is_valid' => $intent['cart_version'] === $currentVersion &&
-                         ! $expired &&
-                         $intent['status'] === 'created', // Skip amount check for now
-            'cart_changed' => $intent['cart_version'] !== $currentVersion,
-            'amount_changed' => $intent['amount'] !== $currentTotal,
-            'expired' => $expired,
+            'is_valid' => ! $cartChanged && $intent['status'] === 'created',
+            'cart_changed' => $cartChanged,
             'status' => $intent['status'] ?? 'unknown',
             'intent' => $intent,
         ];
@@ -345,17 +345,33 @@ final class PaymentService
         return true;
     }
 
-    /**
-     * Get payment intent expiry time in minutes
-     */
-    public function getPaymentIntentExpiryMinutes(): int
-    {
-        return 30; // Default 30 minutes
-    }
-
     // ==========================================
     // Cart Payment Intent Methods
     // ==========================================
+
+    /**
+     * Create a comprehensive cart snapshot including items and conditions
+     *
+     * This captures the complete cart state at payment intent creation:
+     * - Items (products, prices, quantities)
+     * - Cart-level conditions (shipping, discounts, taxes, fees)
+     * - Totals breakdown for audit trail and refunds
+     *
+     * @return array{items: array, conditions: array, totals: array}
+     */
+    private function createCartSnapshot(Cart $cart): array
+    {
+        return [
+            'items' => $cart->getItems()->toArray(),
+            'conditions' => $cart->getConditions()->toArray(),
+            'totals' => [
+                'subtotal' => $cart->subtotal()->getAmount(),
+                'subtotal_without_conditions' => $cart->subtotalWithoutConditions()->getAmount(),
+                'total' => $cart->total()->getAmount(),
+                'savings' => $cart->savings()->getAmount(),
+            ],
+        ];
+    }
 
     /**
      * Get the current version of the cart from database
