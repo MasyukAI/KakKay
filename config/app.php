@@ -58,6 +58,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Public Tunnel URL (for Webhook Testing)
+    |--------------------------------------------------------------------------
+    |
+    | When testing webhooks locally using Cloudflare Tunnel, set this to
+    | the public URL. This allows external services like payment gateways
+    | to send webhooks to your local development environment.
+    | Example: https://local.kakkay.my
+    |
+    */
+
+    'public_url' => env('PUBLIC_URL'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |

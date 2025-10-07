@@ -21,7 +21,14 @@ return Application::configure(basePath: dirname(__DIR__))
         },
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        // Exclude CHIP webhook routes from CSRF protection
+        // External payment gateway webhooks cannot provide CSRF tokens
+        $middleware->validateCsrfTokens(except: [
+            'callbacks/chip/success',
+            'callbacks/chip/*',
+            'webhooks/chip',
+            'webhooks/*',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

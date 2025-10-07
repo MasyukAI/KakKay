@@ -213,13 +213,13 @@ final class CheckoutService
     {
         return Payment::create([
             'order_id' => $order->id,
-            'amount' => $paymentIntent['amount'],
+            'amount' => $order->total, // Use order total, not payment intent amount
             'status' => 'completed',
             'method' => 'chip',
             'currency' => 'MYR',
             'gateway_payment_id' => $paymentIntent['purchase_id'],
             'gateway_response' => $webhookData,
-            'completed_at' => now(),
+            'paid_at' => now(),
         ]);
     }
 

@@ -78,8 +78,24 @@ final class Checkout extends Component implements HasSchemas
             $this->loadCartItems();
             $this->loadPaymentMethods();
 
-            // Initialize form with default values
-            $this->form->fill();
+            // Initialize form data with default values to prevent Livewire entangle errors
+            // This ensures nested properties like data.phone and data.state exist before Alpine tries to bind
+            $this->data = [
+                'name' => '',
+                'company' => '',
+                'email' => '',
+                'email_confirmation' => '',
+                'phone' => '',
+                'country' => 'Malaysia',
+                'state' => '',
+                'city' => '',
+                'postcode' => '',
+                'street1' => '',
+                'street2' => '',
+            ];
+
+            // Initialize form with the pre-populated data
+            $this->form->fill($this->data);
 
         } catch (Exception $e) {
             // Log error but don't crash - might be in testing environment
@@ -88,6 +104,19 @@ final class Checkout extends Component implements HasSchemas
             // Initialize with minimal data
             $this->cartItems = [];
             $this->availablePaymentMethods = [];
+            $this->data = [
+                'name' => '',
+                'company' => '',
+                'email' => '',
+                'email_confirmation' => '',
+                'phone' => '',
+                'country' => 'Malaysia',
+                'state' => '',
+                'city' => '',
+                'postcode' => '',
+                'street1' => '',
+                'street2' => '',
+            ];
         }
     }
 
@@ -169,7 +198,7 @@ final class Checkout extends Component implements HasSchemas
 
                                 TextInput::make('postcode')
                                     ->required()
-                                    ->numeric()
+                                    ->inputMode('integer')
                                     ->label('Poskod')
                                     ->placeholder('Contoh: 40000')
                                     ->length(5)

@@ -210,9 +210,6 @@ final class PaymentService
         $cartItems = $cart->getItems()->toArray();
         $cartVersion = $cart->getVersion() + 1; // Add +1 to account for metadata update
 
-        // Add cart ID as reference for fast lookup on webhook/redirect
-        $customerData['reference'] = (string) $cart->getId();
-
         // Create payment with gateway
         $result = $this->gateway->createPurchase($customerData, $cartItems);
 

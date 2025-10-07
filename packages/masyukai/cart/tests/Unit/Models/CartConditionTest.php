@@ -574,6 +574,16 @@ it('shouldApply returns true for static and evaluates rules for dynamic', functi
             {
                 return false;
             }
+
+            public function getVersion(string $identifier, string $instance): ?int
+            {
+                return null;
+            }
+
+            public function getId(string $identifier, string $instance): ?string
+            {
+                return null;
+            }
         },
         identifier: 'test-user'
     );
