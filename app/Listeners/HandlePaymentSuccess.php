@@ -52,25 +52,27 @@ final class HandlePaymentSuccess implements ShouldQueue
             // Update order status to paid
             DB::transaction(function () use ($order, $purchase) {
                 $oldStatus = $order->status;
-                $newStatus = 'confirmed';
+                $newStatus = in_array($oldStatus, ['completed', 'confirmed']) ? $oldStatus : 'confirmed';
 
-                // Update order status
-                $order->update([
-                    'status' => $newStatus,
-                ]);
+                // Update order status only if not already paid
+                if ($newStatus !== $oldStatus) {
+                    $order->update([
+                        'status' => $newStatus,
+                    ]);
 
-                // Record status change in history
-                $order->statusHistories()->create([
-                    'from_status' => $oldStatus,
-                    'to_status' => $newStatus,
-                    'actor_type' => 'system',
-                    'note' => 'Payment was successfully completed',
-                    'changed_at' => now(),
-                    'meta' => [
-                        'payment_id' => $purchase->id,
-                        'payment_method' => 'chip',
-                    ],
-                ]);
+                    // Record status change in history
+                    $order->statusHistories()->create([
+                        'from_status' => $oldStatus,
+                        'to_status' => $newStatus,
+                        'actor_type' => 'system',
+                        'note' => 'Payment was successfully completed',
+                        'changed_at' => now(),
+                        'meta' => [
+                            'payment_id' => $purchase->id,
+                            'payment_method' => 'chip',
+                        ],
+                    ]);
+                }
 
                 // Update payment record if exists
                 $payment = $order->payments()->where('status', 'pending')->first();

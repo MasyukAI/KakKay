@@ -8,17 +8,20 @@ use App\Models\Address;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\User;
+use App\Services\Chip\ChipDataRecorder;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use MasyukAI\Cart\Cart;
 use MasyukAI\Cart\Facades\Cart as CartFacade;
+use Throwable;
 
 final class CheckoutService
 {
     public function __construct(
         private PaymentService $paymentService,
-        private OrderService $orderService
+        private OrderService $orderService,
+        private ChipDataRecorder $chipDataRecorder
     ) {}
 
     /**
@@ -103,6 +106,16 @@ final class CheckoutService
             'webhook_id' => $webhookData['webhook_id'] ?? null,
         ]);
 
+        Log::debug('Webhook reference payload', [
+            'reference' => $webhookData['reference'] ?? null,
+        ]);
+
+        $purchasePayload = $webhookData['data'] ?? ($webhookData['purchase'] ?? null);
+
+        if (is_array($purchasePayload) && isset($purchasePayload['id'])) {
+            $this->chipDataRecorder->upsertPurchase($purchasePayload);
+        }
+
         try {
             $webhookPurchaseId = $webhookData['purchase_id']
                 ?? $webhookData['id']
@@ -126,6 +139,22 @@ final class CheckoutService
 
             // Find cart with this payment intent
             $cart = $this->findCartByReference($purchaseId, $webhookData);
+
+            if (! $cart) {
+                $sessionCart = CartFacade::getCurrentCart();
+
+                if ($sessionCart) {
+                    $sessionIntent = $sessionCart->getMetadata('payment_intent');
+
+                    if (($sessionIntent['purchase_id'] ?? null) === $purchaseId) {
+                        Log::debug('Using session cart as fallback for purchase processing', [
+                            'purchase_id' => $purchaseId,
+                        ]);
+
+                        $cart = $sessionCart;
+                    }
+                }
+            }
 
             if (! $cart) {
                 Log::warning('handlePaymentSuccess could not locate cart', [
@@ -188,10 +217,15 @@ final class CheckoutService
                 // Create payment record
                 $payment = $this->createPaymentRecord($order, $paymentIntent, $webhookData);
 
+                // Persist the paid status immediately once payment record exists
+                $order = $this->orderService->updateOrderStatus($order, 'completed');
+
                 Log::info('Order created successfully from cart payment intent', [
                     'order_id' => $order->id,
                     'purchase_id' => $webhookPurchaseId,
                     'amount' => $paymentIntent['amount'],
+                    'order_status' => $order->status,
+                    'payment_id' => $payment->id,
                     'source' => $invocationSource,
                 ]);
 
@@ -255,6 +289,320 @@ final class CheckoutService
     }
 
     /**
+     * Find cart by reference (cart ID) from webhook data or fallback to CHIP API
+     * Uses direct primary key lookup - much faster than JSONB query
+     */
+    /**
+     * Resolve the data required by the checkout success page.
+     *
+     * @return array{order:?Order,payment:?Payment,reference:string,isCompleted:bool,isPending:bool}
+     */
+    public function prepareSuccessView(string $reference): array
+    {
+        $order = null;
+        $payment = null;
+        $cartSnapshot = null;
+        $customerSnapshot = null;
+
+        Log::debug('=== prepareSuccessView START ===', [
+            'reference' => $reference,
+            'timestamp' => now()->toIso8601String(),
+        ]);
+
+        // Step 1: Lookup cart data
+        Log::debug('Step 1: Looking up cart data', [
+            'reference' => $reference,
+        ]);
+
+        $cartData = DB::table('carts')->where('id', $reference)->first();
+
+        if (! $cartData) {
+            Log::warning('Cart data not found in database', [
+                'reference' => $reference,
+            ]);
+        } else {
+            Log::debug('Cart data found', [
+                'reference' => $reference,
+                'cart_id' => $cartData->id,
+                'instance' => $cartData->instance,
+                'identifier' => $cartData->identifier,
+                'has_metadata' => ! empty($cartData->metadata),
+                'metadata_length' => $cartData->metadata ? mb_strlen($cartData->metadata) : 0,
+            ]);
+        }
+
+        if ($cartData && $cartData->metadata) {
+            Log::debug('Step 2: Parsing cart metadata', [
+                'reference' => $reference,
+            ]);
+
+            $metadata = json_decode($cartData->metadata, true) ?: [];
+
+            Log::debug('Metadata decoded', [
+                'reference' => $reference,
+                'metadata_keys' => array_keys($metadata),
+                'has_payment_intent' => isset($metadata['payment_intent']),
+            ]);
+
+            $paymentIntent = $metadata['payment_intent'] ?? null;
+            $cartSnapshot = $paymentIntent['cart_snapshot'] ?? null;
+            $customerSnapshot = $paymentIntent['customer_data'] ?? null;
+
+            if (! $paymentIntent) {
+                Log::warning('Payment intent not found in cart metadata', [
+                    'reference' => $reference,
+                    'available_keys' => array_keys($metadata),
+                ]);
+            } else {
+                Log::debug('Payment intent found in metadata', [
+                    'reference' => $reference,
+                    'intent_keys' => array_keys($paymentIntent),
+                    'purchase_id' => $paymentIntent['purchase_id'] ?? null,
+                    'status' => $paymentIntent['status'] ?? null,
+                    'amount' => $paymentIntent['amount'] ?? null,
+                    'created_at' => $paymentIntent['created_at'] ?? null,
+                ]);
+            }
+
+            if ($paymentIntent && isset($paymentIntent['purchase_id'])) {
+                $purchaseId = $paymentIntent['purchase_id'];
+
+                Log::debug('Step 3: Looking up existing payment record', [
+                    'purchase_id' => $purchaseId,
+                    'reference' => $reference,
+                ]);
+
+                $payment = Payment::where('gateway_payment_id', $purchaseId)->first();
+
+                if ($payment) {
+                    Log::debug('Existing payment record found', [
+                        'payment_id' => $payment->id,
+                        'purchase_id' => $purchaseId,
+                        'payment_status' => $payment->status,
+                        'payment_amount' => $payment->amount,
+                        'order_id' => $payment->order_id,
+                        'paid_at' => $payment->paid_at?->toIso8601String(),
+                    ]);
+
+                    $order = $payment?->order;
+
+                    if ($order) {
+                        Log::debug('Existing order found via payment', [
+                            'order_id' => $order->id,
+                            'order_number' => $order->order_number,
+                            'order_total' => $order->total,
+                            'order_status' => $order->status,
+                        ]);
+                    }
+                } else {
+                    Log::info('No existing payment found, will check CHIP API', [
+                        'purchase_id' => $purchaseId,
+                        'reference' => $reference,
+                    ]);
+                }
+
+                if (! $order) {
+                    Log::debug('Step 4: Order not found, fetching from CHIP API', [
+                        'purchase_id' => $purchaseId,
+                        'reference' => $reference,
+                    ]);
+
+                    try {
+                        // Ask CHIP for the definitive purchase snapshot so we can validate and store it.
+                        Log::debug('Calling CHIP API getPurchaseStatus', [
+                            'purchase_id' => $purchaseId,
+                        ]);
+
+                        $chipPurchase = $this->paymentService->getPurchaseStatus($purchaseId);
+
+                        if (! is_array($chipPurchase)) {
+                            Log::warning('CHIP API returned non-array response', [
+                                'purchase_id' => $purchaseId,
+                                'response_type' => gettype($chipPurchase),
+                            ]);
+                        } else {
+                            Log::debug('CHIP API response received', [
+                                'purchase_id' => $purchaseId,
+                                'chip_status' => $chipPurchase['status'] ?? null,
+                                'chip_id' => $chipPurchase['id'] ?? null,
+                                'chip_reference' => $chipPurchase['reference'] ?? null,
+                                'chip_amount' => $chipPurchase['purchase']['total'] ?? null,
+                                'chip_currency' => $chipPurchase['purchase']['currency'] ?? null,
+                                'has_payment' => isset($chipPurchase['payment']),
+                                'response_keys' => array_keys($chipPurchase),
+                            ]);
+                        }
+
+                        if (is_array($chipPurchase) && ($chipPurchase['status'] ?? null) === 'paid') {
+                            Log::info('CHIP purchase is PAID, proceeding with order creation', [
+                                'purchase_id' => $purchaseId,
+                                'chip_status' => $chipPurchase['status'],
+                            ]);
+
+                            Log::debug('Upserting CHIP purchase data', [
+                                'purchase_id' => $purchaseId,
+                            ]);
+
+                            $this->chipDataRecorder->upsertPurchase($chipPurchase);
+
+                            Log::debug('CHIP purchase upserted successfully', [
+                                'purchase_id' => $purchaseId,
+                            ]);
+
+                            $normalizedPayload = [
+                                'event' => 'purchase.paid',
+                                'purchase_id' => $chipPurchase['id'] ?? $purchaseId,
+                                'id' => $chipPurchase['id'] ?? $purchaseId,
+                                'reference' => $chipPurchase['reference']
+                                    ?? ($paymentIntent['customer_data']['reference'] ?? $reference),
+                                'amount' => $paymentIntent['amount'] ?? null,
+                                'payment' => $chipPurchase['payment'] ?? null,
+                                'data' => $chipPurchase,
+                                'source' => 'success_callback',
+                            ];
+
+                            Log::debug('Normalized payload prepared for handlePaymentSuccess', [
+                                'purchase_id' => $purchaseId,
+                                'payload_keys' => array_keys($normalizedPayload),
+                                'normalized_reference' => $normalizedPayload['reference'],
+                                'normalized_amount' => $normalizedPayload['amount'],
+                            ]);
+
+                            Log::debug('Calling handlePaymentSuccess', [
+                                'purchase_id' => $purchaseId,
+                            ]);
+
+                            $order = $this->handlePaymentSuccess($purchaseId, $normalizedPayload);
+
+                            if ($order) {
+                                Log::info('Order created successfully via success callback', [
+                                    'order_id' => $order->id,
+                                    'order_number' => $order->order_number,
+                                    'purchase_id' => $purchaseId,
+                                ]);
+
+                                $payment = $order?->payments()->latest()->first();
+
+                                if ($payment) {
+                                    Log::debug('Payment record retrieved from new order', [
+                                        'payment_id' => $payment->id,
+                                        'payment_status' => $payment->status,
+                                    ]);
+                                }
+                            } else {
+                                Log::warning('handlePaymentSuccess returned null', [
+                                    'purchase_id' => $purchaseId,
+                                ]);
+                            }
+                        } else {
+                            Log::warning('CHIP purchase not paid, cannot create order', [
+                                'purchase_id' => $purchaseId,
+                                'chip_status' => $chipPurchase['status'] ?? 'unknown',
+                                'is_array' => is_array($chipPurchase),
+                            ]);
+                        }
+                    } catch (Throwable $throwable) {
+                        Log::error('Exception while processing CHIP purchase', [
+                            'purchase_id' => $purchaseId,
+                            'reference' => $reference,
+                            'error' => $throwable->getMessage(),
+                            'exception_class' => get_class($throwable),
+                            'file' => $throwable->getFile(),
+                            'line' => $throwable->getLine(),
+                            'trace' => $throwable->getTraceAsString(),
+                        ]);
+                    }
+                }
+            } else {
+                Log::warning('Payment intent missing purchase_id', [
+                    'reference' => $reference,
+                    'has_payment_intent' => $paymentIntent !== null,
+                    'intent_keys' => $paymentIntent ? array_keys($paymentIntent) : [],
+                ]);
+            }
+        } else {
+            Log::debug('Cart data or metadata not available', [
+                'reference' => $reference,
+                'has_cart_data' => $cartData !== null,
+                'has_metadata' => $cartData ? ! empty($cartData->metadata) : false,
+            ]);
+        }
+
+        // Step 5: Fallback payment lookup
+        if (! $payment) {
+            Log::debug('Step 5: Payment not found via purchase_id, trying reference fallback', [
+                'reference' => $reference,
+            ]);
+
+            $payment = Payment::where('reference', $reference)->latest()->first();
+
+            if ($payment) {
+                Log::debug('Payment found via reference fallback', [
+                    'payment_id' => $payment->id,
+                    'payment_status' => $payment->status,
+                    'gateway_payment_id' => $payment->gateway_payment_id,
+                    'order_id' => $payment->order_id,
+                ]);
+
+                $order = $payment?->order;
+
+                if ($order) {
+                    Log::debug('Order retrieved via fallback payment', [
+                        'order_id' => $order->id,
+                        'order_number' => $order->order_number,
+                    ]);
+                }
+            } else {
+                Log::warning('No payment found via reference fallback', [
+                    'reference' => $reference,
+                ]);
+            }
+        }
+
+        if ($order) {
+            $order->loadMissing(['orderItems.product', 'address', 'user']);
+            $payment = $payment ?? $order->payments()->latest()->first();
+        }
+
+        if (! $cartSnapshot && $order) {
+            $cartSnapshot = [
+                'items' => $order->cart_items ?? [],
+                'totals' => [
+                    'total' => $order->total,
+                ],
+            ];
+        }
+
+        if (! $customerSnapshot && $order) {
+            $customerSnapshot = $order->checkout_form_data ?? null;
+        }
+
+        $isCompleted = $payment !== null && $payment->status === 'completed';
+        $isPending = $order === null;
+
+        Log::debug('=== prepareSuccessView END ===', [
+            'reference' => $reference,
+            'order_id' => $order?->id,
+            'order_number' => $order?->order_number,
+            'payment_id' => $payment?->id,
+            'payment_status' => $payment?->status,
+            'is_completed' => $isCompleted,
+            'is_pending' => $isPending,
+            'timestamp' => now()->toIso8601String(),
+        ]);
+
+        return [
+            'order' => $order,
+            'payment' => $payment,
+            'reference' => $reference,
+            'cartSnapshot' => $cartSnapshot,
+            'customerSnapshot' => $customerSnapshot,
+            'isCompleted' => $isCompleted,
+            'isPending' => $isPending,
+        ];
+    }
+
+    /**
      * Create order from cart snapshot stored in payment intent
      *
      * Cart snapshot structure:
@@ -298,16 +646,48 @@ final class CheckoutService
         ]);
     }
 
-    /**
-     * Find cart by reference (cart ID) from webhook data or fallback to CHIP API
-     * Uses direct primary key lookup - much faster than JSONB query
-     */
     private function findCartByReference(string $purchaseId, array $webhookData): ?Cart
     {
         // Try to get cart reference from webhook data first (faster)
         $cartId = $webhookData['reference'] ?? null;
 
         // Fallback: fetch from CHIP API if reference not in webhook
+        if (! $cartId) {
+            Log::info('Reference not in webhook, attempting local metadata lookup', [
+                'purchase_id' => $purchaseId,
+            ]);
+
+            $cartCandidates = DB::table('carts')
+                ->whereNotNull('metadata')
+                ->get();
+
+            $matchingCart = null;
+
+            foreach ($cartCandidates as $candidate) {
+                $metadata = json_decode($candidate->metadata ?? '', true) ?: [];
+                $intent = $metadata['payment_intent'] ?? [];
+
+                if (($intent['purchase_id'] ?? null) === $purchaseId) {
+                    $matchingCart = $candidate;
+                    break;
+                }
+            }
+
+            if ($matchingCart) {
+                Log::debug('Cart located via metadata scan', [
+                    'cart_id' => $matchingCart->id,
+                    'purchase_id' => $purchaseId,
+                ]);
+
+                $cartId = $matchingCart->id;
+            } else {
+                Log::debug('Cart metadata scan did not match purchase id', [
+                    'purchase_id' => $purchaseId,
+                    'scanned_carts' => $cartCandidates->count(),
+                ]);
+            }
+        }
+
         if (! $cartId) {
             Log::info('Reference not in webhook, fetching from CHIP API', [
                 'purchase_id' => $purchaseId,

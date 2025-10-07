@@ -210,6 +210,10 @@ final class PaymentService
         $cartItems = $cart->getItems()->toArray();
         $cartVersion = $cart->getVersion() + 1; // Add +1 to account for metadata update
 
+        // Ensure every intent carries the cart reference for downstream lookups
+        $reference = (string) $cart->getId();
+        $customerData = array_merge(['reference' => $reference], $customerData);
+
         // Create payment with gateway
         $result = $this->gateway->createPurchase($customerData, $cartItems);
 
@@ -217,19 +221,24 @@ final class PaymentService
             // Store intent in cart metadata
             $cart->setMetadata('payment_intent', [
                 'purchase_id' => $result['purchase_id'],
-                'amount' => $cart->total()->getAmount(),
+                'amount' => (int) $cart->total()->getAmount(),
                 'cart_version' => $cartVersion,
                 'cart_snapshot' => $this->createCartSnapshot($cart),
                 'customer_data' => $customerData,
                 'created_at' => now()->toISOString(),
                 'status' => 'created',
                 'checkout_url' => $result['checkout_url'],
+                'reference' => $reference,
             ]);
 
             Log::info('Payment intent created and stored in cart', [
                 'purchase_id' => $result['purchase_id'],
                 'cart_total' => $cart->total()->getAmount(),
                 'cart_version' => $cartVersion,
+            ]);
+
+            Log::debug('Payment intent metadata snapshot stored', [
+                'amount' => $cart->getMetadata('payment_intent')['amount'] ?? null,
             ]);
         }
 
@@ -391,10 +400,10 @@ final class PaymentService
             'items' => $cart->getItems()->toArray(),
             'conditions' => $cart->getConditions()->toArray(),
             'totals' => [
-                'subtotal' => $cart->subtotal()->getAmount(),
-                'subtotal_without_conditions' => $cart->subtotalWithoutConditions()->getAmount(),
-                'total' => $cart->total()->getAmount(),
-                'savings' => $cart->savings()->getAmount(),
+                'subtotal' => (int) $cart->subtotal()->getAmount(),
+                'subtotal_without_conditions' => (int) $cart->subtotalWithoutConditions()->getAmount(),
+                'total' => (int) $cart->total()->getAmount(),
+                'savings' => (int) $cart->savings()->getAmount(),
             ],
         ];
     }

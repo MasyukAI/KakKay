@@ -70,7 +70,7 @@ return new class extends Migration
             $table->integer('refundable_amount')->default(0);
 
             // Currency conversion data
-            $table->jsonbb('currency_conversion')->nullable();
+            $table->jsonb('currency_conversion')->nullable();
 
             // Payment methods and restrictions
             $table->jsonb('payment_method_whitelist')->nullable();

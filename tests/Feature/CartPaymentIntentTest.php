@@ -39,7 +39,8 @@ test('cart payment intent metadata storage and retrieval works', function () {
     expect($retrieved)->not->toBeNull();
     expect($retrieved['purchase_id'])->toBe('test_purchase_123');
     expect($retrieved['status'])->toBe('created');
-    expect($retrieved['amount'])->toBe(250); // JSON decoding converts to int
+    // JSON encoding may convert 250.0 to 250 (int) if no decimal part
+    expect((float) $retrieved['amount'])->toBe(250.0);
 
     // Verify hasMetadata works
     expect($cart->hasMetadata('payment_intent'))->toBeTrue();

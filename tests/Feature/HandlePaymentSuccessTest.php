@@ -142,6 +142,14 @@ test('cart is cleared after successful payment', function () {
         direct_post_url: null,
         marked_as_paid: false,
         order_id: null,
+        upsell_campaigns: [],
+        referral_campaign_id: null,
+        referral_code: null,
+        referral_code_details: null,
+        referral_code_generated: null,
+        retain_level_details: null,
+        can_retrieve: true,
+        can_chargeback: false,
     );
 
     // Create the event
