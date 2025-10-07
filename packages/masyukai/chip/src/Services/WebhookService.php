@@ -76,30 +76,66 @@ class WebhookService
     public function getPublicKey(?string $webhookId = null): string
     {
         $cacheKey = config('chip.cache.prefix').'public_key'.($webhookId ? ":{$webhookId}" : '');
-        $ttl = config('chip.cache.ttl.public_key');
 
-        return Cache::remember($cacheKey, $ttl, function () use ($webhookId) {
-            try {
-                if ($webhookId) {
-                    // Get webhook-specific public key
-                    $webhook = app(ChipCollectService::class)->getWebhook($webhookId);
+        return Cache::remember(
+            $cacheKey,
+            config('chip.cache.ttl.public_key', 86400),
+            function () use ($webhookId) {
+                try {
+                    if ($webhookId) {
+                        $configuredKeys = (array) config('chip.webhooks.webhook_keys', []);
 
-                    return (string) ($webhook['public_key'] ?? '');
+                        if (isset($configuredKeys[$webhookId]) && $configuredKeys[$webhookId] !== '') {
+                            return (string) $configuredKeys[$webhookId];
+                        }
+
+                        $webhook = app(ChipCollectService::class)->getWebhook($webhookId);
+                        $publicKey = (string) ($webhook['public_key'] ?? '');
+
+                        if ($publicKey !== '') {
+                            return $publicKey;
+                        }
+                    }
+
+                    if (! $webhookId) {
+                        $companyKey = config('chip.webhooks.company_public_key');
+                        if ($companyKey) {
+                            return (string) $companyKey;
+                        }
+
+                        $response = app(ChipCollectClient::class)->get('public_key/');
+
+                        $publicKey = is_array($response)
+                            ? (string) ($response['public_key'] ?? '')
+                            : (string) $response;
+
+                        if ($publicKey !== '') {
+                            return $publicKey;
+                        }
+                    }
+                } catch (Exception $e) {
+                    Log::channel(config('chip.logging.channel'))
+                        ->warning('Unable to resolve CHIP public key from API, using fallback', [
+                            'webhook_id' => $webhookId,
+                            'error' => $e->getMessage(),
+                        ]);
                 }
 
-                // Get general public key for success callbacks
-                $response = app(ChipCollectClient::class)->get('public_key/');
-
-                if (is_array($response)) {
-                    return (string) ($response['public_key'] ?? '');
+                $fallbackKeys = (array) config('chip.webhooks.webhook_keys', []);
+                if ($webhookId && isset($fallbackKeys[$webhookId])) {
+                    return (string) $fallbackKeys[$webhookId];
                 }
 
-                return (string) $response;
-            } catch (Exception $e) {
-                // Fallback to configured public key if API call fails
+                if (! $webhookId) {
+                    $companyKey = config('chip.webhooks.company_public_key');
+                    if ($companyKey) {
+                        return (string) $companyKey;
+                    }
+                }
+
                 return (string) config('chip.webhooks.public_key', '');
             }
-        });
+        );
     }
 
     public function parsePayload(string $payload): object

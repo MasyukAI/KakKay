@@ -26,31 +26,14 @@ final class OrderService
     /**
      * Create order record with optimized code generation
      */
-    public function createOrder(User $user, Address $address, array $customerData, array $cartItems): Order
-    {
-        // Use cart's built-in calculation methods instead of manual calculation
-        $subtotal = (int) Cart::getRawSubtotal(); // Already includes item-level conditions
-
-        // Get shipping from cart conditions (preferred) or calculate fallback
-        $shipping = 0;
-        $shippingValue = Cart::getShippingValue();
-        if ($shippingValue !== null) {
-            // Cart::getShippingValue() returns cents already, just cast to int
-            $shipping = (int) $shippingValue;
-        } else {
-            // Fall back to calculating shipping if no condition exists
-            $shipping = $this->shippingService->calculateShipping($customerData['delivery_method'] ?? 'standard');
-        }
-
-        $tax = 0; // No tax applied (could use Cart::getCondition('tax') if needed)
-
-        // Use cart's total calculation method - this includes all cart-level conditions
-        $total = (int) Cart::getRawTotal();
-
-        // If no cart-level conditions exist, total will equal subtotal, so add shipping
-        if ($total === $subtotal) {
-            $total = $subtotal + $shipping + $tax;
-        }
+    public function createOrder(
+        User $user,
+        Address $address,
+        array $customerData,
+        array $cartItems,
+        ?array $cartSnapshot = null
+    ): Order {
+        $totals = $this->resolveTotals($customerData, $cartSnapshot);
 
         // Create order with optimized code generation and retry on uniqueness violations
         $order = $this->createOrderWithRetry([
@@ -60,7 +43,7 @@ final class OrderService
             'cart_items' => $cartItems, // Keep for backward compatibility
             'delivery_method' => $customerData['delivery_method'] ?? 'standard',
             'checkout_form_data' => $customerData,
-            'total' => $total,
+            'total' => $totals['total'],
         ]);
 
         // Create order items
@@ -224,5 +207,54 @@ final class OrderService
             ->with(['orderItems.product', 'address'])
             ->orderBy('created_at', 'desc')
             ->paginate($limit);
+    }
+
+    /**
+     * Resolve monetary totals for an order, preferring cart snapshot data when available.
+     *
+     * @return array{subtotal:int, shipping:int, tax:int, total:int}
+     */
+    private function resolveTotals(array $customerData, ?array $cartSnapshot = null): array
+    {
+        if ($cartSnapshot !== null) {
+            $snapshotTotals = $cartSnapshot['totals'] ?? [];
+
+            $subtotalWithConditions = (int) ($snapshotTotals['subtotal']
+                ?? $snapshotTotals['subtotal_without_conditions']
+                ?? 0);
+
+            $total = (int) ($snapshotTotals['total'] ?? $subtotalWithConditions);
+
+            $shipping = max(0, $total - $subtotalWithConditions);
+
+            return [
+                'subtotal' => $subtotalWithConditions,
+                'shipping' => $shipping,
+                'tax' => 0,
+                'total' => $total,
+            ];
+        }
+
+        $subtotal = (int) Cart::getRawSubtotal();
+
+        $shippingValue = Cart::getShippingValue();
+        $shipping = $shippingValue !== null
+            ? (int) $shippingValue
+            : $this->shippingService->calculateShipping($customerData['delivery_method'] ?? 'standard');
+
+        $tax = 0; // No tax applied (could use Cart::getCondition('tax') if needed)
+
+        $total = (int) Cart::getRawTotal();
+
+        if ($total === $subtotal) {
+            $total = $subtotal + $shipping + $tax;
+        }
+
+        return [
+            'subtotal' => $subtotal,
+            'shipping' => $shipping,
+            'tax' => $tax,
+            'total' => $total,
+        ];
     }
 }

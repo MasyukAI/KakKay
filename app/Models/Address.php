@@ -74,7 +74,8 @@ final class Address extends Model
     /**
      * Scope for billing addresses
      */
-    public function scopeBilling($query)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function billing($query)
     {
         return $query->where('type', 'billing');
     }
@@ -82,7 +83,8 @@ final class Address extends Model
     /**
      * Scope for shipping addresses
      */
-    public function scopeShipping($query)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function shipping($query)
     {
         return $query->where('type', 'shipping');
     }
@@ -90,7 +92,8 @@ final class Address extends Model
     /**
      * Scope for primary addresses
      */
-    public function scopePrimary($query)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function primary($query)
     {
         return $query->where('is_primary', true);
     }

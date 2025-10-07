@@ -16,11 +16,19 @@ describe('Webhook data object', function (): void {
                 'status' => 'paid',
             ],
             'timestamp' => '2024-01-01T16:00:00Z',
+            'headers' => ['X-Signature' => 'sig'],
+            'payload' => ['raw' => 'payload'],
+            'signature' => 'sig',
+            'verified' => true,
+            'processed' => true,
+            'processed_at' => '2024-01-01T16:05:00Z',
+            'processing_attempts' => 2,
         ];
 
         $webhook = Webhook::fromArray($data);
 
         expect($webhook->event)->toBe('purchase.paid');
+        expect($webhook->event_type)->toBe('purchase.paid');
         expect($webhook->data)->toBe([
             'id' => 'purchase_123',
             'amount_in_cents' => 10000,
@@ -28,6 +36,13 @@ describe('Webhook data object', function (): void {
             'status' => 'paid',
         ]);
         expect($webhook->timestamp)->toBe('2024-01-01T16:00:00Z');
+        expect($webhook->headers)->toBe(['X-Signature' => 'sig']);
+        expect($webhook->payload)->toBe(['raw' => 'payload']);
+        expect($webhook->signature)->toBe('sig');
+        expect($webhook->verified)->toBeTrue();
+        expect($webhook->processed)->toBeTrue();
+        expect($webhook->getProcessedAt()?->toIso8601ZuluString())->toBe('2024-01-01T16:05:00Z');
+        expect($webhook->processing_attempts)->toBe(2);
     });
 
     it('extracts purchase from webhook data', function (): void {
@@ -71,14 +86,24 @@ describe('Webhook data object', function (): void {
             'public_key' => 'pk',
             'events' => ['purchase.paid'],
             'callback' => 'https://example.com/webhook',
+            'verified' => true,
+            'processed' => true,
+            'processed_at' => '2024-01-02T12:05:00Z',
+            'processing_attempts' => 1,
+            'processing_error' => null,
         ]);
 
         expect($webhook->handlesEvent('purchase.paid'))->toBeTrue();
         expect($webhook->handlesEvent('purchase.created'))->toBeFalse();
+        expect($webhook->verified)->toBeTrue();
+        expect($webhook->processed)->toBeTrue();
+        expect($webhook->getProcessedAt()?->toIso8601ZuluString())->toBe('2024-01-02T12:05:00Z');
         expect($webhook->getCreatedAt()->toDateString())->toBe('2024-01-01');
-        expect($webhook->toArray())->toMatchArray([
+        $asArray = $webhook->toArray();
+        expect($asArray)->toMatchArray([
             'id' => 'wh_123',
             'callback' => 'https://example.com/webhook',
         ]);
+        expect($asArray['verified'])->toBeTrue();
     });
 });

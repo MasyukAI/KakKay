@@ -250,6 +250,10 @@ final class PaymentService
     {
         $intent = $cart->getMetadata('payment_intent');
         if (! $intent) {
+            Log::debug('No payment intent stored on cart', [
+                'cart_id' => $cart->getId(),
+            ]);
+
             return [
                 'is_valid' => false,
                 'reason' => 'no_intent',
@@ -260,11 +264,23 @@ final class PaymentService
         $currentVersion = $cart->getVersion();
         $cartChanged = $intent['cart_version'] !== $currentVersion;
 
+        Log::debug('Cart payment intent validation', [
+            'cart_id' => $cart->getId(),
+            'intent_purchase_id' => $intent['purchase_id'] ?? null,
+            'cart_version' => $currentVersion,
+            'intent_version' => $intent['cart_version'] ?? null,
+            'cart_changed' => $cartChanged,
+            'intent_status' => $intent['status'] ?? null,
+        ]);
+
+        $hasActiveIntent = ($intent['status'] ?? null) === 'created';
+
         return [
-            'is_valid' => ! $cartChanged && $intent['status'] === 'created',
+            'is_valid' => ! $cartChanged && $hasActiveIntent,
             'cart_changed' => $cartChanged,
             'status' => $intent['status'] ?? 'unknown',
             'intent' => $intent,
+            'has_active_intent' => $hasActiveIntent,
         ];
     }
 
@@ -311,25 +327,36 @@ final class PaymentService
      */
     public function validatePaymentWebhook(array $paymentIntent, array $webhookData): bool
     {
+        $webhookPurchaseId = $webhookData['purchase_id'] ?? $webhookData['id'] ?? null;
+
         // Validate purchase ID matches
-        if ($paymentIntent['purchase_id'] !== $webhookData['purchase_id']) {
+        if ($webhookPurchaseId === null || $paymentIntent['purchase_id'] !== $webhookPurchaseId) {
             Log::error('Webhook purchase ID mismatch', [
                 'intent_purchase_id' => $paymentIntent['purchase_id'],
-                'webhook_purchase_id' => $webhookData['purchase_id'],
+                'webhook_purchase_id' => $webhookPurchaseId,
             ]);
 
             return false;
         }
 
         // Validate payment amount matches cart total
-        if ($paymentIntent['amount'] !== $webhookData['amount']) {
+        $webhookAmount = $webhookData['amount']
+            ?? $webhookData['purchase']['total']
+            ?? null;
+
+        if ($webhookAmount === null || $paymentIntent['amount'] !== $webhookAmount) {
             Log::error('Webhook amount mismatch', [
                 'intent_amount' => $paymentIntent['amount'],
-                'webhook_amount' => $webhookData['amount'],
+                'webhook_amount' => $webhookAmount,
             ]);
 
             return false;
         }
+
+        Log::debug('Payment webhook validated successfully', [
+            'purchase_id' => $webhookPurchaseId,
+            'amount' => $webhookAmount,
+        ]);
 
         // Validate payment intent is in correct status
         if ($paymentIntent['status'] !== 'created') {

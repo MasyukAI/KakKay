@@ -1,9 +1,7 @@
 {
     "preset": "laravel",
     "notPath": [
-        "packages/core/src/Exceptions/CartException.php",
-        "packages/core/src/Services/CartMigrationService.php",
-        "packages/core/src/CartManager.php"
+
     ],
     "rules": {
         "array_push": true,
@@ -12,7 +10,6 @@
         "declare_strict_types": true,
         "lowercase_keywords": true,
         "lowercase_static_reference": true,
-        "final_class": true,
         "final_internal_class": true,
         "final_public_method_for_abstract_class": true,
         "fully_qualified_strict_types": true,

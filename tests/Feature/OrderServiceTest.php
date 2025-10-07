@@ -50,6 +50,51 @@ test('order service can create order with optimized code generation', function (
     expect($order->orderItems->first()->unit_price)->toBe(2000);
 });
 
+test('order service uses cart snapshot totals when provided', function () {
+    $user = User::factory()->create();
+    $address = Address::factory()->create([
+        'addressable_id' => $user->id,
+        'addressable_type' => User::class,
+    ]);
+    $product = Product::factory()->create(['price' => 2000]);
+
+    $cartItems = [[
+        'id' => $product->id,
+        'name' => $product->name,
+        'price' => 2000,
+        'quantity' => 1,
+    ]];
+    $customerData = [
+        'name' => 'Snapshot User',
+        'email' => 'snapshot@example.com',
+        'phone' => '123456789',
+        'street1' => '123 Snapshot Lane',
+        'state' => 'Selangor',
+        'country' => 'MY',
+        'postcode' => '40100',
+        'delivery_method' => 'standard',
+    ];
+
+    Cart::shouldReceive('getRawSubtotal')->never();
+    Cart::shouldReceive('getShippingValue')->never();
+    Cart::shouldReceive('getRawTotal')->never();
+
+    $cartSnapshot = [
+        'totals' => [
+            'subtotal' => 2000,
+            'subtotal_without_conditions' => 2000,
+            'total' => 2500,
+        ],
+        'conditions' => [],
+    ];
+
+    $orderService = new OrderService;
+
+    $order = $orderService->createOrder($user, $address, $customerData, $cartItems, $cartSnapshot);
+
+    expect($order->total)->toBe(2500);
+});
+
 test('order service handles duplicate order numbers gracefully', function () {
     // Create an existing order
     $existingOrder = Order::factory()->create(['order_number' => 'ORD25-TEST01']);

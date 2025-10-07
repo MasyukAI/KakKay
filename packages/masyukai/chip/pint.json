@@ -1,15 +1,7 @@
 {
     "preset": "laravel",
     "notPath": [
-        "src/Exceptions/ChipApiException.php",
-        "src/Services/WebhookService.php",
-        "src/Services/ChipCollectService.php",
-        "src/Clients/ChipCollectClient.php",
-        "src/Services/ChipSendService.php",
-        "src/Clients/ChipSendClient.php",
-        "src/Services/SubscriptionService.php",
-        "src/DataObjects/Purchase.php",
-        "src/Exceptions/ChipApiException.php"
+
     ],
     "rules": {
         "array_push": true,
@@ -18,7 +10,6 @@
         "declare_strict_types": true,
         "lowercase_keywords": true,
         "lowercase_static_reference": true,
-        "final_class": true,
         "final_internal_class": true,
         "final_public_method_for_abstract_class": true,
         "fully_qualified_strict_types": true,

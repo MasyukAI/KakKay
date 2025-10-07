@@ -8,6 +8,7 @@ use App\Contracts\PaymentGatewayInterface;
 use App\Models\Product;
 use Exception;
 use Illuminate\Support\Facades\Log;
+use MasyukAI\Cart\Facades\Cart as CartFacade;
 use MasyukAI\Chip\DataObjects\ClientDetails;
 use MasyukAI\Chip\DataObjects\Product as ChipProduct;
 use MasyukAI\Chip\Services\ChipCollectService;
@@ -37,22 +38,33 @@ final class ChipPaymentGateway implements PaymentGatewayInterface
             // Create client details
             $clientDetails = $this->createClientDetails($customerData);
 
-            // Construct required URLs for CHIP API
-            $successUrl = route('checkout.success');
-            $failureUrl = route('checkout.failure');
-            $webhookUrl = route('webhooks.chip');
+            // Get cart reference for URL construction
+            $cartReference = (string) CartFacade::getId();
+
+            // Construct redirect URLs with cart reference in path
+            $successRedirect = route('checkout.success', ['reference' => $cartReference]);
+            $failureRedirect = route('checkout.failure', ['reference' => $cartReference]);
+            $cancelRedirect = route('checkout.cancel', ['reference' => $cartReference]);
+
+            // Use public tunnel URL for callbacks if testing (Cloudflare Tunnel)
+            // This allows real success callbacks from CHIP servers to reach local dev environment
+            $callbackEndpoint = '/webhooks/chip';
+            $successCallbackUrl = config('app.public_url')
+                ? mb_rtrim(config('app.public_url'), '/').$callbackEndpoint
+                : route('webhooks.chip');
 
             // Create purchase with CHIP
             $purchase = $this->chipService->createCheckoutPurchase(
                 $chipProducts,
                 $clientDetails,
                 [
-                    'success_redirect' => $successUrl,
-                    'failure_redirect' => $failureUrl,
-                    'cancel_redirect' => $failureUrl,
-                    'success_callback' => $webhookUrl,
+                    'success_redirect' => $successRedirect,
+                    'failure_redirect' => $failureRedirect,
+                    'cancel_redirect' => $cancelRedirect,
+                    'success_callback' => $successCallbackUrl,
                     'payment_method_whitelist' => $customerData['payment_method_whitelist'] ?? [],
                     'send_receipt' => true,
+                    'reference' => (string) CartFacade::getId(), // Cart ID for fast lookup
                 ]
             );
 
@@ -143,6 +155,7 @@ final class ChipPaymentGateway implements PaymentGatewayInterface
             return [
                 'id' => $purchase->id,
                 'status' => $purchase->status,
+                'reference' => $purchase->reference ?? null,
                 'checkout_url' => $purchase->checkout_url ?? null,
                 'created_at' => $purchase->created_at,
                 'updated_at' => $purchase->updated_at,

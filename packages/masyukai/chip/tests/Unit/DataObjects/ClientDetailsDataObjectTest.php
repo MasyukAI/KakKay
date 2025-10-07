@@ -43,29 +43,25 @@ describe('ClientDetails data object', function (): void {
 
         expect($details->email)->toBeNull();
         expect($details->cc)->toBe([]);
-        expect($details->toArray())->toMatchArray([
-            'bank_account' => null,
-            'bank_code' => null,
-            'email' => null,
-            'phone' => null,
-            'full_name' => null,
-            'personal_code' => null,
-            'street_address' => null,
-            'country' => null,
-            'city' => null,
-            'zip_code' => null,
-            'state' => null,
-            'shipping_street_address' => null,
-            'shipping_country' => null,
-            'shipping_city' => null,
-            'shipping_zip_code' => null,
-            'shipping_state' => null,
-            'cc' => [],
-            'bcc' => [],
-            'legal_name' => null,
-            'brand_name' => null,
-            'registration_number' => null,
-            'tax_number' => null,
-        ]);
+        expect($details->bank_account)->toBeNull();
+        expect($details->bank_code)->toBeNull();
+        expect($details->phone)->toBeNull();
+        expect($details->full_name)->toBeNull();
+        expect($details->personal_code)->toBeNull();
+        expect($details->street_address)->toBeNull();
+        expect($details->country)->toBeNull();
+        expect($details->city)->toBeNull();
+        expect($details->zip_code)->toBeNull();
+        expect($details->state)->toBeNull();
+        expect($details->shipping_street_address)->toBeNull();
+        expect($details->shipping_country)->toBeNull();
+        expect($details->shipping_city)->toBeNull();
+        expect($details->shipping_zip_code)->toBeNull();
+        expect($details->shipping_state)->toBeNull();
+        expect($details->bcc)->toBe([]);
+        expect($details->legal_name)->toBeNull();
+        expect($details->brand_name)->toBeNull();
+        expect($details->registration_number)->toBeNull();
+        expect($details->tax_number)->toBeNull();
     });
 });

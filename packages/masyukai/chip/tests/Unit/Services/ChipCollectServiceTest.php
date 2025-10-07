@@ -627,31 +627,73 @@ describe('ChipCollectService Account & Reporting', function (): void {
     });
 
     it('lists company statements', function (): void {
+        $payload = [[
+            'id' => 'statement_123',
+            'type' => 'statement',
+            'format' => 'csv',
+            'timezone' => 'Europe/Oslo',
+            'is_test' => false,
+            'company_uid' => 'company_456',
+            'status' => 'queued',
+            'created_on' => 1712070000,
+            'updated_on' => 1712073600,
+        ]];
+
         $this->client->shouldReceive('get')
             ->once()
             ->with('company_statements/?status=active')
-            ->andReturn(['data' => []]);
+            ->andReturn(['data' => $payload, 'meta' => ['total' => 1]]);
 
-        expect($this->service->listCompanyStatements(['status' => 'active']))->toBe(['data' => []]);
+        $statements = $this->service->listCompanyStatements(['status' => 'active']);
+
+        expect($statements)->toHaveKey('data');
+        expect($statements['data'][0])->toBeInstanceOf(MasyukAI\Chip\DataObjects\CompanyStatement::class);
+        expect($statements['data'][0]->status)->toBe('queued');
+        expect($statements['meta']['total'])->toBe(1);
     });
 
     it('retrieves a specific company statement', function (): void {
         $this->client->shouldReceive('get')
             ->once()
             ->with('company_statements/statement_123/')
-            ->andReturn(['id' => 'statement_123']);
+            ->andReturn([
+                'id' => 'statement_123',
+                'type' => 'statement',
+                'format' => 'pdf',
+                'timezone' => 'UTC',
+                'is_test' => false,
+                'company_uid' => 'company_456',
+                'status' => 'finished',
+                'created_on' => 1712070000,
+                'updated_on' => 1712073600,
+            ]);
 
-        expect($this->service->getCompanyStatement('statement_123'))->toBe(['id' => 'statement_123']);
+        $statement = $this->service->getCompanyStatement('statement_123');
+
+        expect($statement)->toBeInstanceOf(MasyukAI\Chip\DataObjects\CompanyStatement::class);
+        expect($statement->status)->toBe('finished');
     });
 
     it('cancels a company statement', function (): void {
         $this->client->shouldReceive('post')
             ->once()
             ->with('company_statements/statement_123/cancel/')
-            ->andReturn(['id' => 'statement_123', 'status' => 'cancelled']);
+            ->andReturn([
+                'id' => 'statement_123',
+                'type' => 'statement',
+                'format' => 'csv',
+                'timezone' => 'UTC',
+                'is_test' => false,
+                'company_uid' => 'company_456',
+                'status' => 'cancelled',
+                'created_on' => 1712070000,
+                'updated_on' => 1712073600,
+            ]);
 
-        expect($this->service->cancelCompanyStatement('statement_123'))
-            ->toBe(['id' => 'statement_123', 'status' => 'cancelled']);
+        $cancelled = $this->service->cancelCompanyStatement('statement_123');
+
+        expect($cancelled)->toBeInstanceOf(MasyukAI\Chip\DataObjects\CompanyStatement::class);
+        expect($cancelled->isCancelled())->toBeTrue();
     });
 });
 
@@ -759,7 +801,7 @@ describe('ChipCollectService Utilities', function (): void {
 
     it('creates checkout purchases via the service facade', function (): void {
         $clientDetails = ClientDetails::fromArray(['email' => 'checkout@example.com']);
-        $products = [new Product('Subscription', 1, 5000, 0, 0.0, null)];
+        $products = [new Product('Subscription', '1', 5000, 0, 0.0, null)];
 
         $this->client->shouldReceive('getBrandId')
             ->andReturn('brand_checkout');

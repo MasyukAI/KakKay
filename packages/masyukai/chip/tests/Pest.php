@@ -29,6 +29,13 @@ R1rBR7x4H2mZ6w2zT3vQ8qM1z0S2Fw
 -----END PUBLIC KEY-----';
 }
 
+if (! function_exists('config')) {
+    function config(string $key, $default = null)
+    {
+        return Illuminate\Support\Facades\Config::get($key, $default);
+    }
+}
+
 // Custom expectations for CHIP package testing
 expect()->extend('toBeChipPurchase', function () {
     return $this->toBeInstanceOf(MasyukAI\Chip\DataObjects\Purchase::class);
@@ -44,6 +51,18 @@ expect()->extend('toBeChipSendInstruction', function () {
 
 expect()->extend('toBeChipBankAccount', function () {
     return $this->toBeInstanceOf(MasyukAI\Chip\DataObjects\BankAccount::class);
+});
+
+expect()->extend('toBeChipCompanyStatement', function () {
+    return $this->toBeInstanceOf(MasyukAI\Chip\DataObjects\CompanyStatement::class);
+});
+
+expect()->extend('toBeChipSendLimit', function () {
+    return $this->toBeInstanceOf(MasyukAI\Chip\DataObjects\SendLimit::class);
+});
+
+expect()->extend('toBeChipSendWebhook', function () {
+    return $this->toBeInstanceOf(MasyukAI\Chip\DataObjects\SendWebhook::class);
 });
 
 expect()->extend('toBeChipClient', function () {

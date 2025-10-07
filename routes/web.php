@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Akaunting\Money\Money;
 use App\Http\Controllers\CheckoutController;
-use App\Http\Controllers\ChipWebhookController;
+use App\Http\Controllers\ChipController;
 use App\Http\Controllers\PageController;
 use App\Livewire\Home;
 use Illuminate\Support\Facades\Route;
@@ -16,12 +16,13 @@ Volt::route('/cart', 'cart')->name('cart');
 
 Route::get('/checkout', App\Livewire\Checkout::class)->name('checkout');
 
-// Checkout success/failure routes
-Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
-Route::get('/checkout/failure', [CheckoutController::class, 'failure'])->name('checkout.failure');
+// Checkout success/failure/cancel routes with cart reference
+Route::get('/checkout/success/{reference}', [CheckoutController::class, 'success'])->name('checkout.success');
+Route::get('/checkout/failure/{reference}', [CheckoutController::class, 'failure'])->name('checkout.failure');
+Route::get('/checkout/cancel/{reference}', [CheckoutController::class, 'cancel'])->name('checkout.cancel');
 
-// CHIP webhook route
-Route::post('/webhooks/chip', [ChipWebhookController::class, 'handle'])->name('webhooks.chip');
+// CHIP callbacks (success + webhooks)
+Route::post('/webhooks/chip/{webhook?}', [ChipController::class, 'handle'])->name('webhooks.chip');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])

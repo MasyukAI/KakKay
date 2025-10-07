@@ -10,7 +10,7 @@ use MasyukAI\Cart\Events\CartMerged;
 use MasyukAI\Cart\Facades\Cart;
 use MasyukAI\Cart\Storage\StorageInterface;
 
-final class CartMigrationService
+class CartMigrationService
 {
     /**
      * Configuration array for migration settings.

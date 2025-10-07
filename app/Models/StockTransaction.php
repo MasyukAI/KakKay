@@ -40,27 +40,32 @@ final class StockTransaction extends Model
     }
 
     // Scopes
-    public function scopeForProduct($query, $productId)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function forProduct($query, $productId)
     {
         return $query->where('product_id', $productId);
     }
 
-    public function scopeInbound($query)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function inbound($query)
     {
         return $query->where('type', 'in');
     }
 
-    public function scopeOutbound($query)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function outbound($query)
     {
         return $query->where('type', 'out');
     }
 
-    public function scopeByReason($query, string $reason)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function byReason($query, string $reason)
     {
         return $query->where('reason', $reason);
     }
 
-    public function scopeByUser($query, $userId)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function byUser($query, $userId)
     {
         return $query->where('user_id', $userId);
     }

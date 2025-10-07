@@ -6,7 +6,7 @@ namespace MasyukAI\Chip\DataObjects;
 
 use Carbon\Carbon;
 
-final class Purchase
+class Purchase
 {
     public function __construct(
         public readonly string $id, // UUID as string

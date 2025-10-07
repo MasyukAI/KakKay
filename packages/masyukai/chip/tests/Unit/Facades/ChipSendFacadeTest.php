@@ -19,11 +19,22 @@ it('proxies send service helpers through the ChipSend facade', function (): void
 });
 
 it('allows mocking of webhook helpers through the ChipSend facade', function (): void {
+    $webhook = new \MasyukAI\Chip\DataObjects\SendWebhook(
+        id: 123,
+        name: 'test-webhook',
+        public_key: 'test-key',
+        callback_url: 'https://example.com',
+        email: 'test@example.com',
+        event_hooks: ['send.created'],
+        created_at: '2023-01-01T00:00:00Z',
+        updated_at: '2023-01-01T00:00:00Z',
+    );
+
     ChipSend::shouldReceive('createSendWebhook')
         ->once()
         ->with(['url' => 'https://example.com'])
-        ->andReturn(['id' => 'wh_123']);
+        ->andReturn($webhook);
 
     expect(ChipSend::createSendWebhook(['url' => 'https://example.com']))
-        ->toBe(['id' => 'wh_123']);
+        ->toBe($webhook);
 });

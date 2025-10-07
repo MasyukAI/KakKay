@@ -25,6 +25,7 @@
         "ysfkaya/filament-phone-input": "^4.0"
     },
     "require-dev": {
+        "driftingly/rector-laravel": "^2.0",
         "laradumps/laradumps": "^4.0",
         "laravel/boost": "^1.0",
         "laravel/pail": "^1.2.2",

@@ -142,7 +142,7 @@ describe('Collect Purchases API', function (): void {
 
     it('creates checkout purchases with derived options', function (): void {
         $client = ClientDetails::fromArray(['email' => 'buyer@example.com']);
-        $products = [new Product('Service', 1, 2000, 0, 0.0, null)];
+        $products = [new Product('Service', '1', 2000, 0, 0.0, null)];
 
         $this->client->shouldReceive('getBrandId')
             ->andReturn('brand_checkout');

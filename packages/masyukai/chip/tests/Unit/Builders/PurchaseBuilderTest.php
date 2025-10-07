@@ -28,7 +28,7 @@ describe('PurchaseBuilder', function (): void {
             ->and($data['purchase']['products'][0])->toBe([
                 'name' => 'Test Product',
                 'price' => 5000,
-                'quantity' => 1,
+                'quantity' => '1',
             ])
             ->and($data)->toHaveKey('client')
             ->and($data['client'])->toHaveKey('email', 'test@example.com');
@@ -46,12 +46,12 @@ describe('PurchaseBuilder', function (): void {
             ->and($data['purchase']['products'][0])->toBe([
                 'name' => 'Product 1',
                 'price' => 1000,
-                'quantity' => 2,
+                'quantity' => '2',
             ])
             ->and($data['purchase']['products'][1])->toBe([
                 'name' => 'Product 2',
                 'price' => 2000,
-                'quantity' => 1,
+                'quantity' => '1',
                 'discount' => 100,
                 'tax_percent' => 6.0,
             ]);

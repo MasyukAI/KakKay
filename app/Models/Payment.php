@@ -48,7 +48,8 @@ class Payment extends Model
     /**
      * Scope for completed payments
      */
-    public function scopeCompleted($query)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function completed($query)
     {
         return $query->where('status', 'completed');
     }
@@ -56,7 +57,8 @@ class Payment extends Model
     /**
      * Scope for pending payments
      */
-    public function scopePending($query)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function pending($query)
     {
         return $query->where('status', 'pending');
     }
@@ -64,7 +66,8 @@ class Payment extends Model
     /**
      * Scope for failed payments
      */
-    public function scopeFailed($query)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function failed($query)
     {
         return $query->where('status', 'failed');
     }
@@ -72,7 +75,8 @@ class Payment extends Model
     /**
      * Scope for refunded payments
      */
-    public function scopeRefunded($query)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function refunded($query)
     {
         return $query->where('status', 'refunded');
     }
@@ -80,7 +84,8 @@ class Payment extends Model
     /**
      * Scope by gateway method
      */
-    public function scopeByGateway($query, string $gatewayMethod)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function byGateway($query, string $gatewayMethod)
     {
         return $query->where('method', $gatewayMethod);
     }

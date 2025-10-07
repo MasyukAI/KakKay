@@ -97,7 +97,8 @@ final class District extends Model
     /**
      * Scope a query to only include districts for a specific state name.
      */
-    public function scopeForState($query, string $state)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function forState($query, string $state)
     {
         return $query->where('state', $state);
     }

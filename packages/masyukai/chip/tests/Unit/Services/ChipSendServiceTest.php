@@ -5,6 +5,8 @@ declare(strict_types=1);
 use MasyukAI\Chip\Clients\ChipSendClient;
 use MasyukAI\Chip\DataObjects\BankAccount;
 use MasyukAI\Chip\DataObjects\SendInstruction;
+use MasyukAI\Chip\DataObjects\SendLimit;
+use MasyukAI\Chip\DataObjects\SendWebhook;
 use MasyukAI\Chip\Services\ChipSendService;
 
 describe('ChipSendService', function (): void {
@@ -137,6 +139,35 @@ describe('ChipSendService', function (): void {
 
         expect($this->service->listSendInstructions(['state' => 'completed', 'page' => 2]))
             ->toBe(['instructions' => []]);
+    });
+
+    it('retrieves a send limit', function (): void {
+        $limitPayload = [
+            'id' => 9,
+            'currency' => 'MYR',
+            'fee_type' => 'flat',
+            'transaction_type' => 'out',
+            'amount' => 10000,
+            'fee' => 100,
+            'net_amount' => 9900,
+            'status' => 'success',
+            'approvals_required' => 1,
+            'approvals_received' => 1,
+            'from_settlement' => '2024-04-01',
+            'created_at' => '2024-04-01T10:00:00Z',
+            'updated_at' => '2024-04-01T10:10:00Z',
+        ];
+
+        $this->client->shouldReceive('get')
+            ->once()
+            ->with('send/send_limits/9')
+            ->andReturn($limitPayload);
+
+        $limit = $this->service->getSendLimit(9);
+
+        expect($limit)->toBeInstanceOf(SendLimit::class);
+        expect($limit->currency)->toBe('MYR');
+        expect($limit->getNetAmountInMajorUnits())->toBe(99.0);
     });
 
     it('manages bank account lifecycle', function (): void {
@@ -273,28 +304,47 @@ describe('ChipSendService', function (): void {
         expect($this->service->listGroups(['per_page' => 10]))
             ->toBe(['data' => []]);
 
+        $webhookPayload = [
+            'id' => 1,
+            'name' => 'Primary',
+            'public_key' => 'pk',
+            'callback_url' => 'https://example.com',
+            'email' => 'ops@example.com',
+            'event_hooks' => ['send_instruction_status'],
+            'created_at' => '2024-04-01T00:00:00Z',
+            'updated_at' => '2024-04-01T00:00:00Z',
+        ];
+
         $this->client->shouldReceive('post')
             ->once()
             ->with('send/webhooks', ['url' => 'https://example.com'])
-            ->andReturn(['id' => 'wh_1']);
+            ->andReturn($webhookPayload);
 
-        expect($this->service->createSendWebhook(['url' => 'https://example.com']))
-            ->toBe(['id' => 'wh_1']);
+        $createdWebhook = $this->service->createSendWebhook(['url' => 'https://example.com']);
+
+        expect($createdWebhook)->toBeInstanceOf(SendWebhook::class)
+            ->and($createdWebhook->handlesEvent('send_instruction_status'))->toBeTrue();
 
         $this->client->shouldReceive('get')
             ->once()
             ->with('send/webhooks/wh_1')
-            ->andReturn(['id' => 'wh_1']);
+            ->andReturn($webhookPayload);
 
-        expect($this->service->getSendWebhook('wh_1'))->toBe(['id' => 'wh_1']);
+        expect($this->service->getSendWebhook('wh_1'))
+            ->toBeInstanceOf(SendWebhook::class);
+
+        $updatedPayload = $webhookPayload;
+        $updatedPayload['event_hooks'] = ['bank_account_status'];
 
         $this->client->shouldReceive('put')
             ->once()
-            ->with('send/webhooks/wh_1', ['events' => ['send_instruction_status']])
-            ->andReturn(['id' => 'wh_1', 'events' => ['send_instruction_status']]);
+            ->with('send/webhooks/wh_1', ['events' => ['bank_account_status']])
+            ->andReturn($updatedPayload);
 
-        expect($this->service->updateSendWebhook('wh_1', ['events' => ['send_instruction_status']]))
-            ->toBe(['id' => 'wh_1', 'events' => ['send_instruction_status']]);
+        $updated = $this->service->updateSendWebhook('wh_1', ['events' => ['bank_account_status']]);
+
+        expect($updated)->toBeInstanceOf(SendWebhook::class)
+            ->and($updated->handlesEvent('bank_account_status'))->toBeTrue();
 
         $this->client->shouldReceive('delete')
             ->once()
@@ -302,12 +352,22 @@ describe('ChipSendService', function (): void {
 
         $this->service->deleteSendWebhook('wh_1');
 
+        $listPayload = [
+            'data' => [
+                $webhookPayload,
+            ],
+            'meta' => ['total' => 1],
+        ];
+
         $this->client->shouldReceive('get')
             ->once()
             ->with('send/webhooks?type=callback')
-            ->andReturn(['data' => []]);
+            ->andReturn($listPayload);
 
-        expect($this->service->listSendWebhooks(['type' => 'callback']))
-            ->toBe(['data' => []]);
+        $list = $this->service->listSendWebhooks(['type' => 'callback']);
+
+        expect($list)->toHaveKey('data');
+        expect($list['data'][0])->toBeInstanceOf(SendWebhook::class);
+        expect($list['meta']['total'])->toBe(1);
     });
 });

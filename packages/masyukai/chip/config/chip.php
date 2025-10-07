@@ -2,6 +2,17 @@
 
 declare(strict_types=1);
 
+$webhookKeysEnv = env('CHIP_WEBHOOK_PUBLIC_KEYS');
+$webhookKeys = [];
+
+if ($webhookKeysEnv !== null) {
+    $decodedWebhookKeys = json_decode($webhookKeysEnv, true);
+
+    if (is_array($decodedWebhookKeys)) {
+        $webhookKeys = $decodedWebhookKeys;
+    }
+}
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -55,16 +66,40 @@ return [
     |
     */
     'webhooks' => [
+        'company_public_key' => env('CHIP_COMPANY_PUBLIC_KEY', env('CHIP_WEBHOOK_PUBLIC_KEY')),
         'public_key' => env('CHIP_WEBHOOK_PUBLIC_KEY'),
+        'webhook_keys' => $webhookKeys,
         'verify_signature' => env('CHIP_WEBHOOK_VERIFY_SIGNATURE', true),
         'middleware' => ['api'],
         'allowed_events' => [
+            // Purchase events
             'purchase.created',
             'purchase.paid',
+            'purchase.payment_failure',
+            'purchase.pending_execute',
+            'purchase.pending_charge',
             'purchase.cancelled',
+            'purchase.hold',
+            'purchase.captured',
+            'purchase.pending_capture',
+            'purchase.released',
+            'purchase.pending_release',
+            'purchase.preauthorized',
+            'purchase.pending_recurring_token_delete',
+            'purchase.recurring_token_deleted',
+            'purchase.subscription_charge_failure',
+            'purchase.pending_refund',
+            // Payment events
             'payment.created',
             'payment.paid',
             'payment.failed',
+            'payment.refunded',
+            // Billing template events
+            'billing_template_client.subscription_billing_cancelled',
+            // Payout events
+            'payout.pending',
+            'payout.failed',
+            'payout.success',
             // CHIP Send webhook events
             'bank_account_status',
             'budget_allocation_status',

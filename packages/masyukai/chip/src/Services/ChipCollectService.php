@@ -9,13 +9,14 @@ use MasyukAI\Chip\Builders\PurchaseBuilder;
 use MasyukAI\Chip\Clients\ChipCollectClient;
 use MasyukAI\Chip\DataObjects\Client;
 use MasyukAI\Chip\DataObjects\ClientDetails;
+use MasyukAI\Chip\DataObjects\CompanyStatement;
 use MasyukAI\Chip\DataObjects\Purchase;
 use MasyukAI\Chip\Services\Collect\AccountApi;
 use MasyukAI\Chip\Services\Collect\ClientsApi;
 use MasyukAI\Chip\Services\Collect\PurchasesApi;
 use MasyukAI\Chip\Services\Collect\WebhooksApi;
 
-final class ChipCollectService
+class ChipCollectService
 {
     private PurchasesApi $purchases;
 
@@ -208,25 +209,39 @@ final class ChipCollectService
      * @param  array<string, mixed>  $filters
      * @return array<string, mixed>
      */
+    /**
+     * @param  array<string, mixed>  $filters
+     * @return array<int, CompanyStatement>|array{data: array<int, CompanyStatement>, meta?: array<string, mixed>}
+     */
     public function listCompanyStatements(array $filters = []): array
     {
-        return $this->account->companyStatements($filters);
+        $response = $this->account->companyStatements($filters);
+
+        if (isset($response['data']) && is_array($response['data'])) {
+            $response['data'] = array_map(static fn (array $item) => CompanyStatement::fromArray($item), $response['data']);
+
+            return $response;
+        }
+
+        if (is_array($response) && array_is_list($response)) {
+            return array_map(static fn (array $item) => CompanyStatement::fromArray($item), $response);
+        }
+
+        return [];
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    public function getCompanyStatement(string $statementId): array
+    public function getCompanyStatement(string $statementId): CompanyStatement
     {
-        return $this->account->companyStatement($statementId);
+        $response = $this->account->companyStatement($statementId);
+
+        return CompanyStatement::fromArray($response);
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    public function cancelCompanyStatement(string $statementId): array
+    public function cancelCompanyStatement(string $statementId): CompanyStatement
     {
-        return $this->account->cancelCompanyStatement($statementId);
+        $response = $this->account->cancelCompanyStatement($statementId);
+
+        return CompanyStatement::fromArray($response);
     }
 
     /**

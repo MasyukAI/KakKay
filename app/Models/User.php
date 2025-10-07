@@ -106,7 +106,8 @@ final class User extends Authenticatable
     /**
      * Scope for guest users
      */
-    public function scopeGuests($query)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function guests($query)
     {
         return $query->where('is_guest', true);
     }
@@ -114,7 +115,8 @@ final class User extends Authenticatable
     /**
      * Scope for registered users
      */
-    public function scopeRegistered($query)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function registered($query)
     {
         return $query->where('is_guest', false);
     }

@@ -6,7 +6,7 @@ namespace MasyukAI\Cart\Exceptions;
 
 use Exception;
 
-final class CartException extends Exception
+class CartException extends Exception
 {
     //
 }

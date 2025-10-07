@@ -7,8 +7,10 @@ namespace MasyukAI\Chip\Services;
 use MasyukAI\Chip\Clients\ChipSendClient;
 use MasyukAI\Chip\DataObjects\BankAccount;
 use MasyukAI\Chip\DataObjects\SendInstruction;
+use MasyukAI\Chip\DataObjects\SendLimit;
+use MasyukAI\Chip\DataObjects\SendWebhook;
 
-final class ChipSendService
+class ChipSendService
 {
     public function __construct(
         private ChipSendClient $client
@@ -61,6 +63,13 @@ final class ChipSendService
         $endpoint = 'send/send_instructions'.($queryString ? "?{$queryString}" : '');
 
         return $this->client->get($endpoint);
+    }
+
+    public function getSendLimit(int|string $id): SendLimit
+    {
+        $response = $this->client->get("send/send_limits/{$id}");
+
+        return SendLimit::fromArray($response);
     }
 
     public function createBankAccount(
@@ -183,32 +192,34 @@ final class ChipSendService
      * Create a webhook for CHIP Send
      *
      * @param  array<string, mixed>  $data
-     * @return array<string, mixed>
      */
-    public function createSendWebhook(array $data): array
+    public function createSendWebhook(array $data): SendWebhook
     {
-        return $this->client->post('send/webhooks', $data);
+        $response = $this->client->post('send/webhooks', $data);
+
+        return SendWebhook::fromArray($response);
     }
 
     /**
      * Get a CHIP Send webhook
-     *
-     * @return array<string, mixed>
      */
-    public function getSendWebhook(string $id): array
+    public function getSendWebhook(string $id): SendWebhook
     {
-        return $this->client->get("send/webhooks/{$id}");
+        $response = $this->client->get("send/webhooks/{$id}");
+
+        return SendWebhook::fromArray($response);
     }
 
     /**
      * Update a CHIP Send webhook
      *
      * @param  array<string, mixed>  $data
-     * @return array<string, mixed>
      */
-    public function updateSendWebhook(string $id, array $data): array
+    public function updateSendWebhook(string $id, array $data): SendWebhook
     {
-        return $this->client->put("send/webhooks/{$id}", $data);
+        $response = $this->client->put("send/webhooks/{$id}", $data);
+
+        return SendWebhook::fromArray($response);
     }
 
     /**
@@ -220,17 +231,27 @@ final class ChipSendService
     }
 
     /**
-     * List CHIP Send webhooks
-     *
      * @param  array<string, mixed>  $filters
-     * @return array<string, mixed>
+     * @return array<int, SendWebhook>|array{data: array<int, SendWebhook>, meta?: array<string, mixed>}
      */
     public function listSendWebhooks(array $filters = []): array
     {
         $queryString = http_build_query($filters);
         $endpoint = 'send/webhooks'.($queryString ? '?'.$queryString : '');
 
-        return $this->client->get($endpoint);
+        $response = $this->client->get($endpoint);
+
+        if (isset($response['data']) && is_array($response['data'])) {
+            $response['data'] = array_map(static fn (array $item) => SendWebhook::fromArray($item), $response['data']);
+
+            return $response;
+        }
+
+        if (is_array($response) && array_is_list($response)) {
+            return array_map(static fn (array $item) => SendWebhook::fromArray($item), $response);
+        }
+
+        return [];
     }
 
     /**

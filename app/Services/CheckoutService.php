@@ -42,6 +42,11 @@ final class CheckoutService
 
             if ($validation['is_valid']) {
                 // Reuse existing valid payment intent
+                session([
+                    'chip_last_purchase_id' => $validation['intent']['purchase_id'] ?? null,
+                    'chip_last_reference' => $validation['intent']['customer_data']['reference'] ?? ($validation['intent']['reference'] ?? null),
+                ]);
+
                 return [
                     'success' => true,
                     'purchase_id' => $validation['intent']['purchase_id'],
@@ -56,7 +61,16 @@ final class CheckoutService
             }
 
             // Create new payment intent
-            return $this->paymentService->createPaymentIntent($cart, $customerData);
+            $result = $this->paymentService->createPaymentIntent($cart, $customerData);
+
+            if ($result['success']) {
+                session([
+                    'chip_last_purchase_id' => $result['purchase_id'] ?? null,
+                    'chip_last_reference' => CartFacade::getId(),
+                ]);
+            }
+
+            return $result;
 
         } catch (Exception $e) {
             Log::error('Enhanced checkout failed', [
@@ -77,27 +91,54 @@ final class CheckoutService
      */
     public function handlePaymentSuccess(string $purchaseId, array $webhookData): ?Order
     {
+        $eventName = $webhookData['event'] ?? null;
+        $invocationSource = $webhookData['source']
+            ?? ($eventName !== null ? 'webhook' : 'success_callback');
+
+        Log::debug('handlePaymentSuccess invoked', [
+            'purchase_id' => $purchaseId,
+            'webhook_purchase_id' => $webhookData['purchase_id'] ?? $webhookData['id'] ?? null,
+            'payload_keys' => array_keys($webhookData),
+            'source' => $invocationSource,
+            'webhook_id' => $webhookData['webhook_id'] ?? null,
+        ]);
+
         try {
+            $webhookPurchaseId = $webhookData['purchase_id']
+                ?? $webhookData['id']
+                ?? $purchaseId;
+
             // Check if order already exists for this purchase (idempotency)
-            $existingOrder = Order::whereHas('payments', function ($query) use ($purchaseId) {
-                $query->where('gateway_payment_id', $purchaseId);
+            $existingOrder = Order::whereHas('payments', function ($query) use ($purchaseId, $webhookPurchaseId) {
+                $query->whereIn('gateway_payment_id', [$purchaseId, $webhookPurchaseId]);
             })->first();
 
             if ($existingOrder) {
                 Log::info('Order already exists for purchase, skipping duplicate creation', [
                     'order_id' => $existingOrder->id,
                     'order_number' => $existingOrder->order_number,
-                    'purchase_id' => $purchaseId,
+                    'purchase_id' => $webhookPurchaseId,
+                    'source' => $invocationSource,
                 ]);
 
                 return $existingOrder;
             }
 
             // Find cart with this payment intent
-            $cart = $this->findCartByPurchaseId($purchaseId);
+            $cart = $this->findCartByReference($purchaseId, $webhookData);
+
+            if (! $cart) {
+                Log::warning('handlePaymentSuccess could not locate cart', [
+                    'purchase_id' => $purchaseId,
+                    'webhook_reference' => $webhookData['reference'] ?? null,
+                    'source' => $invocationSource,
+                ]);
+            }
             if (! $cart) {
                 Log::error('Cart not found for successful payment', [
                     'purchase_id' => $purchaseId,
+                    'reference' => $webhookData['reference'] ?? null,
+                    'source' => $invocationSource,
                 ]);
 
                 return null;
@@ -107,17 +148,37 @@ final class CheckoutService
             if (! $paymentIntent) {
                 Log::error('Payment intent not found in cart metadata', [
                     'purchase_id' => $purchaseId,
+                    'source' => $invocationSource,
                 ]);
 
                 return null;
             }
 
+            Log::debug('Payment intent metadata loaded for purchase success', [
+                'purchase_id' => $purchaseId,
+                'intent_purchase_id' => $paymentIntent['purchase_id'] ?? null,
+                'intent_status' => $paymentIntent['status'] ?? null,
+                'reference' => data_get($paymentIntent, 'customer_data.reference', $paymentIntent['reference'] ?? null),
+                'source' => $invocationSource,
+            ]);
+
             // Validate webhook data against payment intent
             if (! $this->paymentService->validatePaymentWebhook($paymentIntent, $webhookData)) {
+                Log::warning('Payment intent validation failed', [
+                    'purchase_id' => $purchaseId,
+                    'source' => $invocationSource,
+                ]);
+
                 return null;
             }
 
-            $order = DB::transaction(function () use ($paymentIntent, $webhookData, $purchaseId) {
+            Log::info('Payment payload validated against cart intent', [
+                'purchase_id' => $webhookPurchaseId,
+                'amount' => $paymentIntent['amount'] ?? null,
+                'source' => $invocationSource,
+            ]);
+
+            $order = DB::transaction(function () use ($paymentIntent, $webhookData, $webhookPurchaseId, $invocationSource) {
                 // Create order from cart snapshot
                 $order = $this->createOrderFromCartSnapshot(
                     $paymentIntent['cart_snapshot'],
@@ -129,8 +190,9 @@ final class CheckoutService
 
                 Log::info('Order created successfully from cart payment intent', [
                     'order_id' => $order->id,
-                    'purchase_id' => $purchaseId,
+                    'purchase_id' => $webhookPurchaseId,
                     'amount' => $paymentIntent['amount'],
+                    'source' => $invocationSource,
                 ]);
 
                 return $order;
@@ -143,16 +205,24 @@ final class CheckoutService
                 $cart->clear();
                 Log::info('Cart cleared successfully after order creation', [
                     'order_id' => $order->id,
-                    'purchase_id' => $purchaseId,
+                    'purchase_id' => $webhookPurchaseId,
+                    'source' => $invocationSource,
                 ]);
             } catch (Exception $e) {
                 Log::error('Failed to clear cart after order creation', [
                     'order_id' => $order->id,
-                    'purchase_id' => $purchaseId,
+                    'purchase_id' => $webhookPurchaseId,
                     'error' => $e->getMessage(),
+                    'source' => $invocationSource,
                 ]);
                 // Don't fail the order creation if cart clearing fails
             }
+
+            Log::debug('handlePaymentSuccess completed successfully', [
+                'purchase_id' => $webhookPurchaseId,
+                'order_id' => $order->id,
+                'source' => $invocationSource,
+            ]);
 
             return $order;
 
@@ -160,6 +230,8 @@ final class CheckoutService
             Log::error('Failed to handle payment success', [
                 'purchase_id' => $purchaseId,
                 'error' => $e->getMessage(),
+                'payload_keys' => array_keys($webhookData),
+                'source' => $invocationSource,
             ]);
 
             return null;
@@ -178,6 +250,7 @@ final class CheckoutService
             'is_valid' => $validation['is_valid'],
             'cart_changed' => $validation['cart_changed'] ?? false,
             'intent' => $validation['intent'] ?? null,
+            'has_active_intent' => $validation['has_active_intent'] ?? false,
         ];
     }
 
@@ -203,7 +276,7 @@ final class CheckoutService
         $cartItems = $cartSnapshot['items'] ?? $cartSnapshot;
 
         // Create order using OrderService with cart items
-        return $this->orderService->createOrder($user, $address, $customerData, $cartItems);
+        return $this->orderService->createOrder($user, $address, $customerData, $cartItems, $cartSnapshot);
     }
 
     /**
@@ -219,28 +292,45 @@ final class CheckoutService
             'currency' => 'MYR',
             'gateway_payment_id' => $paymentIntent['purchase_id'],
             'gateway_response' => $webhookData,
+            'reference' => $paymentIntent['customer_data']['reference']
+                ?? ($paymentIntent['reference'] ?? null),
             'paid_at' => now(),
         ]);
     }
 
     /**
-     * Find cart by reference (cart ID) using direct primary key lookup
-     * Much faster than JSONB query - uses primary key index
+     * Find cart by reference (cart ID) from webhook data or fallback to CHIP API
+     * Uses direct primary key lookup - much faster than JSONB query
      */
-    private function findCartByPurchaseId(string $purchaseId): ?Cart
+    private function findCartByReference(string $purchaseId, array $webhookData): ?Cart
     {
-        // First, get the purchase from CHIP to extract the reference (cart ID)
-        $purchaseStatus = $this->paymentService->getPurchaseStatus($purchaseId);
+        // Try to get cart reference from webhook data first (faster)
+        $cartId = $webhookData['reference'] ?? null;
 
-        if (! $purchaseStatus || ! isset($purchaseStatus['reference'])) {
-            Log::warning('Purchase status missing or no reference found', [
+        // Fallback: fetch from CHIP API if reference not in webhook
+        if (! $cartId) {
+            Log::info('Reference not in webhook, fetching from CHIP API', [
                 'purchase_id' => $purchaseId,
             ]);
 
-            return null;
-        }
+            $purchaseStatus = $this->paymentService->getPurchaseStatus($purchaseId);
 
-        $cartId = $purchaseStatus['reference'];
+            if (! $purchaseStatus || ! isset($purchaseStatus['reference'])) {
+                Log::warning('Purchase status missing or no reference found', [
+                    'purchase_id' => $purchaseId,
+                ]);
+
+                return null;
+            }
+
+            Log::debug('Purchase status retrieved for cart lookup', [
+                'purchase_id' => $purchaseId,
+                'status' => $purchaseStatus['status'] ?? null,
+                'reference' => $purchaseStatus['reference'],
+            ]);
+
+            $cartId = $purchaseStatus['reference'];
+        }
 
         // Direct primary key lookup - blazing fast!
         $cartData = DB::table('carts')->where('id', $cartId)->first();
@@ -253,6 +343,13 @@ final class CheckoutService
 
             return null;
         }
+
+        Log::debug('Cart located for payment success', [
+            'cart_id' => $cartId,
+            'instance' => $cartData->instance,
+            'identifier' => $cartData->identifier,
+            'metadata_present' => ! empty($cartData->metadata),
+        ]);
 
         // Get CartManager and reconstruct Cart instance from database
         $cartManager = app(\MasyukAI\Cart\CartManager::class);
@@ -302,7 +399,7 @@ final class CheckoutService
             'country' => $customerData['country'],
             'postcode' => $customerData['postcode'],
             'phone' => $customerData['phone'],
-            'type' => $customerData['type'] ?? 'billing',
+            'type' => $customerData['type'] ?? 'shipping',
             'is_primary' => true,
         ]);
     }
