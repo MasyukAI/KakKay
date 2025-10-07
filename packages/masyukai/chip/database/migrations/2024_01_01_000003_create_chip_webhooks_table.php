@@ -30,7 +30,7 @@ return new class extends Migration
             $table->string('event_type')->nullable(); // Which event triggered webhook
             $table->jsonb('payload')->nullable(); // Full webhook payload
             $table->jsonb('headers')->nullable(); // Request headers
-            $table->string('signature')->nullable(); // Webhook signature
+            $table->text('signature')->nullable(); // Webhook signature
 
             // Processing status
             $table->boolean('verified')->default(false);

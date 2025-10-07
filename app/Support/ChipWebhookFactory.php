@@ -14,8 +14,8 @@ final class ChipWebhookFactory
     public static function fromRequest(Request $request, ?string $webhookId, string $publicKey): Webhook
     {
         $payload = $request->all();
-        $event = $payload['event'] ?? null;
-        $data = $payload['data'] ?? [];
+        $event = $payload['event_type'] ?? $payload['event'] ?? null;
+        $data = $payload; // CHIP puts all purchase data at root level
 
         $timestamp = $payload['timestamp'] ?? now()->toIso8601String();
         $epoch = is_numeric($timestamp)
