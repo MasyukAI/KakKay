@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('email', 254);
 
             // List of subscribed event hooks as returned by the API
-            $table->json('event_hooks');
+            $table->jsonb('event_hooks');
 
             // API lifecycle timestamps (ISO8601 strings converted to timestamps)
             $table->timestamp('created_at');

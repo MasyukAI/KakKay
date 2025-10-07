@@ -21,15 +21,15 @@ return new class extends Migration
 
             // Webhook configuration - as per CHIP API
             $table->string('title', 100); // Arbitrary title of webhook
-            $table->json('events'); // List of events to trigger webhook
+            $table->jsonb('events'); // List of events to trigger webhook
             $table->string('callback', 500); // Callback URL
             $table->boolean('all_events')->default(false); // Trigger on all events
             $table->text('public_key')->nullable(); // PEM-encoded RSA public key
 
             // Event processing fields - for handling incoming webhooks
             $table->string('event_type')->nullable(); // Which event triggered webhook
-            $table->json('payload')->nullable(); // Full webhook payload
-            $table->json('headers')->nullable(); // Request headers
+            $table->jsonb('payload')->nullable(); // Full webhook payload
+            $table->jsonb('headers')->nullable(); // Request headers
             $table->string('signature')->nullable(); // Webhook signature
 
             // Processing status

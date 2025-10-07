@@ -20,10 +20,10 @@ return new class extends Migration
             $table->integer('updated_on'); // Unix timestamp as per API
 
             // Client details - stored as JSON per API structure
-            $table->json('client'); // Full client object from API
+            $table->jsonb('client'); // Full client object from API
 
             // Purchase details - stored as JSON per API structure
-            $table->json('purchase'); // Full purchase object from API
+            $table->jsonb('purchase'); // Full purchase object from API
 
             // Core identifiers - all UUIDs as per API
             $table->uuid('brand_id');
@@ -33,12 +33,12 @@ return new class extends Migration
             $table->uuid('client_id')->nullable();
 
             // Payment details - stored as JSON when present
-            $table->json('payment')->nullable(); // Full payment object from API
+            $table->jsonb('payment')->nullable(); // Full payment object from API
 
             // Additional API objects
-            $table->json('issuer_details'); // Company/brand details
-            $table->json('transaction_data'); // Payment method specific data
-            $table->json('status_history'); // Status change tracking
+            $table->jsonb('issuer_details'); // Company/brand details
+            $table->jsonb('transaction_data'); // Payment method specific data
+            $table->jsonb('status_history'); // Status change tracking
 
             // Status and workflow - All official CHIP purchase statuses
             $table->string('status', 32)
@@ -70,10 +70,10 @@ return new class extends Migration
             $table->integer('refundable_amount')->default(0);
 
             // Currency conversion data
-            $table->json('currency_conversion')->nullable();
+            $table->jsonbb('currency_conversion')->nullable();
 
             // Payment methods and restrictions
-            $table->json('payment_method_whitelist')->nullable();
+            $table->jsonb('payment_method_whitelist')->nullable();
 
             // URLs and redirects
             $table->string('success_redirect', 500)->nullable();

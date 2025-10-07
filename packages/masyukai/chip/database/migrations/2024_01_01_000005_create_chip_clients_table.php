@@ -42,8 +42,8 @@ return new class extends Migration
             $table->string('shipping_state', 128)->nullable();
 
             // Email notifications
-            $table->json('cc')->nullable(); // Carbon copy email addresses
-            $table->json('bcc')->nullable(); // Blind carbon copy email addresses
+            $table->jsonb('cc')->nullable(); // Carbon copy email addresses
+            $table->jsonb('bcc')->nullable(); // Blind carbon copy email addresses
 
             // Company information
             $table->string('legal_name', 128)->nullable(); // Legal company name
