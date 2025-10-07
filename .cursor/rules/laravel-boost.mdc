@@ -830,6 +830,99 @@ it('verifies user can login', function () {
     $response->assertSuccessful();
     expect(auth()->check())->toBeTrue();
 });
+```
+
+## Webhook Testing with Cloudflare Tunnel
+
+For end-to-end testing of webhooks (e.g., payment gateway callbacks), use Cloudflare Tunnel to create a public URL.
+
+### Setup
+1. **Start Cloudflare Tunnel:** Run `cloudflared tunnel run kakkay-local` in a **dedicated terminal session**
+2. **Keep Terminal Open:** The `cloudflared` command MUST stay running - do not close the terminal or run other commands
+3. **Public URL:** The tunnel is configured at `https://local.kakkay.my` (persistent subdomain)
+4. **Tunnel Config:** Located at `~/.cloudflared/config.yml`
+5. **Tunnel ID:** `de670c7a-c0a9-4603-b5b5-c807f9d57872`
+6. **Service URL:** Points to `http://kakkay.test:80` (Herd handles SSL separately)
+
+⚠️ **CRITICAL:** If you close the terminal running `cloudflared`, the tunnel will close immediately and webhooks will fail.
+
+### Configuration
+The tunnel is pre-configured with:
+- **DNS Record:** `local.kakkay.my` → `de670c7a-c0a9-4603-b5b5-c807f9d57872.cfargotunnel.com`
+- **Herd Domain:** `local.kakkay.my` linked to `/Users/Saiffil/Herd/kakkay`
+- **SSL:** Enabled via `herd secure local.kakkay.my`
+- **Session Domain:** `.kakkay.my` (configured in `.env` as `SESSION_DOMAIN=.kakkay.my`)
+
+### Usage in Tests
+- The public URL `https://local.kakkay.my` should be used for webhook callbacks
+- Format: `https://local.kakkay.my/webhooks/chip/{webhook_id}` for specific webhooks
+- Format: `https://local.kakkay.my/callbacks/chip/success` for success callbacks
+- External payment gateways can POST to this URL and reach your local application
+
+### Example Workflow
+```bash
+# Terminal 1: Start the tunnel (KEEP THIS RUNNING!)
+cloudflared tunnel run kakkay-local
+
+# Output shows:
+# Connection registered with 4 connections (Singapore)
+# DO NOT CLOSE THIS TERMINAL OR RUN OTHER COMMANDS HERE!
+
+# Terminal 2: Verify configuration
+cd /Users/Saiffil/Herd/kakkay
+
+# Ensure .env has the correct public URL
+# PUBLIC_URL=https://local.kakkay.my
+# SESSION_DOMAIN=.kakkay.my
+# SESSION_SECURE_COOKIE=true
+
+php artisan config:clear
+php artisan config:cache
+
+# Test webhook accessibility
+curl https://local.kakkay.my/webhooks/chip/wh_test -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"event":"purchase.paid","data":{"id":"test"}}'
+```
+
+### Best Practices
+- **Persistent URL:** Unlike Expose, the URL `local.kakkay.my` is permanent (no expiration)
+- **Session Configuration:** Ensure `SESSION_DOMAIN=.kakkay.my` to avoid "page expired" errors
+- **Secure Cookies:** Set `SESSION_SECURE_COOKIE=true` for HTTPS tunnel
+- **Security:** Only use `local.` subdomain for testing; production uses root domain
+- **Monitoring:** Check tunnel status with `cloudflared tunnel info kakkay-local`
+- **Verification:** Test that the webhook route is publicly accessible before running full tests
+
+### Testing Webhook Flow
+1. Start `cloudflared tunnel run kakkay-local` to activate tunnel
+2. Configure payment gateway to use `https://local.kakkay.my/webhooks/chip/{webhook_id}` as callback
+3. Trigger payment flow through browser testing
+4. Payment gateway will POST webhook to public URL
+5. Webhook reaches local application through tunnel
+6. Verify order/payment creation in local database
+
+### Troubleshooting
+- **If webhook doesn't arrive:** Check that `cloudflared` is still running in terminal
+- **If webhook fails:** Check logs at `storage/logs/laravel.log` for errors
+- **If "page expired" errors:** Verify `SESSION_DOMAIN=.kakkay.my` in `.env` and run `php artisan config:clear`
+- **If tunnel disconnects:** Restart with `cloudflared tunnel run kakkay-local`
+- **Check tunnel status:** Run `cloudflared tunnel info kakkay-local` to see active connections
+- **View tunnel logs:** Check `~/.cloudflared/*.log` for detailed tunnel logs
+
+### Cloudflare Tunnel Commands
+```bash
+# Start tunnel
+cloudflared tunnel run kakkay-local
+
+# Check tunnel info
+cloudflared tunnel info kakkay-local
+
+# List all tunnels
+cloudflared tunnel list
+
+# View tunnel configuration
+cat ~/.cloudflared/config.yml
+```
 
 
 === .ai/general rules ===
