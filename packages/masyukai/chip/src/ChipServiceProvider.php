@@ -21,14 +21,8 @@ final class ChipServiceProvider extends PackageServiceProvider
         $package
             ->name('chip')
             ->hasConfigFile()
-            ->hasMigrations([
-                'create_chip_purchases_table',
-                'create_chip_payments_table',
-                'create_chip_webhooks_table',
-                'create_chip_bank_accounts_table',
-                'create_chip_clients_table',
-                'create_chip_send_instructions_table',
-            ])
+            ->discoversMigrations()
+            ->runsMigrations()
             ->hasRoute('api')
             ->hasCommand(ChipHealthCheckCommand::class);
     }

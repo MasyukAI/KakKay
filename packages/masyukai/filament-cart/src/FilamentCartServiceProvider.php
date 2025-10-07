@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace MasyukAI\FilamentCart;
 
-use Illuminate\Support\Facades\Event;
-use Illuminate\Support\ServiceProvider;
 use MasyukAI\Cart\Events\CartCleared;
 use MasyukAI\Cart\Events\CartConditionAdded as ConditionAdded;
 use MasyukAI\Cart\Events\CartConditionRemoved as ConditionRemoved;
@@ -26,41 +24,40 @@ use MasyukAI\FilamentCart\Listeners\SyncCartOnClear;
 use MasyukAI\FilamentCart\Listeners\SyncCompleteCart;
 use MasyukAI\FilamentCart\Services\CartSyncManager;
 use MasyukAI\FilamentCart\Services\NormalizedCartSynchronizer;
+use Spatie\LaravelPackageTools\Package;
+use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-final class FilamentCartServiceProvider extends ServiceProvider
+final class FilamentCartServiceProvider extends PackageServiceProvider
 {
-    public function register(): void
+    public function configurePackage(Package $package): void
     {
-        $this->mergeConfigFrom(
-            __DIR__.'/../config/filament-cart.php',
-            'filament-cart'
-        );
+        $package
+            ->name('filament-cart')
+            ->hasConfigFile('filament-cart')
+            ->discoversMigrations()
+            ->runsMigrations();
+    }
 
+    public function packageRegistered(): void
+    {
         $this->app->singleton(NormalizedCartSynchronizer::class);
         $this->app->singleton(CartSyncManager::class);
     }
 
-    public function boot(): void
+    public function packageBooted(): void
     {
-        $this->publishes([
-            __DIR__.'/../config/filament-cart.php' => config_path('filament-cart.php'),
-        ], 'filament-cart-config');
-
-        $this->publishes([
-            __DIR__.'/../database/factories' => database_path('factories'),
-        ], 'filament-cart-factories');
-
-        $this->publishes([
-            __DIR__.'/../database/seeders' => database_path('seeders'),
-        ], 'filament-cart-seeders');
-
-        $this->publishes([
-            __DIR__.'/../database/migrations' => database_path('migrations'),
-        ], 'filament-cart-migrations');
-
-        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
-
         $this->registerEventListeners();
+    }
+
+    /**
+     * @return array<string>
+     */
+    public function provides(): array
+    {
+        return [
+            NormalizedCartSynchronizer::class,
+            CartSyncManager::class,
+        ];
     }
 
     /**
@@ -68,23 +65,24 @@ final class FilamentCartServiceProvider extends ServiceProvider
      */
     protected function registerEventListeners(): void
     {
-        Event::listen(CartCreated::class, [ApplyGlobalConditions::class, 'handleCartCreated']);
-        Event::listen(CartUpdated::class, [ApplyGlobalConditions::class, 'handleCartUpdated']);
+        // Apply global conditions
+        $this->app['events']->listen(CartCreated::class, [ApplyGlobalConditions::class, 'handleCartCreated']);
+        $this->app['events']->listen(CartUpdated::class, [ApplyGlobalConditions::class, 'handleCartUpdated']);
 
         // Item events
-        Event::listen(ItemAdded::class, SyncCartItemOnAdd::class);
-        Event::listen(ItemUpdated::class, SyncCartItemOnUpdate::class);
-        Event::listen(ItemRemoved::class, SyncCartItemOnRemove::class);
+        $this->app['events']->listen(ItemAdded::class, SyncCartItemOnAdd::class);
+        $this->app['events']->listen(ItemUpdated::class, SyncCartItemOnUpdate::class);
+        $this->app['events']->listen(ItemRemoved::class, SyncCartItemOnRemove::class);
 
         // Condition events
-        Event::listen(ConditionAdded::class, SyncCartConditionOnAdd::class);
-        Event::listen(ItemConditionAdded::class, SyncCartConditionOnAdd::class);
-        Event::listen(ConditionRemoved::class, SyncCartConditionOnRemove::class);
-        Event::listen(ItemConditionRemoved::class, SyncCartConditionOnRemove::class);
+        $this->app['events']->listen(ConditionAdded::class, SyncCartConditionOnAdd::class);
+        $this->app['events']->listen(ItemConditionAdded::class, SyncCartConditionOnAdd::class);
+        $this->app['events']->listen(ConditionRemoved::class, SyncCartConditionOnRemove::class);
+        $this->app['events']->listen(ItemConditionRemoved::class, SyncCartConditionOnRemove::class);
 
         // Cart events
-        Event::listen(CartCreated::class, SyncCompleteCart::class);
-        Event::listen(CartUpdated::class, SyncCompleteCart::class);
-        Event::listen(CartCleared::class, SyncCartOnClear::class);
+        $this->app['events']->listen(CartCreated::class, SyncCompleteCart::class);
+        $this->app['events']->listen(CartUpdated::class, SyncCompleteCart::class);
+        $this->app['events']->listen(CartCleared::class, SyncCartOnClear::class);
     }
 }
