@@ -8,6 +8,7 @@ use MasyukAI\Cart\Events\CartCleared;
 use MasyukAI\Cart\Events\CartConditionAdded as ConditionAdded;
 use MasyukAI\Cart\Events\CartConditionRemoved as ConditionRemoved;
 use MasyukAI\Cart\Events\CartCreated;
+use MasyukAI\Cart\Events\CartMerged;
 use MasyukAI\Cart\Events\CartUpdated;
 use MasyukAI\Cart\Events\ItemAdded;
 use MasyukAI\Cart\Events\ItemConditionAdded;
@@ -15,6 +16,7 @@ use MasyukAI\Cart\Events\ItemConditionRemoved;
 use MasyukAI\Cart\Events\ItemRemoved;
 use MasyukAI\Cart\Events\ItemUpdated;
 use MasyukAI\FilamentCart\Listeners\ApplyGlobalConditions;
+use MasyukAI\FilamentCart\Listeners\CleanupSnapshotOnCartMerged;
 use MasyukAI\FilamentCart\Listeners\SyncCartConditionOnAdd;
 use MasyukAI\FilamentCart\Listeners\SyncCartConditionOnRemove;
 use MasyukAI\FilamentCart\Listeners\SyncCartItemOnAdd;
@@ -84,5 +86,6 @@ final class FilamentCartServiceProvider extends PackageServiceProvider
         $this->app['events']->listen(CartCreated::class, SyncCompleteCart::class);
         $this->app['events']->listen(CartUpdated::class, SyncCompleteCart::class);
         $this->app['events']->listen(CartCleared::class, SyncCartOnClear::class);
+        $this->app['events']->listen(CartMerged::class, CleanupSnapshotOnCartMerged::class);
     }
 }

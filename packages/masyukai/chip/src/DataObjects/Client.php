@@ -11,6 +11,7 @@ final class Client
     /**
      * @param  array<int, mixed>  $cc
      * @param  array<int, mixed>  $bcc
+     * @param  array<int, mixed>  $delivery_methods
      * @param  array<string, mixed>|null  $address_data
      */
     public function __construct(
@@ -18,6 +19,7 @@ final class Client
         public readonly string $type,
         public readonly int $created_on,
         public readonly int $updated_on,
+        public readonly ?string $client_type,
         public readonly ?string $bank_account,
         public readonly ?string $bank_code,
         public readonly ?string $email,
@@ -36,6 +38,7 @@ final class Client
         public readonly ?string $shipping_state,
         public readonly array $cc,
         public readonly array $bcc,
+        public readonly array $delivery_methods,
         public readonly ?string $legal_name,
         public readonly ?string $brand_name,
         public readonly ?string $registration_number,
@@ -88,6 +91,7 @@ final class Client
             type: $data['type'] ?? 'client',
             created_on: (int) ($data['created_on'] ?? strtotime($data['created_at'] ?? 'now')),
             updated_on: (int) ($data['updated_on'] ?? strtotime($data['updated_at'] ?? 'now')),
+            client_type: $data['client_type'] ?? null,
             bank_account: $data['bank_account'] ?? null,
             bank_code: $data['bank_code'] ?? null,
             email: $data['email'] ?? null,
@@ -106,6 +110,7 @@ final class Client
             shipping_state: $data['shipping_state'] ?? null,
             cc: $data['cc'] ?? [],
             bcc: $data['bcc'] ?? [],
+            delivery_methods: $data['delivery_methods'] ?? [],
             legal_name: $data['legal_name'] ?? null,
             brand_name: $data['brand_name'] ?? null,
             registration_number: $data['registration_number'] ?? null,
@@ -141,6 +146,7 @@ final class Client
             'type' => $this->type,
             'created_on' => $this->created_on,
             'updated_on' => $this->updated_on,
+            'client_type' => $this->client_type,
             'bank_account' => $this->bank_account,
             'bank_code' => $this->bank_code,
             'email' => $this->email,
@@ -159,6 +165,7 @@ final class Client
             'shipping_state' => $this->shipping_state,
             'cc' => $this->cc,
             'bcc' => $this->bcc,
+            'delivery_methods' => $this->delivery_methods,
             'legal_name' => $this->legal_name,
             'brand_name' => $this->brand_name,
             'registration_number' => $this->registration_number,

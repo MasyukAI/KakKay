@@ -152,14 +152,8 @@ final class ChipPaymentGateway implements PaymentGatewayInterface
                 return null;
             }
 
-            return [
-                'id' => $purchase->id,
-                'status' => $purchase->status,
-                'reference' => $purchase->reference ?? null,
-                'checkout_url' => $purchase->checkout_url ?? null,
-                'created_at' => $purchase->created_at,
-                'updated_at' => $purchase->updated_at,
-            ];
+            // Return full purchase array to preserve all fields including sanitized UUIDs
+            return $purchase->toArray();
         } catch (Exception $e) {
             Log::error('Failed to get CHIP purchase status', [
                 'purchase_id' => $purchaseId,

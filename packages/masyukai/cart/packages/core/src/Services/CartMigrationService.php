@@ -115,7 +115,9 @@ class CartMigrationService
                     sourceCart: $targetCartInstance, // Limited by design
                     totalItemsMerged: array_sum(array_column($guestItems, 'quantity')),
                     mergeStrategy: $this->config['merge_strategy'] ?? 'add_quantities',
-                    hadConflicts: false
+                    hadConflicts: false,
+                    originalSourceIdentifier: $guestIdentifier, // Preserve original guest identifier
+                    originalTargetIdentifier: $userIdentifier, // Preserve original user identifier
                 ));
             }
 
@@ -156,7 +158,9 @@ class CartMigrationService
                 sourceCart: $targetCartInstance, // Limited by design
                 totalItemsMerged: array_sum(array_column($mergedItems, 'quantity')),
                 mergeStrategy: $this->config['merge_strategy'] ?? 'add_quantities',
-                hadConflicts: count($mergedItems) > count($guestItems)
+                hadConflicts: count($mergedItems) > count($guestItems),
+                originalSourceIdentifier: $guestIdentifier, // Preserve original guest identifier
+                originalTargetIdentifier: $userIdentifier, // Preserve original user identifier
             ));
         }
 

@@ -97,3 +97,57 @@ test('handlePaymentSuccess uses cart snapshot totals even when cart changes afte
 
     expect(CartFacade::isEmpty())->toBeTrue();
 });
+
+test('prepareSuccessView returns hydrated order data with cart and customer snapshots', function (): void {
+    CartFacade::clear();
+
+    $product = Product::factory()->create(['price' => 2250]);
+    CartFacade::add($product->id, $product->name, $product->price, 2);
+
+    $cart = CartFacade::getCurrentCart();
+    $reference = $cart->getId();
+
+    $customerData = [
+        'name' => 'Volt Customer',
+        'email' => 'volt@example.com',
+        'phone' => '60123456789',
+        'street1' => '1 Jalan Elektrik',
+        'street2' => 'Tingkat 3',
+        'city' => 'Shah Alam',
+        'state' => 'Selangor',
+        'country' => 'MY',
+        'postcode' => '40100',
+        'delivery_method' => 'express',
+    ];
+
+    $paymentService = app(PaymentService::class);
+    $paymentService->createPaymentIntent($cart, $customerData);
+
+    $intent = $cart->getMetadata('payment_intent');
+    expect($intent)->not->toBeNull();
+
+    $checkoutService = app(CheckoutService::class);
+
+    $webhookData = [
+        'event' => 'purchase.paid',
+        'purchase_id' => $intent['purchase_id'],
+        'amount' => $intent['amount'],
+        'reference' => $reference,
+    ];
+
+    $order = $checkoutService->handlePaymentSuccess($intent['purchase_id'], $webhookData);
+
+    expect($order)->not->toBeNull();
+
+    $payload = $checkoutService->prepareSuccessView($reference);
+
+    expect($payload['order'])->not->toBeNull();
+    expect($payload['order']->relationLoaded('orderItems'))->toBeTrue();
+    expect($payload['order']->relationLoaded('address'))->toBeTrue();
+    expect($payload['payment'])->not->toBeNull();
+    expect($payload['cartSnapshot'])->toBeArray();
+    expect($payload['cartSnapshot']['items'] ?? [])->not->toBeEmpty();
+    expect($payload['customerSnapshot'])->toMatchArray($customerData);
+    expect($payload['isCompleted'])->toBeTrue();
+    expect($payload['isPending'])->toBeFalse();
+});

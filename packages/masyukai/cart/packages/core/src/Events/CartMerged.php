@@ -42,6 +42,8 @@ final class CartMerged
      * @param  int  $totalItemsMerged  Total number of items that were merged
      * @param  string  $mergeStrategy  The strategy used for merging (e.g., 'add_quantities', 'keep_highest')
      * @param  bool  $hadConflicts  Whether there were conflicting items during merge
+     * @param  string|null  $originalSourceIdentifier  The original identifier of the source cart before swap (for cleanup)
+     * @param  string|null  $originalTargetIdentifier  The original identifier of the target cart before swap (for tracking)
      */
     public function __construct(
         public readonly Cart $targetCart,
@@ -49,6 +51,8 @@ final class CartMerged
         public readonly int $totalItemsMerged,
         public readonly string $mergeStrategy,
         public readonly bool $hadConflicts = false,
+        public readonly ?string $originalSourceIdentifier = null,
+        public readonly ?string $originalTargetIdentifier = null,
     ) {
         //
     }

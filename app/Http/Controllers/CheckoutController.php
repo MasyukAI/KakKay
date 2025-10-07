@@ -4,19 +4,17 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Models\Order;
 use App\Models\Payment;
 use App\Services\CheckoutService;
-use App\Services\PaymentService;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
-use MasyukAI\Cart\Facades\Cart;
 
 final class CheckoutController extends Controller
 {
+    public function __construct(private readonly CheckoutService $checkoutService) {}
+
     /**
      * Show checkout success page
      *
@@ -27,112 +25,11 @@ final class CheckoutController extends Controller
      */
     public function success(Request $request, string $reference): View
     {
-        $order = null;
-        $payment = null;
+        Log::debug('Checkout success redirect hit', ['reference' => $reference]);
 
-        Log::debug('Checkout success redirect hit', [
-            'reference' => $reference,
-        ]);
+        $payload = $this->checkoutService->prepareSuccessView($reference);
 
-        // Find cart by reference (cart ID) from database
-        $cartData = DB::table('carts')->where('id', $reference)->first();
-
-        if ($cartData && $cartData->metadata) {
-            $metadata = json_decode($cartData->metadata, true);
-            $paymentIntent = $metadata['payment_intent'] ?? null;
-
-            if ($paymentIntent && isset($paymentIntent['purchase_id'])) {
-                $purchaseId = $paymentIntent['purchase_id'];
-
-                Log::debug('Checkout redirect found cart payment intent', [
-                    'purchase_id' => $purchaseId,
-                    'cart_version' => $paymentIntent['cart_version'] ?? null,
-                    'intent_status' => $paymentIntent['status'] ?? null,
-                ]);
-
-                // First, check if webhook already created the order
-                $payment = Payment::where('gateway_payment_id', $purchaseId)->first();
-                $order = $payment?->order;
-
-                // If no order yet, try to create it immediately (better UX!)
-                if (! $order) {
-                    $checkoutService = app(CheckoutService::class);
-                    $paymentService = app(PaymentService::class);
-
-                    try {
-                        // Fetch payment details from CHIP to verify it's actually paid
-                        $chipPurchase = $paymentService->getPurchaseStatus($purchaseId);
-
-                        Log::debug('Checkout redirect CHIP purchase lookup', [
-                            'purchase_id' => $purchaseId,
-                            'chip_status' => $chipPurchase['status'] ?? null,
-                            'chip_reference' => $chipPurchase['reference'] ?? null,
-                        ]);
-
-                        if ($chipPurchase && $chipPurchase['status'] === 'paid') {
-                            $normalizedPurchaseData = array_merge($chipPurchase, [
-                                'purchase_id' => $chipPurchase['id'] ?? $purchaseId,
-                                'amount' => $paymentIntent['amount'] ?? null,
-                                'reference' => $chipPurchase['reference']
-                                    ?? ($paymentIntent['customer_data']['reference'] ?? $reference),
-                                'gateway' => 'chip',
-                                'source' => 'success_callback',
-                            ]);
-
-                            Log::debug('Checkout redirect normalized purchase data', [
-                                'purchase_id' => $normalizedPurchaseData['purchase_id'],
-                                'status' => $normalizedPurchaseData['status'] ?? null,
-                                'reference' => $normalizedPurchaseData['reference'] ?? null,
-                                'keys' => array_keys($normalizedPurchaseData),
-                            ]);
-
-                            // Create order immediately from cart metadata
-                            $order = $checkoutService->handlePaymentSuccess($purchaseId, $normalizedPurchaseData);
-                            $payment = $order?->payments()->first();
-
-                            Log::info('Order created on redirect (before webhook)', [
-                                'purchase_id' => $purchaseId,
-                                'order_id' => $order?->id,
-                                'source' => 'redirect',
-                            ]);
-                        }
-
-                        if (! $order) {
-                            Log::debug('Checkout redirect did not create order immediately', [
-                                'purchase_id' => $purchaseId,
-                                'chip_status' => $chipPurchase['status'] ?? null,
-                            ]);
-                        }
-                    } catch (Exception $e) {
-                        // If immediate creation fails, webhook will handle it
-                        Log::warning('Could not create order on redirect, webhook will handle', [
-                            'purchase_id' => $purchaseId,
-                            'error' => $e->getMessage(),
-                        ]);
-                    }
-                }
-            }
-        }
-
-        // Fallback: try to find payment by reference
-        if (! $payment) {
-            $payment = Payment::where('reference', $reference)->latest()->first();
-            $order = $payment?->order;
-        }
-
-        Log::debug('Checkout success response payload', [
-            'reference' => $reference,
-            'order_id' => $order?->id,
-            'payment_id' => $payment?->id,
-        ]);
-
-        return view('checkout.success', [
-            'order' => $order ?? null,
-            'payment' => $payment ?? null,
-            'reference' => $reference,
-            'isCompleted' => $payment && $payment->status === 'completed',
-            'isPending' => ! $order, // Show "processing" if no order yet
-        ]);
+        return view('checkout.success', $payload);
     }
 
     /**

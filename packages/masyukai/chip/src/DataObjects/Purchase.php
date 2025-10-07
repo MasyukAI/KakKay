@@ -23,7 +23,7 @@ class Purchase
         /** @var array<string, mixed> */
         public readonly array $status_history,
         public readonly ?int $viewed_on, // Unix timestamp or null
-        public readonly string $company_id, // UUID as string
+        public readonly ?string $company_id, // UUID as string or null
         public readonly bool $is_test,
         public readonly ?string $user_id, // UUID as string or null
         public readonly ?string $billing_template_id, // UUID as string or null
@@ -56,6 +56,15 @@ class Purchase
         public readonly ?string $direct_post_url,
         public readonly bool $marked_as_paid,
         public readonly ?string $order_id,
+        /** @var array<int, mixed> */
+        public readonly array $upsell_campaigns,
+        public readonly ?string $referral_campaign_id,
+        public readonly ?string $referral_code,
+        public readonly mixed $referral_code_details, // Can be null or object
+        public readonly ?string $referral_code_generated,
+        public readonly mixed $retain_level_details, // Can be null or object
+        public readonly bool $can_retrieve,
+        public readonly bool $can_chargeback,
     ) {}
 
     /**
@@ -90,6 +99,9 @@ class Purchase
      */
     public static function fromArray(array $data): self
     {
+        // Sanitize UUID fields - PostgreSQL UUID columns cannot accept empty strings
+        $data = self::sanitizeUuidFields($data);
+
         // Handle both API response structure and simplified test data
 
         // For timestamps, convert string dates to timestamps if needed
@@ -150,7 +162,7 @@ class Purchase
             status: $data['status'] ?? 'created',
             status_history: $data['status_history'] ?? [],
             viewed_on: $data['viewed_on'] ?? null,
-            company_id: $data['company_id'] ?? '',
+            company_id: $data['company_id'] ?? null,
             is_test: $data['is_test'] ?? true,
             user_id: $data['user_id'] ?? null,
             billing_template_id: $data['billing_template_id'] ?? null,
@@ -182,6 +194,14 @@ class Purchase
             direct_post_url: $data['direct_post_url'] ?? null,
             marked_as_paid: $data['marked_as_paid'] ?? false,
             order_id: $data['order_id'] ?? null,
+            upsell_campaigns: $data['upsell_campaigns'] ?? [],
+            referral_campaign_id: $data['referral_campaign_id'] ?? null,
+            referral_code: $data['referral_code'] ?? null,
+            referral_code_details: $data['referral_code_details'] ?? null,
+            referral_code_generated: $data['referral_code_generated'] ?? null,
+            retain_level_details: $data['retain_level_details'] ?? null,
+            can_retrieve: $data['can_retrieve'] ?? false,
+            can_chargeback: $data['can_chargeback'] ?? false,
         );
     }
 
@@ -250,6 +270,26 @@ class Purchase
         return in_array($this->refund_availability, ['all', 'partial_only']);
     }
 
+    public function canRetrieve(): bool
+    {
+        return $this->can_retrieve;
+    }
+
+    public function canChargeback(): bool
+    {
+        return $this->can_chargeback;
+    }
+
+    public function hasUpsellCampaigns(): bool
+    {
+        return count($this->upsell_campaigns) > 0;
+    }
+
+    public function hasReferralCode(): bool
+    {
+        return $this->referral_code !== null;
+    }
+
     public function getAmountInCurrency(): float
     {
         return $this->purchase->total / 100;
@@ -311,6 +351,41 @@ class Purchase
             'direct_post_url' => $this->direct_post_url,
             'marked_as_paid' => $this->marked_as_paid,
             'order_id' => $this->order_id,
+            'upsell_campaigns' => $this->upsell_campaigns,
+            'referral_campaign_id' => $this->referral_campaign_id,
+            'referral_code' => $this->referral_code,
+            'referral_code_details' => $this->referral_code_details,
+            'referral_code_generated' => $this->referral_code_generated,
+            'retain_level_details' => $this->retain_level_details,
+            'can_retrieve' => $this->can_retrieve,
+            'can_chargeback' => $this->can_chargeback,
         ];
+    }
+
+    /**
+     * Sanitize UUID fields to handle empty strings from CHIP API.
+     * PostgreSQL UUID columns cannot accept empty strings, only valid UUIDs or NULL.
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    private static function sanitizeUuidFields(array $data): array
+    {
+        $uuidFields = [
+            'company_id',
+            'user_id',
+            'billing_template_id',
+            'client_id',
+            'recurring_token',
+            'referral_campaign_id',
+        ];
+
+        foreach ($uuidFields as $field) {
+            if (isset($data[$field]) && $data[$field] === '') {
+                $data[$field] = null;
+            }
+        }
+
+        return $data;
     }
 }

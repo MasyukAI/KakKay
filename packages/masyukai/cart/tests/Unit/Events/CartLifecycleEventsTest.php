@@ -58,7 +58,15 @@ describe('CartMerged Event', function () {
         $sourceCart = $manager->getCartInstance('source', 'source-id');
         $targetCart = $manager->getCartInstance('target', 'target-id');
 
-        $event = new CartMerged($targetCart, $sourceCart, 2, 'add_quantities');
+        $event = new CartMerged(
+            targetCart: $targetCart,
+            sourceCart: $sourceCart,
+            totalItemsMerged: 2,
+            mergeStrategy: 'add_quantities',
+            hadConflicts: false,
+            originalSourceIdentifier: 'source-id',
+            originalTargetIdentifier: 'target-id'
+        );
 
         expect($event)->toBeInstanceOf(CartMerged::class);
         expect($event->sourceCart)->toBe($sourceCart);
@@ -73,7 +81,15 @@ describe('CartMerged Event', function () {
         $sourceCart->add('item-1', 'Item 1', 10.00);
         $sourceCart->add('item-2', 'Item 2', 20.00);
 
-        $event = new CartMerged($targetCart, $sourceCart, 2, 'add_quantities');
+        $event = new CartMerged(
+            targetCart: $targetCart,
+            sourceCart: $sourceCart,
+            totalItemsMerged: 2,
+            mergeStrategy: 'add_quantities',
+            hadConflicts: false,
+            originalSourceIdentifier: 'source-id',
+            originalTargetIdentifier: 'target-id'
+        );
 
         expect($event->totalItemsMerged)->toBe(2);
     });
@@ -83,7 +99,15 @@ describe('CartMerged Event', function () {
         $sourceCart = $manager->getCartInstance('source', 'source-id');
         $targetCart = $manager->getCartInstance('target', 'target-id');
 
-        $event = new CartMerged($targetCart, $sourceCart, 3, 'keep_highest', true);
+        $event = new CartMerged(
+            targetCart: $targetCart,
+            sourceCart: $sourceCart,
+            totalItemsMerged: 3,
+            mergeStrategy: 'keep_highest',
+            hadConflicts: true,
+            originalSourceIdentifier: 'source-id',
+            originalTargetIdentifier: 'target-id'
+        );
 
         expect($event->mergeStrategy)->toBe('keep_highest');
         expect($event->hadConflicts)->toBeTrue();
@@ -94,7 +118,15 @@ describe('CartMerged Event', function () {
         $sourceCart = $manager->getCartInstance('source', 'source-id');
         $targetCart = $manager->getCartInstance('target', 'target-id');
 
-        $event = new CartMerged($targetCart, $sourceCart, 3, 'add_quantities');
+        $event = new CartMerged(
+            targetCart: $targetCart,
+            sourceCart: $sourceCart,
+            totalItemsMerged: 3,
+            mergeStrategy: 'add_quantities',
+            hadConflicts: false,
+            originalSourceIdentifier: 'source-id',
+            originalTargetIdentifier: 'target-id'
+        );
         $array = $event->toArray();
 
         expect($array)->toBeArray();
@@ -111,7 +143,15 @@ describe('CartMerged Event', function () {
         $sourceCart = $manager->getCartInstance('source', 'source-id');
         $targetCart = $manager->getCartInstance('target', 'target-id');
 
-        $event = new CartMerged($targetCart, $sourceCart, 0, 'add_quantities');
+        $event = new CartMerged(
+            targetCart: $targetCart,
+            sourceCart: $sourceCart,
+            totalItemsMerged: 0,
+            mergeStrategy: 'add_quantities',
+            hadConflicts: false,
+            originalSourceIdentifier: 'source-id',
+            originalTargetIdentifier: 'target-id'
+        );
 
         expect($event->totalItemsMerged)->toBe(0);
     });
@@ -121,8 +161,24 @@ describe('CartMerged Event', function () {
         $sourceCart = $manager->getCartInstance('source', 'source-id');
         $targetCart = $manager->getCartInstance('target', 'target-id');
 
-        $eventWithConflict = new CartMerged($targetCart, $sourceCart, 5, 'keep_highest', true);
-        $eventWithoutConflict = new CartMerged($targetCart, $sourceCart, 3, 'add_quantities', false);
+        $eventWithConflict = new CartMerged(
+            targetCart: $targetCart,
+            sourceCart: $sourceCart,
+            totalItemsMerged: 5,
+            mergeStrategy: 'keep_highest',
+            hadConflicts: true,
+            originalSourceIdentifier: 'source-id',
+            originalTargetIdentifier: 'target-id'
+        );
+        $eventWithoutConflict = new CartMerged(
+            targetCart: $targetCart,
+            sourceCart: $sourceCart,
+            totalItemsMerged: 3,
+            mergeStrategy: 'add_quantities',
+            hadConflicts: false,
+            originalSourceIdentifier: 'source-id',
+            originalTargetIdentifier: 'target-id'
+        );
 
         expect($eventWithConflict->hadConflicts)->toBeTrue();
         expect($eventWithoutConflict->hadConflicts)->toBeFalse();

@@ -18,6 +18,7 @@ final class Webhook
      * @param  array<string, mixed>|null  $data
      * @param  array<string, mixed>|null  $payload
      * @param  array<string, string>|null  $headers
+     * @param  array<string>  $unique_brands
      */
     public function __construct(
         public readonly string $id,
@@ -29,6 +30,9 @@ final class Webhook
         public readonly string $public_key,
         public readonly array $events,
         public readonly string $callback,
+        public readonly bool $is_test,
+        public readonly string $version,
+        public readonly array $unique_brands,
         public readonly ?string $event = null,
         public readonly ?array $data = null,
         public readonly ?string $timestamp = null,
@@ -54,6 +58,9 @@ final class Webhook
             $events = is_array($data['event']) ? $data['event'] : [$data['event']];
             $events = array_combine(array_map('strval', array_keys($events)), array_values($events));
 
+            /** @var array<string> $uniqueBrands */
+            $uniqueBrands = $data['unique_brands'] ?? [];
+
             return new self(
                 id: $data['id'] ?? 'webhook_event_'.uniqid(),
                 type: 'webhook_event',
@@ -64,6 +71,9 @@ final class Webhook
                 public_key: '',
                 events: $events,
                 callback: '',
+                is_test: (bool) ($data['is_test'] ?? false),
+                version: $data['version'] ?? 'v1',
+                unique_brands: $uniqueBrands,
                 event: is_string($data['event']) ? $data['event'] : null,
                 data: $data['data'] ?? null,
                 timestamp: isset($data['timestamp']) ? (string) $data['timestamp'] : null,
@@ -84,6 +94,9 @@ final class Webhook
         $events = $data['events'] ?? [];
         $events = array_combine(array_map('strval', array_keys($events)), array_values($events));
 
+        /** @var array<string> $uniqueBrands */
+        $uniqueBrands = $data['unique_brands'] ?? [];
+
         return new self(
             id: $data['id'] ?? 'webhook_'.uniqid(),
             type: $data['type'] ?? 'webhook',
@@ -94,6 +107,9 @@ final class Webhook
             public_key: $data['public_key'] ?? '',
             events: $events,
             callback: $data['callback'] ?? '',
+            is_test: (bool) ($data['is_test'] ?? false),
+            version: $data['version'] ?? 'v1',
+            unique_brands: $uniqueBrands,
             event: null,
             data: null,
             timestamp: null,
@@ -139,6 +155,26 @@ final class Webhook
         return $this->all_events || in_array($eventType, $this->events);
     }
 
+    public function isTestWebhook(): bool
+    {
+        return $this->is_test;
+    }
+
+    public function isVersion1(): bool
+    {
+        return $this->version === 'v1';
+    }
+
+    public function hasBrands(): bool
+    {
+        return count($this->unique_brands) > 0;
+    }
+
+    public function getBrandIds(): array
+    {
+        return $this->unique_brands;
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -154,6 +190,9 @@ final class Webhook
             'public_key' => $this->public_key,
             'events' => $this->events,
             'callback' => $this->callback,
+            'is_test' => $this->is_test,
+            'version' => $this->version,
+            'unique_brands' => $this->unique_brands,
             'event' => $this->event,
             'data' => $this->data,
             'timestamp' => $this->timestamp,
