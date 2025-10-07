@@ -854,11 +854,32 @@ The tunnel is pre-configured with:
 - **SSL:** Enabled via `herd secure local.kakkay.my`
 - **Session Domain:** `.kakkay.my` (configured in `.env` as `SESSION_DOMAIN=.kakkay.my`)
 
+### Testing Workflow
+**IMPORTANT:** Always run browser tests through the local domain (`kakkay.test`) due to session domain restrictions, while keeping Cloudflare tunnel running for webhook/callback reception.
+
+1. **Start Cloudflare Tunnel** in dedicated terminal:
+   ```bash
+   cloudflared tunnel run kakkay-local
+   ```
+
+2. **Run Browser Tests** through local domain in separate terminal:
+   ```bash
+   # Access application at https://kakkay.test
+   # Webhooks/callbacks will be received at https://local.kakkay.my
+   ```
+
+3. **Verify Configuration:**
+   ```bash
+   cd /Users/Saiffil/Herd/kakkay
+   php artisan config:clear
+   php artisan config:cache
+   ```
+
 ### Usage in Tests
-- The public URL `https://local.kakkay.my` should be used for webhook callbacks
-- Format: `https://local.kakkay.my/webhooks/chip/{webhook_id}` for specific webhooks
-- Format: `https://local.kakkay.my/callbacks/chip/success` for success callbacks
-- External payment gateways can POST to this URL and reach your local application
+- **Browser Navigation:** Use `https://kakkay.test` for all browser interactions to maintain proper session handling
+- **Webhook URLs:** External services post to `https://local.kakkay.my/webhooks/chip/{webhook_id}` 
+- **Success Callbacks:** Post to `https://local.kakkay.my/callbacks/chip/success`
+- **Local Testing:** Use curl to simulate webhooks to the public tunnel URL
 
 ### Example Workflow
 ```bash
@@ -869,7 +890,7 @@ cloudflared tunnel run kakkay-local
 # Connection registered with 4 connections (Singapore)
 # DO NOT CLOSE THIS TERMINAL OR RUN OTHER COMMANDS HERE!
 
-# Terminal 2: Verify configuration
+# Terminal 2: Run browser tests through local domain
 cd /Users/Saiffil/Herd/kakkay
 
 # Ensure .env has the correct public URL
@@ -880,10 +901,13 @@ cd /Users/Saiffil/Herd/kakkay
 php artisan config:clear
 php artisan config:cache
 
-# Test webhook accessibility
+# Test webhook accessibility via tunnel
 curl https://local.kakkay.my/webhooks/chip/wh_test -X POST \
   -H "Content-Type: application/json" \
   -d '{"event":"purchase.paid","data":{"id":"test"}}'
+
+# Run browser tests at http://kakkay.test
+# Webhooks will be received through the tunnel
 ```
 
 ### Best Practices
@@ -901,6 +925,53 @@ curl https://local.kakkay.my/webhooks/chip/wh_test -X POST \
 4. Payment gateway will POST webhook to public URL
 5. Webhook reaches local application through tunnel
 6. Verify order/payment creation in local database
+
+### Chrome DevTools MCP Simulation
+For manual testing and debugging of webhooks and success callbacks, use Chrome DevTools MCP tools to simulate requests:
+
+**Setup:**
+- Open Chrome browser to `http://kakkay.test` (local domain for session handling)
+- Cloudflare tunnel must be running for webhook reception at `https://local.kakkay.my`
+- Use MCP Chrome DevTools tools to simulate HTTP requests
+
+**Simulating Webhooks:**
+```bash
+# Use MCP tools to POST to webhook endpoint
+POST https://local.kakkay.my/webhooks/chip/wh_test123
+Headers:
+  Content-Type: application/json
+  X-Signature: {valid_signature}
+Body:
+{
+  "event": "purchase.paid",
+  "data": {
+    "id": "test_purchase_123",
+    "reference": "cart_ref_456",
+    "status": "paid"
+  }
+}
+```
+
+**Simulating Success Callbacks:**
+```bash
+# Use MCP tools to POST to success callback endpoint
+POST https://local.kakkay.my/callbacks/chip/success
+Headers:
+  Content-Type: application/json
+  X-Signature: {valid_signature}
+Body:
+{
+  "event": "purchase.success",
+  "purchase_id": "test_purchase_123",
+  "reference": "cart_ref_456"
+}
+```
+
+**Verification:**
+- Check Laravel logs for webhook/callback processing messages
+- Verify database for created orders/payments
+- Monitor browser for success page redirects
+- Use Chrome DevTools Network tab to observe requests
 
 ### Troubleshooting
 - **If webhook doesn't arrive:** Check that `cloudflared` is still running in terminal
