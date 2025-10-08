@@ -11,6 +11,24 @@
 
 # MasyukAI Cart
 
+> A production-grade, multi-instance shopping cart engine for Laravel 12, crafted for modern commerce applications.
+
+MasyukAI Cart delivers developer ergonomics paired with enterprise durability: optimistic locking for concurrency safety, dynamic pricing rules, powerful event hooks, and comprehensive documentation. Whether you're building an online storefront, a B2B quoting system, or a headless checkout API, this package provides the foundation you need—without vendor lock-in.
+
+## ✨ Key Features
+
+- 🚀 **Ready in minutes** – Composer install, Laravel auto-discovery, intuitive fluent API
+- 💰 **Accurate totals** – Precision currency handling via [Akaunting Money](https://github.com/akaunting/money)
+- 🎯 **Dynamic pricing** – Stackable conditions for discounts, taxes, fees, and shipping
+- 🔄 **Flexible storage** – Session, cache, or database drivers with seamless identifier migration
+- 🔐 **Concurrency safe** – Optimistic locking prevents race conditions in high-traffic scenarios
+- 🎭 **Multi-instance** – Separate carts, wishlists, and quotes per user without collision
+- 🔔 **Event-driven** – Comprehensive events for auditing and integration workflows
+- ⚡ **Octane ready** – Works seamlessly with long-lived worker processes
+- ✅ **Battle-tested** – Comprehensive Pest test suite with 100+ tests
+
+# MasyukAI Cart
+
 > A production-grade, multi-instance shopping cart engine for Laravel 12, crafted for modern commerce teams.
 
 MasyukAI Cart pairs developer ergonomics with enterprise durability: optimistic locking, dynamic pricing rules, powerful analytics hooks, and batteries included documentation. Whether you’re building a classic storefront, a B2B quoting flow, or a headless checkout, this package gives you the building blocks you need—without vendor lock-in.
@@ -25,146 +43,190 @@ MasyukAI Cart pairs developer ergonomics with enterprise durability: optimistic 
 - ⚡ **Optional batteries** – Events, guest→user switching, multiple cart instances.
 - 🏗 **Full-stack ready** – Easy integration with Laravel, Livewire, Filament.
 
-## Documentation
 
-| Guide | Description |
-| --- | --- |
-| [Getting Started](docs/getting-started.md) | Installation checklist, first code sample, next steps. |
-| [Cart Operations](docs/cart-operations.md) | All item, total, metadata, and instance APIs. |
-| [Conditions & Discounts](docs/conditions.md) | Build complex promotions, taxes, shipping fees, and dynamic rules. |
-| [Configuration Reference](docs/configuration.md) | Every config flag, explained and cross-linked. |
-| [Storage Drivers](docs/storage.md) | Session vs cache vs database, plus custom driver guidance. |
-| [Identifiers & Migration](docs/identifiers-and-migration.md) | Guest → user flows, merge strategies, identifier swaps. |
-| [Concurrency & Conflict Handling](docs/concurrency-and-retry.md) | Optimistic locking, conflict handling strategies. |
-| [Money & Currency](docs/money-and-currency.md) | Working with Money objects and multi-currency strategies. |
-| [Laravel Octane](docs/octane.md) | Deploy safely on long-lived workers. |
-| [Testing Guide](docs/testing.md) | Pest patterns, Testbench setup, recommended assertions. |
-| [Security Checklist](docs/security.md) | Guardrails for payload size, PII handling, logging. |
-| [Troubleshooting](docs/troubleshooting.md) | Quick fixes for common integration questions. |
-| [API Reference](docs/api-reference.md) | Facade, services, collections, console commands. |
-| [Recipes & Examples](docs/examples.md) | Drop-in snippets for everyday scenarios. |
+## 📚 Documentation
 
-Want the full tour? Start at [docs/index.md](docs/index.md).
+Comprehensive documentation to get you from zero to production:
 
-## Quick Start
+### Getting Started
+- **[Installation & Setup](docs/getting-started.md)** – Get up and running in 5 minutes
+- **[Core Concepts](docs/architecture.md)** – Understand the cart architecture
+- **[Quick Examples](docs/examples.md)** – Copy-paste recipes for common scenarios
+
+### Core Features
+- **[Cart Operations](docs/cart-operations.md)** – Add, update, remove items and manage metadata
+- **[Conditions & Pricing](docs/conditions.md)** – Build dynamic discounts, taxes, fees, and shipping rules
+- **[Storage Drivers](docs/storage.md)** – Choose between session, cache, or database storage
+- **[Money & Currency](docs/money-and-currency.md)** – Work with precise monetary values
+
+### Advanced Topics
+- **[User Migration](docs/identifiers-and-migration.md)** – Guest-to-user cart migration strategies
+- **[Concurrency Control](docs/concurrency-and-retry.md)** – Handle conflicts in high-traffic scenarios
+- **[Event System](docs/events.md)** – Hook into cart lifecycle events
+- **[Laravel Octane](docs/octane.md)** – Deploy on long-lived worker processes
+
+### Reference
+- **[Configuration](docs/configuration.md)** – Complete configuration reference
+- **[API Reference](docs/api-reference.md)** – Full API documentation
+- **[Security Guide](docs/security.md)** – Best practices for production
+- **[Testing Guide](docs/testing.md)** – Test your cart integration
+- **[Troubleshooting](docs/troubleshooting.md)** – Solutions to common issues
+
+📖 **[View Full Documentation](docs/index.md)**
+
+## 🚀 Quick Start
+
+### Installation
 
 ```bash
 composer require masyukai/cart
 ```
 
+Laravel will auto-discover the service provider. No manual registration needed.
+
+### Basic Usage
+
 ```php
 use MasyukAI\Cart\Facades\Cart;
 
-Cart::add('sku-1', 'Limited Hoodie', 79.90, 1, [
+// Add items to cart
+Cart::add('sku-001', 'Premium Hoodie', 79.90, 2, [
     'size' => 'L',
     'color' => 'charcoal',
 ]);
 
+// Apply discounts and taxes
 Cart::addDiscount('new-customer', '10%');
-Cart::addTax('sales-tax', '8.25%');
+Cart::addTax('vat', '8%');
 
-$total = Cart::total()->format();
-$count = Cart::count();
+// Get totals
+$subtotal = Cart::subtotal()->format(); // "143.82"
+$total = Cart::total()->format();       // "155.32"
+$count = Cart::count();                 // 2
 
-printf("%s items → %s\n", $count, $total);
-// 1 items → 71.15
-```
-
-Need raw numbers? `Cart::getRawTotal()` returns `float` for further math.
-
-## Feature Highlights
-
-### Multi-Instance by Design
-
-Serve different journeys simultaneously—shopping cart, wishlist, quick quotes—without clobbering data.
-
-```php
-$cart = Cart::getCurrentCart();        // default instance
-$wishlist = Cart::getCartInstance('wishlist');
-
-$wishlist->add('dream-phone', 'Concept Phone', 1299.00);
-Cart::setInstance('wishlist');
-
-Cart::countItems(); // 1
-```
-
-### Dynamic Pricing Rules
-
-Layer discounts, fees, and shipping logic with predictable ordering.
-
-```php
-Cart::addCondition(new CartCondition(
-    name: 'vip-tier',
-    type: 'discount',
-    target: 'subtotal',
-    value: '-15%',
-    attributes: ['source' => 'VIP'],
-));
-
-Cart::addShipping('express', '25.00', 'express', ['eta' => '1-2 days']);
-```
-
-Dynamic conditions respond to live cart state—see [Conditions & Discounts](docs/conditions.md).
-
-### Durable Storage with Optimistic Locking
-
-Use the database driver for cross-device carts and analytics. Conflicts raise `CartConflictException` with actionable metadata. Enable `lock_for_update` in config for stronger conflict prevention, or handle conflicts at the application level with custom retry logic.
-
-```php
-try {
-    Cart::update('sku-1', ['quantity' => 3]);
-} catch (CartConflictException $e) {
-    // Handle conflict - show user message, retry, or reload cart
+// Access items
+$items = Cart::getItems();
+foreach ($items as $item) {
+    echo "{$item->name}: {$item->getSubtotal()->format()}\n";
 }
 ```
 
-### Metrics & Observability
+### Multiple Instances
 
-Monitor cart performance and usage with Laravel's built-in tools:
-
-```bash
-# Use Laravel Telescope for debugging and monitoring
-composer require laravel/telescope --dev
-php artisan telescope:install
-php artisan migrate
-
-# Or use Debugbar for development
-composer require barryvdh/laravel-debugbar --dev
-```
-
-Track business metrics by querying your data directly:
+Manage separate carts, wishlists, and quote baskets simultaneously:
 
 ```php
-// Conversion rate
-$carts = DB::table('carts')->count();
-$orders = Order::count();
-$rate = ($orders / $carts) * 100;
+// Shopping cart
+Cart::add('product-1', 'Laptop', 999.00);
 
-// Abandoned carts
-$abandoned = DB::table('carts')
-    ->where('updated_at', '<', now()->subDays(7))
-    ->whereDoesntHave('orders')
-    ->count();
+// Wishlist
+Cart::instance('wishlist')->add('product-2', 'Monitor', 449.00);
+
+// Get counts per instance
+Cart::instance('default')->count();   // 1
+Cart::instance('wishlist')->count();  // 1
 ```
 
-## Testing & Tooling
+### Guest-to-User Migration
 
-- Tests: `vendor/bin/pest`
-- Coding standards: `vendor/bin/pint --dirty`
-- Docs live in [`docs/`](docs/index.md); keep them updated when behaviour changes.
+Automatically migrate guest carts when users log in:
 
-## Contributing
+```php
+// config/cart.php
+'migration' => [
+    'auto_migrate_on_login' => true,
+    'merge_strategy' => 'add_quantities',
+],
+```
 
-Contributions are welcome! Please:
+The cart seamlessly transfers from session to authenticated user with configurable merge strategies.
 
-1. Read the [Coding Guidelines](.ai/guidelines/laravel-cart.md).
-2. Fork the repo and create a feature branch.
-3. Run the focused test suite relevant to your change.
-4. Update documentation when altering public behaviour.
-5. Submit a pull request describing the motivation and impact.
+## 🏗️ Architecture Highlights
 
-Security issues? Email security@masyukai.dev instead of opening a public issue.
+### Precision Money Handling
+All monetary calculations use [`akaunting/laravel-money`](https://github.com/akaunting/money) to avoid floating-point precision issues. Every total, subtotal, and price returns a `Money` object with proper currency formatting.
 
-## License
+### Flexible Storage Drivers
+
+| Driver | Use Case | Persistence | Concurrency |
+|--------|----------|-------------|-------------|
+| **Session** | Quick prototypes, single-device carts | Session lifetime | Session locks |
+| **Cache** | Multi-server, fast access | Configurable TTL | Redis locks (if supported) |
+| **Database** | Cross-device, analytics, high traffic | Permanent | Optimistic locking |
+
+### Event-Driven Architecture
+Comprehensive events for every cart operation:
+- `ItemAdded`, `ItemUpdated`, `ItemRemoved`
+- `CartCleared`, `CartMerged`
+- `ConditionAdded`, `ConditionRemoved`
+- `MetadataAdded`, `MetadataRemoved`
+- Consolidated `CartUpdated` event for all changes
+
+### Conflict-Safe Concurrency
+The database driver uses optimistic locking with version tracking:
+- Automatic conflict detection
+- Rich exception metadata with resolution suggestions
+- Optional pessimistic locking for critical operations
+- Configurable retry strategies
+
+## 🧪 Testing & Quality
+
+```bash
+# Run test suite
+vendor/bin/pest
+
+# Run with coverage
+vendor/bin/pest --coverage
+
+# Format code
+vendor/bin/pint
+
+# Static analysis
+vendor/bin/phpstan analyse
+```
+
+The package includes 100+ tests covering:
+- Item operations and totals
+- Condition calculations
+- Storage driver implementations
+- Concurrency scenarios
+- Event dispatching
+- Migration flows
+
+## 🤝 Contributing
+
+We welcome contributions! Please:
+
+1. Fork the repository and create a feature branch
+2. Follow the [coding guidelines](.ai/cart.md)
+3. Write tests for new features
+4. Run `vendor/bin/pint` before committing
+5. Update documentation for public API changes
+6. Submit a pull request with a clear description
+
+### Development Setup
+
+```bash
+git clone https://github.com/masyukai/cart.git
+cd cart
+composer install
+vendor/bin/pest
+```
+
+## 📄 License
 
 MasyukAI Cart is open-sourced software licensed under the [MIT license](LICENSE).
+
+## 🔒 Security
+
+If you discover a security vulnerability, please email **security@masyukai.dev** instead of using the issue tracker. All security vulnerabilities will be promptly addressed.
+
+## 💬 Support
+
+- 📖 **Documentation**: [docs/index.md](docs/index.md)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/masyukai/cart/issues)
+- 💡 **Discussions**: [GitHub Discussions](https://github.com/masyukai/cart/discussions)
+
+---
+
+<p align="center">Made with ❤️ by <a href="https://masyukai.com">MasyukAI</a></p>

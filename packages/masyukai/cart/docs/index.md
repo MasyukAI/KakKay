@@ -1,36 +1,177 @@
 # MasyukAI Cart Documentation
 
-MasyukAI Cart is a multi-channel shopping cart engine for Laravel 12 built around robust storage drivers, accurate money calculations, and powerful conditions. These docs guide you from installation to advanced tuning.
+Welcome to the complete documentation for MasyukAI Cart—a modern, production-grade shopping cart engine for Laravel 12. This documentation guides you from installation through advanced deployment scenarios.
 
-## Feature Highlights
+## 📖 About This Documentation
 
-- **First-class storage drivers** for session, cache, and database (with concurrency-safe versioning).
-- **Composable cart instances** per user, channel, or purpose with automatic identifier resolution.
-- **Powerful pricing engine** supporting dynamic cart- and item-level conditions, taxes, fees, and shipping rules.
-## Why This Cart?
+This documentation is organized into four main sections:
 
-- **Flexible storage** with session, cache, or database (with optimistic locking for concurrent checkouts).
-- **Money precision** via [akaunting/money](https://github.com/akaunting/money)—no floating‑point pitfalls.
-- **Production-ready extras** including seamless guest → user migration and built-in validation.
-- **Extensible architecture** supporting conditions, events, and multiple cart instances.
+1. **Essentials** – Get started and understand core concepts
+2. **Core Features** – Master day-to-day cart operations
+3. **Advanced Topics** – Handle complex scenarios and scaling
+4. **Reference** – Quick lookups and troubleshooting
 
-## Documentation Roadmap
+## 🎯 Choose Your Path
 
-| Topic | When to read |
-| --- | --- |
-| [Getting Started](getting-started.md) | Install the package and add your first cart items. |
-| [Cart Operations](cart-operations.md) | Learn every day-to-day API for items, totals, and metadata. |
-| [Conditions & Discounts](conditions.md) | Model discounts, taxes, shipping, and dynamic rules. |
-| [Configuration Reference](configuration.md) | Understand every configuration flag and how to tweak it. |
-| [Storage Drivers](storage.md) | Choose between session, cache, or database and see how they differ. |
-| [Identifiers & Migration](identifiers-and-migration.md) | Control how carts follow users across sessions and logins. |
-| [Events](events.md) | Hook into lifecycle events across items, metadata, and merges. |
-| [Concurrency](concurrency-and-retry.md) | Handle conflicts and optimistic locking. |
-| [Money & Currency](money-and-currency.md) | Discover how totals are calculated with Akaunting Money. |
-| [Testing Guide](testing.md) | Reproduce cart scenarios with Pest and Testbench. |
-| [Security Checklist](security.md) | Enforce limits and guard sensitive data. |
-| [Troubleshooting](troubleshooting.md) | Resolve the most common integration surprises. |
-| [API Reference](api-reference.md) | Quick lookup for facades, services, and console commands. |
-| [Recipes & Examples](examples.md) | Copy‑ready snippets for popular scenarios. |
+### New to MasyukAI Cart?
+Start here to get up and running quickly:
+1. [Installation & Setup](getting-started.md) – Install and configure the package
+2. [Cart Operations](cart-operations.md) – Learn the core API
+3. [Quick Examples](examples.md) – Copy-paste common scenarios
 
-Need a crash course? Start with **Getting Started → Cart Operations**, then skim the topics that match your deployment needs.
+### Building a Feature?
+Jump directly to the relevant guide:
+- **Pricing & Discounts** → [Conditions & Pricing](conditions.md)
+- **User Login Flow** → [User Migration](identifiers-and-migration.md)
+- **Multi-Device Carts** → [Storage Drivers](storage.md)
+- **High Traffic** → [Concurrency Control](concurrency.md)
+
+### Deploying to Production?
+Review these essential guides:
+1. [Storage Drivers](storage.md) – Choose the right storage backend
+2. [Concurrency Control](concurrency.md) – Handle concurrent access
+
+## 📚 Complete Documentation Index
+
+### Essentials
+
+Get started and understand the fundamentals.
+
+| Guide | What You'll Learn |
+|-------|------------------|
+| **[Installation & Setup](getting-started.md)** | Install the package, run your first cart operation, verify everything works |
+| **[Configuration](configuration.md)** | Complete reference of all configuration options with examples |
+
+### Core Features
+
+Master the day-to-day operations you'll use most frequently.
+
+| Guide | What You'll Learn |
+|-------|------------------|
+| **[Cart Operations](cart-operations.md)** | Add, update, remove items; calculate totals; manage metadata; work with collections |
+| **[Conditions & Pricing](conditions.md)** | Create discounts, taxes, fees, shipping rules; build dynamic conditions; understand calculation order |
+| **[Storage Drivers](storage.md)** | Choose between session, cache, or database; understand trade-offs; implement custom drivers |
+| **[Money & Currency](money-and-currency.md)** | Work with Money objects; format for display; handle multi-currency scenarios |
+
+### Advanced Topics
+
+Handle complex scenarios, scaling, and production deployments.
+
+| Guide | What You'll Learn |
+|-------|------------------|
+| **[User Migration](identifiers-and-migration.md)** | Migrate guest carts to authenticated users; understand merge strategies; handle edge cases |
+| **[Concurrency Control](concurrency.md)** | Prevent race conditions; handle conflicts; implement retry logic; use optimistic locking |
+| **[Event System](events.md)** | Listen to cart events; build audit trails; integrate with external systems; test events |
+
+### Reference
+
+Quick lookups, troubleshooting, and complete API documentation.
+
+| Guide | What You'll Learn |
+|-------|------------------|
+| **[API Reference](api-reference.md)** | Complete method signatures; facade methods; collections; exceptions |
+| **[Quick Examples](examples.md)** | Copy-paste recipes for common scenarios and patterns |
+| **[Troubleshooting](troubleshooting.md)** | Solutions to common issues; debugging tips |
+
+## 💡 Key Concepts
+
+Before diving into the guides, familiarize yourself with these core concepts:
+
+### Carts vs Instances
+- A **cart** is a collection of items for a specific user
+- An **instance** is a named cart bucket (e.g., `'default'`, `'wishlist'`, `'quote'`)
+- Users can have multiple instances simultaneously without collision
+
+### Identifiers
+- **Identifier** determines *who* owns the cart (user ID or session ID)
+- Automatically resolved from authenticated user or session
+- Can be explicitly set for custom scenarios
+
+### Storage Drivers
+- **Session**: Fast, ephemeral, single-device
+- **Cache**: Fast, distributed, TTL-based
+- **Database**: Persistent, cross-device, analytics-ready
+
+### Conditions
+- Modify prices at three levels: **item**, **subtotal**, **total**
+- Support percentages, fixed amounts, and dynamic rules
+- Execute in predictable order based on target and priority
+
+### Money Objects
+All monetary values use [`Akaunting\Money`](https://github.com/akaunting/money) for precision:
+- `->format()` for display: `"$1,234.56"`
+- `->getAmount()` for calculations: `1234.56`
+- Avoids floating-point precision issues
+
+## 🎓 Learning Paths
+
+### For E-commerce Developers
+1. [Installation & Setup](getting-started.md)
+2. [Cart Operations](cart-operations.md)
+3. [Conditions & Pricing](conditions.md)
+4. [User Migration](identifiers-and-migration.md)
+5. [Quick Examples](examples.md)
+
+### For API Developers
+1. [Installation & Setup](getting-started.md)
+2. [Storage Drivers](storage.md) (use cache or database)
+3. [API Reference](api-reference.md)
+4. [Concurrency Control](concurrency.md)
+
+### For Enterprise Teams
+1. [Storage Drivers](storage.md) (use database)
+2. [Concurrency Control](concurrency.md)
+3. [Event System](events.md)
+4. [Examples](examples.md)
+
+## 🔍 Quick Reference
+
+### Common Tasks
+
+| Task | Method |
+|------|--------|
+| Add item | `Cart::add($id, $name, $price, $qty, $attributes)` |
+| Update quantity | `Cart::update($id, ['quantity' => $qty])` |
+| Remove item | `Cart::remove($id)` |
+| Get total | `Cart::total()->format()` |
+| Apply discount | `Cart::addDiscount($name, '-10%')` |
+| Add tax | `Cart::addTax($name, '8%')` |
+| Switch instance | `Cart::instance('wishlist')` |
+| Clear cart | `Cart::clear()` |
+
+### Storage Configuration
+
+```php
+// config/cart.php
+'storage' => 'database', // session, cache, or database
+```
+
+### Migration Configuration
+
+```php
+// config/cart.php
+'migration' => [
+    'auto_migrate_on_login' => true,
+    'merge_strategy' => 'add_quantities',
+],
+```
+
+## 🆘 Need Help?
+
+- **Can't find what you're looking for?** Check the [Troubleshooting](troubleshooting.md) guide
+- **Found a bug?** Open an issue on [GitHub](https://github.com/masyukai/cart/issues)
+- **Have a question?** Start a [discussion](https://github.com/masyukai/cart/discussions)
+- **Security concern?** Email security@masyukai.dev
+
+## 📝 Contributing to Documentation
+
+Found an error or want to improve the docs? Contributions are welcome!
+
+1. Fork the repository
+2. Edit files in the `docs/` directory
+3. Follow the existing structure and style
+4. Submit a pull request
+
+---
+
+**Ready to start?** Begin with [Installation & Setup](getting-started.md) →
