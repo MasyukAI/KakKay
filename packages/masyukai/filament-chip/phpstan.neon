@@ -1,0 +1,28 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - packages/core/src
+        - tests
+    
+    level: 6
+
+    parallel: { maximumNumberOfProcesses: 4 }
+
+    reportUnmatchedIgnoredErrors: false
+
+    # Laravel-specific rules
+    checkMissingIterableValueType: false
+    checkGenericClassInNonGenericObjectType: false
+    
+    # Ignore Laravel facade undefined methods
+    # (Larastan handles this but sometimes needs hints)
+    ignoreErrors:
+        - '#Call to an undefined method Illuminate\\Support\\Facades\\Http::#'
+        - '#Access to an undefined property Pest\\.*#'
+        - identifier: 'missingType.generics'
+
+    # Exclude patterns
+    excludePaths:
+        - vendor
