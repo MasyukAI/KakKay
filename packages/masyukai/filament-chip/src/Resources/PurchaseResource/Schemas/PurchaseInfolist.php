@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace MasyukAI\FilamentChip\Resources\PurchaseResource\Schemas;
 
-use Filament\Infolists\Components\KeyValueEntry;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Fieldset;
@@ -167,9 +166,11 @@ final class PurchaseInfolist
                                     $state,
                                     Arr::get($entry, 'subtotal.currency', Arr::get($entry, 'price.currency')),
                                 )),
-                            KeyValueEntry::make('metadata')
+                            TextEntry::make('metadata')
                                 ->label('Metadata')
-                                ->visible(fn (array $entry): bool => filled($entry['metadata'] ?? [])),
+                                ->formatStateUsing(fn ($state) => is_array($state) ? json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) : $state)
+                                ->visible(fn (array $entry): bool => filled($entry['metadata'] ?? []))
+                                ->columnSpanFull(),
                         ])
                         ->grid(1)
                         ->visible(fn (ChipPurchase $record): bool => filled($record->purchase['line_items'] ?? [])),
@@ -184,9 +185,9 @@ final class PurchaseInfolist
                             TextEntry::make('translated')
                                 ->label('Status')
                                 ->badge()
-                                ->color(fn (array $state): string => match ($state['status'] ?? '') {
+                                ->color(fn (string $state): string => match (mb_strtolower($state)) {
                                     'paid', 'completed', 'captured' => 'success',
-                                    'processing', 'partially_paid', 'refund_pending' => 'warning',
+                                    'processing', 'partially paid', 'refund pending' => 'warning',
                                     'failed', 'cancelled', 'chargeback' => 'danger',
                                     default => 'secondary',
                                 }),
@@ -202,15 +203,21 @@ final class PurchaseInfolist
 
             Section::make('Raw Payloads')
                 ->schema([
-                    KeyValueEntry::make('purchase')
+                    TextEntry::make('purchase')
                         ->label('Purchase JSON')
-                        ->visible(fn (ChipPurchase $record): bool => filled($record->purchase)),
-                    KeyValueEntry::make('payment')
+                        ->formatStateUsing(fn ($state) => json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES))
+                        ->visible(fn (ChipPurchase $record): bool => filled($record->purchase))
+                        ->columnSpanFull(),
+                    TextEntry::make('payment')
                         ->label('Payment JSON')
-                        ->visible(fn (ChipPurchase $record): bool => filled($record->payment ?? [])),
-                    KeyValueEntry::make('transaction_data')
-                        ->label('Transaction Data')
-                        ->visible(fn (ChipPurchase $record): bool => filled($record->transaction_data ?? [])),
+                        ->formatStateUsing(fn ($state) => json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES))
+                        ->visible(fn (ChipPurchase $record): bool => filled($record->payment ?? []))
+                        ->columnSpanFull(),
+                    TextEntry::make('transaction_data')
+                        ->label('Transaction Data JSON')
+                        ->formatStateUsing(fn ($state) => json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES))
+                        ->visible(fn (ChipPurchase $record): bool => filled($record->transaction_data ?? []))
+                        ->columnSpanFull(),
                 ])
                 ->collapsible()
                 ->collapsed(),

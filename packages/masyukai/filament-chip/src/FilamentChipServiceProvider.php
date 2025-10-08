@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace MasyukAI\FilamentChip;
 
-use Filament\Facades\Filament;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Tables\Columns\Layout\Panel;
 use Filament\Tables\Columns\Layout\Split;
@@ -28,10 +27,6 @@ final class FilamentChipServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
-        Filament::serving(function (): void {
-            Filament::registerPlugin(FilamentChip::make());
-        });
-
         $this->registerMacros();
     }
 

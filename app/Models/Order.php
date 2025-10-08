@@ -72,6 +72,11 @@ final class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    public function shipments(): HasMany
+    {
+        return $this->hasMany(Shipment::class);
+    }
+
     /**
      * Get order status histories
      */
@@ -150,5 +155,13 @@ final class Order extends Model
     public function getSubtotalAttribute(): int
     {
         return $this->orderItems->sum('total_price');
+    }
+
+    public function latestShipment(): ?Shipment
+    {
+        return $this->shipments()
+            ->orderByDesc('shipped_at')
+            ->orderByDesc('created_at')
+            ->first();
     }
 }

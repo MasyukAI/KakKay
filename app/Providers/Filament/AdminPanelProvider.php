@@ -22,6 +22,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use MasyukAI\FilamentCart\FilamentCart;
+use MasyukAI\FilamentChip\FilamentChip;
 
 final class AdminPanelProvider extends PanelProvider
 {
@@ -62,6 +63,7 @@ final class AdminPanelProvider extends PanelProvider
             ->plugins([
                 ResizedColumnPlugin::make(),
                 FilamentCart::make(),
+                FilamentChip::make(),
             ])
             ->authMiddleware([
                 Authenticate::class,

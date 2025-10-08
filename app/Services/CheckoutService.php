@@ -560,7 +560,7 @@ final class CheckoutService
         }
 
         if ($order) {
-            $order->loadMissing(['orderItems.product', 'address', 'user']);
+            $order->loadMissing(['orderItems.product', 'address', 'user', 'shipments']);
             $payment = $payment ?? $order->payments()->latest()->first();
         }
 

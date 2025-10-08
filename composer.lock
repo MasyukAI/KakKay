@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0adf6df4d7f28b4a45dea1537f2544dd",
+    "content-hash": "fe52d7544f106eca1793ecc9062fef42",
     "packages": [
         {
             "name": "akaunting/laravel-money",
@@ -4370,6 +4370,81 @@
                 "masyukai",
                 "plugin",
                 "shopping-cart"
+            ],
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "masyukai/filament-chip",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "./packages/masyukai/filament-chip",
+                "reference": "257fd3129466627d1178e8057c70a963a595f9b0"
+            },
+            "require": {
+                "filament/filament": "^4.0",
+                "laravel/framework": "^12.0",
+                "livewire/livewire": "^3.0",
+                "masyukai/chip": "@dev",
+                "php": "^8.4",
+                "spatie/laravel-package-tools": "^1.92"
+            },
+            "require-dev": {
+                "driftingly/rector-laravel": "^2.0",
+                "larastan/larastan": "^3.0",
+                "laravel/pint": "^1.18",
+                "orchestra/testbench": "^10.0",
+                "pestphp/pest": "^4.0",
+                "pestphp/pest-plugin-browser": "^4.0",
+                "pestphp/pest-plugin-laravel": "^4.0",
+                "pestphp/pest-plugin-type-coverage": "^4.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "MasyukAI\\FilamentChip\\FilamentChipServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "MasyukAI\\FilamentChip\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "MasyukAI\\FilamentChip\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "vendor/bin/pest"
+                ],
+                "format": [
+                    "vendor/bin/pint"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "MasyukAI",
+                    "email": "info@masyukai.com"
+                }
+            ],
+            "description": "A Filament admin plugin to explore CHIP data ingested by the masyukai/chip package.",
+            "keywords": [
+                "admin",
+                "chip",
+                "filament",
+                "laravel",
+                "masyukai",
+                "payments",
+                "plugin"
             ],
             "transport-options": {
                 "relative": true
@@ -13774,7 +13849,8 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "masyukai/cart": 20,
-        "masyukai/chip": 20
+        "masyukai/chip": 20,
+        "masyukai/filament-chip": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
