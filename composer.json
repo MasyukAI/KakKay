@@ -6,7 +6,7 @@
     "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {
-        "php": "^8.4",
+        "php": "^8.3",
         "asmit/resized-column": "^1.1",
         "calebporzio/sushi": "^2.5",
         "fakerphp/faker": "^1.24",
@@ -21,6 +21,7 @@
         "masyukai/chip": "@dev",
         "masyukai/filament-cart": "^1.0",
         "masyukai/filament-chip": "@dev",
+        "masyukai/invoice": "@dev",
         "nnjeim/world": "^1.1",
         "propaganistas/laravel-phone": "^6.0",
         "ysfkaya/filament-phone-input": "^4.0"
@@ -55,6 +56,10 @@
         {
             "type": "path",
             "url": "./packages/masyukai/filament-chip"
+        },
+        {
+            "type": "path",
+            "url": "./packages/masyukai/invoice"
         }
     ],
     "autoload": {
