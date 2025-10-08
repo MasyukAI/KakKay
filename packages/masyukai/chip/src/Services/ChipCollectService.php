@@ -67,11 +67,17 @@ class ChipCollectService
     }
 
     /**
-     * @param  array<string, mixed>  $filters
+     * Get available payment methods
+     *
+     * @param  array<string, mixed>  $filters  Optional filters to override defaults (brand_id, currency, etc.)
      * @return array<string, mixed>
      */
     public function getPaymentMethods(array $filters = []): array
     {
+        // Set default brand_id and currency from config if not provided
+        $filters['brand_id'] ??= $this->getBrandId();
+        $filters['currency'] ??= config('chip.collect.currency', 'MYR');
+
         return $this->purchases->paymentMethods($filters);
     }
 

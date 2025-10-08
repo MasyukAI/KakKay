@@ -31,7 +31,7 @@ final class Checkout extends Component implements HasSchemas
 
     public string $selectedCountryCode = '+60';
 
-    public array $availablePaymentMethods = [];
+    // public array $availablePaymentMethods = [];
 
     public string $selectedPaymentGroup = 'card';
 
@@ -76,7 +76,7 @@ final class Checkout extends Component implements HasSchemas
             }
 
             $this->loadCartItems();
-            $this->loadPaymentMethods();
+            // $this->loadPaymentMethods();
 
             // Initialize form data with default values to prevent Livewire entangle errors
             // This ensures nested properties like data.phone and data.state exist before Alpine tries to bind
@@ -103,7 +103,7 @@ final class Checkout extends Component implements HasSchemas
 
             // Initialize with minimal data
             $this->cartItems = [];
-            $this->availablePaymentMethods = [];
+            // $this->availablePaymentMethods = [];
             $this->data = [
                 'name' => '',
                 'company' => '',
@@ -300,65 +300,65 @@ final class Checkout extends Component implements HasSchemas
         }
     }
 
-    public function loadPaymentMethods(): void
-    {
-        try {
-            $paymentService = app(\App\Services\PaymentService::class);
-            $this->availablePaymentMethods = $paymentService->getAvailablePaymentMethods();
-            // No need to set default payment methods - let CHIP gateway handle selection
-        } catch (Exception $e) {
-            Log::error('Failed to load payment methods: '.$e->getMessage());
-            // Use fallback payment methods for reference (not used in checkout)
-            $this->availablePaymentMethods = [
-                [
-                    'id' => 'fpx_b2c',
-                    'name' => 'FPX Online Banking',
-                    'description' => 'Bayar dengan Internet Banking Malaysia',
-                    'icon' => 'building-office',
-                    'group' => 'banking',
-                ],
-                [
-                    'id' => 'visa',
-                    'name' => 'Kad Kredit/Debit',
-                    'description' => 'Visa, Mastercard',
-                    'icon' => 'credit-card',
-                    'group' => 'card',
-                ],
-            ];
-        }
-    }
+    // public function loadPaymentMethods(): void
+    // {
+    //     try {
+    //         $paymentService = app(\App\Services\PaymentService::class);
+    //         $this->availablePaymentMethods = $paymentService->getAvailablePaymentMethods();
+    //         // No need to set default payment methods - let CHIP gateway handle selection
+    //     } catch (Exception $e) {
+    //         Log::error('Failed to load payment methods: '.$e->getMessage());
+    //         // Use fallback payment methods for reference (not used in checkout)
+    //         $this->availablePaymentMethods = [
+    //             [
+    //                 'id' => 'fpx_b2c',
+    //                 'name' => 'FPX Online Banking',
+    //                 'description' => 'Bayar dengan Internet Banking Malaysia',
+    //                 'icon' => 'building-office',
+    //                 'group' => 'banking',
+    //             ],
+    //             [
+    //                 'id' => 'visa',
+    //                 'name' => 'Kad Kredit/Debit',
+    //                 'description' => 'Visa, Mastercard',
+    //                 'icon' => 'credit-card',
+    //                 'group' => 'card',
+    //             ],
+    //         ];
+    //     }
+    // }
 
-    public function selectPaymentGroup(?string $group): void
-    {
-        $group = $group ?: $this->determineDefaultGroup();
-        $this->selectedPaymentGroup = $group ?? '';
-        $this->data['payment_group'] = $group;
+    // public function selectPaymentGroup(?string $group): void
+    // {
+    //     $group = $group ?: $this->determineDefaultGroup();
+    //     $this->selectedPaymentGroup = $group ?? '';
+    //     $this->data['payment_group'] = $group;
 
-        if (! $group) {
-            $this->data['payment_method_whitelist'] = [];
+    //     if (! $group) {
+    //         $this->data['payment_method_whitelist'] = [];
 
-            return;
-        }
+    //         return;
+    //     }
 
-        $groupMethods = collect($this->availablePaymentMethods)
-            ->where('group', $group)
-            ->pluck('id')
-            ->toArray();
+    //     $groupMethods = collect($this->availablePaymentMethods)
+    //         ->where('group', $group)
+    //         ->pluck('id')
+    //         ->toArray();
 
-        $this->data['payment_method_whitelist'] = $groupMethods;
-    }
+    //     $this->data['payment_method_whitelist'] = $groupMethods;
+    // }
 
-    public function selectPaymentMethod(?string $methodId): void
-    {
-        if (empty($methodId)) {
-            $this->data['payment_method_whitelist'] = [];
+    // public function selectPaymentMethod(?string $methodId): void
+    // {
+    //     if (empty($methodId)) {
+    //         $this->data['payment_method_whitelist'] = [];
 
-            return;
-        }
+    //         return;
+    //     }
 
-        $this->data['payment_method'] = $methodId;
-        $this->data['payment_method_whitelist'] = [$methodId];
-    }
+    //     $this->data['payment_method'] = $methodId;
+    //     $this->data['payment_method_whitelist'] = [$methodId];
+    // }
 
     #[Computed]
     public function getSubtotal(): Money
@@ -405,16 +405,16 @@ final class Checkout extends Component implements HasSchemas
         }
     }
 
-    #[Computed]
-    public function getPaymentMethodsByGroup(): array
-    {
-        $grouped = [];
-        foreach ($this->availablePaymentMethods as $method) {
-            $grouped[$method['group']][] = $method;
-        }
+    // #[Computed]
+    // public function getPaymentMethodsByGroup(): array
+    // {
+    //     $grouped = [];
+    //     foreach ($this->availablePaymentMethods as $method) {
+    //         $grouped[$method['group']][] = $method;
+    //     }
 
-        return $grouped;
-    }
+    //     return $grouped;
+    // }
 
     public function getGroupDisplayName(string $group): string
     {
@@ -463,11 +463,6 @@ final class Checkout extends Component implements HasSchemas
             $result = $checkoutService->processCheckout($customerData);
 
             if ($result['success']) {
-                // Show appropriate message if intent was reused
-                if ($result['reused_intent'] ?? false) {
-                    session()->flash('info', 'Menggunakan pembayaran yang telah dibuat sebelumnya.');
-                }
-
                 // Redirect to CHIP checkout
                 return $this->redirect($result['checkout_url']);
             }

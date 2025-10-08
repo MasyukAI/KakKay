@@ -11,12 +11,6 @@ describe('Package bootstrap', function (): void {
         expect(app()->bound('chip.webhook'))->toBeTrue();
     });
 
-    it('registers the webhook route', function (): void {
-        $routes = collect(app('router')->getRoutes())->map(fn ($route) => $route->uri());
-
-        expect($routes->contains('chip/webhook'))->toBeTrue();
-    });
-
     it('migrates package tables', function (): void {
         $tablePrefix = config('chip.database.table_prefix', 'chip_');
 

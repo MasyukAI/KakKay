@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5a023553d1444e3e767bf3e97a1f19fe",
+    "content-hash": "9578b67f8e97f008b111ba3008f7c373",
     "packages": [
         {
             "name": "akaunting/laravel-money",
@@ -1300,7 +1300,7 @@
         },
         {
             "name": "filament/actions",
-            "version": "v4.1.4",
+            "version": "v4.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/actions.git",
@@ -1349,16 +1349,16 @@
         },
         {
             "name": "filament/filament",
-            "version": "v4.1.4",
+            "version": "v4.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/panels.git",
-                "reference": "f9199d2734d7d7c42fc9978bf541df5cc37edadf"
+                "reference": "d03d2f80f08002e55c9617bb480dc8cd0403892a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filamentphp/panels/zipball/f9199d2734d7d7c42fc9978bf541df5cc37edadf",
-                "reference": "f9199d2734d7d7c42fc9978bf541df5cc37edadf",
+                "url": "https://api.github.com/repos/filamentphp/panels/zipball/d03d2f80f08002e55c9617bb480dc8cd0403892a",
+                "reference": "d03d2f80f08002e55c9617bb480dc8cd0403892a",
                 "shasum": ""
             },
             "require": {
@@ -1402,20 +1402,20 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
-            "time": "2025-10-07T12:45:32+00:00"
+            "time": "2025-10-08T11:01:55+00:00"
         },
         {
             "name": "filament/forms",
-            "version": "v4.1.4",
+            "version": "v4.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/forms.git",
-                "reference": "572fb508b4312759e91841048b3f1384401a5f05"
+                "reference": "ddfa808665077bccae64242dc763e0434e98183f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filamentphp/forms/zipball/572fb508b4312759e91841048b3f1384401a5f05",
-                "reference": "572fb508b4312759e91841048b3f1384401a5f05",
+                "url": "https://api.github.com/repos/filamentphp/forms/zipball/ddfa808665077bccae64242dc763e0434e98183f",
+                "reference": "ddfa808665077bccae64242dc763e0434e98183f",
                 "shasum": ""
             },
             "require": {
@@ -1452,11 +1452,11 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
-            "time": "2025-10-07T12:45:15+00:00"
+            "time": "2025-10-08T10:40:16+00:00"
         },
         {
             "name": "filament/infolists",
-            "version": "v4.1.4",
+            "version": "v4.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/infolists.git",
@@ -1501,7 +1501,7 @@
         },
         {
             "name": "filament/notifications",
-            "version": "v4.1.4",
+            "version": "v4.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/notifications.git",
@@ -1548,7 +1548,7 @@
         },
         {
             "name": "filament/schemas",
-            "version": "v4.1.4",
+            "version": "v4.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/schemas.git",
@@ -1593,7 +1593,7 @@
         },
         {
             "name": "filament/spatie-laravel-media-library-plugin",
-            "version": "v4.1.4",
+            "version": "v4.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/spatie-laravel-media-library-plugin.git",
@@ -1630,16 +1630,16 @@
         },
         {
             "name": "filament/support",
-            "version": "v4.1.4",
+            "version": "v4.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/support.git",
-                "reference": "8af3cf138f9dcff58cc84ac267d580299b0c51ea"
+                "reference": "e3294c6cd71d0b6c8cba8d20c99d5af651351a86"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filamentphp/support/zipball/8af3cf138f9dcff58cc84ac267d580299b0c51ea",
-                "reference": "8af3cf138f9dcff58cc84ac267d580299b0c51ea",
+                "url": "https://api.github.com/repos/filamentphp/support/zipball/e3294c6cd71d0b6c8cba8d20c99d5af651351a86",
+                "reference": "e3294c6cd71d0b6c8cba8d20c99d5af651351a86",
                 "shasum": ""
             },
             "require": {
@@ -1684,20 +1684,20 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
-            "time": "2025-10-06T08:11:00+00:00"
+            "time": "2025-10-08T10:40:12+00:00"
         },
         {
             "name": "filament/tables",
-            "version": "v4.1.4",
+            "version": "v4.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/tables.git",
-                "reference": "3dde14affa3120f54dd73af807b13a6ee8198d08"
+                "reference": "b3bf48fd079d8abdf6dfb0936f1d1c8c4a4479ab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filamentphp/tables/zipball/3dde14affa3120f54dd73af807b13a6ee8198d08",
-                "reference": "3dde14affa3120f54dd73af807b13a6ee8198d08",
+                "url": "https://api.github.com/repos/filamentphp/tables/zipball/b3bf48fd079d8abdf6dfb0936f1d1c8c4a4479ab",
+                "reference": "b3bf48fd079d8abdf6dfb0936f1d1c8c4a4479ab",
                 "shasum": ""
             },
             "require": {
@@ -1729,20 +1729,20 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
-            "time": "2025-10-07T12:45:13+00:00"
+            "time": "2025-10-08T11:01:10+00:00"
         },
         {
             "name": "filament/widgets",
-            "version": "v4.1.4",
+            "version": "v4.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/widgets.git",
-                "reference": "bd4cf38da8990026e92a93021e82d4422efdf017"
+                "reference": "f0b009e52737a2f973771928ada952ff577704ba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filamentphp/widgets/zipball/bd4cf38da8990026e92a93021e82d4422efdf017",
-                "reference": "bd4cf38da8990026e92a93021e82d4422efdf017",
+                "url": "https://api.github.com/repos/filamentphp/widgets/zipball/f0b009e52737a2f973771928ada952ff577704ba",
+                "reference": "f0b009e52737a2f973771928ada952ff577704ba",
                 "shasum": ""
             },
             "require": {
@@ -1773,7 +1773,7 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
-            "time": "2025-10-07T12:45:14+00:00"
+            "time": "2025-10-08T10:39:57+00:00"
         },
         {
             "name": "fruitcake/php-cors",
@@ -3769,7 +3769,7 @@
         },
         {
             "name": "livewire/flux",
-            "version": "v2.5.0",
+            "version": "v2.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/livewire/flux.git",
@@ -3829,7 +3829,7 @@
             ],
             "support": {
                 "issues": "https://github.com/livewire/flux/issues",
-                "source": "https://github.com/livewire/flux/tree/v2.5.0"
+                "source": "https://github.com/livewire/flux/tree/v2.5.1"
             },
             "time": "2025-09-29T21:36:00+00:00"
         },
@@ -4211,7 +4211,7 @@
         },
         {
             "name": "masyukai/chip",
-            "version": "dev-copilot/add-invoice-package-functionality",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./packages/masyukai/chip",
@@ -4298,6 +4298,92 @@
             }
         },
         {
+            "name": "masyukai/docs",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "./packages/masyukai/docs",
+                "reference": "ed865da859dc16c787afbd8d950245a4d7bc23cd"
+            },
+            "require": {
+                "ext-json": "*",
+                "illuminate/contracts": "^12.0",
+                "illuminate/database": "^12.0",
+                "illuminate/support": "^12.0",
+                "php": "^8.3",
+                "spatie/laravel-package-tools": "^1.92",
+                "spatie/laravel-pdf": "^1.5"
+            },
+            "require-dev": {
+                "driftingly/rector-laravel": "^2.0",
+                "larastan/larastan": "^3.0",
+                "laravel/framework": "^12.0",
+                "laravel/pint": "^1.0",
+                "mockery/mockery": "^1.6",
+                "orchestra/testbench": "^10.0",
+                "pestphp/pest": "^4.0",
+                "pestphp/pest-plugin-laravel": "^4.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "MasyukAI\\Docs\\DocsServiceProvider"
+                    ],
+                    "aliases": {
+                        "Invoice": "MasyukAI\\Docs\\Facades\\Invoice",
+                        "Receipt": "MasyukAI\\Docs\\Facades\\Receipt"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "MasyukAI\\Docs\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "MasyukAI\\Docs\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "vendor/bin/pest"
+                ],
+                "test-coverage": [
+                    "vendor/bin/pest --coverage"
+                ],
+                "format": [
+                    "vendor/bin/pint"
+                ],
+                "analyse": [
+                    "vendor/bin/phpstan analyse --memory-limit=2G"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Masyukai",
+                    "email": "hello@masyuk.ai"
+                }
+            ],
+            "description": "Laravel document generation package with PDF support for invoices, receipts, and more using Spatie Laravel PDF",
+            "keywords": [
+                "document",
+                "invoice",
+                "laravel",
+                "pdf",
+                "receipt",
+                "spatie",
+                "tailwind"
+            ],
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
             "name": "masyukai/filament-cart",
             "version": "1.0.0",
             "dist": {
@@ -4377,11 +4463,11 @@
         },
         {
             "name": "masyukai/filament-chip",
-            "version": "dev-copilot/add-invoice-package-functionality",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./packages/masyukai/filament-chip",
-                "reference": "c6e8faa6e33b03b20c154473ad4581a9b823ad36"
+                "reference": "0f9b830a838f01ba84b6356188f91b8190cbbb8e"
             },
             "require": {
                 "filament/filament": "^4.0",
@@ -4399,7 +4485,8 @@
                 "pestphp/pest": "^4.0",
                 "pestphp/pest-plugin-browser": "^4.0",
                 "pestphp/pest-plugin-laravel": "^4.0",
-                "pestphp/pest-plugin-type-coverage": "^4.0"
+                "pestphp/pest-plugin-type-coverage": "^4.0",
+                "rector/rector": "^2.2"
             },
             "type": "library",
             "extra": {
@@ -4451,65 +4538,73 @@
             }
         },
         {
-            "name": "masyukai/invoice",
-            "version": "dev-copilot/add-invoice-package-functionality",
+            "name": "masyukai/jnt",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "./packages/masyukai/invoice",
-                "reference": "799e07e6e6a96a15e814ba7cac251b1a8387fa2c"
+                "url": "./packages/masyukai/jnt",
+                "reference": "245c8d54f3ba6f9b937ff2e8ede67c6ef5ba0303"
             },
             "require": {
-                "ext-json": "*",
-                "illuminate/contracts": "^12.0",
-                "illuminate/database": "^12.0",
+                "guzzlehttp/guzzle": "^7.0",
                 "illuminate/support": "^12.0",
-                "php": "^8.3",
-                "spatie/laravel-package-tools": "^1.92",
-                "spatie/laravel-pdf": "^1.5"
+                "php": "^8.4"
             },
             "require-dev": {
-                "driftingly/rector-laravel": "^2.0",
-                "larastan/larastan": "^3.0",
-                "laravel/framework": "^12.0",
-                "laravel/pint": "^1.0",
-                "mockery/mockery": "^1.6",
+                "larastan/larastan": "^3.7",
+                "laravel/pint": "^1.18",
                 "orchestra/testbench": "^10.0",
                 "pestphp/pest": "^4.0",
-                "pestphp/pest-plugin-laravel": "^4.0"
+                "pestphp/pest-plugin-laravel": "^4.0",
+                "rector/rector": "^2.2"
             },
             "type": "library",
             "extra": {
                 "laravel": {
                     "providers": [
-                        "MasyukAI\\Invoice\\InvoiceServiceProvider"
+                        "MasyukAI\\Jnt\\JntServiceProvider"
                     ],
                     "aliases": {
-                        "Invoice": "MasyukAI\\Invoice\\Facades\\Invoice"
+                        "JntExpress": "MasyukAI\\Jnt\\Facades\\JntExpress"
                     }
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "MasyukAI\\Invoice\\": "src/"
+                    "MasyukAI\\Jnt\\": "src/"
                 }
             },
             "autoload-dev": {
                 "psr-4": {
-                    "MasyukAI\\Invoice\\Tests\\": "tests/"
+                    "MasyukAI\\Jnt\\Tests\\": "tests/"
                 }
             },
             "scripts": {
                 "test": [
                     "vendor/bin/pest"
                 ],
-                "test-coverage": [
+                "test:coverage": [
                     "vendor/bin/pest --coverage"
+                ],
+                "test:parallel": [
+                    "vendor/bin/pest --parallel"
+                ],
+                "analyse": [
+                    "vendor/bin/phpstan analyse"
+                ],
+                "refactor": [
+                    "vendor/bin/rector process"
+                ],
+                "refactor:dry": [
+                    "vendor/bin/rector process --dry-run"
                 ],
                 "format": [
                     "vendor/bin/pint"
                 ],
-                "analyse": [
-                    "vendor/bin/phpstan analyse --memory-limit=2G"
+                "check": [
+                    "@format",
+                    "@analyse",
+                    "@test"
                 ]
             },
             "license": [
@@ -4517,18 +4612,11 @@
             ],
             "authors": [
                 {
-                    "name": "Masyukai",
+                    "name": "MasyukAI",
                     "email": "hello@masyuk.ai"
                 }
             ],
-            "description": "Laravel invoice generation package with PDF support using Spatie Laravel PDF",
-            "keywords": [
-                "invoice",
-                "laravel",
-                "pdf",
-                "spatie",
-                "tailwind"
-            ],
+            "description": "J&T Express Malaysia API Integration Package",
             "transport-options": {
                 "relative": true
             }
@@ -14087,8 +14175,9 @@
     "stability-flags": {
         "masyukai/cart": 20,
         "masyukai/chip": 20,
+        "masyukai/docs": 20,
         "masyukai/filament-chip": 20,
-        "masyukai/invoice": 20
+        "masyukai/jnt": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

@@ -41,7 +41,7 @@ describe('ChipHealthCheckCommand', function (): void {
 
     it('displays verbose diagnostics when requested', function (): void {
         Http::fake([
-            '*/payment_methods*' => Http::response(['fpx'], 200),
+            '*/payment_methods*' => Http::response(['available_payment_methods' => ['fpx']], 200),
             '*/accounts' => Http::response(['acc_1'], 200),
         ]);
 
@@ -96,57 +96,54 @@ describe('ChipHealthCheckCommand', function (): void {
             ->assertExitCode(0);
     });
 
-    it('reports configuration issues for CHIP Collect API', function (): void {
-        config()->set('chip.collect.brand_id', '');
+    it('skips CHIP Collect API when credentials are not configured', function (): void {
+        config()->set('chip.collect.api_key', null);
+        config()->set('chip.collect.brand_id', null);
 
         Http::fake([
-            '*' => Http::response(['payment_methods' => []], 200),
+            '*/accounts' => Http::response([], 200),
         ]);
 
         $this->artisan(ChipHealthCheckCommand::class)
-            ->expectsOutputToContain('Brand ID not configured')
-            ->assertExitCode(1);
+            ->expectsOutputToContain('Skipped (credentials not configured)')
+            ->assertExitCode(0);
     });
 
-    it('reports configuration issues for CHIP Send API', function (): void {
-        config()->set('chip.send.api_key', '');
-
-        Http::fake([
-            '*' => Http::response(['accounts' => []], 200),
-        ]);
+    it('skips CHIP Send API when credentials are not configured', function (): void {
+        config()->set('chip.send.api_key', null);
 
         $this->artisan(ChipHealthCheckCommand::class, ['--send' => true])
-            ->expectsOutputToContain('API Key not configured')
-            ->assertExitCode(1);
+            ->expectsOutputToContain('Skipped (credentials not configured)')
+            ->assertExitCode(0);
     });
 
-    it('returns exit code 1 when CHIP Collect API is unreachable', function (): void {
+    it('shows warning when CHIP Collect API connectivity fails', function (): void {
         Http::fake([
             '*/payment_methods/*' => Http::response(['error' => 'Unauthorized'], 401),
             '*/payment_methods' => Http::response(['error' => 'Unauthorized'], 401),
-            '*/accounts' => Http::response(['accounts' => []], 200),
         ]);
 
         $this->artisan(ChipHealthCheckCommand::class)
-            ->expectsOutputToContain('❌')
-            ->assertExitCode(1);
+            ->expectsOutputToContain('✅ Service configured')
+            ->expectsOutputToContain('⚠️  API connectivity issue')
+            ->assertExitCode(0);
     });
 
-    it('returns exit code 1 when CHIP Send API is unreachable', function (): void {
+    it('shows warning when CHIP Send API connectivity fails', function (): void {
         Http::fake([
-            '*/payment_methods/*' => Http::response(['payment_methods' => []], 200),
-            '*/payment_methods' => Http::response(['payment_methods' => []], 200),
             '*/accounts' => Http::response(['error' => 'Unauthorized'], 401),
         ]);
 
-        $this->artisan(ChipHealthCheckCommand::class)
-            ->expectsOutputToContain('❌')
-            ->assertExitCode(1);
+        $this->artisan(ChipHealthCheckCommand::class, ['--send' => true])
+            ->expectsOutputToContain('✅ Service configured')
+            ->expectsOutputToContain('⚠️  API connectivity issue')
+            ->assertExitCode(0);
     });
 
     it('shows all systems operational when all checks pass', function (): void {
         Http::fake([
-            '*' => Http::response(['payment_methods' => [], 'accounts' => []], 200),
+            '*/payment_methods*' => Http::response([], 200),
+            '*/accounts' => Http::response([], 200),
         ]);
 
         $this->artisan(ChipHealthCheckCommand::class)

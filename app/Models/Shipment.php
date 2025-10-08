@@ -22,11 +22,15 @@ final class Shipment extends Model
         'shipped_at',
         'delivered_at',
         'note',
+        'shipping_address',
+        'estimated_delivery',
     ];
 
     protected $casts = [
         'shipped_at' => 'datetime',
         'delivered_at' => 'datetime',
+        'shipping_address' => 'array',
+        'estimated_delivery' => 'datetime',
     ];
 
     public function order(): BelongsTo

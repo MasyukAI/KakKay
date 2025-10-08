@@ -24,12 +24,15 @@ final class Order extends Model
         'checkout_form_data',
         'status',
         'total',
+        'invoice_path',
+        'invoice_generated_at',
     ];
 
     protected $casts = [
         'cart_items' => 'array',
         'checkout_form_data' => 'array',
         'total' => 'integer',
+        'invoice_generated_at' => 'datetime',
     ];
 
     /**

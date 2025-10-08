@@ -414,16 +414,57 @@ describe('ChipCollectService Purchase Management', function (): void {
         expect($result['available_payment_methods'])->toContain('fpx');
     });
 
+    it('automatically uses configured brand_id and currency for payment methods', function (): void {
+        config(['chip.collect.currency' => 'MYR']);
+
+        $paymentMethods = [
+            'available_payment_methods' => ['fpx', 'visa'],
+        ];
+
+        $this->client->shouldReceive('getBrandId')
+            ->andReturn('configured_brand_id');
+
+        $this->client->shouldReceive('get')
+            ->with('payment_methods/?brand_id=configured_brand_id&currency=MYR')
+            ->andReturn($paymentMethods);
+
+        $result = $this->service->getPaymentMethods();
+
+        expect($result)->toBe($paymentMethods);
+        expect($result['available_payment_methods'])->toContain('fpx');
+    });
+
+    it('allows overriding brand_id and currency for payment methods', function (): void {
+        config(['chip.collect.currency' => 'MYR']);
+
+        $paymentMethods = [
+            'available_payment_methods' => ['visa'],
+        ];
+
+        $this->client->shouldReceive('getBrandId')
+            ->andReturn('configured_brand_id');
+
+        $this->client->shouldReceive('get')
+            ->with('payment_methods/?brand_id=override_brand&currency=SGD')
+            ->andReturn($paymentMethods);
+
+        $result = $this->service->getPaymentMethods(['brand_id' => 'override_brand', 'currency' => 'SGD']);
+
+        expect($result)->toBe($paymentMethods);
+    });
+
     it('uses cache repository when available for payment methods', function (): void {
+        config(['chip.collect.currency' => 'MYR']);
+
         $cache = Mockery::mock(CacheRepository::class);
         $service = new ChipCollectService($this->client, $cache);
 
-        $filters = ['brand_id' => 'test_brand'];
+        $filters = ['brand_id' => 'test_brand', 'currency' => 'MYR'];
         $paymentMethods = ['available_payment_methods' => ['visa']];
 
         $this->client->shouldReceive('get')
             ->once()
-            ->with('payment_methods/?brand_id=test_brand')
+            ->with('payment_methods/?brand_id=test_brand&currency=MYR')
             ->andReturn($paymentMethods);
 
         $cache->shouldReceive('remember')

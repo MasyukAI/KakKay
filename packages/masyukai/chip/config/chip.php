@@ -26,6 +26,7 @@ return [
         'base_url' => env('CHIP_COLLECT_BASE_URL', 'https://gate.chip-in.asia/api/v1/'),
         'api_key' => env('CHIP_COLLECT_API_KEY'),
         'brand_id' => env('CHIP_COLLECT_BRAND_ID'),
+        'currency' => env('CHIP_COLLECT_CURRENCY', 'MYR'),
         'environment' => env('CHIP_COLLECT_ENVIRONMENT', 'sandbox'),
         'timeout' => env('CHIP_COLLECT_TIMEOUT', 30),
         'retry' => [
@@ -71,57 +72,6 @@ return [
         'webhook_keys' => $webhookKeys,
         'verify_signature' => env('CHIP_WEBHOOK_VERIFY_SIGNATURE', true),
         'middleware' => ['api'],
-        'allowed_events' => [
-            // Purchase events
-            'purchase.created',
-            'purchase.paid',
-            'purchase.payment_failure',
-            'purchase.pending_execute',
-            'purchase.pending_charge',
-            'purchase.cancelled',
-            'purchase.hold',
-            'purchase.captured',
-            'purchase.pending_capture',
-            'purchase.released',
-            'purchase.pending_release',
-            'purchase.preauthorized',
-            'purchase.pending_recurring_token_delete',
-            'purchase.recurring_token_deleted',
-            'purchase.subscription_charge_failure',
-            'purchase.pending_refund',
-            // Payment events
-            'payment.created',
-            'payment.paid',
-            'payment.failed',
-            'payment.refunded',
-            // Billing template events
-            'billing_template_client.subscription_billing_cancelled',
-            // Payout events
-            'payout.pending',
-            'payout.failed',
-            'payout.success',
-            // CHIP Send webhook events
-            'bank_account_status',
-            'budget_allocation_status',
-            'send_instruction_status',
-        ],
-        'event_mapping' => [
-            'purchase.created' => MasyukAI\Chip\Events\PurchaseCreated::class,
-            'purchase.paid' => MasyukAI\Chip\Events\PurchasePaid::class,
-        ],
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Event Configuration
-    |--------------------------------------------------------------------------
-    |
-    | Configure event dispatching behavior
-    |
-    */
-    'events' => [
-        'dispatch_purchase_events' => env('CHIP_DISPATCH_PURCHASE_EVENTS', true),
-        'dispatch_webhook_events' => env('CHIP_DISPATCH_WEBHOOK_EVENTS', true),
     ],
 
     /*

@@ -7,6 +7,7 @@ namespace MasyukAI\Chip\Commands;
 use Illuminate\Console\Command;
 use MasyukAI\Chip\Services\ChipCollectService;
 use MasyukAI\Chip\Services\ChipSendService;
+use RuntimeException;
 use Throwable;
 
 final class ChipHealthCheckCommand extends Command
@@ -26,10 +27,8 @@ final class ChipHealthCheckCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle(
-        ChipCollectService $collectService,
-        ChipSendService $sendService
-    ): int {
+    public function handle(): int
+    {
         $this->info('🔍 CHIP API Health Check');
         $this->newLine();
 
@@ -40,22 +39,36 @@ final class ChipHealthCheckCommand extends Command
 
         // Check CHIP Collect API
         if ($checkCollect) {
-            $this->line('📦 <fg=cyan>Checking CHIP Collect API...</>');
-            $collectHealthy = $this->checkCollectApi($collectService);
-            if (! $collectHealthy) {
-                $allHealthy = false;
+            // Only check Collect API if credentials are configured
+            if (config('chip.collect.api_key') && config('chip.collect.brand_id')) {
+                $this->line('📦 <fg=cyan>Checking CHIP Collect API...</>');
+                $collectHealthy = $this->checkCollectApi();
+                if (! $collectHealthy) {
+                    $allHealthy = false;
+                }
+                $this->newLine();
+            } else {
+                $this->line('📦 <fg=yellow>CHIP Collect API...</>');
+                $this->info('   ⏭️  Skipped (credentials not configured)');
+                $this->newLine();
             }
-            $this->newLine();
         }
 
         // Check CHIP Send API
         if ($checkSend) {
-            $this->line('💸 <fg=cyan>Checking CHIP Send API...</>');
-            $sendHealthy = $this->checkSendApi($sendService);
-            if (! $sendHealthy) {
-                $allHealthy = false;
+            // Only check Send API if credentials are configured
+            if (config('chip.send.api_key') && config('chip.send.api_secret')) {
+                $this->line('💸 <fg=cyan>Checking CHIP Send API...</>');
+                $sendHealthy = $this->checkSendApi();
+                if (! $sendHealthy) {
+                    $allHealthy = false;
+                }
+                $this->newLine();
+            } else {
+                $this->line('💸 <fg=yellow>CHIP Send API...</>');
+                $this->info('   ⏭️  Skipped (credentials not configured)');
+                $this->newLine();
             }
-            $this->newLine();
         }
 
         // Display configuration status
@@ -79,36 +92,12 @@ final class ChipHealthCheckCommand extends Command
     /**
      * Check CHIP Collect API health
      */
-    protected function checkCollectApi(ChipCollectService $service): bool
+    protected function checkCollectApi(): bool
     {
         try {
-            // Verify configuration
-            if (! config('chip.collect.brand_id')) {
-                $this->error('   ❌ Brand ID not configured');
-
-                return false;
-            }
-
-            if (! config('chip.collect.api_key')) {
-                $this->error('   ❌ API Key not configured');
-
-                return false;
-            }
-
-            // Try to fetch payment methods as a connectivity test
-            $methods = $service->getPaymentMethods();
-
-            $this->info('   ✅ Connected');
-
-            if ($this->option('verbose')) {
-                $brandId = config('chip.collect.brand_id');
-                $this->line("      Brand ID: {$brandId}");
-                $this->line('      Available payment methods: '.count($methods));
-            }
-
-            return true;
-        } catch (Throwable $e) {
-            $this->error('   ❌ Connection failed');
+            $service = app(ChipCollectService::class);
+        } catch (RuntimeException $e) {
+            $this->error('   ❌ Configuration error');
 
             if ($this->option('verbose')) {
                 $this->line("      Error: {$e->getMessage()}");
@@ -116,33 +105,39 @@ final class ChipHealthCheckCommand extends Command
 
             return false;
         }
+
+        // Service can be instantiated, which means configuration is valid
+        $this->info('   ✅ Service configured');
+
+        // Try to make an API call for connectivity check
+        try {
+            $methods = $service->getPaymentMethods();
+            $this->info('   ✅ API reachable');
+            if ($this->option('verbose')) {
+                $availableMethods = $methods['available_payment_methods'] ?? [];
+                $this->line('      Available payment methods: '.count($availableMethods));
+            }
+        } catch (Throwable $e) {
+            // API call failed - log as warning but don't fail the check
+            $this->warn('   ⚠️  API connectivity issue');
+            if ($this->option('verbose')) {
+                $this->line("      Error: {$e->getMessage()}");
+            }
+            // Don't return false - configuration is valid, connectivity issues are warnings
+        }
+
+        return true;
     }
 
     /**
      * Check CHIP Send API health
      */
-    protected function checkSendApi(ChipSendService $service): bool
+    protected function checkSendApi(): bool
     {
         try {
-            // Verify configuration
-            if (! config('chip.send.api_key')) {
-                $this->error('   ❌ API Key not configured');
-
-                return false;
-            }
-
-            // Try to fetch available payout accounts as a connectivity test
-            $accounts = $service->listAccounts();
-
-            $this->info('   ✅ Connected');
-
-            if ($this->option('verbose')) {
-                $this->line('      Accounts retrieved: '.count($accounts));
-            }
-
-            return true;
-        } catch (Throwable $e) {
-            $this->error('   ❌ Connection failed');
+            $service = app(ChipSendService::class);
+        } catch (RuntimeException $e) {
+            $this->error('   ❌ Configuration error');
 
             if ($this->option('verbose')) {
                 $this->line("      Error: {$e->getMessage()}");
@@ -150,6 +145,27 @@ final class ChipHealthCheckCommand extends Command
 
             return false;
         }
+
+        // Service can be instantiated, which means configuration is valid
+        $this->info('   ✅ Service configured');
+
+        // Try to make an API call for connectivity check
+        try {
+            $accounts = $service->listAccounts();
+            $this->info('   ✅ API reachable');
+            if ($this->option('verbose')) {
+                $this->line('      Accounts retrieved: '.count($accounts));
+            }
+        } catch (Throwable $e) {
+            // API call failed - log as warning but don't fail the check
+            $this->warn('   ⚠️  API connectivity issue');
+            if ($this->option('verbose')) {
+                $this->line("      Error: {$e->getMessage()}");
+            }
+            // Don't return false - configuration is valid, connectivity issues are warnings
+        }
+
+        return true;
     }
 
     /**

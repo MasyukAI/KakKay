@@ -7,15 +7,9 @@ namespace MasyukAI\Chip\Services;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use MasyukAI\Chip\Clients\ChipCollectClient;
-use MasyukAI\Chip\DataObjects\Purchase;
-use MasyukAI\Chip\Events\PurchaseCreated;
-use MasyukAI\Chip\Events\PurchasePaid;
-use MasyukAI\Chip\Events\WebhookReceived;
 use MasyukAI\Chip\Exceptions\WebhookVerificationException;
-use MasyukAI\Chip\Http\Requests\WebhookRequest;
 
 class WebhookService
 {
@@ -147,108 +141,5 @@ class WebhookService
         }
 
         return (object) $data;
-    }
-
-    /**
-     * @param  array<string, mixed>  $eventConfig
-     */
-    public function shouldProcessWebhook(string $eventType, array $eventConfig = []): bool
-    {
-        // You can add custom logic here to determine if a webhook should be processed
-        // based on event type, configuration, etc.
-
-        return true;
-    }
-
-    /**
-     * Process incoming webhook request.
-     *
-     * @throws WebhookVerificationException
-     */
-    public function processWebhook(WebhookRequest $request): bool
-    {
-        if (! $this->verifySignature($request)) {
-            throw new WebhookVerificationException('Invalid webhook signature');
-        }
-
-        $event = $request->getEvent();
-        $data = $request->getData();
-
-        // Log webhook receipt
-        Log::channel(config('chip.logging.channel'))
-            ->info('Webhook received', [
-                'event' => $event,
-                'reference' => $data['id'] ?? null,
-            ]);
-
-        // Dispatch generic webhook event
-        $webhook = \MasyukAI\Chip\DataObjects\Webhook::fromArray([
-            'event' => $event,
-            'data' => $data,
-            'timestamp' => now()->toISOString(),
-        ]);
-        Event::dispatch(new WebhookReceived($webhook));
-
-        // Handle specific events
-        if ($event !== null) {
-            $this->handleSpecificEvent($event, $data);
-        }
-
-        return true;
-    }
-
-    /**
-     * Check if webhook event is allowed.
-     */
-    public function isEventAllowed(string $event): bool
-    {
-        $allowedEvents = (array) config('chip.webhooks.allowed_events', []);
-
-        return in_array($event, $allowedEvents) || in_array('*', $allowedEvents);
-    }
-
-    /**
-     * Get webhook configuration.
-     *
-     * @return array<string, mixed>
-     */
-    public function getWebhookConfig(): array
-    {
-        $config = config('chip.webhooks', []);
-
-        return is_array($config) ? $config : [];
-    }
-
-    /**
-     * Handle specific webhook events.
-     */
-    /**
-     * @param  array<string, mixed>  $data
-     */
-    private function handleSpecificEvent(string $event, array $data): void
-    {
-        $eventMapping = config('chip.webhooks.event_mapping', []);
-
-        if (! isset($eventMapping[$event])) {
-            return;
-        }
-
-        switch ($event) {
-            case 'purchase.created':
-                if (config('chip.events.dispatch_purchase_events', true)
-                    && class_exists(PurchaseCreated::class)) {
-                    $purchase = Purchase::fromArray($data);
-                    Event::dispatch(new PurchaseCreated($purchase));
-                }
-                break;
-
-            case 'purchase.paid':
-                if (config('chip.events.dispatch_purchase_events', true)
-                    && class_exists(PurchasePaid::class)) {
-                    $purchase = Purchase::fromArray($data);
-                    Event::dispatch(new PurchasePaid($purchase));
-                }
-                break;
-        }
     }
 }

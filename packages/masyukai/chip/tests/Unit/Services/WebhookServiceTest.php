@@ -2,13 +2,9 @@
 
 declare(strict_types=1);
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Event;
-use MasyukAI\Chip\Events\PurchaseCreated;
-use MasyukAI\Chip\Events\PurchasePaid;
-use MasyukAI\Chip\Events\WebhookReceived;
 use MasyukAI\Chip\Exceptions\WebhookVerificationException;
-use MasyukAI\Chip\Http\Requests\WebhookRequest;
 use MasyukAI\Chip\Services\ChipCollectService;
 use MasyukAI\Chip\Services\WebhookService;
 
@@ -55,8 +51,7 @@ describe('WebhookService', function (): void {
     });
 
     it('throws when signature header is missing', function (): void {
-        $request = new WebhookRequest;
-        $request->replace(['event' => 'purchase.created', 'data' => []]);
+        $request = Request::create('/', 'POST', [], [], [], [], json_encode(['event' => 'purchase.created', 'data' => []]));
 
         $service = new class extends WebhookService
         {
@@ -86,84 +81,6 @@ describe('WebhookService', function (): void {
 
         expect(fn () => $service->verifySignature('payload', '***invalid***'))
             ->toThrow(WebhookVerificationException::class, 'Signature is not valid base64');
-    });
-
-    it('processes webhook events and dispatches mapped events', function (): void {
-        Event::fake([
-            WebhookReceived::class,
-            PurchaseCreated::class,
-            PurchasePaid::class,
-        ]);
-
-        $request = new WebhookRequest;
-        $request->headers->set('X-Signature', base64_encode('valid_signature'));
-        $request->merge([
-            'event' => 'purchase.paid',
-            'data' => [
-                'id' => 'purchase_123',
-                'amount_in_cents' => 10000,
-                'currency' => 'MYR',
-                'status' => 'paid',
-            ],
-        ]);
-
-        // Mock successful verification and processing
-        $webhookService = new class extends WebhookService
-        {
-            public function verifySignature($payloadOrRequest, ?string $signature = null, ?string $publicKey = null): bool
-            {
-                return true;
-            }
-        };
-
-        $webhookService->processWebhook($request);
-
-        Event::assertDispatched(WebhookReceived::class);
-        Event::assertDispatched(PurchasePaid::class);
-
-        $request->merge(['event' => 'purchase.created']);
-        $webhookService->processWebhook($request);
-
-        Event::assertDispatched(PurchaseCreated::class);
-    });
-
-    it('uses configured public key when available', function (): void {
-        config(['chip.webhooks.public_key' => $this->publicKey]);
-
-        $request = new WebhookRequest;
-        $request->headers->set('X-Signature', base64_encode('valid_signature'));
-        $request->merge(['event' => 'purchase.paid', 'data' => ['id' => 'purchase_123']]);
-
-        // Mock service that uses config
-        $webhookService = new class extends WebhookService
-        {
-            public function verifySignature($payloadOrRequest, ?string $signature = null, ?string $publicKey = null): bool
-            {
-                // If no public key provided, use the configured one
-                $publicKey = $publicKey ?? $this->getPublicKey();
-
-                return $publicKey === config('chip.webhooks.public_key');
-            }
-        };
-
-        expect($webhookService->verifySignature($request))->toBeTrue();
-    });
-
-    it('throws when webhook signature verification fails during processing', function (): void {
-        $request = new WebhookRequest;
-        $request->headers->set('X-Signature', 'invalid');
-        $request->merge(['event' => 'purchase.paid', 'data' => []]);
-
-        $service = new class extends WebhookService
-        {
-            public function verifySignature($payloadOrRequest, ?string $signature = null, ?string $publicKey = null): bool
-            {
-                return false;
-            }
-        };
-
-        expect(fn () => $service->processWebhook($request))
-            ->toThrow(WebhookVerificationException::class, 'Invalid webhook signature');
     });
 
     it('parses payloads and rejects invalid json', function (): void {
@@ -228,25 +145,5 @@ describe('WebhookService', function (): void {
         } finally {
             app()->instance(ChipCollectService::class, $originalCollect);
         }
-    });
-
-    it('checks allowed events using configuration', function (): void {
-        config(['chip.webhooks.allowed_events' => ['purchase.paid']]);
-
-        expect($this->webhookService->isEventAllowed('purchase.paid'))->toBeTrue();
-        expect($this->webhookService->isEventAllowed('purchase.created'))->toBeFalse();
-
-        config(['chip.webhooks.allowed_events' => ['*']]);
-
-        expect($this->webhookService->isEventAllowed('purchase.failed'))->toBeTrue();
-    });
-
-    it('exposes webhook configuration array', function (): void {
-        expect($this->webhookService->getWebhookConfig())
-            ->toBe(config('chip.webhooks'));
-    });
-
-    it('indicates webhooks should always be processed', function (): void {
-        expect($this->webhookService->shouldProcessWebhook('any-event'))->toBeTrue();
     });
 });

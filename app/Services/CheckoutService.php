@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Events\OrderPaid;
 use App\Models\Address;
 use App\Models\Order;
 use App\Models\Payment;
@@ -207,7 +208,7 @@ final class CheckoutService
                 'source' => $invocationSource,
             ]);
 
-            $order = DB::transaction(function () use ($paymentIntent, $webhookData, $webhookPurchaseId, $invocationSource) {
+            [$order, $payment] = DB::transaction(function () use ($paymentIntent, $webhookData, $webhookPurchaseId, $invocationSource) {
                 // Create order from cart snapshot
                 $order = $this->createOrderFromCartSnapshot(
                     $paymentIntent['cart_snapshot'],
@@ -229,8 +230,11 @@ final class CheckoutService
                     'source' => $invocationSource,
                 ]);
 
-                return $order;
+                return [$order, $payment];
             });
+
+            // Dispatch domain event after transaction commits successfully
+            OrderPaid::dispatch($order, $payment, $webhookData, $invocationSource);
 
             // Clear cart AFTER transaction commits successfully
             // This ensures cart is cleared even if there are minor issues later

@@ -4,22 +4,18 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Notifications\WebhookProcessingFailed;
+use App\Jobs\ProcessWebhook;
 use App\Services\Chip\ChipDataRecorder;
-use App\Services\Chip\WebhookProcessor;
 use App\Support\ChipWebhookFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Notification;
 use MasyukAI\Chip\Services\WebhookService;
-use Throwable;
 
 final class ChipController extends Controller
 {
     public function __construct(
         private readonly WebhookService $webhookService,
-        private readonly WebhookProcessor $webhookProcessor,
         private readonly ChipDataRecorder $chipDataRecorder,
     ) {}
 
@@ -72,39 +68,16 @@ final class ChipController extends Controller
 
         $this->chipDataRecorder->recordWebhook($webhook);
 
-        try {
-            $this->webhookProcessor->handle($webhook);
-            $this->chipDataRecorder->markWebhookProcessed($webhook->id, true);
+        // Dispatch webhook processing to queue for better reliability and performance
+        ProcessWebhook::dispatch($webhook, $webhookId);
 
-            Log::info('CHIP request processed successfully', [
-                'type' => $requestType,
-                'webhook_id' => $webhookId,
-                'event_type' => $webhook->event ?? $webhook->event_type,
-                'purchase_id' => $webhook->data['id'] ?? null,
-            ]);
+        Log::info('CHIP request queued for processing', [
+            'type' => $requestType,
+            'webhook_id' => $webhookId,
+            'event_type' => $webhook->event ?? $webhook->event_type,
+            'purchase_id' => $webhook->data['id'] ?? null,
+        ]);
 
-            return response('OK', 200);
-        } catch (Throwable $throwable) {
-            $this->chipDataRecorder->markWebhookProcessed($webhook->id, false, $throwable->getMessage());
-
-            Log::error('CHIP request processing failed', [
-                'type' => $requestType,
-                'webhook_id' => $webhookId,
-                'event' => $webhook->event ?? $webhook->event_type,
-                'purchase_id' => $webhook->data['id'] ?? null,
-                'error' => $throwable->getMessage(),
-                'error_class' => get_class($throwable),
-            ]);
-
-            Notification::route('mail', config('mail.from.address'))
-                ->notify(new WebhookProcessingFailed(
-                    $webhook->event ?? $webhook->event_type ?? 'unknown',
-                    $throwable->getMessage(),
-                    $webhook->data['id'] ?? null,
-                    $request->all()
-                ));
-
-            return response('Internal Server Error', 500);
-        }
+        return response('OK', 200);
     }
 }

@@ -11,6 +11,7 @@ use MasyukAI\Chip\Commands\ChipHealthCheckCommand;
 use MasyukAI\Chip\Services\ChipCollectService;
 use MasyukAI\Chip\Services\ChipSendService;
 use MasyukAI\Chip\Services\WebhookService;
+use RuntimeException;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -23,7 +24,6 @@ final class ChipServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->discoversMigrations()
             ->runsMigrations()
-            ->hasRoute('api')
             ->hasCommand(ChipHealthCheckCommand::class);
     }
 
@@ -76,6 +76,15 @@ final class ChipServiceProvider extends PackageServiceProvider
     protected function registerClients(): void
     {
         $this->app->singleton(function (): ChipCollectClient {
+            $apiKey = config('chip.collect.api_key');
+            $brandId = config('chip.collect.brand_id');
+
+            if (! $apiKey || ! $brandId) {
+                throw new RuntimeException(
+                    'CHIP Collect API credentials not configured. Please set CHIP_COLLECT_API_KEY and CHIP_COLLECT_BRAND_ID environment variables.'
+                );
+            }
+
             $baseUrlConfig = config('chip.collect.base_url', 'https://gate.chip-in.asia/api/v1/');
             $environment = config('chip.collect.environment', 'sandbox');
 
@@ -86,8 +95,8 @@ final class ChipServiceProvider extends PackageServiceProvider
             }
 
             return new ChipCollectClient(
-                config('chip.collect.api_key'),
-                config('chip.collect.brand_id'),
+                $apiKey,
+                $brandId,
                 (string) $baseUrl,
                 config('chip.collect.timeout', 30),
                 config('chip.collect.retry', [
@@ -98,11 +107,20 @@ final class ChipServiceProvider extends PackageServiceProvider
         });
 
         $this->app->singleton(function (): ChipSendClient {
+            $apiKey = config('chip.send.api_key');
+            $apiSecret = config('chip.send.api_secret');
+
+            if (! $apiKey || ! $apiSecret) {
+                throw new RuntimeException(
+                    'CHIP Send API credentials not configured. Please set CHIP_SEND_API_KEY and CHIP_SEND_API_SECRET environment variables.'
+                );
+            }
+
             $environment = config('chip.send.environment', 'sandbox');
 
             return new ChipSendClient(
-                apiKey: config('chip.send.api_key'),
-                apiSecret: config('chip.send.api_secret'),
+                apiKey: $apiKey,
+                apiSecret: $apiSecret,
                 environment: $environment,
                 baseUrl: config("chip.send.base_url.{$environment}")
                     ?? config('chip.send.base_url.sandbox', 'https://staging-api.chip-in.asia/api'),
