@@ -1,0 +1,173 @@
+{
+  "version": "2025-10-08",
+  "title": "J&T Express Malaysia Open API",
+  "base_urls": {
+    "testing": "https://demoopenapi.jtexpress.my/webopenplatformapi",
+    "production": "https://ylopenapi.jtexpress.my/webopenplatformapi"
+  },
+  "testing_credentials": {
+    "apiAccount": "640826271705595946",
+    "privateKey": "8e88c8477d4e4939859c560192fcafbc"
+  },
+  "headers": [
+    "apiAccount",
+    "digest",
+    "timestamp"
+  ],
+  "content_type": "application/x-www-form-urlencoded",
+  "response_envelope": [
+    "code",
+    "msg",
+    "data",
+    "requestId"
+  ],
+  "apis": [
+    {
+      "name": "Create Order",
+      "path": "/api/order/addOrder",
+      "method": "POST",
+      "bizContent": {
+        "required": [
+          "customerCode",
+          "password",
+          "txlogisticId",
+          "actionType",
+          "serviceType",
+          "payType",
+          "expressType",
+          "sender",
+          "receiver",
+          "items",
+          "packageInfo"
+        ],
+        "optional": [
+          "returnInfo",
+          "sendStartTime",
+          "sendEndTime",
+          "offerFeeInfo",
+          "codInfo",
+          "remark",
+          "customsInfo",
+          "multipleVotes"
+        ]
+      },
+      "response_data_fields": [
+        "txlogisticId",
+        "billCode",
+        "sortingCode",
+        "thirdSortingCode",
+        "multipleVoteBillCodes",
+        "packageChargeWeight"
+      ]
+    },
+    {
+      "name": "Query Order",
+      "path": "/api/order/getOrders",
+      "method": "POST",
+      "bizContent": {
+        "required": [
+          "customerCode",
+          "password",
+          "txlogisticId"
+        ],
+        "optional": []
+      }
+    },
+    {
+      "name": "Cancel Order",
+      "path": "/api/order/cancelOrder",
+      "method": "POST",
+      "bizContent": {
+        "required": [
+          "customerCode",
+          "password",
+          "txlogisticId",
+          "reason"
+        ],
+        "optional": [
+          "billCode"
+        ]
+      },
+      "response_data_fields": [
+        "txlogisticId",
+        "billCode"
+      ]
+    },
+    {
+      "name": "Print Order",
+      "path": "/api/order/printOrder",
+      "method": "POST",
+      "bizContent": {
+        "required": [
+          "customerCode",
+          "password",
+          "txlogisticId"
+        ],
+        "optional": [
+          "billCode",
+          "templateName"
+        ]
+      },
+      "response_data_fields": [
+        "txlogisticId",
+        "billCode",
+        "base64EncodeContent",
+        "urlContent"
+      ]
+    },
+    {
+      "name": "Track Parcel",
+      "path": "/api/logistics/trace",
+      "method": "POST",
+      "bizContent": {
+        "required": [
+          "customerCode",
+          "password"
+        ],
+        "one_of": [
+          [
+            "txlogisticId"
+          ],
+          [
+            "billCode"
+          ]
+        ]
+      },
+      "response_data_fields": [
+        "billCode",
+        "details[]"
+      ]
+    },
+    {
+      "name": "Tracking Callback (Webhook)",
+      "path": "/api/logistics/push",
+      "method": "POST",
+      "bizContent": {
+        "array_of": {
+          "fields": [
+            "billCode",
+            "txlogisticId?",
+            "details[]"
+          ]
+        }
+      },
+      "expected_response": {
+        "code": "1",
+        "msg": "success",
+        "data": "SUCCESS",
+        "requestId": "string"
+      }
+    }
+  ],
+  "status_codes_common": {
+    "1": "success",
+    "0": "fail",
+    "145003052": "digest is empty!",
+    "145003051": "apiAccount is empty!",
+    "145003053": "timestamp is empty!",
+    "145003010": "API account does not exist",
+    "145003012": "API account has no interface permissions",
+    "145003030": "headers signature verification failed",
+    "145003050": "Illegal parameters"
+  }
+}

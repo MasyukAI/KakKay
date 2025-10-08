@@ -1,0 +1,38 @@
+<?php
+
+declare(strict_types=1);
+
+namespace MasyukAI\Jnt\Exceptions;
+
+use Exception;
+
+class JntException extends Exception
+{
+    public function __construct(
+        string $message,
+        public readonly ?string $errorCode = null,
+        public readonly mixed $data = null,
+    ) {
+        parent::__construct($message);
+    }
+
+    public static function apiError(string $message, ?string $errorCode = null, mixed $data = null): self
+    {
+        return new self($message, $errorCode, $data);
+    }
+
+    public static function invalidConfiguration(string $message): self
+    {
+        return new self($message);
+    }
+
+    public static function invalidSignature(): self
+    {
+        return new self('Invalid signature verification');
+    }
+
+    public static function missingCredentials(string $credential): self
+    {
+        return new self("Missing required credential: {$credential}");
+    }
+}

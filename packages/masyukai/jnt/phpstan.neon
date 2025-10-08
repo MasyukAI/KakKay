@@ -1,0 +1,21 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: 6
+    paths:
+        - src
+        - tests
+    
+    excludePaths:
+        - tests/Pest.php
+    
+    # Laravel-specific rules
+    checkMissingIterableValueType: false
+    checkGenericClassInNonGenericObjectType: false
+    
+    # Ignore Laravel facade undefined methods
+    # (Larastan handles this but sometimes needs hints)
+    ignoreErrors:
+        - '#Call to an undefined method Illuminate\\Support\\Facades\\Http::#'
+        - '#Access to an undefined property Pest\\.*#'
