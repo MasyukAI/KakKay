@@ -45,20 +45,41 @@ Both services share the same authentication style (Bearer tokens) but live on di
 
 ## Base URLs & Authentication
 
-| Service      | Base URL                              | Environment Handling                     |
-|--------------|---------------------------------------|-------------------------------------------|
-| CHIP Collect | `https://gate.chip-in.asia/api/v1/`   | Same URL for both sandbox and production. Use different API keys to differentiate environments. |
-| CHIP Send    | **Sandbox:** `https://staging-api.chip-in.asia/api/`  
-  **Production:** `https://api.chip-in.asia/api/` | Different URLs for sandbox and production environments. |
+### Base URLs
 
-**Authentication**
+| Service      | Environment | Base URL                                      |
+|--------------|-------------|-----------------------------------------------|
+| **CHIP Collect** | All         | `https://gate.chip-in.asia/api/v1/`           |
+|              |             | *Uses same URL for sandbox/production. API key determines environment.* |
+| **CHIP Send**    | Sandbox     | `https://staging-api.chip-in.asia/api/`       |
+|              | Production  | `https://api.chip-in.asia/api/`               |
 
-- CHIP Collect: HTTP `Authorization: Bearer {API_KEY}` header. The API key determines whether you're in sandbox or production mode.
-- CHIP Send: HTTP `Authorization: Bearer {API_KEY}` header + custom headers:  
-  - `epoch`: current Unix timestamp (seconds).  
-  - `checksum`: `hash_hmac('sha256', (string) $epoch, API_SECRET)`.
+### Authentication
 
-Every request must send `Accept: application/json` and `Content-Type: application/json`. Rate limiting is documented via HTTP 5xx responses; CHIP does not emit HTTP 429.
+#### CHIP Collect
+```http
+Authorization: Bearer {API_KEY}
+```
+The API key determines sandbox vs production environment.
+
+#### CHIP Send
+```http
+Authorization: Bearer {API_KEY}
+epoch: {unix_timestamp}
+checksum: {hmac_signature}
+```
+
+**Required Headers:**
+- `epoch` – Current Unix timestamp (seconds)
+- `checksum` – `hash_hmac('sha256', (string) $epoch, API_SECRET)`
+
+#### Required Headers (Both Services)
+```http
+Accept: application/json
+Content-Type: application/json
+```
+
+> **Note:** CHIP does not emit HTTP 429 for rate limiting. Handle 5xx responses appropriately.
 
 ---
 
