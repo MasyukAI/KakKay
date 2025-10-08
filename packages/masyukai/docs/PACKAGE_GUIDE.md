@@ -2,7 +2,7 @@
 
 ## Overview
 
-The package has been renamed from `masyukai/invoice` to `masyukai/docs` to support multiple document types beyond just invoices.
+The package is named `masyukai/docs` to support multiple document types beyond just invoices.
 
 ## Changes Made
 
@@ -79,29 +79,34 @@ The package has been renamed from `masyukai/invoice` to `masyukai/docs` to suppo
   - Updated repository path
 - Examples file updated with new namespaces
 
-## Backward Compatibility
+## Configuration Structure
 
-The config file maintains backward compatibility by including legacy keys at the root level:
+The package uses a type-based configuration structure:
+
 ```php
-'default_template' => 'invoice-default',
-'number_format' => [...],
-'storage' => [...],
-'defaults' => [...],
+'types' => [
+    'invoice' => [
+        'default_template' => 'invoice-default',
+        'number_format' => [...],
+        'storage' => [...],
+        'defaults' => [...],
+    ],
+    'receipt' => [
+        'default_template' => 'receipt-default',
+        'number_format' => [...],
+        'storage' => [...],
+        'defaults' => [...],
+    ],
+]
 ```
 
-Existing code using `config('docs.default_template')` will continue to work.
-
-## Usage Changes
-
-### Before (Invoice Package)
+## Usage
 ```php
-use MasyukAI\Invoice\Facades\Invoice;
-use MasyukAI\Invoice\DataObjects\InvoiceData;
+use MasyukAI\Docs\Facades\Invoice;
+use MasyukAI\Docs\DataObjects\InvoiceData;
 
-$invoice = Invoice::createInvoice(InvoiceData::from([...]));
-```
+## Usage
 
-### After (Docs Package)
 ```php
 use MasyukAI\Docs\Facades\Invoice;
 use MasyukAI\Docs\DataObjects\InvoiceData;
@@ -109,7 +114,25 @@ use MasyukAI\Docs\DataObjects\InvoiceData;
 $invoice = Invoice::createInvoice(InvoiceData::from([...]));
 ```
 
-The API remains the same, only the namespace changes.
+## Accessing Configuration
+
+To access document type configurations:
+
+```php
+// Invoice configuration
+config('docs.types.invoice.default_template')
+config('docs.types.invoice.number_format.prefix')
+config('docs.types.invoice.storage.disk')
+config('docs.types.invoice.defaults.currency')
+
+// Receipt configuration
+config('docs.types.receipt.default_template')
+config('docs.types.receipt.number_format.prefix')
+
+// Shared configuration
+config('docs.pdf.format')
+config('docs.company.name')
+```
 
 ## Future Expandability
 
@@ -122,41 +145,6 @@ The API remains the same, only the namespace changes.
 
 ### Adding Other Document Types
 Follow the same pattern for quotations, purchase orders, delivery notes, etc.
-
-## Migration Guide
-
-For existing projects using the invoice package:
-
-1. Update composer.json:
-   ```bash
-   composer remove masyukai/invoice
-   composer require masyukai/docs
-   ```
-
-2. Update imports in your code:
-   ```php
-   // Old
-   use MasyukAI\Invoice\Facades\Invoice;
-   
-   // New
-   use MasyukAI\Docs\Facades\Invoice;
-   ```
-
-3. Update config references if using custom configs:
-   ```php
-   // Old
-   config('invoice.default_template')
-   
-   // New
-   config('docs.default_template')
-   // or
-   config('docs.types.invoice.default_template')
-   ```
-
-4. Republish config:
-   ```bash
-   php artisan vendor:publish --tag=docs-config --force
-   ```
 
 ## Benefits
 

@@ -90,30 +90,4 @@ return [
         'website' => env('DOCS_COMPANY_WEBSITE'),
         'tax_id' => env('DOCS_COMPANY_TAX_ID'),
     ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Legacy Configuration (Backward Compatibility)
-    |--------------------------------------------------------------------------
-    |
-    | These configurations maintain backward compatibility with the invoice-only
-    | version. They map to the invoice type configuration above.
-    |
-    */
-    'default_template' => 'invoice-default',
-    'number_format' => [
-        'prefix' => 'INV',
-        'year_format' => 'y',
-        'separator' => '-',
-        'suffix_length' => 6,
-    ],
-    'storage' => [
-        'disk' => env('INVOICE_STORAGE_DISK', 'local'),
-        'path' => env('INVOICE_STORAGE_PATH', 'invoices'),
-    ],
-    'defaults' => [
-        'currency' => env('INVOICE_CURRENCY', 'MYR'),
-        'tax_rate' => env('INVOICE_TAX_RATE', 0),
-        'due_days' => env('INVOICE_DUE_DAYS', 30),
-    ],
 ];

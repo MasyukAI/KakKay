@@ -16,7 +16,7 @@ class InvoiceService
 {
     public function generateInvoiceNumber(): string
     {
-        $config = config('docs.number_format');
+        $config = config('docs.types.invoice.number_format');
         $prefix = $config['prefix'] ?? 'INV';
         $yearFormat = $config['year_format'] ?? 'y';
         $separator = $config['separator'] ?? '-';
@@ -59,12 +59,12 @@ class InvoiceService
             'invoiceable_id' => $data->invoiceableId,
             'status' => $data->status ?? InvoiceStatus::DRAFT,
             'issue_date' => $data->issueDate ?? now(),
-            'due_date' => $data->dueDate ?? now()->addDays(config('docs.defaults.due_days', 30)),
+            'due_date' => $data->dueDate ?? now()->addDays(config('docs.types.invoice.defaults.due_days', 30)),
             'subtotal' => $subtotal,
             'tax_amount' => $taxAmount,
             'discount_amount' => $discountAmount,
             'total' => $total,
-            'currency' => $data->currency ?? config('docs.defaults.currency', 'MYR'),
+            'currency' => $data->currency ?? config('docs.types.invoice.defaults.currency', 'MYR'),
             'notes' => $data->notes,
             'terms' => $data->terms,
             'customer_data' => $data->customerData,
@@ -84,7 +84,7 @@ class InvoiceService
     public function generatePdf(Invoice $invoice, bool $save = true): string
     {
         $template = $invoice->template ?? InvoiceTemplate::where('is_default', true)->first();
-        $viewName = $template?->view_name ?? config('docs.default_template', 'default');
+        $viewName = $template?->view_name ?? config('docs.types.invoice.default_template', 'invoice-default');
 
         $pdf = Pdf::view("docs::templates.{$viewName}", [
             'invoice' => $invoice,
@@ -100,7 +100,7 @@ class InvoiceService
 
         if ($save) {
             $path = $this->generatePdfPath($invoice);
-            $disk = config('docs.storage.disk', 'local');
+            $disk = config('docs.types.invoice.storage.disk', 'local');
 
             Storage::disk($disk)->put($path, $pdf->string());
 
@@ -114,8 +114,8 @@ class InvoiceService
 
     public function downloadPdf(Invoice $invoice): string
     {
-        if ($invoice->pdf_path && Storage::disk(config('docs.storage.disk', 'local'))->exists($invoice->pdf_path)) {
-            return Storage::disk(config('docs.storage.disk', 'local'))->url($invoice->pdf_path);
+        if ($invoice->pdf_path && Storage::disk(config('docs.types.invoice.storage.disk', 'local'))->exists($invoice->pdf_path)) {
+            return Storage::disk(config('docs.types.invoice.storage.disk', 'local'))->url($invoice->pdf_path);
         }
 
         return $this->generatePdf($invoice);
@@ -143,7 +143,7 @@ class InvoiceService
 
     protected function generatePdfPath(Invoice $invoice): string
     {
-        $basePath = config('docs.storage.path', 'invoices');
+        $basePath = config('docs.types.invoice.storage.path', 'invoices');
         $filename = Str::slug($invoice->invoice_number).'.pdf';
 
         return "{$basePath}/{$filename}";
