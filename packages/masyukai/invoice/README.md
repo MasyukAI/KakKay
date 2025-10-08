@@ -185,6 +185,8 @@ $invoice = Invoice::createInvoice(InvoiceData::from([
 ]));
 ```
 
+For more information on using Tailwind CSS with invoice templates, see [docs/TAILWIND_USAGE.md](docs/TAILWIND_USAGE.md).
+
 ## Invoice Status
 
 Available invoice statuses:
@@ -200,28 +202,25 @@ Available invoice statuses:
 
 ## Requirements
 
-- PHP 8.4+
+- PHP 8.3+
 - Laravel 12.0+
 - Spatie Laravel PDF 1.5+
 
-## Development
+## Development Tools
 
-### Running Tests
+The package includes the following development tools as specified:
 
-```bash
-composer test
-```
+- **Spatie Laravel Package Tools** - For package scaffolding and structure
+- **Larastan** - PHPStan wrapper for Laravel, level 6 static analysis
+- **Laravel Rector** - Automated code refactoring and upgrades
+- **Laravel Pint** - Opinionated PHP code style fixer
 
-### Code Formatting
-
-```bash
-composer format
-```
-
-### Static Analysis
+Run these tools with:
 
 ```bash
-composer analyse
+composer format    # Run Laravel Pint
+composer analyse   # Run Larastan
+vendor/bin/rector  # Run Rector
 ```
 
 ## License
