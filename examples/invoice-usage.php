@@ -9,10 +9,10 @@ declare(strict_types=1);
  * It shows various use cases for generating, managing, and delivering invoices.
  */
 
-use MasyukAI\Invoice\DataObjects\InvoiceData;
-use MasyukAI\Invoice\Enums\InvoiceStatus;
-use MasyukAI\Invoice\Facades\Invoice;
-use MasyukAI\Invoice\Models\InvoiceTemplate;
+use MasyukAI\Docs\DataObjects\InvoiceData;
+use MasyukAI\Docs\Enums\InvoiceStatus;
+use MasyukAI\Docs\Facades\Invoice;
+use MasyukAI\Docs\Models\InvoiceTemplate;
 
 // ============================================================================
 // Example 1: Create a simple invoice for an order
