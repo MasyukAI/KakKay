@@ -1,7 +1,7 @@
 {
-    "name": "masyukai/chip",
-    "description": "Modern Laravel integration for CHIP payment gateway - Collect & Send APIs",
-    "keywords": ["laravel", "payment", "chip", "malaysia", "gateway", "fintech"],
+    "name": "masyukai/docs",
+    "description": "Laravel document generation package with PDF support for invoices, receipts, and more using Spatie Laravel PDF",
+    "keywords": ["laravel", "invoice", "receipt", "document", "pdf", "spatie", "tailwind"],
     "license": "MIT",
     "type": "library",
     "authors": [
@@ -12,14 +12,12 @@
     ],
     "require": {
         "php": "^8.3",
-        "ext-curl": "*",
         "ext-json": "*",
-        "guzzlehttp/guzzle": "^7.0",
-        "illuminate/http": "^12.0",
-        "illuminate/queue": "^12.0",
+        "illuminate/contracts": "^12.0",
+        "illuminate/database": "^12.0",
         "illuminate/support": "^12.0",
-        "illuminate/validation": "^12.0",
-        "spatie/laravel-package-tools": "^1.92"
+        "spatie/laravel-package-tools": "^1.92",
+        "spatie/laravel-pdf": "^1.5"
     },
     "require-dev": {
         "driftingly/rector-laravel": "^2.0",
@@ -29,18 +27,16 @@
         "mockery/mockery": "^1.6",
         "orchestra/testbench": "^10.0",
         "pestphp/pest": "^4.0",
-        "pestphp/pest-plugin-browser": "^4.0",
-        "pestphp/pest-plugin-laravel": "^4.0",
-        "pestphp/pest-plugin-type-coverage": "^4.0"
+        "pestphp/pest-plugin-laravel": "^4.0"
     },
     "autoload": {
         "psr-4": {
-            "MasyukAI\\Chip\\": "src/"
+            "MasyukAI\\Docs\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "MasyukAI\\Chip\\Tests\\": "tests/"
+            "MasyukAI\\Docs\\Tests\\": "tests/"
         }
     },
     "scripts": {
@@ -58,10 +54,11 @@
     "extra": {
         "laravel": {
             "providers": [
-                "MasyukAI\\Chip\\ChipServiceProvider"
+                "MasyukAI\\Docs\\DocsServiceProvider"
             ],
             "aliases": {
-                "Chip": "MasyukAI\\Chip\\Facades\\Chip"
+                "Invoice": "MasyukAI\\Docs\\Facades\\Invoice",
+                "Receipt": "MasyukAI\\Docs\\Facades\\Receipt"
             }
         }
     },
