@@ -7,15 +7,14 @@ namespace MasyukAI\Invoice\Facades;
 use Illuminate\Support\Facades\Facade;
 use MasyukAI\Invoice\DataObjects\InvoiceData;
 use MasyukAI\Invoice\Enums\InvoiceStatus;
-use MasyukAI\Invoice\Models\Invoice;
 
 /**
  * @method static string generateInvoiceNumber()
- * @method static Invoice createInvoice(InvoiceData $data)
- * @method static string generatePdf(Invoice $invoice, bool $save = true)
- * @method static string downloadPdf(Invoice $invoice)
- * @method static void emailInvoice(Invoice $invoice, string $email)
- * @method static void updateInvoiceStatus(Invoice $invoice, InvoiceStatus $status, ?string $notes = null)
+ * @method static \MasyukAI\Invoice\Models\Invoice createInvoice(InvoiceData $data)
+ * @method static string generatePdf(\MasyukAI\Invoice\Models\Invoice $invoice, bool $save = true)
+ * @method static string downloadPdf(\MasyukAI\Invoice\Models\Invoice $invoice)
+ * @method static void emailInvoice(\MasyukAI\Invoice\Models\Invoice $invoice, string $email)
+ * @method static void updateInvoiceStatus(\MasyukAI\Invoice\Models\Invoice $invoice, InvoiceStatus $status, ?string $notes = null)
  *
  * @see \MasyukAI\Invoice\Services\InvoiceService
  */
