@@ -10,8 +10,11 @@ use MasyukAI\Jnt\Data\ItemData;
 use MasyukAI\Jnt\Data\OrderData;
 use MasyukAI\Jnt\Data\PackageInfoData;
 use MasyukAI\Jnt\Data\TrackingData;
-use MasyukAI\Jnt\Exceptions\JntException;
+use MasyukAI\Jnt\Exceptions\JntConfigurationException;
+use MasyukAI\Jnt\Exceptions\JntValidationException;
 use MasyukAI\Jnt\Http\JntClient;
+use MasyukAI\Jnt\Support\FieldNameConverter;
+use Throwable;
 
 class JntExpressService
 {
@@ -43,20 +46,21 @@ class JntExpressService
         AddressData $receiver,
         array $items,
         PackageInfoData $packageInfo,
-        ?string $txlogisticId = null,
+        ?string $orderId = null,
         array $additionalData = [],
     ): OrderData {
         $orderData = [
-            'txlogisticId' => $txlogisticId ?? 'TXN-'.time(),
+            'txlogisticId' => $orderId ?? 'TXN-'.time(),
             'actionType' => 'add',
             'serviceType' => '1',
-            'orderType' => '1',
+            'payType' => 'PP_PM',
+            'expressType' => 'EZ',
             'customerCode' => $this->customerCode,
             'password' => $this->password,
-            'sender' => $sender->toArray(),
-            'receiver' => $receiver->toArray(),
-            'items' => array_map(fn (ItemData $item) => $item->toArray(), $items),
-            'packageInfo' => $packageInfo->toArray(),
+            'sender' => $sender->toApiArray(),
+            'receiver' => $receiver->toApiArray(),
+            'items' => array_map(fn (ItemData $item) => $item->toApiArray(), $items),
+            'packageInfo' => $packageInfo->toApiArray(),
             ...$additionalData,
         ];
 
@@ -70,31 +74,59 @@ class JntExpressService
     {
         $response = $this->getClient()->post('/api/order/addOrder', $orderData);
 
-        return OrderData::fromArray($response['data']);
+        return OrderData::fromApiArray($response['data']);
     }
 
-    public function queryOrder(string $txlogisticId): array
+    public function queryOrder(string $orderId): array
     {
         $response = $this->getClient()->post('/api/order/getOrders', [
             'customerCode' => $this->customerCode,
             'password' => $this->password,
-            'txlogisticId' => $txlogisticId,
+            'txlogisticId' => $orderId,
         ]);
 
         return $response['data'];
     }
 
-    public function cancelOrder(string $txlogisticId, string $reason, ?string $billCode = null): array
+    /**
+     * Cancel an order.
+     *
+     * Cancels an existing order. Accepts either a predefined CancellationReason enum
+     * or a custom string reason. Using the enum provides better type safety and
+     * business logic helpers (requiresCustomerContact, isMerchantResponsibility, etc.).
+     *
+     * @param  string  $orderId  The merchant's order ID (txlogisticId)
+     * @param  \MasyukAI\Jnt\Enums\CancellationReason|string  $reason  Cancellation reason (enum recommended)
+     * @param  string|null  $trackingNumber  Optional J&T tracking number (billCode)
+     * @return array<string, mixed> Response data from API
+     *
+     * @throws \MasyukAI\Jnt\Exceptions\JntApiException If API returns error
+     *
+     * @example
+     * ```php
+     * // Using predefined enum (recommended)
+     * $result = $service->cancelOrder('ORDER123', CancellationReason::OUT_OF_STOCK);
+     *
+     * // Check if customer contact required
+     * if (CancellationReason::OUT_OF_STOCK->requiresCustomerContact()) {
+     *     // Notify customer about cancellation
+     * }
+     *
+     * // Using custom string (for flexibility)
+     * $result = $service->cancelOrder('ORDER123', 'Custom cancellation reason');
+     * ```
+     */
+    public function cancelOrder(string $orderId, \MasyukAI\Jnt\Enums\CancellationReason|string $reason, ?string $trackingNumber = null): array
     {
         $payload = [
             'customerCode' => $this->customerCode,
             'password' => $this->password,
-            'txlogisticId' => $txlogisticId,
-            'reason' => $reason,
+            'txlogisticId' => $orderId,
+            'reason' => $reason instanceof \MasyukAI\Jnt\Enums\CancellationReason ? $reason->value : $reason,
         ];
 
-        if ($billCode !== null) {
-            $payload['billCode'] = $billCode;
+        if ($trackingNumber !== null) {
+            $payload['billCode'] = $trackingNumber;
         }
 
         $response = $this->getClient()->post('/api/order/cancelOrder', $payload);
@@ -102,16 +134,16 @@ class JntExpressService
         return $response['data'];
     }
 
-    public function printOrder(string $txlogisticId, ?string $billCode = null, ?string $templateName = null): array
+    public function printOrder(string $orderId, ?string $trackingNumber = null, ?string $templateName = null): array
     {
         $payload = [
             'customerCode' => $this->customerCode,
             'password' => $this->password,
-            'txlogisticId' => $txlogisticId,
+            'txlogisticId' => $orderId,
         ];
 
-        if ($billCode !== null) {
-            $payload['billCode'] = $billCode;
+        if ($trackingNumber !== null) {
+            $payload['billCode'] = $trackingNumber;
         }
 
         if ($templateName !== null) {
@@ -123,10 +155,10 @@ class JntExpressService
         return $response['data'];
     }
 
-    public function trackParcel(?string $txlogisticId = null, ?string $billCode = null): TrackingData
+    public function trackParcel(?string $orderId = null, ?string $trackingNumber = null): TrackingData
     {
-        if ($txlogisticId === null && $billCode === null) {
-            throw JntException::invalidConfiguration('Either txlogisticId or billCode is required');
+        if ($orderId === null && $trackingNumber === null) {
+            throw JntValidationException::requiredFieldMissing('orderId or trackingNumber');
         }
 
         $payload = [
@@ -134,17 +166,17 @@ class JntExpressService
             'password' => $this->password,
         ];
 
-        if ($txlogisticId !== null) {
-            $payload['txlogisticId'] = $txlogisticId;
+        if ($orderId !== null) {
+            $payload['txlogisticId'] = $orderId;
         }
 
-        if ($billCode !== null) {
-            $payload['billCode'] = $billCode;
+        if ($trackingNumber !== null) {
+            $payload['billCode'] = $trackingNumber;
         }
 
         $response = $this->getClient()->post('/api/logistics/trace', $payload);
 
-        return TrackingData::fromArray($response['data']);
+        return TrackingData::fromApiArray($response['data']);
     }
 
     public function verifyWebhookSignature(string $bizContent, string $digest): bool
@@ -162,7 +194,7 @@ class JntExpressService
     public function parseWebhookPayload(array $webhookData): array
     {
         if (! isset($webhookData['bizContent'])) {
-            throw JntException::invalidConfiguration('Missing bizContent in webhook payload');
+            throw JntValidationException::requiredFieldMissing('bizContent');
         }
 
         $bizContent = is_string($webhookData['bizContent'])
@@ -170,13 +202,241 @@ class JntExpressService
             : $webhookData['bizContent'];
 
         if (! is_array($bizContent)) {
-            throw JntException::invalidConfiguration('Invalid bizContent format');
+            throw JntValidationException::invalidFormat('bizContent', 'valid JSON array', gettype($bizContent));
         }
 
         return array_map(
-            fn (array $item) => TrackingData::fromArray($item),
+            fn (array $item) => TrackingData::fromApiArray($item),
             $bizContent
         );
+    }
+
+    /**
+     * Batch create multiple orders.
+     *
+     * Creates multiple orders in a single operation with intelligent error handling.
+     * Returns both successful orders and failed attempts for processing.
+     *
+     * Accepts clean field names (orderId, trackingNumber) which are automatically
+     * converted to J&T API format internally for consistency with the rest of the package.
+     *
+     * @param  array<array>  $ordersData  Array of order data arrays with clean field names
+     * @return array{successful: array<OrderData>, failed: array{orderId: string, error: string, exception: Throwable}}
+     *
+     * @example
+     * ```php
+     * $orders = [
+     *     ['orderId' => 'ORDER1', 'sender' => [...], ...],
+     *     ['orderId' => 'ORDER2', 'sender' => [...], ...],
+     * ];
+     *
+     * $result = $service->batchCreateOrders($orders);
+     *
+     * foreach ($result['successful'] as $order) {
+     *     echo "Created: {$order->orderId}\n";
+     * }
+     *
+     * foreach ($result['failed'] as $failure) {
+     *     echo "Failed {$failure['orderId']}: {$failure['error']}\n";
+     * }
+     * ```
+     */
+    public function batchCreateOrders(array $ordersData): array
+    {
+        $successful = [];
+        $failed = [];
+
+        foreach ($ordersData as $orderData) {
+            try {
+                // Convert clean field names to J&T API format
+                $apiOrderData = FieldNameConverter::convert($orderData);
+
+                $order = $this->createOrderFromArray($apiOrderData);
+                $successful[] = $order;
+            } catch (Throwable $e) {
+                // Support both clean (orderId) and API (txlogisticId) field names for error reporting
+                $orderId = $orderData['orderId'] ?? $orderData['txlogisticId'] ?? 'unknown';
+                $failed[] = [
+                    'orderId' => $orderId,
+                    'error' => $e->getMessage(),
+                    'exception' => $e,
+                ];
+            }
+        }
+
+        return [
+            'successful' => $successful,
+            'failed' => $failed,
+        ];
+    }
+
+    /**
+     * Batch track multiple parcels.
+     *
+     * Retrieves tracking information for multiple orders/parcels in a single operation.
+     * Returns both successful tracking data and failed attempts.
+     *
+     * @param  array<string>  $orderIds  Array of order IDs to track
+     * @param  array<string>  $trackingNumbers  Array of tracking numbers to track
+     * @return array{successful: array<TrackingData>, failed: array{identifier: string, error: string, exception: Throwable}}
+     *
+     * @example
+     * ```php
+     * // Track by order IDs
+     * $result = $service->batchTrackParcels(orderIds: ['ORDER1', 'ORDER2', 'ORDER3']);
+     *
+     * // Track by tracking numbers
+     * $result = $service->batchTrackParcels(trackingNumbers: ['TN001', 'TN002']);
+     *
+     * // Mixed
+     * $result = $service->batchTrackParcels(
+     *     orderIds: ['ORDER1'],
+     *     trackingNumbers: ['TN002']
+     * );
+     * ```
+     */
+    public function batchTrackParcels(array $orderIds = [], array $trackingNumbers = []): array
+    {
+        $successful = [];
+        $failed = [];
+
+        // Track by order IDs
+        foreach ($orderIds as $orderId) {
+            try {
+                $tracking = $this->trackParcel(orderId: $orderId);
+                $successful[] = $tracking;
+            } catch (Throwable $e) {
+                $failed[] = [
+                    'identifier' => $orderId,
+                    'type' => 'orderId',
+                    'error' => $e->getMessage(),
+                    'exception' => $e,
+                ];
+            }
+        }
+
+        // Track by tracking numbers
+        foreach ($trackingNumbers as $trackingNumber) {
+            try {
+                $tracking = $this->trackParcel(trackingNumber: $trackingNumber);
+                $successful[] = $tracking;
+            } catch (Throwable $e) {
+                $failed[] = [
+                    'identifier' => $trackingNumber,
+                    'type' => 'trackingNumber',
+                    'error' => $e->getMessage(),
+                    'exception' => $e,
+                ];
+            }
+        }
+
+        return [
+            'successful' => $successful,
+            'failed' => $failed,
+        ];
+    }
+
+    /**
+     * Batch cancel multiple orders.
+     *
+     * Cancels multiple orders in a single operation. All orders will use the same
+     * cancellation reason. For different reasons per order, call cancelOrder individually.
+     *
+     * @param  array<string>  $orderIds  Array of order IDs to cancel
+     * @param  \MasyukAI\Jnt\Enums\CancellationReason|string  $reason  Cancellation reason
+     * @return array{successful: array{orderId: string, data: array}, failed: array{orderId: string, error: string, exception: Throwable}}
+     *
+     * @example
+     * ```php
+     * use MasyukAI\Jnt\Enums\CancellationReason;
+     *
+     * $result = $service->batchCancelOrders(
+     *     orderIds: ['ORDER1', 'ORDER2', 'ORDER3'],
+     *     reason: CancellationReason::OUT_OF_STOCK
+     * );
+     *
+     * echo "Cancelled: " . count($result['successful']) . "\n";
+     * echo "Failed: " . count($result['failed']) . "\n";
+     * ```
+     */
+    public function batchCancelOrders(array $orderIds, \MasyukAI\Jnt\Enums\CancellationReason|string $reason): array
+    {
+        $successful = [];
+        $failed = [];
+
+        foreach ($orderIds as $orderId) {
+            try {
+                $data = $this->cancelOrder($orderId, $reason);
+                $successful[] = [
+                    'orderId' => $orderId,
+                    'data' => $data,
+                ];
+            } catch (Throwable $e) {
+                $failed[] = [
+                    'orderId' => $orderId,
+                    'error' => $e->getMessage(),
+                    'exception' => $e,
+                ];
+            }
+        }
+
+        return [
+            'successful' => $successful,
+            'failed' => $failed,
+        ];
+    }
+
+    /**
+     * Batch print waybills for multiple orders.
+     *
+     * Prints waybills for multiple orders in a single operation. All waybills
+     * will use the same template if specified.
+     *
+     * @param  array<string>  $orderIds  Array of order IDs to print
+     * @param  string|null  $templateName  Optional template name for all waybills
+     * @return array{successful: array{orderId: string, data: array}, failed: array{orderId: string, error: string, exception: Throwable}}
+     *
+     * @example
+     * ```php
+     * $result = $service->batchPrintWaybills(
+     *     orderIds: ['ORDER1', 'ORDER2', 'ORDER3'],
+     *     templateName: 'CUSTOM_TEMPLATE'
+     * );
+     *
+     * foreach ($result['successful'] as $waybill) {
+     *     // Save or process waybill data
+     *     file_put_contents(
+     *         "waybill_{$waybill['orderId']}.pdf",
+     *         base64_decode($waybill['data']['content'])
+     *     );
+     * }
+     * ```
+     */
+    public function batchPrintWaybills(array $orderIds, ?string $templateName = null): array
+    {
+        $successful = [];
+        $failed = [];
+
+        foreach ($orderIds as $orderId) {
+            try {
+                $data = $this->printOrder($orderId, null, $templateName);
+                $successful[] = [
+                    'orderId' => $orderId,
+                    'data' => $data,
+                ];
+            } catch (Throwable $e) {
+                $failed[] = [
+                    'orderId' => $orderId,
+                    'error' => $e->getMessage(),
+                    'exception' => $e,
+                ];
+            }
+        }
+
+        return [
+            'successful' => $successful,
+            'failed' => $failed,
+        ];
     }
 
     /**
@@ -186,8 +446,8 @@ class JntExpressService
     {
         if ($this->client === null) {
             $baseUrl = $this->getBaseUrl();
-            $apiAccount = $this->config['api_account'] ?? throw JntException::missingCredentials('api_account');
-            $privateKey = $this->config['private_key'] ?? throw JntException::missingCredentials('private_key');
+            $apiAccount = $this->config['api_account'] ?? throw JntConfigurationException::missingApiAccount();
+            $privateKey = $this->config['private_key'] ?? throw JntConfigurationException::missingPrivateKey();
 
             $this->client = new JntClient($baseUrl, $apiAccount, $privateKey, $this->config);
         }
@@ -200,6 +460,6 @@ class JntExpressService
         $environment = $this->config['environment'] ?? 'testing';
         $baseUrls = $this->config['base_urls'] ?? [];
 
-        return $baseUrls[$environment] ?? throw JntException::invalidConfiguration("Invalid environment: {$environment}");
+        return $baseUrls[$environment] ?? throw JntConfigurationException::invalidEnvironment($environment);
     }
 }

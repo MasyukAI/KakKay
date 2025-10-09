@@ -15,7 +15,7 @@ it('builds a valid order payload', function (): void {
         address: 'No 32, Jalan Kempas 4',
         postCode: '81930',
         countryCode: 'MYS',
-        prov: 'Johor',
+        state: 'Johor',
         city: 'Bandar Penawar',
         area: 'Taman Desaru Utama'
     );
@@ -26,28 +26,28 @@ it('builds a valid order payload', function (): void {
         address: '4678, Laluan Sentang 35',
         postCode: '31000',
         countryCode: 'MYS',
-        prov: 'Perak',
+        state: 'Perak',
         city: 'Batu Gajah',
         area: 'Kampung Seri Mariah'
     );
 
     $item = new ItemData(
-        itemName: 'Basketball',
-        number: '2',
-        weight: '10',
-        itemValue: '50.00'
+        name: 'Basketball',
+        quantity: 2,
+        weight: 10,
+        price: 50.00
     );
 
     $packageInfo = new PackageInfoData(
-        packageQuantity: '1',
-        weight: '10',
-        packageValue: '50',
+        quantity: 1,
+        weight: 10.5,
+        value: 50,
         goodsType: 'ITN8'
     );
 
     $builder = new OrderBuilder('ITTEST0001', '9C75439FB1FD01EB01861670DD1B949C');
     $payload = $builder
-        ->txlogisticId('TEST-123456')
+        ->orderId('TEST-123456')
         ->sender($sender)
         ->receiver($receiver)
         ->addItem($item)
@@ -64,14 +64,14 @@ it('builds a valid order payload', function (): void {
         ->and($payload['packageInfo'])->toBeArray();
 });
 
-it('throws exception when txlogisticId is missing', function (): void {
+it('throws exception when orderId is missing', function (): void {
     $builder = new OrderBuilder('ITTEST0001', '9C75439FB1FD01EB01861670DD1B949C');
     $builder->build();
-})->throws(JntException::class, 'txlogisticId is required');
+})->throws(JntException::class, 'orderId is required');
 
 it('throws exception when sender is missing', function (): void {
     $builder = new OrderBuilder('ITTEST0001', '9C75439FB1FD01EB01861670DD1B949C');
-    $builder->txlogisticId('TEST-123456')->build();
+    $builder->orderId('TEST-123456')->build();
 })->throws(JntException::class, 'Sender address is required');
 
 it('throws exception when items are empty', function (): void {
@@ -91,7 +91,7 @@ it('throws exception when items are empty', function (): void {
 
     $builder = new OrderBuilder('ITTEST0001', '9C75439FB1FD01EB01861670DD1B949C');
     $builder
-        ->txlogisticId('TEST-123456')
+        ->orderId('TEST-123456')
         ->sender($sender)
         ->receiver($receiver)
         ->build();

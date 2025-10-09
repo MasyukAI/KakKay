@@ -1,14 +1,18 @@
 # J&T Express Malaysia API Integration Package
 
-A modern, type-safe Laravel package for integrating with J&T Express Malaysia Open API.
+A modern, type-safe Laravel package for integrating with J&T Express Malaysia Open API with **clean, intuitive property names** and **type-safe enums**.
 
 ## Features
 
+- ✅ **Clean, developer-friendly API** - No more confusing property names like `txlogisticId`
+- ✅ **Type-safe enums** - Use `ExpressType::DOMESTIC` instead of magic strings like `'EZ'`
+- ✅ **Automatic API translation** - Clean names internally, J&T format for API calls
 - ✅ Create orders with comprehensive validation
 - ✅ Query order details
 - ✅ Cancel orders
 - ✅ Print AWB labels
 - ✅ Track parcels
+- ✅ **Batch operations** - Create, track, cancel, and print multiple orders at once
 - ✅ Webhook support for tracking updates
 - ✅ Automatic signature generation and verification
 - ✅ Retry logic for failed requests (including 5xx errors)
@@ -17,7 +21,19 @@ A modern, type-safe Laravel package for integrating with J&T Express Malaysia Op
 - ✅ Type-safe data objects with PHP 8.4
 - ✅ Testing and production environments
 - ✅ PHPStan level 6 compliant
-- ✅ Comprehensive test suite with Pest
+- ✅ Comprehensive test suite with Pest (312 tests)
+
+## 📚 Documentation
+
+Need help? We've got you covered with comprehensive documentation:
+
+- **Quick Start:** You're reading it! See [Usage](#usage) below
+- **[API Reference](docs/API_REFERENCE.md)** - Complete API documentation with all methods and examples
+- **[Integration Testing](docs/INTEGRATION_TESTING.md)** - Sandbox setup and testing guide
+- **[Batch Operations](docs/BATCH_OPERATIONS.md)** - Process multiple orders efficiently
+- **[100% Complete Report](docs/100_PERCENT_COMPLETE.md)** - Package completion milestone 🎉
+
+[View All Documentation →](#documentation)
 
 ## Installation
 
@@ -66,9 +82,8 @@ You'll need to obtain `JNT_CUSTOMER_CODE` and `JNT_PASSWORD` from your J&T Distr
 
 ```php
 use MasyukAI\Jnt\Facades\JntExpress;
-use MasyukAI\Jnt\Data\AddressData;
-use MasyukAI\Jnt\Data\ItemData;
-use MasyukAI\Jnt\Data\PackageInfoData;
+use MasyukAI\Jnt\Data\{AddressData, ItemData, PackageInfoData};
+use MasyukAI\Jnt\Enums\{ExpressType, ServiceType, PaymentType, GoodsType};
 
 // Create sender address
 $sender = new AddressData(
@@ -77,7 +92,7 @@ $sender = new AddressData(
     address: 'No 32, Jalan Kempas 4',
     postCode: '81930',
     countryCode: 'MYS',
-    prov: 'Johor',
+    state: 'Johor',              // ✨ Clean name (was 'prov')
     city: 'Bandar Penawar',
     area: 'Taman Desaru Utama'
 );
@@ -89,7 +104,7 @@ $receiver = new AddressData(
     address: '4678, Laluan Sentang 35',
     postCode: '31000',
     countryCode: 'MYS',
-    prov: 'Perak',
+    state: 'Perak',
     city: 'Batu Gajah',
     area: 'Kampung Seri Mariah'
 );
@@ -97,45 +112,74 @@ $receiver = new AddressData(
 // Create items
 $item = new ItemData(
     itemName: 'Basketball',
-    number: '2',
-    weight: '10',
-    itemValue: '50.00',
+    quantity: 2,                 // ✨ Clear (was 'number')
+    weight: 10,
+    unitPrice: 50.00,            // ✨ Clear (was 'itemValue')
     englishName: 'Basketball',
-    itemDesc: 'Sports equipment',
-    itemCurrency: 'MYR'
+    description: 'Sports equipment', // ✨ Full word (was 'itemDesc')
+    currency: 'MYR'              // ✨ Short & clear (was 'itemCurrency')
 );
 
 // Create package info
 $packageInfo = new PackageInfoData(
-    packageQuantity: '1',
-    weight: '10',
-    packageValue: '50',
-    goodsType: 'ITN8', // ITN2 for documents, ITN8 for packages
-    length: '30',
-    width: '20',
-    height: '15'
+    quantity: 1,                 // ✨ Short & clear (was 'packageQuantity')
+    weight: 10,
+    declaredValue: 50,           // ✨ Purpose-clear (was 'packageValue')
+    goodsType: GoodsType::PACKAGE, // ✨ Type-safe enum (was 'ITN8')
+    length: 30,
+    width: 20,
+    height: 15
 );
 
 // Build and create order
-$orderData = JntExpress::createOrderBuilder()
-    ->txlogisticId('ORDER-'.time())
-    ->expressType('EZ') // EZ: Domestic, EX: Next Day, FD: Fresh
-    ->serviceType('1') // 1: Door-to-door, 6: Walk-in
-    ->payType('PP_PM') // PP_PM, PP_CASH, CC_CASH
+$order = JntExpress::createOrderBuilder()
+    ->orderId('ORDER-'.time())                    // ✨ Clear (was 'txlogisticId')
+    ->expressType(ExpressType::DOMESTIC)          // ✨ Type-safe enum
+    ->serviceType(ServiceType::DOOR_TO_DOOR)      // ✨ Type-safe enum
+    ->paymentType(PaymentType::PREPAID_POSTPAID) // ✨ Type-safe enum
     ->sender($sender)
     ->receiver($receiver)
     ->addItem($item)
     ->packageInfo($packageInfo)
-    ->insurance('50.00') // Optional
-    ->cod('100.00') // Optional
-    ->remark('Handle with care') // Optional
+    ->insurance(50.00)                            // Optional
+    ->cashOnDelivery(100.00)                      // ✨ Clear (was 'cod')
+    ->remark('Handle with care')                  // Optional
     ->build();
 
-$order = JntExpress::createOrder($orderData);
+$order = JntExpress::createOrderFromArray($order);
 
-// Access order details
-echo "Bill Code: " . $order->billCode;
-echo "Sorting Code: " . $order->sortingCode;
+// Access order details with clean names
+echo "Order ID: " . $order->orderId;                  // Your reference
+echo "Tracking Number: " . $order->trackingNumber;    // J&T tracking number
+echo "Chargeable Weight: " . $order->chargeableWeight; // Billing weight
+```
+
+### Available Enums
+
+#### ExpressType
+```php
+ExpressType::DOMESTIC   // 'EZ' - Domestic Standard
+ExpressType::NEXT_DAY   // 'EX' - Express Next Day  
+ExpressType::FRESH      // 'FD' - Fresh Delivery
+```
+
+#### ServiceType
+```php
+ServiceType::DOOR_TO_DOOR  // '1' - Door to Door
+ServiceType::WALK_IN       // '6' - Walk-In
+```
+
+#### PaymentType
+```php
+PaymentType::PREPAID_POSTPAID  // 'PP_PM' - Prepaid, Postpaid by Merchant
+PaymentType::PREPAID_CASH      // 'PP_CASH' - Prepaid Cash
+PaymentType::COLLECT_CASH      // 'CC_CASH' - Cash on Delivery
+```
+
+#### GoodsType
+```php
+GoodsType::DOCUMENT  // 'ITN2' - Document
+GoodsType::PACKAGE   // 'ITN8' - Package
 ```
 
 ### Query Order
@@ -148,9 +192,9 @@ $orderDetails = JntExpress::queryOrder('ORDER-123456789');
 
 ```php
 $result = JntExpress::cancelOrder(
-    txlogisticId: 'ORDER-123456789',
+    orderId: 'ORDER-123456789',           // ✨ Clear name
     reason: 'Customer requested cancellation',
-    billCode: '630002864925' // Optional
+    trackingNumber: '630002864925'        // ✨ Clear name (was 'billCode')
 );
 ```
 
@@ -158,8 +202,8 @@ $result = JntExpress::cancelOrder(
 
 ```php
 $label = JntExpress::printOrder(
-    txlogisticId: 'ORDER-123456789',
-    billCode: '630002864925',
+    orderId: 'ORDER-123456789',
+    trackingNumber: '630002864925',
     templateName: null // Optional
 );
 
@@ -170,152 +214,201 @@ $pdfUrl = $label['urlContent'];
 ### Track Parcel
 
 ```php
-// Track by txlogisticId
-$tracking = JntExpress::trackParcel(txlogisticId: 'ORDER-123456789');
+// Track by orderId (your reference)
+$tracking = JntExpress::trackParcel(orderId: 'ORDER-123456789');
 
-// Or track by billCode
-$tracking = JntExpress::trackParcel(billCode: '630002864925');
+// Or track by trackingNumber (J&T waybill number)
+$tracking = JntExpress::trackParcel(trackingNumber: '630002864925');
 
-// Access tracking details
+// Access tracking details with clean names
+echo "Tracking: " . $tracking->trackingNumber;  // J&T tracking number
+echo "Order ID: " . $tracking->orderId;         // Your reference
+
 foreach ($tracking->details as $detail) {
-    echo $detail->scanTime . ': ' . $detail->desc;
+    echo $detail->scanTime . ': ' . $detail->description; // ✨ Clear (was 'desc')
+    echo "Weight: " . $detail->actualWeight;              // ✨ Clear (was 'realWeight')
 }
 ```
 
-### Webhook Handling
+### Webhooks - Automatic Tracking Updates
 
-Create a controller to handle J&T webhooks:
+Receive real-time tracking status updates from J&T automatically.
 
+#### Quick Setup
+
+1. **Configure environment:**
+```env
+JNT_WEBHOOKS_ENABLED=true
+JNT_WEBHOOK_LOG_PAYLOADS=false  # Enable for debugging only
+```
+
+2. **Listen to tracking events:**
 ```php
-namespace App\Http\Controllers;
+// app/Providers/EventServiceProvider.php
+protected $listen = [
+    \MasyukAI\Jnt\Events\TrackingStatusReceived::class => [
+        \App\Listeners\UpdateOrderTracking::class,
+    ],
+];
+```
 
-use Illuminate\Http\Request;
-use MasyukAI\Jnt\Facades\JntExpress;
+3. **Handle tracking updates:**
+```php
+namespace App\Listeners;
 
-class JntWebhookController extends Controller
+use MasyukAI\Jnt\Events\TrackingStatusReceived;
+use App\Models\Order;
+
+class UpdateOrderTracking
 {
-    public function handle(Request $request)
+    public function handle(TrackingStatusReceived $event): void
     {
-        // Verify signature
-        $bizContent = $request->input('bizContent');
-        $digest = $request->header('digest');
+        $order = Order::where('tracking_number', $event->getBillCode())->first();
         
-        if (!JntExpress::verifyWebhookSignature($bizContent, $digest)) {
-            return response()->json([
-                'code' => '0',
-                'msg' => 'Invalid signature',
-                'data' => 'FAILED',
-            ], 400);
+        if (!$order) {
+            return;
         }
 
-        // Parse webhook payload
-        $trackingUpdates = JntExpress::parseWebhookPayload($request->all());
-
-        foreach ($trackingUpdates as $tracking) {
-            // Process tracking update
-            $billCode = $tracking->billCode;
-            $details = $tracking->details;
-            
-            // Your business logic here
-        }
-
-        // Return success response
-        return response()->json([
-            'code' => '1',
-            'msg' => 'success',
-            'data' => 'SUCCESS',
-            'requestId' => uniqid(),
+        $order->update([
+            'tracking_status' => $event->getLatestStatus(),
+            'tracking_description' => $event->getLatestDescription(),
+            'tracking_location' => $event->getLatestLocation(),
+            'tracking_updated_at' => $event->getLatestTimestamp(),
         ]);
+
+        // Notify customer if delivered
+        if ($event->isDelivered()) {
+            $order->user->notify(new OrderDelivered($order));
+        }
     }
 }
 ```
 
-Register the webhook route in `routes/api.php`:
-
-```php
-Route::post('/jnt/webhook', [JntWebhookController::class, 'handle']);
+4. **Configure webhook URL in J&T Dashboard:**
+```
+https://yourdomain.com/webhooks/jnt/status
 ```
 
-## Scan Type Codes
+That's it! Your application will now automatically receive and process tracking updates.
 
-- `10` - Pick Up
-- `20` - Departure
-- `30` - Arrival
-- `94` - Delivery (Out for delivery)
-- `100` - Delivery Signature
-- `110` - Problematic
-- `172` - Return
-- `173` - Return Delivery Signature
-- `200` - Collected
-- `300-306` - Terminal statuses (Damaged/Lost/Disposed/Rejected/Customs/Expired/Crossborder Disposal)
+#### Features
+- ✅ **Automatic signature verification** - Middleware validates all webhooks
+- ✅ **Type-safe event data** - Access webhook data through clean helper methods
+- ✅ **Queue support** - Process webhooks asynchronously with `ShouldQueue`
+- ✅ **Status detection** - Built-in helpers: `isDelivered()`, `isCollected()`, `hasProblem()`
+- ✅ **Comprehensive logging** - Configurable webhook payload logging
+
+#### Learn More
+
+📚 **Detailed Documentation:**
+- [Webhook Usage Guide](docs/WEBHOOKS_USAGE.md) - Complete setup and configuration
+- [Integration Examples](docs/WEBHOOK_INTEGRATION_EXAMPLES.md) - 7 production-ready examples
+- [Troubleshooting Guide](docs/WEBHOOK_TROUBLESHOOTING.md) - Common issues and solutions
 
 ## Testing
 
-Run the test suite:
-
 ```bash
-cd packages/masyukai/jnt
+# Run all tests
 vendor/bin/pest
+
+# Run specific test file
+vendor/bin/pest tests/Feature/JntExpressServiceTest.php
+
+# Run with coverage
+vendor/bin/pest --coverage
 ```
 
-Run with coverage:
+## API Translation
 
-```bash
-composer test:coverage
+The package automatically translates between clean property names and J&T API format:
+
+**Your Code (Clean):**
+```php
+$order = new OrderData(
+    orderId: 'ORDER-123',
+    trackingNumber: '630002864925',
+    chargeableWeight: '12.5'
+);
 ```
 
-Run static analysis:
-
-```bash
-composer analyse
+**Sent to J&T API (Translated):**
+```json
+{
+  "txlogisticId": "ORDER-123",
+  "billCode": "630002864925",
+  "packageChargeWeight": "12.5"
+}
 ```
 
-Format code:
+This happens automatically! You never need to deal with confusing API names. 🎉
 
-```bash
-composer format
-```
+## Property Name Reference
 
-Run all checks:
+| Clean Name (Your Code) | API Name (J&T) | Description |
+|---|---|---|
+| `orderId` | `txlogisticId` | Your order reference number |
+| `trackingNumber` | `billCode` | J&T waybill/tracking number |
+| `state` | `prov` | State/province |
+| `quantity` | `number` | Item quantity |
+| `unitPrice` | `itemValue` | Price per item |
+| `description` | `desc` / `itemDesc` | Description text |
+| `currency` | `itemCurrency` | Currency code |
+| `declaredValue` | `packageValue` | Declared value for customs |
+| `actualWeight` | `realWeight` | Actual measured weight |
+| `chargeableWeight` | `packageChargeWeight` | Billable weight |
+| `signaturePictureUrl` | `sigPicUrl` | Delivery signature image |
+| `additionalTrackingNumbers` | `multipleVoteBillCodes` | Multi-parcel tracking numbers |
 
-```bash
-composer check
-```
+## Requirements
 
-The package uses Laravel's `Http::fake()` for testing, making it easy to test your integration code without hitting the actual J&T API.
-
-## API Response Codes
-
-- `1` - Success
-- `0` - Failed
-- `145003052` - digest is empty
-- `145003051` - apiAccount is empty
-- `145003053` - timestamp is empty
-- `145003010` - API account does not exist
-- `145003012` - API account has no interface permissions
-- `145003030` - headers signature verification failed
-- `145003050` - Illegal parameters
-
-## License
-
-MIT
-
-## Technical Details
-
-- **PHP Version**: 8.4+
-- **Laravel Version**: 12.x
-- **HTTP Client**: Laravel HTTP (built on Guzzle 7)
-- **Testing**: Pest v4
-- **Static Analysis**: PHPStan (Larastan) Level 6
-- **Code Style**: Laravel Pint
+- PHP 8.4+
+- Laravel 12+
 
 ## Contributing
 
-Pull requests are welcome! Please ensure:
-- All tests pass (`composer test`)
-- Code is formatted (`composer format`)
-- Static analysis passes (`composer analyse`)
+Contributions are welcome! Please ensure:
+- All tests pass
+- Code follows PSR-12 standards (run `vendor/bin/pint`)
+- PHPStan passes at level 6
+
+## License
+
+MIT License - see LICENSE file for details.
+
+## Credits
+
+- Developed by MasyukAI
+- J&T Express Malaysia API documentation
+- Laravel community
+
+## Documentation
+
+### 📚 Comprehensive Guides
+
+- **[API Reference](docs/API_REFERENCE.md)** - Complete package documentation with all methods, data objects, enums, events, and examples
+- **[Integration Testing Guide](docs/INTEGRATION_TESTING.md)** - Sandbox setup, test suite, and CI/CD integration
+- **[Batch Operations Guide](docs/BATCH_OPERATIONS.md)** - Process multiple orders efficiently with batch methods
+- **[Webhook Integration Examples](docs/WEBHOOK_INTEGRATION_EXAMPLES.md)** - 7 production-ready webhook examples
+- **[Webhook Usage Guide](docs/WEBHOOKS_USAGE.md)** - Complete webhook setup and configuration
+- **[Quick Reference](docs/QUICK_REFERENCE.md)** - Common operations at a glance
+- **[Type System Explained](docs/TYPE_SYSTEM_EXPLAINED.md)** - Understanding type transformations
+
+### 📖 Technical Documentation
+
+- **[100% Completion Report](docs/100_PERCENT_COMPLETE.md)** 🎉 - Package completion milestone (312 tests)
+- **[Complete API Gap Analysis](docs/COMPLETE_API_GAP_ANALYSIS.md)** - Package completeness status (100%)
+- **[Phase 5 Completion Report](docs/PHASE_5_COMPLETION_REPORT.md)** - Laravel integration features
+- **[Post-Phase 5 Improvements](docs/POST_PHASE_5_IMPROVEMENTS.md)** - Test correctness, Spatie integration, property naming
+- **[Optional Enhancements](docs/OPTIONAL_ENHANCEMENTS_COMPLETE.md)** - Production validation improvements
+
+### 🔧 Development Resources
+
+- **[Testing Guidelines](.ai/testing.md)** - How to write and run tests
+- **[Package Development Guidelines](.ai/package-development.md)** - Development best practices
+- **[CHIP Integration Guidelines](.ai/chip.md)** - Payment gateway integration (if needed)
 
 ## Support
 
-For issues and feature requests, please use the [GitHub issue tracker](https://github.com/masyukai/jnt/issues).
+- **Issues:** [GitHub Issues](https://github.com/masyukai/jnt/issues)
+- **Questions:** Check the [API Reference](docs/API_REFERENCE.md) first
+- **Integration Help:** See [Integration Testing Guide](docs/INTEGRATION_TESTING.md)

@@ -12,17 +12,43 @@ use MasyukAI\Jnt\Data\PackageInfoData;
 use MasyukAI\Jnt\Data\TrackingData;
 
 /**
- * @method static OrderBuilder createOrderBuilder()
- * @method static OrderData createOrder(AddressData $sender, AddressData $receiver, array $items, PackageInfoData $packageInfo, ?string $txlogisticId = null, array $additionalData = [])
- * @method static OrderData createOrderFromArray(array $orderData)
- * @method static array queryOrder(string $txlogisticId)
- * @method static array cancelOrder(string $txlogisticId, string $reason, ?string $billCode = null)
- * @method static array printOrder(string $txlogisticId, ?string $billCode = null, ?string $templateName = null)
- * @method static TrackingData trackParcel(?string $txlogisticId = null, ?string $billCode = null)
- * @method static bool verifyWebhookSignature(string $bizContent, string $digest)
- * @method static array<TrackingData> parseWebhookPayload(array $webhookData)
+ * J&T Express Facade
+ *
+ * Provides a convenient static interface to the J&T Express API service.
+ * All methods return typed data objects for type safety and IDE autocompletion.
+ *
+ * @method static OrderBuilder createOrderBuilder() Create a new order builder instance for fluent order creation
+ * @method static OrderData createOrder(AddressData $sender, AddressData $receiver, array $items, PackageInfoData $packageInfo, ?string $orderId = null, array $additionalData = []) Create a new order with all required information
+ * @method static OrderData createOrderFromArray(array $orderData) Create an order from a raw array payload
+ * @method static array queryOrder(string $orderId) Query order details by order ID
+ * @method static array cancelOrder(string $orderId, string $reason, ?string $trackingNumber = null) Cancel an existing order with reason
+ * @method static array printOrder(string $orderId, ?string $trackingNumber = null, ?string $templateName = null) Generate waybill/shipping label for an order
+ * @method static TrackingData trackParcel(?string $orderId = null, ?string $trackingNumber = null) Track parcel status by order ID or tracking number
+ * @method static bool verifyWebhookSignature(string $bizContent, string $digest) Verify webhook signature from J&T Express
+ * @method static array<TrackingData> parseWebhookPayload(array $webhookData) Parse webhook payload into TrackingData objects
+ *
+ * @throws \MasyukAI\Jnt\Exceptions\JntValidationException When input validation fails (missing required fields, invalid formats, out of range values)
+ * @throws \MasyukAI\Jnt\Exceptions\JntApiException When J&T Express API returns an error (authentication failure, order not found, cancellation failure, etc.)
+ * @throws \MasyukAI\Jnt\Exceptions\JntNetworkException When network communication fails (timeout, connection error, DNS failure, SSL error)
+ * @throws \MasyukAI\Jnt\Exceptions\JntConfigurationException When package configuration is invalid or incomplete (missing API key, invalid environment, etc.)
  *
  * @see \MasyukAI\Jnt\Services\JntExpressService
+ * @see OrderBuilder For fluent order creation
+ * @see OrderData For order response structure
+ * @see TrackingData For tracking response structure
+ *
+ * @example
+ * // Create an order
+ * $order = JntExpress::createOrder($sender, $receiver, $items, $packageInfo, 'ORDER123');
+ * @example
+ * // Track a parcel
+ * $tracking = JntExpress::trackParcel(orderId: 'ORDER123');
+ * @example
+ * // Cancel an order
+ * $result = JntExpress::cancelOrder('ORDER123', 'Customer requested cancellation');
+ * @example
+ * // Generate waybill
+ * $waybill = JntExpress::printOrder('ORDER123');
  */
 class JntExpress extends Facade
 {

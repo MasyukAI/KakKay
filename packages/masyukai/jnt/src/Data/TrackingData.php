@@ -10,31 +10,53 @@ class TrackingData
      * @param  array<TrackingDetailData>  $details
      */
     public function __construct(
-        public readonly string $billCode,
+        public readonly string $trackingNumber,
         public readonly array $details,
-        public readonly ?string $txlogisticId = null,
+        public readonly ?string $orderId = null,
     ) {}
 
-    public static function fromArray(array $data): self
+    /**
+     * Create from API response array
+     */
+    public static function fromApiArray(array $data): self
     {
         $details = array_map(
-            fn (array $detail) => TrackingDetailData::fromArray($detail),
+            fn (array $detail) => TrackingDetailData::fromApiArray($detail),
             $data['details'] ?? []
         );
 
         return new self(
-            billCode: $data['billCode'],
+            trackingNumber: $data['billCode'],
             details: $details,
-            txlogisticId: $data['txlogisticId'] ?? null,
+            orderId: $data['txlogisticId'] ?? null,
         );
     }
 
-    public function toArray(): array
+    /**
+     * @deprecated Use fromApiArray() instead
+     */
+    public static function fromArray(array $data): self
+    {
+        return self::fromApiArray($data);
+    }
+
+    /**
+     * Convert to API request array
+     */
+    public function toApiArray(): array
     {
         return [
-            'billCode' => $this->billCode,
-            'txlogisticId' => $this->txlogisticId,
-            'details' => array_map(fn (TrackingDetailData $detail) => $detail->toArray(), $this->details),
+            'billCode' => $this->trackingNumber,
+            'txlogisticId' => $this->orderId,
+            'details' => array_map(fn (TrackingDetailData $detail) => $detail->toApiArray(), $this->details),
         ];
+    }
+
+    /**
+     * @deprecated Use toApiArray() instead
+     */
+    public function toArray(): array
+    {
+        return $this->toApiArray();
     }
 }

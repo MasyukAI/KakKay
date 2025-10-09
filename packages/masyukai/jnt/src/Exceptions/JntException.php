@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MasyukAI\Jnt\Exceptions;
 
 use Exception;
+use Throwable;
 
 class JntException extends Exception
 {
@@ -12,8 +13,10 @@ class JntException extends Exception
         string $message,
         public readonly ?string $errorCode = null,
         public readonly mixed $data = null,
+        int $code = 0,
+        ?Throwable $previous = null
     ) {
-        parent::__construct($message);
+        parent::__construct($message, $code, $previous);
     }
 
     public static function apiError(string $message, ?string $errorCode = null, mixed $data = null): self

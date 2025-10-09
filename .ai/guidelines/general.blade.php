@@ -1,3 +1,4 @@
 - All generated database code must remain compatible with PostgreSQL.
 - When choosing JSON column types or operators, prioritize `jsonb` over `json`.
 - All code must adhere to PHPStan level 6.
+- If needed validation always consider using laravel built in validation first. Search the docs about the many options.

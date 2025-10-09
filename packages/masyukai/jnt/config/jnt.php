@@ -42,9 +42,19 @@ return [
         'channel' => env('JNT_LOGGING_CHANNEL', 'stack'),
     ],
 
-    'webhook' => [
-        'enabled' => env('JNT_WEBHOOK_ENABLED', true),
-        'verify_signature' => env('JNT_WEBHOOK_VERIFY_SIGNATURE', true),
-        'route_path' => env('JNT_WEBHOOK_ROUTE_PATH', '/api/jnt/webhook'),
+    /*
+    |--------------------------------------------------------------------------
+    | Webhook Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configure webhook endpoint for receiving tracking status updates from
+    | J&T Express. The signature verification ensures webhooks are authentic.
+    |
+    */
+    'webhooks' => [
+        'enabled' => env('JNT_WEBHOOKS_ENABLED', true),
+        'route' => env('JNT_WEBHOOK_ROUTE', 'webhooks/jnt/status'),
+        'middleware' => ['api', 'jnt.verify.signature'],
+        'log_payloads' => env('JNT_WEBHOOK_LOG_PAYLOADS', false),
     ],
 ];

@@ -8,7 +8,8 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use MasyukAI\Jnt\Exceptions\JntException;
+use MasyukAI\Jnt\Exceptions\JntApiException;
+use MasyukAI\Jnt\Exceptions\JntNetworkException;
 
 class JntClient
 {
@@ -24,7 +25,7 @@ class JntClient
         $jsonBizContent = json_encode($bizContent, JSON_UNESCAPED_UNICODE);
 
         if ($jsonBizContent === false) {
-            throw JntException::apiError('Failed to encode bizContent to JSON');
+            throw JntApiException::invalidApiResponse($endpoint, 'Failed to encode bizContent to JSON');
         }
 
         $digest = $this->generateDigest($jsonBizContent);
@@ -85,33 +86,35 @@ class JntClient
             }
 
             if ($response->failed()) {
-                throw JntException::apiError(
-                    "HTTP {$response->status()}: {$response->body()}",
-                    (string) $response->status()
-                );
+                $statusCode = $response->status();
+
+                if ($statusCode >= 500) {
+                    throw JntNetworkException::serverError($endpoint, $statusCode, $response->body());
+                }
+                if ($statusCode >= 400) {
+                    throw JntNetworkException::clientError($endpoint, $statusCode, $response->body());
+                }
+
+                throw JntApiException::invalidApiResponse($endpoint, "HTTP {$statusCode}: {$response->body()}", ['status' => $statusCode, 'body' => $response->body()]);
             }
 
             $data = $response->json();
 
             if ($data === null) {
-                throw JntException::apiError('Failed to decode API response: invalid JSON');
+                throw JntApiException::invalidApiResponse($endpoint, 'Failed to decode API response: invalid JSON');
             }
 
             // Check for API-level errors
             if (isset($data['code']) && (string) $data['code'] !== '1') {
-                throw JntException::apiError(
+                throw JntApiException::orderCreationFailed(
                     $data['msg'] ?? 'API request failed',
-                    (string) $data['code'],
-                    $data['data'] ?? null
+                    $data
                 );
             }
 
             return $data;
         } catch (ConnectionException $e) {
-            throw JntException::apiError(
-                'Connection failed: '.$e->getMessage(),
-                '0'
-            );
+            throw JntNetworkException::connectionFailed($endpoint, $e);
         }
     }
 

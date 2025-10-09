@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Http;
 use MasyukAI\Jnt\Exceptions\JntException;
+use MasyukAI\Jnt\Exceptions\JntNetworkException;
 use MasyukAI\Jnt\Services\JntExpressService;
 
 beforeEach(function () {
@@ -56,8 +57,8 @@ test('creates order successfully with Http facade', function () {
         'packageInfo' => ['weight' => '1'],
     ]);
 
-    expect($result->billCode)->toBe('JT123456789')
-        ->and($result->txlogisticId)->toBe('TXN-001');
+    expect($result->trackingNumber)->toBe('JT123456789')
+        ->and($result->orderId)->toBe('TXN-001');
 
     // Verify request was sent with correct headers
     Http::assertSent(function ($request) {
@@ -98,7 +99,7 @@ test('handles connection errors', function () {
         'items' => [['itemName' => 'Item']],
         'packageInfo' => ['weight' => '1'],
     ]);
-})->throws(JntException::class, 'Connection failed');
+})->throws(JntNetworkException::class);
 
 test('retries on 5xx errors', function () {
     Http::fake([
@@ -109,14 +110,14 @@ test('retries on 5xx errors', function () {
     ]);
 
     $result = $this->service->createOrderFromArray([
-        'txlogisticId' => 'TXN-001',
+        'orderId' => 'TXN-001',
         'sender' => ['name' => 'John'],
         'receiver' => ['name' => 'Jane'],
         'items' => [['itemName' => 'Item']],
         'packageInfo' => ['weight' => '1'],
     ]);
 
-    expect($result->billCode)->toBe('JT123');
+    expect($result->trackingNumber)->toBe('JT123');
 
     // Verify it was called 3 times (2 failures + 1 success)
     Http::assertSentCount(3);
@@ -182,7 +183,7 @@ test('creates order with data objects', function () {
         address: '123 Test Street',
         postCode: '47300',
         countryCode: 'MYS',
-        prov: 'Selangor',
+        state: 'Selangor',
         city: 'Petaling Jaya',
         area: 'SS2'
     );
@@ -193,22 +194,22 @@ test('creates order with data objects', function () {
         address: '456 Test Avenue',
         postCode: '50000',
         countryCode: 'MYS',
-        prov: 'Kuala Lumpur',
+        state: 'Kuala Lumpur',
         city: 'KL',
         area: 'Bukit Bintang'
     );
 
     $item = new MasyukAI\Jnt\Data\ItemData(
-        itemName: 'Test Product',
-        number: '1',
+        name: 'Test Product',
+        quantity: '1',
         weight: '1.5',
-        itemValue: '100.00'
+        price: '100.00'
     );
 
     $packageInfo = new MasyukAI\Jnt\Data\PackageInfoData(
-        packageQuantity: '1',
+        quantity: '1',
         weight: '1.5',
-        packageValue: '100.00',
+        value: '100.00',
         goodsType: 'General'
     );
 
@@ -217,11 +218,11 @@ test('creates order with data objects', function () {
         receiver: $receiver,
         items: [$item],
         packageInfo: $packageInfo,
-        txlogisticId: 'TXN-002'
+        orderId: 'TXN-002'
     );
 
-    expect($result->billCode)->toBe('JT987654321')
-        ->and($result->txlogisticId)->toBe('TXN-002');
+    expect($result->trackingNumber)->toBe('JT987654321')
+        ->and($result->orderId)->toBe('TXN-002');
 
     Http::assertSent(function ($request) {
         $body = json_decode($request->data()['bizContent'], true);
@@ -247,7 +248,7 @@ test('uses builder pattern', function () {
         address: 'Builder Address',
         postCode: '40000',
         countryCode: 'MYS',
-        prov: 'Selangor',
+        state: 'Selangor',
         city: 'Shah Alam',
         area: 'Sec 13'
     );
@@ -258,27 +259,27 @@ test('uses builder pattern', function () {
         address: 'Receiver Address',
         postCode: '80000',
         countryCode: 'MYS',
-        prov: 'Johor',
+        state: 'Johor',
         city: 'Johor Bahru',
         area: 'JB City'
     );
 
     $item = new MasyukAI\Jnt\Data\ItemData(
-        itemName: 'Builder Item',
-        number: '5',
+        name: 'Builder Item',
+        quantity: '5',
         weight: '2.5',
-        itemValue: '250.00'
+        price: '250.00'
     );
 
     $packageInfo = new MasyukAI\Jnt\Data\PackageInfoData(
-        packageQuantity: '1',
+        quantity: '1',
         weight: '2.5',
-        packageValue: '250.00',
+        value: '250.00',
         goodsType: 'Electronics'
     );
 
     $order = $this->service->createOrderBuilder()
-        ->txlogisticId('TXN-BUILDER')
+        ->orderId('TXN-BUILDER')
         ->sender($sender)
         ->receiver($receiver)
         ->addItem($item)
@@ -287,7 +288,7 @@ test('uses builder pattern', function () {
 
     $result = $this->service->createOrderFromArray($order);
 
-    expect($result->billCode)->toBe('JT555');
+    expect($result->trackingNumber)->toBe('JT555');
 
     Http::assertSent(function ($request) {
         $body = json_decode($request->data()['bizContent'], true);

@@ -12,14 +12,17 @@ class AddressData
         public readonly string $address,
         public readonly string $postCode,
         public readonly string $countryCode = 'MYS',
-        public readonly ?string $prov = null,
+        public readonly ?string $state = null,
         public readonly ?string $city = null,
         public readonly ?string $area = null,
         public readonly ?string $email = null,
         public readonly ?string $idCard = null,
     ) {}
 
-    public static function fromArray(array $data): self
+    /**
+     * Create from API response array
+     */
+    public static function fromApiArray(array $data): self
     {
         return new self(
             name: $data['name'],
@@ -27,7 +30,7 @@ class AddressData
             address: $data['address'],
             postCode: $data['postCode'],
             countryCode: $data['countryCode'] ?? 'MYS',
-            prov: $data['prov'] ?? null,
+            state: $data['prov'] ?? null,
             city: $data['city'] ?? null,
             area: $data['area'] ?? null,
             email: $data['email'] ?? null,
@@ -35,7 +38,18 @@ class AddressData
         );
     }
 
-    public function toArray(): array
+    /**
+     * @deprecated Use fromApiArray() instead
+     */
+    public static function fromArray(array $data): self
+    {
+        return self::fromApiArray($data);
+    }
+
+    /**
+     * Convert to API request array
+     */
+    public function toApiArray(): array
     {
         return array_filter([
             'name' => $this->name,
@@ -43,11 +57,19 @@ class AddressData
             'address' => $this->address,
             'postCode' => $this->postCode,
             'countryCode' => $this->countryCode,
-            'prov' => $this->prov,
+            'prov' => $this->state,
             'city' => $this->city,
             'area' => $this->area,
             'email' => $this->email,
             'idCard' => $this->idCard,
         ], fn ($value) => $value !== null);
+    }
+
+    /**
+     * @deprecated Use toApiArray() instead
+     */
+    public function toArray(): array
+    {
+        return $this->toApiArray();
     }
 }

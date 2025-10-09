@@ -8,11 +8,11 @@ class TrackingDetailData
 {
     public function __construct(
         public readonly string $scanTime,
-        public readonly string $desc,
+        public readonly string $description,
         public readonly string $scanTypeCode,
         public readonly string $scanTypeName,
         public readonly string $scanType,
-        public readonly ?string $realWeight = null,
+        public readonly ?string $actualWeight = null,
         public readonly ?string $scanNetworkTypeName = null,
         public readonly ?string $scanNetworkName = null,
         public readonly ?string $staffName = null,
@@ -21,21 +21,41 @@ class TrackingDetailData
         public readonly ?string $scanNetworkProvince = null,
         public readonly ?string $scanNetworkCity = null,
         public readonly ?string $scanNetworkArea = null,
-        public readonly ?string $sigPicUrl = null,
+        public readonly ?string $signaturePictureUrl = null,
         public readonly ?string $longitude = null,
         public readonly ?string $latitude = null,
         public readonly ?string $timeZone = null,
+        // Additional fields from complete API documentation
+        public readonly ?string $otp = null,
+        public readonly ?string $secondLevelTypeCode = null,
+        public readonly ?string $wcTraceFlag = null,
+        public readonly ?string $postCode = null,
+        public readonly ?string $paymentStatus = null,
+        public readonly ?string $paymentMethod = null,
+        public readonly ?string $nextStopName = null,
+        public readonly ?string $remark = null,
+        public readonly ?string $nextNetworkProvinceName = null,
+        public readonly ?string $nextNetworkCityName = null,
+        public readonly ?string $nextNetworkAreaName = null,
+        public readonly ?string $problemType = null,
+        public readonly ?string $signUrl = null,
+        public readonly ?string $electronicSignaturePicUrl = null,
+        public readonly ?int $scanNetworkId = null,
+        public readonly ?string $scanNetworkCountry = null,
     ) {}
 
-    public static function fromArray(array $data): self
+    /**
+     * Create from API response array
+     */
+    public static function fromApiArray(array $data): self
     {
         return new self(
             scanTime: $data['scanTime'],
-            desc: $data['desc'],
+            description: $data['desc'],
             scanTypeCode: $data['scanTypeCode'],
             scanTypeName: $data['scanTypeName'],
             scanType: $data['scanType'],
-            realWeight: $data['realWeight'] ?? null,
+            actualWeight: $data['realWeight'] ?? null,
             scanNetworkTypeName: $data['scanNetworkTypeName'] ?? null,
             scanNetworkName: $data['scanNetworkName'] ?? null,
             staffName: $data['staffName'] ?? null,
@@ -44,22 +64,50 @@ class TrackingDetailData
             scanNetworkProvince: $data['scanNetworkProvince'] ?? null,
             scanNetworkCity: $data['scanNetworkCity'] ?? null,
             scanNetworkArea: $data['scanNetworkArea'] ?? null,
-            sigPicUrl: $data['sigPicUrl'] ?? null,
+            signaturePictureUrl: $data['sigPicUrl'] ?? null,
             longitude: $data['longitude'] ?? null,
             latitude: $data['latitude'] ?? null,
             timeZone: $data['timeZone'] ?? null,
+            // Additional fields
+            otp: $data['otp'] ?? null,
+            secondLevelTypeCode: $data['secondLevelTypeCode'] ?? null,
+            wcTraceFlag: $data['wcTraceFlag'] ?? null,
+            postCode: $data['postCode'] ?? null,
+            paymentStatus: $data['paymentStatus'] ?? null,
+            paymentMethod: $data['paymentMethod'] ?? null,
+            nextStopName: $data['nextStopName'] ?? null,
+            remark: $data['remark'] ?? null,
+            nextNetworkProvinceName: $data['nextNetworkProvinceName'] ?? null,
+            nextNetworkCityName: $data['nextNetworkCityName'] ?? null,
+            nextNetworkAreaName: $data['nextNetworkAreaName'] ?? null,
+            problemType: $data['problemType'] ?? null,
+            signUrl: $data['signUrl'] ?? null,
+            electronicSignaturePicUrl: $data['electronicSignaturePicUrl'] ?? null,
+            scanNetworkId: isset($data['scanNetworkId']) ? (int) $data['scanNetworkId'] : null,
+            scanNetworkCountry: $data['scanNetworkCountray'] ?? null, // API has typo
         );
     }
 
-    public function toArray(): array
+    /**
+     * @deprecated Use fromApiArray() instead
+     */
+    public static function fromArray(array $data): self
+    {
+        return self::fromApiArray($data);
+    }
+
+    /**
+     * Convert to API request array
+     */
+    public function toApiArray(): array
     {
         return array_filter([
             'scanTime' => $this->scanTime,
-            'desc' => $this->desc,
+            'desc' => $this->description,
             'scanTypeCode' => $this->scanTypeCode,
             'scanTypeName' => $this->scanTypeName,
             'scanType' => $this->scanType,
-            'realWeight' => $this->realWeight,
+            'realWeight' => $this->actualWeight,
             'scanNetworkTypeName' => $this->scanNetworkTypeName,
             'scanNetworkName' => $this->scanNetworkName,
             'staffName' => $this->staffName,
@@ -68,10 +116,35 @@ class TrackingDetailData
             'scanNetworkProvince' => $this->scanNetworkProvince,
             'scanNetworkCity' => $this->scanNetworkCity,
             'scanNetworkArea' => $this->scanNetworkArea,
-            'sigPicUrl' => $this->sigPicUrl,
+            'sigPicUrl' => $this->signaturePictureUrl,
             'longitude' => $this->longitude,
             'latitude' => $this->latitude,
             'timeZone' => $this->timeZone,
+            // Additional fields
+            'otp' => $this->otp,
+            'secondLevelTypeCode' => $this->secondLevelTypeCode,
+            'wcTraceFlag' => $this->wcTraceFlag,
+            'postCode' => $this->postCode,
+            'paymentStatus' => $this->paymentStatus,
+            'paymentMethod' => $this->paymentMethod,
+            'nextStopName' => $this->nextStopName,
+            'remark' => $this->remark,
+            'nextNetworkProvinceName' => $this->nextNetworkProvinceName,
+            'nextNetworkCityName' => $this->nextNetworkCityName,
+            'nextNetworkAreaName' => $this->nextNetworkAreaName,
+            'problemType' => $this->problemType,
+            'signUrl' => $this->signUrl,
+            'electronicSignaturePicUrl' => $this->electronicSignaturePicUrl,
+            'scanNetworkId' => $this->scanNetworkId,
+            'scanNetworkCountray' => $this->scanNetworkCountry, // API has typo
         ], fn ($value) => $value !== null);
+    }
+
+    /**
+     * @deprecated Use toApiArray() instead
+     */
+    public function toArray(): array
+    {
+        return $this->toApiArray();
     }
 }
