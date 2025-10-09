@@ -47,13 +47,17 @@ php artisan vendor:publish --tag=jnt-config
 Add the following to your `.env` file:
 
 ```env
-JNT_ENVIRONMENT=testing
-JNT_API_ACCOUNT=your_api_account
-JNT_PRIVATE_KEY=your_private_key
+JNT_ENVIRONMENT=testing  # or 'production'
+
+# Required: Get these from your J&T Distribution Partner
 JNT_CUSTOMER_CODE=your_customer_code
 JNT_PASSWORD=your_password
 
-# Optional
+# Optional: Testing environment uses J&T's public credentials by default
+# JNT_API_ACCOUNT=640826271705595946
+# JNT_PRIVATE_KEY=8e88c8477d4e4939859c560192fcafbc
+
+# Optional settings
 JNT_LOGGING_ENABLED=true
 JNT_LOGGING_CHANNEL=stack
 JNT_WEBHOOK_ENABLED=true
@@ -62,14 +66,19 @@ JNT_WEBHOOK_VERIFY_SIGNATURE=true
 
 ### Testing Credentials
 
-For sandbox testing, use:
+**Good news!** When `JNT_ENVIRONMENT=testing`, the package automatically uses J&T's official public testing credentials. You only need to provide:
 
 ```env
-JNT_API_ACCOUNT=640826271705595946
-JNT_PRIVATE_KEY=8e88c8477d4e4939859c560192fcafbc
+JNT_ENVIRONMENT=testing
+JNT_CUSTOMER_CODE=your_customer_code
+JNT_PASSWORD=your_password
 ```
 
-You'll need to obtain `JNT_CUSTOMER_CODE` and `JNT_PASSWORD` from your J&T Distribution Partner.
+The testing `API_ACCOUNT` and `PRIVATE_KEY` are pre-configured with J&T's public sandbox credentials:
+- API Account: `640826271705595946`
+- Private Key: `8e88c8477d4e4939859c560192fcafbc`
+
+**For production**, you must explicitly provide all credentials from your J&T Distribution Partner.
 
 ## Usage
 

@@ -407,11 +407,21 @@ test('creates order successfully', function () {
 
 ### Sandbox Environment
 
+**Quick setup:** When `JNT_ENVIRONMENT=testing`, the package automatically uses J&T's official public testing credentials:
+
 ```env
-JNT_ENVIRONMENT=sandbox
-JNT_API_ACCOUNT=640826271705595946
-JNT_PRIVATE_KEY=8e88c8477d4e4939859c560192fcafbc
+JNT_ENVIRONMENT=testing
+
+# These are auto-configured for testing (optional to set):
+# JNT_API_ACCOUNT=640826271705595946
+# JNT_PRIVATE_KEY=8e88c8477d4e4939859c560192fcafbc
+
+# You only need to provide:
+JNT_CUSTOMER_CODE=your_customer_code
+JNT_PASSWORD=your_password
 ```
+
+For production, you must explicitly set all credentials from your J&T Distribution Partner.
 
 ## Field Name Mappings
 

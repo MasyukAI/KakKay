@@ -10,10 +10,24 @@ return [
     |
     | Only these are required. Everything else has sensible defaults.
     |
+    | Testing credentials are provided by J&T Express for sandbox testing.
+    | For production, you must provide your own credentials.
+    |
     */
     'environment' => env('JNT_ENVIRONMENT', 'testing'),
-    'api_account' => env('JNT_API_ACCOUNT'),
-    'private_key' => env('JNT_PRIVATE_KEY'),
+
+    // Testing environment uses J&T's official public credentials by default
+    'api_account' => env('JNT_API_ACCOUNT',
+        env('JNT_ENVIRONMENT', 'testing') === 'testing'
+            ? '640826271705595946'  // J&T official testing account
+            : null
+    ),
+    'private_key' => env('JNT_PRIVATE_KEY',
+        env('JNT_ENVIRONMENT', 'testing') === 'testing'
+            ? '8e88c8477d4e4939859c560192fcafbc'  // J&T official testing key
+            : null
+    ),
+
     'customer_code' => env('JNT_CUSTOMER_CODE'),
     'password' => env('JNT_PASSWORD'),
 
