@@ -8,6 +8,7 @@ parameters:
     level: 6
     
     reportUnmatchedIgnoredErrors: false
+    treatPhpDocTypesAsCertain: false
 
     parallel: { maximumNumberOfProcesses: 4 }
     

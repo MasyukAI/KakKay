@@ -18,6 +18,8 @@ trait ManagesConditions
      * Add condition to cart
      *
      * @param  CartCondition|array<string, mixed>  $condition
+     *
+     * @throws InvalidCartConditionException If attempting to add a dynamic condition (with rules)
      */
     public function addCondition(CartCondition|array $condition): static
     {
@@ -26,6 +28,17 @@ trait ManagesConditions
         foreach ($conditions as $cond) {
             if (! $cond instanceof CartCondition) {
                 throw new InvalidCartConditionException('Condition must be an instance of CartCondition');
+            }
+
+            // Guard against adding dynamic conditions as static
+            // Dynamic conditions must be registered via registerDynamicCondition()
+            if ($cond->isDynamic()) {
+                throw new InvalidCartConditionException(
+                    sprintf(
+                        'Cannot add dynamic condition "%s" using addCondition(). Dynamic conditions (with validation rules) must be registered using registerDynamicCondition() instead. Alternatively, create a static copy using withoutRules() if you want to bypass validation.',
+                        $cond->getName()
+                    )
+                );
             }
 
             $this->addCartCondition($cond);

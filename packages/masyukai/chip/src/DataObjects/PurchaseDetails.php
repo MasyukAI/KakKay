@@ -59,7 +59,7 @@ final class PurchaseDetails
     public function getSubtotalInCurrency(): float
     {
         return array_reduce($this->products, function ($carry, $product) {
-            return $carry + ($product->price * $product->quantity);
+            return $carry + ($product->price * (float) $product->quantity);
         }, 0) / 100;
     }
 

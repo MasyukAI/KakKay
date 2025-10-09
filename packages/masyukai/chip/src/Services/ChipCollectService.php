@@ -229,7 +229,7 @@ class ChipCollectService
             return $response;
         }
 
-        if (is_array($response) && array_is_list($response)) {
+        if (array_is_list($response)) {
             return array_map(static fn (array $item) => CompanyStatement::fromArray($item), $response);
         }
 

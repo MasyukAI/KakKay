@@ -170,6 +170,9 @@ final class Webhook
         return count($this->unique_brands) > 0;
     }
 
+    /**
+     * @return array<string>
+     */
     public function getBrandIds(): array
     {
         return $this->unique_brands;
