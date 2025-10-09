@@ -25,15 +25,10 @@ A modern, type-safe Laravel package for integrating with J&T Express Malaysia Op
 
 ## 📚 Documentation
 
-Need help? We've got you covered with comprehensive documentation:
-
-- **Quick Start:** You're reading it! See [Usage](#usage) below
-- **[API Reference](docs/API_REFERENCE.md)** - Complete API documentation with all methods and examples
-- **[Integration Testing](docs/INTEGRATION_TESTING.md)** - Sandbox setup and testing guide
+- **[API Reference](docs/API_REFERENCE.md)** - Complete method reference
 - **[Batch Operations](docs/BATCH_OPERATIONS.md)** - Process multiple orders efficiently
-- **[100% Complete Report](docs/100_PERCENT_COMPLETE.md)** - Package completion milestone 🎉
-
-[View All Documentation →](#documentation)
+- **[Webhooks](docs/WEBHOOKS.md)** - Webhook integration and troubleshooting
+- **[Quick Reference](docs/QUICK_REFERENCE.md)** - Cheat sheet for enums and field names
 
 ## Installation
 

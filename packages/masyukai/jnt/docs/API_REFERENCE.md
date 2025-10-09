@@ -1,1014 +1,438 @@
 # J&T Express API Reference
 
-**Package:** MasyukAI/JNT Express Integration  
-**Version:** 1.0.0  
-**Laravel:** 11+  
-**PHP:** 8.2+
+Complete method reference for the J&T Express Laravel package.
 
----
+## Quick Links
 
-## Table of Contents
+- [Core Methods](#core-methods)
+- [Batch Operations](#batch-operations)  
+- [Data Objects](#data-objects)
+- [Enums](#enums)
+- [Events](#events)
+- [Commands](#artisan-commands)
 
-1. [Installation](#installation)
-2. [Configuration](#configuration)
-3. [Service Methods](#service-methods)
-4. [Data Objects](#data-objects)
-5. [Enums](#enums)
-6. [Events](#events)
-7. [Notifications](#notifications)
-8. [Artisan Commands](#artisan-commands)
-9. [Webhooks](#webhooks)
-10. [Error Handling](#error-handling)
-11. [Testing](#testing)
+## Core Methods
 
----
-
-## Installation
-
-```bash
-composer require masyukai/jnt
-```
-
-### Publish Configuration
-
-```bash
-php artisan vendor:publish --tag=jnt-config
-```
-
-### Verify Configuration
-
-```bash
-php artisan jnt:config:check
-```
-
----
-
-## Configuration
-
-### Environment Variables
-
-Add these to your `.env` file:
-
-```env
-# Required
-JNT_CUSTOMER_CODE=your_customer_code
-JNT_PASSWORD=your_password
-JNT_PRIVATE_KEY=your_private_key
-
-# Optional
-JNT_ENVIRONMENT=production  # or 'sandbox'
-JNT_BASE_URL=https://api.jtexpress.com.my
-JNT_TIMEOUT=30
-JNT_RETRY_TIMES=3
-JNT_RETRY_DELAY=100
-
-# Webhooks
-JNT_WEBHOOKS_ENABLED=true
-JNT_WEBHOOKS_ROUTE=/webhooks/jnt/status
-JNT_WEBHOOKS_MIDDLEWARE=web
-
-# Logging
-JNT_LOG_REQUESTS=false
-JNT_LOG_CHANNEL=stack
-```
-
-### Configuration File
-
-```php
-// config/jnt.php
-return [
-    'customer_code' => env('JNT_CUSTOMER_CODE'),
-    'password' => env('JNT_PASSWORD'),
-    'private_key' => env('JNT_PRIVATE_KEY'),
-    'environment' => env('JNT_ENVIRONMENT', 'production'),
-    'base_url' => env('JNT_BASE_URL'),
-    
-    'http' => [
-        'timeout' => env('JNT_TIMEOUT', 30),
-        'retry_times' => env('JNT_RETRY_TIMES', 3),
-        'retry_delay' => env('JNT_RETRY_DELAY', 100),
-    ],
-    
-    'webhooks' => [
-        'enabled' => env('JNT_WEBHOOKS_ENABLED', true),
-        'route' => env('JNT_WEBHOOKS_ROUTE', '/webhooks/jnt/status'),
-        'middleware' => explode(',', env('JNT_WEBHOOKS_MIDDLEWARE', 'web')),
-    ],
-    
-    'logging' => [
-        'enabled' => env('JNT_LOG_REQUESTS', false),
-        'channel' => env('JNT_LOG_CHANNEL', 'stack'),
-    ],
-];
-```
-
----
-
-## Service Methods
-
-### Creating Orders
-
-#### Using Facade (Recommended)
+### Create Order
 
 ```php
 use MasyukAI\Jnt\Facades\JntExpress;
-use MasyukAI\Jnt\Data\{AddressData, ItemData, PackageInfoData};
 use MasyukAI\Jnt\Enums\{ExpressType, ServiceType, PaymentType, GoodsType};
 
-// Prepare data
-$sender = new AddressData(
-    name: 'Merchant Store',
-    phone: '+60123456789',
-    countryCode: 'MY',
-    address: '123 Main Street, Taman ABC',
-    postCode: '50000',
-    prov: 'Wilayah Persekutuan',
-    city: 'Kuala Lumpur',
-    area: 'Bukit Bintang'
-);
-
-$receiver = new AddressData(
-    name: 'John Customer',
-    phone: '+60198765432',
-    countryCode: 'MY',
-    address: '456 Customer Road, Taman XYZ',
-    postCode: '47000',
-    prov: 'Selangor',
-    city: 'Petaling Jaya',
-    area: 'SS2'
-);
-
-$items = [
-    new ItemData(
-        description: 'T-Shirt - Blue (Size M)',
-        quantity: 2,
-        itemValue: 50.00,
-        weight: 300 // grams
-    ),
-    new ItemData(
-        description: 'Jeans - Black (Size 32)',
-        quantity: 1,
-        itemValue: 120.00,
-        weight: 600 // grams
-    ),
-];
-
-$packageInfo = new PackageInfoData(
-    weight: 0.9, // kg
-    length: 30.0, // cm
-    width: 20.0, // cm
-    height: 10.0, // cm
-    expressType: ExpressType::DOMESTIC,
-    serviceType: ServiceType::DOOR_TO_DOOR,
-    paymentType: PaymentType::PREPAID_POSTPAID,
-    goodsType: GoodsType::PACKAGE
-);
-
-// Create order
-$order = JntExpress::createOrder(
-    sender: $sender,
-    receiver: $receiver,
-    items: $items,
-    packageInfo: $packageInfo,
-    orderId: 'ORDER-2025-001'  // Your unique order ID
-);
-
-// Access response
-echo "Order created: {$order->orderId}\n";
-echo "Tracking number: {$order->trackingNumber}\n";
-echo "Chargeable weight: {$order->chargeableWeight} kg\n";
-```
-
-#### Using Service (Dependency Injection)
-
-```php
-use MasyukAI\Jnt\Services\JntExpressService;
-
-class OrderController
-{
-    public function __construct(
-        protected JntExpressService $jnt
-    ) {}
-    
-    public function store(Request $request)
-    {
-        $order = $this->jnt->createOrder(
-            sender: $sender,
-            receiver: $receiver,
-            items: $items,
-            packageInfo: $packageInfo,
-            orderId: $request->input('order_id')
-        );
-        
-        return response()->json($order);
-    }
-}
-```
-
-#### Using Builder Pattern
-
-```php
 $order = JntExpress::createOrderBuilder()
-    ->orderId('ORDER-2025-001')
-    ->sender($sender)
-    ->receiver($receiver)
-    ->addItem($items[0])
-    ->addItem($items[1])
+    ->orderId('ORDER-123')
+    ->expressType(ExpressType::DOMESTIC)
+    ->serviceType(ServiceType::DOOR_TO_DOOR)
+    ->paymentType(PaymentType::PREPAID_POSTPAID)
+    ->sender($senderAddress)
+    ->receiver($receiverAddress)
+    ->addItem($item)
     ->packageInfo($packageInfo)
-    ->create();
+    ->insurance(500.00)           // Optional
+    ->cashOnDelivery(100.00)      // Optional for COD
+    ->remark('Fragile items')     // Optional
+    ->build();
+
+$result = JntExpress::createOrderFromArray($order);
 ```
 
----
+**Returns:** `OrderData` with tracking number and sorting code
 
-### Tracking Parcels
-
-#### By Order ID
+### Track Parcel
 
 ```php
-$tracking = JntExpress::trackParcel(orderId: 'ORDER-2025-001');
+// Track by your order ID
+$tracking = JntExpress::trackParcel(orderId: 'ORDER-123');
 
-echo "Status: {$tracking->status}\n";
-echo "Current location: {$tracking->getCurrentLocation()}\n";
-echo "Is delivered: " . ($tracking->isDelivered() ? 'Yes' : 'No') . "\n";
+// Or by J&T tracking number
+$tracking = JntExpress::trackParcel(trackingNumber: 'JT630002864925');
 
-// Access tracking details
+// Access details
+echo $tracking->lastStatus;
 foreach ($tracking->details as $detail) {
     echo "{$detail->scanTime}: {$detail->description}\n";
-    echo "  Location: {$detail->scanNetworkCity}, {$detail->scanNetworkProvince}\n";
 }
 ```
 
-#### By Tracking Number
+**Returns:** `TrackingData` with status history
 
-```php
-$tracking = JntExpress::trackParcel(trackingNumber: 'JT123456789MY');
-```
-
-#### Check Status
-
-```php
-if ($tracking->isDelivered()) {
-    // Parcel has been delivered
-    $deliveryTime = $tracking->getDeliveryTime();
-    $signatureUrl = $tracking->getSignatureUrl();
-}
-
-if ($tracking->isInTransit()) {
-    // Parcel is on the way
-    $currentLocation = $tracking->getCurrentLocation();
-    $estimatedDelivery = $tracking->getEstimatedDelivery();
-}
-
-if ($tracking->hasProblems()) {
-    // There's an issue
-    $problemDescription = $tracking->getProblemDescription();
-    $problemType = $tracking->getProblemType();
-}
-```
-
----
-
-### Cancelling Orders
+### Cancel Order
 
 ```php
 use MasyukAI\Jnt\Enums\CancellationReason;
 
-// Using enum (recommended)
-$result = JntExpress::cancelOrder(
-    orderId: 'ORDER-2025-001',
-    reason: CancellationReason::OUT_OF_STOCK
+JntExpress::cancelOrder(
+    orderId: 'ORDER-123',
+    reason: CancellationReason::OUT_OF_STOCK,
+    trackingNumber: 'JT630002864925'  // Optional
 );
-
-// Using custom reason
-$result = JntExpress::cancelOrder(
-    orderId: 'ORDER-2025-001',
-    reason: 'Customer requested cancellation due to wrong size'
-);
-
-// With tracking number (optional)
-$result = JntExpress::cancelOrder(
-    orderId: 'ORDER-2025-001',
-    reason: CancellationReason::CUSTOMER_CHANGED_MIND,
-    trackingNumber: 'JT123456789MY'
-);
-
-// Check if customer contact is required
-if (CancellationReason::OUT_OF_STOCK->requiresCustomerContact()) {
-    // Send notification to customer
-}
 ```
 
----
+**Returns:** `array` with cancellation confirmation
 
-### Printing Waybills
+### Print Waybill
 
 ```php
-// Generate waybill PDF
-$waybill = JntExpress::printOrder(orderId: 'ORDER-2025-001');
+$label = JntExpress::printOrder(
+    orderId: 'ORDER-123',
+    trackingNumber: 'JT630002864925'
+);
 
-// Save to file
-$pdfContent = base64_decode($waybill['data']['base64EncodeContent']);
-file_put_contents('waybill.pdf', $pdfContent);
+// Get PDF URL
+$pdfUrl = $label['urlContent'];
+```
 
-// Or get download URL (for multi-parcel)
-if (isset($waybill['data']['urlContent'])) {
-    $downloadUrl = $waybill['data']['urlContent'];
-}
+**Returns:** `array` with PDF URL
 
-// With custom template
-$waybill = JntExpress::printOrder(
-    orderId: 'ORDER-2025-001',
-    templateName: 'thermal_80mm'
+### Query Order
+
+```php
+$details = JntExpress::queryOrder('ORDER-123');
+
+echo $details['orderStatus'];     // Order status
+echo $details['trackingNumber'];  // J&T tracking number
+```
+
+**Returns:** `array` with order details
+
+## Batch Operations
+
+Process multiple orders efficiently. See [BATCH_OPERATIONS.md](BATCH_OPERATIONS.md) for details.
+
+### Batch Create
+
+```php
+$results = JntExpress::batchCreateOrders([
+    $orderData1,
+    $orderData2,
+    $orderData3,
+]);
+
+// Returns: ['successful' => [...], 'failed' => [...]]
+```
+
+### Batch Track
+
+```php
+$results = JntExpress::batchTrackParcels(
+    orderIds: ['ORDER-1', 'ORDER-2'],
+    trackingNumbers: ['JT123', 'JT456']
 );
 ```
 
----
+### Batch Cancel
+
+```php
+$results = JntExpress::batchCancelOrders(
+    orderIds: ['ORDER-1', 'ORDER-2'],
+    reason: CancellationReason::OUT_OF_STOCK
+);
+```
+
+### Batch Print
+
+```php
+$results = JntExpress::batchPrintWaybills(
+    orderIds: ['ORDER-1', 'ORDER-2'],
+    trackingNumbers: ['JT123', 'JT456']
+);
+```
 
 ## Data Objects
 
 ### AddressData
 
 ```php
-new AddressData(
-    name: string,              // Required, max 200 chars
-    phone: string,             // Required, max 50 chars
-    countryCode: string,       // Required, 2-char ISO code (e.g., 'MY')
-    address: string,           // Required, max 200 chars
-    postCode: string,          // Required, max 20 chars
-    prov: string,              // Required (optional for international)
-    city: string,              // Required (optional for international)
-    area: string               // Required (optional for international)
-)
+use MasyukAI\Jnt\Data\AddressData;
+
+$address = new AddressData(
+    name: 'John Doe',
+    phone: '60123456789',
+    address: '123 Main Street',
+    postCode: '50000',
+    state: 'Kuala Lumpur',        // Clean name for 'prov'
+    city: 'KL',
+    area: 'Bukit Bintang',        // Optional
+    email: 'john@example.com'     // Optional
+);
 ```
 
 ### ItemData
 
 ```php
-new ItemData(
-    description: string,       // Required, max 500 chars
-    quantity: int|string,      // Required, positive integer
-    itemValue: float|string,   // Required, min 0.01 (MYR)
-    weight: int|string         // Required, in grams (50-999,999)
-)
+use MasyukAI\Jnt\Data\ItemData;
+
+$item = new ItemData(
+    name: 'Product Name',         // Clean name for 'itemName'
+    quantity: 2,                  // Clean name for 'number'
+    weight: 500,                  // In grams
+    price: 99.90,                 // Clean name for 'itemValue'
+    description: 'Product desc',  // Optional
+    currency: 'MYR'              // Optional
+);
 ```
 
 ### PackageInfoData
 
 ```php
-new PackageInfoData(
-    weight: float|string,      // Required, in kg, 2 decimal places (0.01-999.99)
-    length: float|string,      // Required, in cm, 2 decimal places (1.00-999.99)
-    width: float|string,       // Required, in cm, 2 decimal places (1.00-999.99)
-    height: float|string,      // Required, in cm, 2 decimal places (1.00-999.99)
-    expressType: ExpressType,  // Required
-    serviceType: ServiceType,  // Required
-    paymentType: PaymentType,  // Required
-    goodsType: GoodsType       // Required
-)
+use MasyukAI\Jnt\Data\PackageInfoData;
+use MasyukAI\Jnt\Enums\GoodsType;
+
+$package = new PackageInfoData(
+    quantity: 1,                  // Number of packages
+    weight: 1.5,                  // In kilograms
+    value: 199.90,                // Declared value
+    goodsType: GoodsType::PACKAGE,
+    length: 30,                   // Optional, in cm
+    width: 20,                    // Optional, in cm
+    height: 15                    // Optional, in cm
+);
 ```
 
-### TrackingData
+### OrderData (Response)
 
 ```php
-readonly class TrackingData
-{
-    public string $orderId;
-    public string $trackingNumber;
-    public string $status;
-    public array $details;  // Array of TrackingDetailData
-    
-    // Helper methods
-    public function isDelivered(): bool;
-    public function isInTransit(): bool;
-    public function isCollected(): bool;
-    public function hasProblems(): bool;
-    public function getCurrentLocation(): ?string;
-    public function getDeliveryTime(): ?string;
-    public function getEstimatedDelivery(): ?string;
-    public function getSignatureUrl(): ?string;
-    public function getProblemDescription(): ?string;
-    public function getProblemType(): ?string;
-}
+$order->orderId;              // Your order reference
+$order->trackingNumber;       // J&T tracking number
+$order->sortingCode;          // Sorting code for warehouse
+$order->chargeableWeight;     // Billable weight
+$order->toArray();            // Convert to array
 ```
 
-### OrderData
+### TrackingData (Response)
 
 ```php
-readonly class OrderData
-{
-    public string $orderId;
-    public string $trackingNumber;
-    public array $additionalTrackingNumbers;
-    public float $chargeableWeight;
-    
-    public function toArray(): array;
-    public static function fromApiArray(array $data): self;
-}
+$tracking->trackingNumber;    // J&T tracking number
+$tracking->orderId;           // Your order reference
+$tracking->lastStatus;        // Latest status description
+$tracking->scanTime;          // Latest scan timestamp
+$tracking->details;           // Array of all tracking events
+$tracking->isDelivered();     // Check if delivered
+$tracking->hasProblem();      // Check if has issues
 ```
-
----
 
 ## Enums
 
 ### ExpressType
 
 ```php
-enum ExpressType: string
-{
-    case DOMESTIC = 'EZ';       // Domestic shipping
-    case NEXT_DAY = 'EX';       // Next day delivery
-    case FRESH = 'FD';          // Fresh products (cold chain)
-}
+use MasyukAI\Jnt\Enums\ExpressType;
+
+ExpressType::DOMESTIC   // 'EZ' - Standard delivery
+ExpressType::NEXT_DAY   // 'EX' - Express next day
+ExpressType::FRESH      // 'FD' - Cold chain delivery
 ```
 
 ### ServiceType
 
 ```php
-enum ServiceType: string
-{
-    case DOOR_TO_DOOR = '1';    // Standard pickup & delivery
-    case WALK_IN = '6';         // Customer drop-off
-}
+use MasyukAI\Jnt\Enums\ServiceType;
+
+ServiceType::DOOR_TO_DOOR  // '1' - Pickup from sender
+ServiceType::WALK_IN       // '6' - Drop-off at counter
 ```
 
 ### PaymentType
 
 ```php
-enum PaymentType: string
-{
-    case PREPAID_POSTPAID = 'PP_PM';  // Prepaid + postpaid
-    case PREPAID_CASH = 'PP_CASH';    // Prepaid cash
-    case COLLECT_CASH = 'CC_CASH';    // Cash on delivery
-}
+use MasyukAI\Jnt\Enums\PaymentType;
+
+PaymentType::PREPAID_POSTPAID  // 'PP_PM' - Most common
+PaymentType::PREPAID_CASH      // 'PP_CASH' - Cash prepaid
+PaymentType::COLLECT_CASH      // 'CC_CASH' - COD
 ```
 
 ### GoodsType
 
 ```php
-enum GoodsType: string
-{
-    case DOCUMENT = 'ITN2';     // Documents
-    case PACKAGE = 'ITN8';      // Packages/parcels
-}
+use MasyukAI\Jnt\Enums\GoodsType;
+
+GoodsType::DOCUMENT  // 'ITN2' - Documents
+GoodsType::PACKAGE   // 'ITN8' - Parcels
 ```
 
 ### CancellationReason
 
 ```php
-enum CancellationReason: string
-{
-    // Customer-initiated
-    case CUSTOMER_CHANGED_MIND = 'customer_changed_mind';
-    case CUSTOMER_WRONG_ADDRESS = 'customer_wrong_address';
-    case CUSTOMER_FOUND_CHEAPER = 'customer_found_cheaper';
-    case CUSTOMER_NO_LONGER_NEEDED = 'customer_no_longer_needed';
-    
-    // Merchant-initiated
-    case OUT_OF_STOCK = 'out_of_stock';
-    case PRICE_ERROR = 'price_error';
-    case PRODUCT_DISCONTINUED = 'product_discontinued';
-    case UNABLE_TO_FULFILL = 'unable_to_fulfill';
-    
-    // Delivery issues
-    case ADDRESS_INCORRECT = 'address_incorrect';
-    case CUSTOMER_UNREACHABLE = 'customer_unreachable';
-    case DELIVERY_AREA_NOT_COVERED = 'delivery_area_not_covered';
-    
-    // Payment issues
-    case PAYMENT_FAILED = 'payment_failed';
-    case FRAUD_SUSPECTED = 'fraud_suspected';
-    
-    // System issues
-    case DUPLICATE_ORDER = 'duplicate_order';
-    case SYSTEM_ERROR = 'system_error';
-    case OTHER = 'other';
-    
-    // Helper methods
-    public function getDescription(): string;
-    public function getCategory(): string;
-    public function requiresCustomerContact(): bool;
-    public function isCustomerInitiated(): bool;
-    public function isMerchantInitiated(): bool;
-    public function isDeliveryIssue(): bool;
-    public function isPaymentIssue(): bool;
-    public static function fromString(string $value): self;
-}
-```
+use MasyukAI\Jnt\Enums\CancellationReason;
 
----
+CancellationReason::OUT_OF_STOCK
+CancellationReason::CUSTOMER_CANCELLED
+CancellationReason::WRONG_ADDRESS
+CancellationReason::DUPLICATE_ORDER
+CancellationReason::PRICE_ERROR
+// ... see enum file for all options
+```
 
 ## Events
 
-All events are automatically dispatched when their respective actions occur.
+### TrackingStatusReceived
 
-### OrderCreatedEvent
-
-**Dispatched:** After successful order creation
+Dispatched when webhook receives tracking update.
 
 ```php
-use MasyukAI\Jnt\Events\OrderCreatedEvent;
+use MasyukAI\Jnt\Events\TrackingStatusReceived;
 
-Event::listen(OrderCreatedEvent::class, function ($event) {
-    $order = $event->order;  // OrderData
-    $orderId = $event->orderId;
-    $trackingNumber = $event->trackingNumber;
-    $status = $event->status;
-    $createdAt = $event->createdAt;
-    
-    // Send order confirmation email
-    Mail::to($customer)->send(new OrderConfirmed($order));
-});
+// In your listener
+public function handle(TrackingStatusReceived $event): void
+{
+    $event->trackingNumber;      // J&T tracking number
+    $event->orderId;             // Your order ID
+    $event->lastStatus;          // Latest status
+    $event->scanTime;            // Timestamp
+    $event->allStatuses;         // All status updates
+    $event->isDelivered();       // true if delivered
+    $event->hasProblem();        // true if issue
+}
 ```
 
-### OrderCancelledEvent
-
-**Dispatched:** After successful order cancellation
-
-```php
-use MasyukAI\Jnt\Events\OrderCancelledEvent;
-
-Event::listen(OrderCancelledEvent::class, function ($event) {
-    $orderId = $event->orderId;
-    $reason = $event->reason;  // CancellationReason enum
-    $trackingNumber = $event->trackingNumber;
-    $success = $event->success;
-    $message = $event->message;
-    $cancelledAt = $event->cancelledAt;
-    
-    // Restore inventory
-    Inventory::restore($orderId);
-    
-    // Notify customer
-    if ($event->reason->requiresCustomerContact()) {
-        Mail::to($customer)->send(new OrderCancelled($orderId, $reason));
-    }
-});
-```
-
-### TrackingUpdatedEvent
-
-**Dispatched:** When tracking status changes (usually via webhook)
-
-```php
-use MasyukAI\Jnt\Events\TrackingUpdatedEvent;
-
-Event::listen(TrackingUpdatedEvent::class, function ($event) {
-    $tracking = $event->tracking;  // TrackingData
-    $orderId = $event->orderId;
-    $trackingNumber = $event->trackingNumber;
-    $status = $event->status;
-    
-    // Check status
-    if ($event->isDelivered()) {
-        // Mark order as delivered
-        Order::where('tracking_number', $trackingNumber)->update([
-            'status' => 'delivered',
-            'delivered_at' => now(),
-        ]);
-    }
-    
-    if ($event->isInTransit()) {
-        // Update tracking page
-        Cache::put("tracking:{$trackingNumber}", $tracking, 3600);
-    }
-    
-    if ($event->hasProblem()) {
-        // Alert customer service
-        Notification::route('slack', config('slack.cs_channel'))
-            ->notify(new DeliveryProblem($tracking));
-    }
-});
-```
-
-### WaybillPrintedEvent
-
-**Dispatched:** After waybill generation
-
-```php
-use MasyukAI\Jnt\Events\WaybillPrintedEvent;
-
-Event::listen(WaybillPrintedEvent::class, function ($event) {
-    $waybill = $event->waybill;  // PrintWaybillData
-    $orderId = $event->orderId;
-    $trackingNumber = $event->trackingNumber;
-    
-    // Save PDF for records
-    if ($event->canSavePdf()) {
-        $path = storage_path("waybills/{$orderId}.pdf");
-        $waybill->savePdf($path);
-    }
-    
-    // Email to warehouse
-    if ($event->hasBase64Content()) {
-        Mail::to($warehouse)->send(new WaybillReady($waybill));
-    }
-});
-```
-
----
-
-## Notifications
-
-All notifications implement `ShouldQueue` for async processing and support both mail and database channels.
-
-### OrderShippedNotification
-
-```php
-use MasyukAI\Jnt\Notifications\OrderShippedNotification;
-
-$user->notify(new OrderShippedNotification(
-    tracking: $trackingData,
-    estimatedDelivery: '2025-01-15'  // optional
-));
-```
-
-**Email Content:**
-- Subject: "Your Order Has Been Shipped"
-- Tracking number
-- Order ID (if available)
-- Estimated delivery date
-- Current location
-
-**Database Storage:**
-```php
-[
-    'type' => 'order_shipped',
-    'tracking_number' => 'JT123456789MY',
-    'order_id' => 'ORDER-2025-001',
-    'estimated_delivery' => '2025-01-15',
-    'current_location' => 'Kuala Lumpur, Wilayah Persekutuan',
-    'message' => '...',
-]
-```
-
-### OrderDeliveredNotification
-
-```php
-use MasyukAI\Jnt\Notifications\OrderDeliveredNotification;
-
-$user->notify(new OrderDeliveredNotification($trackingData));
-```
-
-**Email Content:**
-- Subject: "Your Order Has Been Delivered"
-- Tracking number
-- Order ID (if available)
-- Delivery time
-- Delivery location
-- Delivered by (courier name)
-- Signature availability
-
-### OrderProblemNotification
-
-```php
-use MasyukAI\Jnt\Notifications\OrderProblemNotification;
-
-$user->notify(new OrderProblemNotification(
-    tracking: $trackingData,
-    supportContact: 'support@example.com'  // optional
-));
-```
-
-**Email Content:**
-- Subject: "Issue with Your Order"
-- Tracking number
-- Order ID (if available)
-- Problem description
-- Problem type
-- Reported time
-- Support contact
-
----
+See [WEBHOOKS.md](WEBHOOKS.md) for webhook setup.
 
 ## Artisan Commands
 
-### jnt:config:check
-
-Validate package configuration
+### Check Configuration
 
 ```bash
 php artisan jnt:config:check
+
+# Check specific environment
+php artisan jnt:config:check --env=sandbox
 ```
 
-**Output:**
-```
- ✓ API Account: Configured (CUST123)
- ✓ Environment: production
- ✓ Base URL: https://api.jtexpress.com.my
- ✓ Private Key: Valid RSA-2048 format
- ✓ Webhooks: Enabled
- ✓ Connectivity: Connection successful (120ms)
-
- SUCCESS  All configuration checks passed!
-```
-
-### jnt:order:create
-
-Create order interactively
+### Create Order (CLI)
 
 ```bash
 php artisan jnt:order:create \
-  --sender-name="Merchant Store" \
-  --sender-phone="+60123456789" \
-  --receiver-name="John Customer" \
-  --receiver-phone="+60198765432"
+    --order-id=ORDER-123 \
+    --sender-name="John Sender" \
+    --sender-phone=60123456789 \
+    --receiver-name="Jane Receiver" \
+    --receiver-phone=60198765432
+    
+# See all options
+php artisan jnt:order:create --help
 ```
 
-### jnt:order:track
-
-Track parcel status
+### Track Parcel (CLI)
 
 ```bash
-php artisan jnt:order:track ORDER-2025-001
-php artisan jnt:order:track --tracking-number=JT123456789MY
+# Track by order ID
+php artisan jnt:order:track --order-id=ORDER-123
+
+# Track by tracking number
+php artisan jnt:order:track --tracking-number=JT630002864925
 ```
 
-### jnt:order:cancel
-
-Cancel an order
+### Cancel Order (CLI)
 
 ```bash
-php artisan jnt:order:cancel ORDER-2025-001 --reason="out_of_stock"
+php artisan jnt:order:cancel \
+    --order-id=ORDER-123 \
+    --reason="Out of stock" \
+    --tracking-number=JT630002864925
 ```
 
-### jnt:order:print
-
-Generate waybill
+### Print Waybill (CLI)
 
 ```bash
-php artisan jnt:order:print ORDER-2025-001 --output=waybills/
+php artisan jnt:order:print \
+    --order-id=ORDER-123 \
+    --tracking-number=JT630002864925
 ```
-
-### jnt:webhook:test
-
-Test webhook endpoint
-
-```bash
-php artisan jnt:webhook:test
-```
-
----
-
-## Webhooks
-
-J&T Express sends status updates to your webhook endpoint.
-
-### Setup
-
-1. **Configure webhook URL** in J&T Express merchant portal
-2. **Enable webhooks** in `config/jnt.php`
-3. **Add route** (automatically registered)
-
-### Handling Webhooks
-
-The package automatically:
-- Verifies RSA signatures
-- Parses webhook payload
-- Dispatches `TrackingUpdatedEvent`
-- Returns proper response to J&T
-
-### Custom Webhook Handling
-
-```php
-use MasyukAI\Jnt\Events\TrackingUpdatedEvent;
-
-Event::listen(TrackingUpdatedEvent::class, function ($event) {
-    $tracking = $event->tracking;
-    
-    // Find your order
-    $order = Order::where('tracking_number', $tracking->trackingNumber)->first();
-    
-    if (!$order) {
-        return;
-    }
-    
-    // Update order status
-    $order->update([
-        'shipping_status' => $tracking->status,
-        'current_location' => $tracking->getCurrentLocation(),
-    ]);
-    
-    // Trigger notifications
-    if ($tracking->isDelivered()) {
-        $order->user->notify(new OrderDeliveredNotification($tracking));
-    }
-    
-    if ($tracking->hasProblems()) {
-        $order->user->notify(new OrderProblemNotification($tracking));
-    }
-});
-```
-
-### Webhook Payload Structure
-
-```json
-{
-  "billCode": "JT123456789MY",
-  "txlogisticId": "ORDER-2025-001",
-  "details": [
-    {
-      "scanTime": "2025-01-08 10:30:00",
-      "desc": "Package received at facility",
-      "scanType": "parcel_pickup",
-      "scanTypeCode": "10",
-      "scanNetworkCity": "Kuala Lumpur",
-      "scanNetworkProvince": "Wilayah Persekutuan"
-    }
-  ]
-}
-```
-
----
 
 ## Error Handling
 
-### Exception Hierarchy
-
-```
-JntValidationException     - Input validation failures
-JntApiException           - J&T API errors
-JntNetworkException       - Network/connection issues
-JntConfigurationException - Configuration problems
-```
-
-### Handling Exceptions
+### Exception Types
 
 ```php
 use MasyukAI\Jnt\Exceptions\{
-    JntValidationException,
-    JntApiException,
-    JntNetworkException,
-    JntConfigurationException
+    JntException,           // Base exception
+    JntApiException,        // API errors (4xx/5xx)
+    JntNetworkException,    // Network failures
+    JntValidationException, // Validation errors
+    JntConfigurationException // Config errors
 };
 
 try {
-    $order = JntExpress::createOrder(...);
+    $order = JntExpress::createOrderFromArray($data);
 } catch (JntValidationException $e) {
-    // Invalid input data
-    $errors = $e->getErrors();  // Array of validation errors
-    Log::error('Validation failed', ['errors' => $errors]);
-    
+    // Handle validation errors
+    $errors = $e->getErrors();
 } catch (JntApiException $e) {
-    // J&T API returned error
-    $response = $e->getApiResponse();  // Full API response
-    Log::error('API error', ['response' => $response]);
-    
+    // Handle API errors
+    $statusCode = $e->getStatusCode();
+    $response = $e->getResponseData();
 } catch (JntNetworkException $e) {
-    // Network/connection failure
-    Log::error('Network error', ['message' => $e->getMessage()]);
-    
-} catch (JntConfigurationException $e) {
-    // Configuration issue
-    Log::critical('Config error', ['message' => $e->getMessage()]);
+    // Handle network failures
+    Log::error('JNT network error', ['exception' => $e]);
+} catch (JntException $e) {
+    // Handle any JNT error
+    Log::error('JNT error', ['exception' => $e]);
 }
 ```
 
-### Common API Errors
+### Common Error Codes
 
-| Code | Message | Handling |
+| Code | Meaning | Solution |
 |------|---------|----------|
-| 145003010 | API account does not exist | Check `customer_code` |
-| 145003030 | Signature verification failed | Check `private_key` and payload |
-| 145003050 | Illegal parameters | Validate input data |
-| 999001030 | Data cannot be found | Order/tracking number not found |
-| 999002010 | Order cannot be cancelled | Order already shipped/delivered |
-
----
+| 401 | Invalid credentials | Check API account and private key |
+| 422 | Validation failed | Review request data |
+| 500 | J&T server error | Retry with exponential backoff |
+| -1 | Network timeout | Check connectivity, increase timeout |
 
 ## Testing
 
-### Unit Tests
-
-```bash
-# Run all tests
-vendor/bin/pest
-
-# Run specific test suite
-vendor/bin/pest tests/Unit/
-vendor/bin/pest tests/Feature/
-
-# Run with coverage
-vendor/bin/pest --coverage
-```
-
-### Integration Tests
-
-See `docs/INTEGRATION_TESTING.md` for complete integration test guide.
-
-```php
-use MasyukAI\Jnt\Facades\JntExpress;
-
-test('complete order lifecycle', function () {
-    // 1. Create order
-    $order = JntExpress::createOrder(...);
-    expect($order->orderId)->not->toBeNull();
-    
-    // 2. Track order
-    $tracking = JntExpress::trackParcel(orderId: $order->orderId);
-    expect($tracking->trackingNumber)->toBe($order->trackingNumber);
-    
-    // 3. Print waybill
-    $waybill = JntExpress::printOrder(orderId: $order->orderId);
-    expect($waybill)->toHaveKey('data');
-    
-    // 4. Cancel order (if not shipped)
-    $result = JntExpress::cancelOrder(
-        orderId: $order->orderId,
-        reason: 'Testing cancellation'
-    );
-    expect($result)->toBeArray();
-});
-```
-
-### Mocking in Tests
+### HTTP Faking
 
 ```php
 use Illuminate\Support\Facades\Http;
 
-test('handles API errors gracefully', function () {
+test('creates order successfully', function () {
     Http::fake([
-        '*' => Http::response([
-            'code' => '999001030',
-            'msg' => 'Data cannot be found',
+        '*gate.jtexpress.my*' => Http::response([
+            'code' => '0',
+            'msg' => 'success',
+            'data' => [
+                'billCode' => 'JT123456',
+                'sortingCode' => 'KL-001',
+            ],
         ], 200),
     ]);
+
+    $result = JntExpress::createOrderFromArray($orderData);
     
-    expect(fn() => JntExpress::queryOrder('INVALID'))
-        ->toThrow(JntApiException::class);
+    expect($result->trackingNumber)->toBe('JT123456');
 });
 ```
 
----
+### Sandbox Environment
 
-## Best Practices
-
-### 1. Use Enums
-
-```php
-// ✅ Good - Type safe
-$reason = CancellationReason::OUT_OF_STOCK;
-
-// ❌ Bad - String literals
-$reason = 'out_of_stock';
+```env
+JNT_ENVIRONMENT=sandbox
+JNT_API_ACCOUNT=640826271705595946
+JNT_PRIVATE_KEY=8e88c8477d4e4939859c560192fcafbc
 ```
 
-### 2. Handle Exceptions
+## Field Name Mappings
 
-```php
-// ✅ Good - Graceful error handling
-try {
-    $order = JntExpress::createOrder(...);
-} catch (JntValidationException $e) {
-    return response()->json(['errors' => $e->getErrors()], 422);
-}
+The package uses clean, intuitive field names that are automatically converted to J&T's API format:
 
-// ❌ Bad - Uncaught exceptions
-$order = JntExpress::createOrder(...);
-```
+| Clean Name | API Name | Description |
+|------------|----------|-------------|
+| `orderId` | `txlogisticId` | Your order reference |
+| `trackingNumber` | `billCode` | J&T tracking number |
+| `state` | `prov` | State/province |
+| `quantity` (item) | `number` | Item quantity |
+| `price` | `itemValue` | Item unit price |
+| `quantity` (package) | `packageQuantity` | Package count |
+| `value` | `packageValue` | Declared value |
+| `chargeableWeight` | `packageChargeWeight` | Billable weight |
 
-### 3. Use Events for Side Effects
+You write clean code, the package handles the API translation. See [QUICK_REFERENCE.md](QUICK_REFERENCE.md) for more mappings.
 
-```php
-// ✅ Good - Decouple logic with events
-Event::listen(OrderCreatedEvent::class, SendOrderConfirmation::class);
+## Related Documentation
 
-// ❌ Bad - Tight coupling
-JntExpress::createOrder(...);
-Mail::to($customer)->send(new OrderConfirmed());
-```
-
-### 4. Queue Notifications
-
-```php
-// ✅ Good - Already queued by default
-$user->notify(new OrderShippedNotification($tracking));
-
-// ❌ Bad - Blocking notification
-$user->notifyNow(new OrderShippedNotification($tracking));
-```
-
-### 5. Validate Before Creating Orders
-
-```php
-// ✅ Good - Validate early
-$request->validate([
-    'phone' => 'required|regex:/^\+60\d{9,10}$/',
-    'postcode' => 'required|size:5',
-]);
-
-// ❌ Bad - Let API validate
-// Wastes API calls and slows response
-```
-
----
-
-## Support
-
-- **Documentation:** `/docs`
-- **GitHub Issues:** https://github.com/masyukai/jnt/issues
-- **Email:** support@masyukai.com
-
----
-
-**Last Updated:** 2025-01-08  
-**Package Version:** 1.0.0
+- [README.md](../README.md) - Package overview and installation
+- [BATCH_OPERATIONS.md](BATCH_OPERATIONS.md) - Batch processing guide
+- [WEBHOOKS.md](WEBHOOKS.md) - Webhook integration guide
+- [QUICK_REFERENCE.md](QUICK_REFERENCE.md) - Quick reference cheat sheet
