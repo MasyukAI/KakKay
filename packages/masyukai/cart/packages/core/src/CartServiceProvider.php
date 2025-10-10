@@ -7,7 +7,6 @@ namespace MasyukAI\Cart;
 use Illuminate\Auth\Events\Attempting;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Contracts\Events\Dispatcher;
-use MasyukAI\Cart\Listeners\DispatchCartUpdated;
 use MasyukAI\Cart\Listeners\HandleUserLogin;
 use MasyukAI\Cart\Listeners\HandleUserLoginAttempt;
 use MasyukAI\Cart\Services\CartMigrationService;
@@ -128,8 +127,8 @@ final class CartServiceProvider extends PackageServiceProvider
     {
         $dispatcher = $this->app->make(Dispatcher::class);
 
-        // Register cart update event subscriber
-        $dispatcher->subscribe(DispatchCartUpdated::class);
+        // Note: We removed DispatchCartUpdated subscriber as CartUpdated event is no longer used.
+        // Applications should listen to specific events (ItemAdded, ConditionAdded, etc.) instead.
 
         if (config('cart.migration.auto_migrate_on_login', true)) {
             // Register login attempt listener to capture session ID before regeneration

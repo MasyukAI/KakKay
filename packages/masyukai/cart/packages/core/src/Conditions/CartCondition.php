@@ -23,7 +23,8 @@ final class CartCondition implements Arrayable, Jsonable, JsonSerializable
         private string|float $value,
         private array $attributes = [],
         private int $order = 0,
-        private ?array $rules = null
+        private ?array $rules = null,
+        private ?self $staticConditionCache = null
     ) {
         $this->validateCondition();
     }
@@ -245,7 +246,23 @@ final class CartCondition implements Arrayable, Jsonable, JsonSerializable
      */
     public function withoutRules(): static
     {
-        return new static(
+        if (! $this->isDynamic()) {
+            return new static(
+                name: $this->name,
+                type: $this->type,
+                target: $this->target,
+                value: $this->value,
+                attributes: $this->attributes,
+                order: $this->order,
+                rules: null
+            );
+        }
+
+        if ($this->staticConditionCache instanceof self) {
+            return $this->staticConditionCache;
+        }
+
+        $this->staticConditionCache = new static(
             name: $this->name,
             type: $this->type,
             target: $this->target,
@@ -254,6 +271,8 @@ final class CartCondition implements Arrayable, Jsonable, JsonSerializable
             order: $this->order,
             rules: null
         );
+
+        return $this->staticConditionCache;
     }
 
     /**

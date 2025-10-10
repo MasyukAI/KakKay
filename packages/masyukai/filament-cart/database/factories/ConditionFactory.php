@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MasyukAI\FilamentCart\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 use MasyukAI\FilamentCart\Models\Condition;
 
 /**
@@ -17,15 +18,15 @@ final class ConditionFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->unique()->lexify('condition_????'),
-            'display_name' => $this->faker->words(2, true),
-            'description' => $this->faker->sentence(),
-            'type' => $this->faker->randomElement(['discount', 'tax', 'fee', 'shipping', 'surcharge']),
-            'target' => $this->faker->randomElement(['subtotal', 'total', 'item']),
+            'name' => 'condition_'.Str::lower(Str::random(8)),
+            'display_name' => 'Condition '.Str::upper(Str::random(4)),
+            'description' => 'Auto generated condition '.Str::lower(Str::random(12)),
+            'type' => $this->randomFrom(['discount', 'tax', 'fee', 'shipping', 'surcharge']),
+            'target' => $this->randomFrom(['subtotal', 'total', 'item']),
             'value' => $this->generateValue(),
-            'order' => $this->faker->numberBetween(0, 10),
+            'order' => random_int(0, 10),
             'attributes' => [],
-            'is_active' => $this->faker->boolean(80),
+            'is_active' => random_int(0, 100) < 80,
             'is_global' => false,
         ];
     }
@@ -34,8 +35,8 @@ final class ConditionFactory extends Factory
     {
         return $this->state(fn () => [
             'type' => 'discount',
-            'value' => '-'.$this->faker->numberBetween(5, 50).'%',
-            'target' => $this->faker->randomElement(['subtotal', 'item']),
+            'value' => '-'.random_int(5, 50).'%',
+            'target' => $this->randomFrom(['subtotal', 'item']),
         ]);
     }
 
@@ -43,7 +44,7 @@ final class ConditionFactory extends Factory
     {
         return $this->state(fn () => [
             'type' => 'tax',
-            'value' => $this->faker->numberBetween(5, 15).'%',
+            'value' => random_int(5, 15).'%',
             'target' => 'subtotal',
         ]);
     }
@@ -52,7 +53,7 @@ final class ConditionFactory extends Factory
     {
         return $this->state(fn () => [
             'type' => 'fee',
-            'value' => '+'.$this->faker->numberBetween(200, 5000),
+            'value' => '+'.random_int(200, 5000),
             'target' => 'subtotal',
         ]);
     }
@@ -61,11 +62,11 @@ final class ConditionFactory extends Factory
     {
         return $this->state(fn () => [
             'type' => 'shipping',
-            'value' => '+'.$this->faker->numberBetween(500, 8000),
+            'value' => '+'.random_int(500, 8000),
             'target' => 'subtotal',
             'attributes' => [
-                'method' => $this->faker->randomElement(['standard', 'express', 'overnight']),
-                'carrier' => $this->faker->randomElement(['UPS', 'FedEx', 'DHL', 'USPS']),
+                'method' => $this->randomFrom(['standard', 'express', 'overnight']),
+                'carrier' => $this->randomFrom(['UPS', 'FedEx', 'DHL', 'USPS']),
             ],
         ]);
     }
@@ -90,12 +91,29 @@ final class ConditionFactory extends Factory
         return $this->state(fn () => ['attributes' => $attributes]);
     }
 
+    public function withRules(array $rules): static
+    {
+        return $this->state(function () use ($rules) {
+            $isDynamic = ! empty($rules);
+
+            return [
+                'rules' => Condition::normalizeRulesDefinition($rules, $isDynamic),
+                'is_dynamic' => $isDynamic,
+            ];
+        });
+    }
+
     private function generateValue(): string
     {
-        return match ($this->faker->randomElement(['percentage', 'fixed_positive', 'fixed_negative'])) {
-            'percentage' => $this->faker->numberBetween(1, 50).'%',
-            'fixed_positive' => '+'.$this->faker->numberBetween(100, 10000),
-            'fixed_negative' => '-'.$this->faker->numberBetween(100, 10000),
+        return match ($this->randomFrom(['percentage', 'fixed_positive', 'fixed_negative'])) {
+            'percentage' => random_int(1, 50).'%',
+            'fixed_positive' => '+'.random_int(100, 10000),
+            'fixed_negative' => '-'.random_int(100, 10000),
         };
+    }
+
+    private function randomFrom(array $options): mixed
+    {
+        return $options[array_rand($options)];
     }
 }

@@ -8,9 +8,9 @@ use Exception;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Support\Icons\Heroicon;
-use MasyukAI\Cart\Facades\Cart;
 use MasyukAI\FilamentCart\Models\Cart as CartModel;
 use MasyukAI\FilamentCart\Models\CartCondition;
+use MasyukAI\FilamentCart\Services\CartInstanceManager;
 
 final class RemoveConditionAction extends Action
 {
@@ -29,9 +29,11 @@ final class RemoveConditionAction extends Action
             ->action(function (CartCondition $record): void {
                 try {
                     // Get the cart instance
-                    $cart = $record->cart;
                     /** @phpstan-ignore-next-line */
-                    $cartInstance = Cart::getCartInstance($cart->instance, $cart->identifier);
+                    $cart = $record->cart;
+                    $cartInstance = app(CartInstanceManager::class)
+                        /** @phpstan-ignore-next-line */
+                        ->resolve($cart->instance, $cart->identifier);
 
                     if ($record->isItemLevel()) {
                         // Remove item-level condition
@@ -85,7 +87,8 @@ final class RemoveConditionAction extends Action
 
                 try {
                     // Get the cart instance
-                    $cartInstance = Cart::getCartInstance($cart->instance, $cart->identifier);
+                    $cartInstance = app(CartInstanceManager::class)
+                        ->resolve($cart->instance, $cart->identifier);
 
                     // Clear all cart-level conditions
                     $cartInstance->clearConditions();
@@ -145,7 +148,8 @@ final class RemoveConditionAction extends Action
 
                 try {
                     // Get the cart instance
-                    $cartInstance = Cart::getCartInstance($cart->instance, $cart->identifier);
+                    $cartInstance = app(CartInstanceManager::class)
+                        ->resolve($cart->instance, $cart->identifier);
 
                     // Remove conditions by type
                     $cartInstance->removeConditionsByType($data['type']);

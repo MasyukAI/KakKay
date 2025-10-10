@@ -13,6 +13,8 @@ use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Str;
+use MasyukAI\Cart\Contracts\RulesFactoryInterface;
 
 final class ConditionForm
 {
@@ -108,19 +110,30 @@ final class ConditionForm
                             ->default(false)
                             ->helperText('Automatically apply this condition to all new carts'),
 
-                        KeyValue::make('rules')
-                            ->label('Dynamic Rules (AND Logic)')
-                            ->default(['min_items' => '1'])
-                            ->keyLabel('Rule Type')
-                            ->valueLabel('Value')
-                            ->helperText('All rules must pass for the condition to be applied or removed. Leave empty for non-dynamic conditions.')
+                        Select::make('rules.factory_keys')
+                            ->label('Dynamic Rule Keys')
+                            ->options(self::ruleOptions())
+                            ->helperText('Select one or more built-in rule factories. All selected rules must pass for the condition to apply.')
+                            ->placeholder('Select rule keys')
+                            ->multiple()
+                            ->searchable()
                             ->columnSpanFull()
-                            ->addActionLabel('Add Rule')
-                            ->keyPlaceholder('e.g., min_items')
-                            ->valuePlaceholder('e.g., 3')
-                            ->hint('Available rules: min_total, min_items, max_total, max_items, has_category, user_vip, specific_items, item_quantity, item_price')
+                            ->default([]),
+
+                        KeyValue::make('rules.context')
+                            ->label('Rule Context Values')
+                            ->keyLabel('Parameter')
+                            ->valueLabel('Value')
+                            ->helperText('Provide the context values used by the selected rules. Use JSON arrays (e.g., ["vip","gold"]) or comma-separated lists when a rule expects multiple values.')
+                            ->columnSpanFull()
+                            ->addActionLabel('Add Context Value')
+                            ->keyPlaceholder('e.g., min, amount, ids')
+                            ->valuePlaceholder('e.g., 3 or ["A","B"]')
+                            ->hint(static fn (): string => 'Available keys: '.self::ruleOptionsHint())
                             ->hintIcon('heroicon-m-information-circle')
-                            ->reorderable(false),
+                            ->reorderable(false)
+                            ->default([])
+                            ->dehydrated(fn ($get): bool => ! empty($get('rules.factory_keys'))),
 
                         KeyValue::make('attributes')
                             ->label('Custom Attributes')
@@ -168,5 +181,22 @@ final class ConditionForm
                     ->hiddenOn('create')
                     ->description('These fields are automatically computed when you save the condition based on the value you enter.'),
             ]);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private static function ruleOptions(): array
+    {
+        $factory = app(RulesFactoryInterface::class);
+
+        return collect($factory->getAvailableKeys())
+            ->mapWithKeys(static fn (string $key): array => [$key => Str::headline(str_replace('-', ' ', $key))])
+            ->all();
+    }
+
+    private static function ruleOptionsHint(): string
+    {
+        return collect(self::ruleOptions())->keys()->implode(', ');
     }
 }

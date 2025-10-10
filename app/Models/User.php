@@ -104,24 +104,6 @@ final class User extends Authenticatable
     }
 
     /**
-     * Scope for guest users
-     */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
-    protected function guests($query)
-    {
-        return $query->where('is_guest', true);
-    }
-
-    /**
-     * Scope for registered users
-     */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
-    protected function registered($query)
-    {
-        return $query->where('is_guest', false);
-    }
-
-    /**
      * Convert guest to registered user
      */
     public function convertToRegistered(string $password): bool
@@ -148,6 +130,24 @@ final class User extends Authenticatable
     public function isRegistered(): bool
     {
         return ! $this->is_guest;
+    }
+
+    /**
+     * Scope for guest users
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function guests($query)
+    {
+        return $query->where('is_guest', true);
+    }
+
+    /**
+     * Scope for registered users
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function registered($query)
+    {
+        return $query->where('is_guest', false);
     }
 
     /**

@@ -7,8 +7,8 @@ namespace MasyukAI\FilamentCart\Resources\CartResource\Pages;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Icons\Heroicon;
-use MasyukAI\Cart\Facades\Cart as CartFacade;
 use MasyukAI\FilamentCart\Resources\CartResource;
+use MasyukAI\FilamentCart\Services\CartInstanceManager;
 
 final class EditCart extends EditRecord
 {
@@ -29,8 +29,11 @@ final class EditCart extends EditRecord
                 ->color('danger')
                 ->requiresConfirmation()
                 ->action(function (): void {
-                    /** @phpstan-ignore-next-line */
-                    CartFacade::getCartInstance($this->record->instance, $this->record->identifier)->clear();
+                    /** @var \MasyukAI\FilamentCart\Models\Cart $record */
+                    $record = $this->record;
+                    app(CartInstanceManager::class)
+                        ->resolve($record->instance, $record->identifier)
+                        ->clear();
                     $this->redirect($this->getResource()::getUrl('index'));
                 })
                 /** @phpstan-ignore-next-line */

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * Example usage of the Invoice package
- * 
+ *
  * This file demonstrates how to integrate the invoice package with your application.
  * It shows various use cases for generating, managing, and delivering invoices.
  */
@@ -21,16 +21,16 @@ use MasyukAI\Docs\Models\InvoiceTemplate;
 /**
  * Create an invoice for a completed order
  */
-function createInvoiceForOrder($order): \MasyukAI\Invoice\Models\Invoice
+function createInvoiceForOrder($order): MasyukAI\Invoice\Models\Invoice
 {
     $invoice = Invoice::createInvoice(InvoiceData::from([
         // Link the invoice to the order
         'invoiceable_type' => 'App\\Models\\Order',
         'invoiceable_id' => $order->id,
-        
+
         // Invoice status
         'status' => InvoiceStatus::PENDING,
-        
+
         // Line items from order
         'items' => $order->items->map(fn ($item) => [
             'name' => $item->product->name,
@@ -38,7 +38,7 @@ function createInvoiceForOrder($order): \MasyukAI\Invoice\Models\Invoice
             'quantity' => $item->quantity,
             'price' => (float) $item->unit_price,
         ])->toArray(),
-        
+
         // Customer information
         'customer_data' => [
             'name' => $order->user->name,
@@ -50,25 +50,25 @@ function createInvoiceForOrder($order): \MasyukAI\Invoice\Models\Invoice
             'country' => $order->shipping_address->country ?? '',
             'phone' => $order->user->phone ?? '',
         ],
-        
+
         // Company information (optional - uses config defaults if not provided)
         'company_data' => config('invoice.company'),
-        
+
         // Tax and discounts
         'tax_amount' => (float) $order->tax_amount,
         'discount_amount' => (float) $order->discount_amount,
-        
+
         // Currency
         'currency' => $order->currency ?? 'MYR',
-        
+
         // Additional info
         'notes' => 'Thank you for your order!',
         'terms' => 'Payment due within 30 days. All sales are final.',
-        
+
         // Auto-generate PDF
         'generate_pdf' => true,
     ]));
-    
+
     return $invoice;
 }
 
@@ -82,7 +82,7 @@ function createInvoiceForOrder($order): \MasyukAI\Invoice\Models\Invoice
 function generateInvoiceOnPaymentSuccess($payment): void
 {
     $order = $payment->order;
-    
+
     // Create the invoice
     $invoice = Invoice::createInvoice(InvoiceData::from([
         'invoiceable_type' => 'App\\Models\\Payment',
@@ -100,7 +100,7 @@ function generateInvoiceOnPaymentSuccess($payment): void
         ],
         'generate_pdf' => true,
     ]));
-    
+
     // Email the invoice to the customer
     Invoice::emailInvoice($invoice, $order->user->email);
 }
@@ -114,14 +114,14 @@ function generateInvoiceOnPaymentSuccess($payment): void
  */
 function getInvoiceDownloadUrl($order): ?string
 {
-    $invoice = \MasyukAI\Invoice\Models\Invoice::where('invoiceable_type', 'App\\Models\\Order')
+    $invoice = MasyukAI\Invoice\Models\Invoice::where('invoiceable_type', 'App\\Models\\Order')
         ->where('invoiceable_id', $order->id)
         ->first();
-    
+
     if ($invoice) {
         return Invoice::downloadPdf($invoice);
     }
-    
+
     return null;
 }
 
@@ -134,7 +134,7 @@ function getInvoiceDownloadUrl($order): ?string
  */
 function getUserInvoices($user)
 {
-    return \MasyukAI\Invoice\Models\Invoice::whereHasMorph(
+    return MasyukAI\Invoice\Models\Invoice::whereHasMorph(
         'invoiceable',
         ['App\\Models\\Order', 'App\\Models\\Payment'],
         function ($query) use ($user) {
@@ -191,14 +191,14 @@ function markInvoiceAsPaid($invoice, $notes = null): void
  */
 function updateOverdueInvoices(): void
 {
-    $invoices = \MasyukAI\Invoice\Models\Invoice::whereIn('status', [
+    $invoices = MasyukAI\Invoice\Models\Invoice::whereIn('status', [
         InvoiceStatus::PENDING,
         InvoiceStatus::SENT,
     ])->whereDate('due_date', '<', now())->get();
-    
+
     foreach ($invoices as $invoice) {
         $invoice->updateStatus();
-        
+
         // Send reminder email (implement your email logic)
         // Mail::to($invoice->customer_data['email'])->send(new InvoiceOverdueReminder($invoice));
     }
@@ -211,7 +211,7 @@ function updateOverdueInvoices(): void
 /**
  * Create invoice with custom invoice number
  */
-function createInvoiceWithCustomNumber($order, $customNumber): \MasyukAI\Invoice\Models\Invoice
+function createInvoiceWithCustomNumber($order, $customNumber): MasyukAI\Invoice\Models\Invoice
 {
     return Invoice::createInvoice(InvoiceData::from([
         'invoice_number' => $customNumber,
@@ -240,7 +240,7 @@ class OrderService
     {
         // Mark order as complete
         $order->update(['status' => 'completed']);
-        
+
         // Generate invoice
         $invoice = Invoice::createInvoice(InvoiceData::from([
             'invoiceable_type' => 'App\\Models\\Order',
@@ -258,10 +258,10 @@ class OrderService
             'tax_amount' => (float) $order->tax_amount,
             'generate_pdf' => true,
         ]));
-        
+
         // Store invoice reference in order
         $order->update(['invoice_url' => Invoice::downloadPdf($invoice)]);
-        
+
         // Email invoice to customer
         Invoice::emailInvoice($invoice, $order->user->email);
     }

@@ -7,9 +7,9 @@ namespace MasyukAI\FilamentCart\Resources\CartResource\Pages;
 use Filament\Actions;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Support\Icons\Heroicon;
-use MasyukAI\Cart\Facades\Cart as CartFacade;
 use MasyukAI\FilamentCart\Models\Cart;
 use MasyukAI\FilamentCart\Resources\CartResource;
+use MasyukAI\FilamentCart\Services\CartInstanceManager;
 
 use function assert;
 
@@ -69,8 +69,11 @@ final class ViewCart extends ViewRecord
                 ->modalHeading('Clear Cart')
                 ->modalDescription('Are you sure you want to clear all items from this cart? This action cannot be undone.')
                 ->action(function (): void {
-                    /** @phpstan-ignore-next-line */
-                    CartFacade::getCartInstance($this->record->instance, $this->record->identifier)->clear();
+                    /** @var Cart $record */
+                    $record = $this->record;
+                    app(CartInstanceManager::class)
+                        ->resolve($record->instance, $record->identifier)
+                        ->clear();
                     $this->redirect($this->getResource()::getUrl('view', ['record' => $this->record]));
                 })
                 /** @phpstan-ignore-next-line */

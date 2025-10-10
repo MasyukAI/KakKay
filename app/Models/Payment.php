@@ -46,51 +46,6 @@ class Payment extends Model
     }
 
     /**
-     * Scope for completed payments
-     */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
-    protected function completed($query)
-    {
-        return $query->where('status', 'completed');
-    }
-
-    /**
-     * Scope for pending payments
-     */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
-    protected function pending($query)
-    {
-        return $query->where('status', 'pending');
-    }
-
-    /**
-     * Scope for failed payments
-     */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
-    protected function failed($query)
-    {
-        return $query->where('status', 'failed');
-    }
-
-    /**
-     * Scope for refunded payments
-     */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
-    protected function refunded($query)
-    {
-        return $query->where('status', 'refunded');
-    }
-
-    /**
-     * Scope by gateway method
-     */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
-    protected function byGateway($query, string $gatewayMethod)
-    {
-        return $query->where('method', $gatewayMethod);
-    }
-
-    /**
      * Get formatted amount
      */
     public function getFormattedAmountAttribute(): string
@@ -162,5 +117,50 @@ class Payment extends Model
             'status' => 'refunded',
             'refunded_at' => now(),
         ]);
+    }
+
+    /**
+     * Scope for completed payments
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function completed($query)
+    {
+        return $query->where('status', 'completed');
+    }
+
+    /**
+     * Scope for pending payments
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function pending($query)
+    {
+        return $query->where('status', 'pending');
+    }
+
+    /**
+     * Scope for failed payments
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function failed($query)
+    {
+        return $query->where('status', 'failed');
+    }
+
+    /**
+     * Scope for refunded payments
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function refunded($query)
+    {
+        return $query->where('status', 'refunded');
+    }
+
+    /**
+     * Scope by gateway method
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function byGateway($query, string $gatewayMethod)
+    {
+        return $query->where('method', $gatewayMethod);
     }
 }

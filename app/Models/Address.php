@@ -72,33 +72,6 @@ final class Address extends Model
     }
 
     /**
-     * Scope for billing addresses
-     */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
-    protected function billing($query)
-    {
-        return $query->where('type', 'billing');
-    }
-
-    /**
-     * Scope for shipping addresses
-     */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
-    protected function shipping($query)
-    {
-        return $query->where('type', 'shipping');
-    }
-
-    /**
-     * Scope for primary addresses
-     */
-    #[\Illuminate\Database\Eloquent\Attributes\Scope]
-    protected function primary($query)
-    {
-        return $query->where('is_primary', true);
-    }
-
-    /**
      * Get formatted address string
      */
     public function getFormattedAttribute(): string
@@ -127,5 +100,32 @@ final class Address extends Model
         }
 
         return $address;
+    }
+
+    /**
+     * Scope for billing addresses
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function billing($query)
+    {
+        return $query->where('type', 'billing');
+    }
+
+    /**
+     * Scope for shipping addresses
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function shipping($query)
+    {
+        return $query->where('type', 'shipping');
+    }
+
+    /**
+     * Scope for primary addresses
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function primary($query)
+    {
+        return $query->where('is_primary', true);
     }
 }

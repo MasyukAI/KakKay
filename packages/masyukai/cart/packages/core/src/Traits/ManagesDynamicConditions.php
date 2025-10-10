@@ -10,6 +10,7 @@ use InvalidArgumentException;
 use MasyukAI\Cart\Collections\CartConditionCollection;
 use MasyukAI\Cart\Conditions\CartCondition;
 use MasyukAI\Cart\Contracts\RulesFactoryInterface;
+use Throwable;
 
 trait ManagesDynamicConditions
 {
@@ -22,6 +23,13 @@ trait ManagesDynamicConditions
      * Rules factory for reconstructing dynamic conditions from metadata.
      */
     protected ?RulesFactoryInterface $rulesFactory = null;
+
+    /**
+     * Optional handler invoked when a dynamic condition fails to evaluate or restore.
+     *
+     * @var (callable(string, ?CartCondition, ?Throwable, array<string, mixed>): void)|null
+     */
+    protected $dynamicConditionFailureHandler = null;
 
     /**
      * Set rules factory for dynamic condition persistence.
@@ -55,17 +63,19 @@ trait ManagesDynamicConditions
      * @param  CartCondition|array<string, mixed>  $condition  The dynamic condition or condition data
      * @param  array<callable>|string|array<string>|Closure|null  $rules  Rules as array, factory key(s), or closure
      * @param  string|array<string>|null  $ruleFactoryKey  Optional explicit key(s) for persistence
+     * @param  array<string, mixed>  $metadata  Additional metadata to persist alongside the condition
      *
      * @throws InvalidArgumentException When invalid parameters are provided
      */
     public function registerDynamicCondition(
         CartCondition|array $condition,
         array|string|Closure|null $rules = null,
-        string|array|null $ruleFactoryKey = null
+        string|array|null $ruleFactoryKey = null,
+        array $metadata = []
     ): static {
         // Handle smart condition creation
         if (is_array($condition)) {
-            $condition = $this->createConditionFromArray($condition, $rules, $ruleFactoryKey);
+            $condition = $this->createConditionFromArray($condition, $rules, $ruleFactoryKey, $metadata);
         }
 
         if (! $condition->isDynamic()) {
@@ -77,10 +87,22 @@ trait ManagesDynamicConditions
 
         // Persist metadata if rule factory key provided
         if ($ruleFactoryKey !== null) {
-            $this->persistDynamicConditionMetadata($condition, $ruleFactoryKey);
+            $this->persistDynamicConditionMetadata($condition, $ruleFactoryKey, $metadata);
         }
 
         $this->evaluateDynamicConditions();
+
+        return $this;
+    }
+
+    /**
+     * Register a callback that will be invoked when dynamic condition evaluation fails.
+     *
+     * @param  callable(string, ?CartCondition, ?Throwable, array<string, mixed>): void  $handler
+     */
+    public function onDynamicConditionFailure(callable $handler): static
+    {
+        $this->dynamicConditionFailureHandler = $handler;
 
         return $this;
     }
@@ -124,7 +146,20 @@ trait ManagesDynamicConditions
         foreach ($this->dynamicConditions as $condition) {
             if (in_array($condition->getTarget(), ['total', 'subtotal'])) {
                 // Cart-level condition (both 'total' and 'subtotal' targets)
-                if ($condition->shouldApply($this)) {
+                $shouldApply = false;
+
+                try {
+                    $shouldApply = $condition->shouldApply($this);
+                } catch (Throwable $exception) {
+                    $this->handleDynamicConditionFailure('evaluate', $condition, $exception, [
+                        'target' => $condition->getTarget(),
+                    ]);
+                    $this->removeCondition($condition->getName());
+
+                    continue;
+                }
+
+                if ($shouldApply) {
                     if (! $this->getConditions()->has($condition->getName())) {
                         // Create a static version for application (without rules to avoid recursion)
                         $staticCondition = $condition->withoutRules();
@@ -136,7 +171,21 @@ trait ManagesDynamicConditions
             } elseif ($condition->getTarget() === 'item') {
                 // Item-level condition
                 foreach ($this->getItems() as $item) {
-                    if ($condition->shouldApply($this, $item)) {
+                    $shouldApply = false;
+
+                    try {
+                        $shouldApply = $condition->shouldApply($this, $item);
+                    } catch (Throwable $exception) {
+                        $this->handleDynamicConditionFailure('evaluate', $condition, $exception, [
+                            'target' => 'item',
+                            'item_id' => $item->id,
+                        ]);
+                        $this->removeItemCondition($item->id, $condition->getName());
+
+                        continue;
+                    }
+
+                    if ($shouldApply) {
                         if (! $item->conditions->has($condition->getName())) {
                             $staticCondition = $condition->withoutRules();
                             $this->addItemCondition($item->id, $staticCondition);
@@ -193,8 +242,11 @@ trait ManagesDynamicConditions
                 $this->initializeDynamicConditions();
                 $this->dynamicConditions->put($condition->getName(), $condition);
             } catch (Exception $e) {
-                // Log error but continue with other conditions
-                // The application should handle logging appropriately
+                $this->handleDynamicConditionFailure('restore', null, $e, [
+                    'name' => $name,
+                    'rule_factory_key' => $ruleFactoryKey,
+                ]);
+
                 continue;
             }
         }
@@ -249,7 +301,7 @@ trait ManagesDynamicConditions
      * @param  string|array<string>|null  $ruleFactoryKey  Reference to store factory keys for persistence
      * @return array<callable>
      */
-    protected function evaluateMixedRules(array $rules, string|array|null &$ruleFactoryKey): array
+    protected function evaluateMixedRules(array $rules, string|array|null &$ruleFactoryKey, array $metadata = []): array
     {
         if ($this->rulesFactory === null) {
             throw new InvalidArgumentException(
@@ -267,7 +319,7 @@ trait ManagesDynamicConditions
                     throw new InvalidArgumentException("Unknown factory key: {$rule}");
                 }
 
-                $factoryRules = $this->rulesFactory->createRules($rule, []);
+                $factoryRules = $this->rulesFactory->createRules($rule, $metadata);
                 $evaluatedRules = array_merge($evaluatedRules, $factoryRules);
                 $factoryKeys[] = $rule; // Track for persistence
             } elseif (is_callable($rule)) {
@@ -326,10 +378,11 @@ trait ManagesDynamicConditions
     protected function createConditionFromArray(
         array $data,
         array|string|Closure|null $rules,
-        string|array|null &$ruleFactoryKey
+        string|array|null &$ruleFactoryKey,
+        array $metadata = []
     ): CartCondition {
         // Smart rule evaluation (Filament-style)
-        $evaluatedRules = $this->evaluateRules($rules, $ruleFactoryKey);
+        $evaluatedRules = $this->evaluateRules($rules, $ruleFactoryKey, $metadata);
 
         return new CartCondition(
             name: $data['name'] ?? throw new InvalidArgumentException('Condition name is required'),
@@ -351,8 +404,12 @@ trait ManagesDynamicConditions
      */
     protected function evaluateRules(
         array|string|Closure|null $rules,
-        string|array|null &$ruleFactoryKey
+        string|array|null &$ruleFactoryKey,
+        array $metadata = []
     ): array {
+        $factoryMetadata = array_key_exists('context', $metadata)
+            ? $metadata
+            : ['context' => $metadata];
         // Case 1: Already an array → check contents
         if (is_array($rules)) {
             // Check if ALL elements are strings (factory keys only)
@@ -363,14 +420,14 @@ trait ManagesDynamicConditions
             );
 
             if ($allStrings) {
-                return $this->evaluateFactoryKeyArray($rules, $ruleFactoryKey);
+                return $this->evaluateFactoryKeyArray($rules, $ruleFactoryKey, $factoryMetadata);
             }
 
             // Check for mixed array (strings + callables)
             $hasStrings = ! empty(array_filter($rules, fn ($item) => is_string($item)));
 
             if ($hasStrings) {
-                return $this->evaluateMixedRules($rules, $ruleFactoryKey);
+                return $this->evaluateMixedRules($rules, $ruleFactoryKey, $factoryMetadata);
             }
 
             // Otherwise, pure array of callables
@@ -379,7 +436,7 @@ trait ManagesDynamicConditions
 
         // Case 2: String → treat as factory key
         if (is_string($rules)) {
-            return $this->evaluateFactoryKey($rules, $ruleFactoryKey);
+            return $this->evaluateFactoryKey($rules, $ruleFactoryKey, $factoryMetadata);
         }
 
         // Case 3: Closure → evaluate it (might return rules or need serialization)
@@ -405,7 +462,7 @@ trait ManagesDynamicConditions
      * @param  string|array<string>|null  $ruleFactoryKey  Reference to store key for persistence
      * @return array<callable>
      */
-    protected function evaluateFactoryKey(string $factoryKey, string|array|null &$ruleFactoryKey): array
+    protected function evaluateFactoryKey(string $factoryKey, string|array|null &$ruleFactoryKey, array $metadata = []): array
     {
         if ($this->rulesFactory === null) {
             throw new InvalidArgumentException(
@@ -419,7 +476,7 @@ trait ManagesDynamicConditions
 
         $ruleFactoryKey = $factoryKey; // Set for persistence
 
-        return $this->rulesFactory->createRules($factoryKey, []);
+        return $this->rulesFactory->createRules($factoryKey, $metadata);
     }
 
     /**
@@ -429,7 +486,7 @@ trait ManagesDynamicConditions
      * @param  string|array<string>|null  $ruleFactoryKey  Reference to store keys for persistence
      * @return array<callable>
      */
-    protected function evaluateFactoryKeyArray(array $factoryKeys, string|array|null &$ruleFactoryKey): array
+    protected function evaluateFactoryKeyArray(array $factoryKeys, string|array|null &$ruleFactoryKey, array $metadata = []): array
     {
         if ($this->rulesFactory === null) {
             throw new InvalidArgumentException(
@@ -449,7 +506,7 @@ trait ManagesDynamicConditions
             }
 
             // Merge rules from this factory key
-            $rules = $this->rulesFactory->createRules($key, []);
+            $rules = $this->rulesFactory->createRules($key, $metadata);
             $combinedRules = array_merge($combinedRules, $rules);
         }
 
@@ -473,8 +530,9 @@ trait ManagesDynamicConditions
      *
      * @param  CartCondition  $condition  The condition to persist
      * @param  string|array<string>  $ruleFactoryKey  Key(s) for rule recreation
+     * @param  array<string, mixed>  $context  Additional metadata context for factories
      */
-    protected function persistDynamicConditionMetadata(CartCondition $condition, string|array $ruleFactoryKey): void
+    protected function persistDynamicConditionMetadata(CartCondition $condition, string|array $ruleFactoryKey, array $context = []): void
     {
         $existingMetadata = $this->getDynamicConditionMetadata();
 
@@ -486,6 +544,7 @@ trait ManagesDynamicConditions
             'order' => $condition->getOrder(),
             'rule_factory_key' => $ruleFactoryKey, // Can be string or array
             'created_at' => time(),
+            'context' => $context,
         ];
 
         $this->storage->putMetadata(
@@ -494,6 +553,24 @@ trait ManagesDynamicConditions
             'dynamic_conditions',
             $existingMetadata
         );
+    }
+
+    /**
+     * Invoke the registered failure handler, if any.
+     *
+     * @param  array<string, mixed>  $context
+     */
+    protected function handleDynamicConditionFailure(
+        string $operation,
+        ?CartCondition $condition,
+        ?Throwable $exception = null,
+        array $context = []
+    ): void {
+        if ($this->dynamicConditionFailureHandler === null) {
+            return;
+        }
+
+        ($this->dynamicConditionFailureHandler)($operation, $condition, $exception, $context);
     }
 
     /**

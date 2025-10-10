@@ -9,7 +9,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use MasyukAI\FilamentCart\Services\RuleConverter;
+use Illuminate\Support\Str;
+use InvalidArgumentException;
+use MasyukAI\Cart\Contracts\RulesFactoryInterface;
 
 /**
  * Condition model for creating reusable condition configurations.
@@ -31,7 +33,7 @@ use MasyukAI\FilamentCart\Services\RuleConverter;
  * @property string|null $parsed_value
  * @property int $order
  * @property array<mixed>|null $attributes
- * @property array<mixed>|null $rules
+ * @property array{factory_keys?: array<int, string>, context?: array<string, mixed>}|null $rules
  * @property bool $is_active
  * @property bool $is_global
  */
@@ -93,6 +95,51 @@ final class Condition extends Model
     ];
 
     /**
+     * @param  array{factory_keys?: array<int, string>, context?: array<string, mixed>}|null  $rules
+     * @return array{factory_keys: array<int, string>, context: array<string, mixed>}|null
+     */
+    public static function normalizeRulesDefinition(?array $rules, bool $isDynamic): ?array
+    {
+        if (! $isDynamic || empty($rules)) {
+            return null;
+        }
+
+        $factoryKeys = [];
+        if (isset($rules['factory_keys']) && is_array($rules['factory_keys'])) {
+            $factoryKeys = array_values(array_filter(
+                $rules['factory_keys'],
+                static fn ($key): bool => $key !== ''
+            ));
+        }
+
+        if ($factoryKeys === []) {
+            return null;
+        }
+
+        $context = [];
+        if (isset($rules['context']) && is_array($rules['context'])) {
+            foreach ($rules['context'] as $key => $value) {
+                if ($key === '') {
+                    continue;
+                }
+
+                $normalizedValue = self::normalizeContextValue($value);
+
+                if ($normalizedValue === null) {
+                    continue;
+                }
+
+                $context[$key] = $normalizedValue;
+            }
+        }
+
+        return [
+            'factory_keys' => $factoryKeys,
+            'context' => $context,
+        ];
+    }
+
+    /**
      * Compute derived fields from the value.
      */
     public function computeDerivedFields(): void
@@ -139,7 +186,13 @@ final class Condition extends Model
         }
 
         // Check if dynamic (has rules)
-        $this->is_dynamic = ! empty($this->rules);
+        $factoryKeys = $this->getRuleFactoryKeys();
+
+        $this->is_dynamic = ! empty($factoryKeys);
+
+        if (! $this->is_dynamic) {
+            $this->rules = null;
+        }
     }
 
     /**
@@ -199,6 +252,40 @@ final class Condition extends Model
     }
 
     /**
+     * @return array<int, string>
+     */
+    public function getRuleFactoryKeys(): array
+    {
+        if (! is_array($this->rules)) {
+            return [];
+        }
+
+        $keys = $this->rules['factory_keys'] ?? [];
+
+        if (! is_array($keys)) {
+            return [];
+        }
+
+        return array_values(array_filter($keys, static function ($key): bool {
+            return $key !== '';
+        }));
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function getRuleContext(): array
+    {
+        if (! is_array($this->rules)) {
+            return [];
+        }
+
+        $context = $this->rules['context'] ?? [];
+
+        return is_array($context) ? $context : [];
+    }
+
+    /**
      * Check if this condition is global (auto-applied).
      */
     public function isGlobal(): bool
@@ -232,6 +319,8 @@ final class Condition extends Model
      */
     public function toConditionArray(?string $customName = null): array
     {
+        $factoryKeys = $this->getRuleFactoryKeys();
+
         return [
             'name' => $customName ?? $this->display_name,
             'type' => $this->type,
@@ -243,7 +332,10 @@ final class Condition extends Model
                 'condition_name' => $this->name,
                 'is_global' => $this->is_global,
             ]),
-            'rules' => $this->is_dynamic ? $this->rules : null,
+            'rules' => $this->is_dynamic ? [
+                'factory_keys' => $factoryKeys,
+                'context' => $this->getRuleContext(),
+            ] : null,
             'is_global' => $this->is_global,
         ];
     }
@@ -255,11 +347,7 @@ final class Condition extends Model
     {
         $data = $this->toConditionArray($customName);
 
-        // Convert JSON rules to callable functions if this is a dynamic condition
-        $rules = null;
-        if ($this->is_dynamic && ! empty($data['rules'])) {
-            $rules = RuleConverter::convertRules($data['rules']);
-        }
+        $rules = $this->buildRuleCallables();
 
         return new \MasyukAI\Cart\Conditions\CartCondition(
             name: $data['name'],
@@ -270,6 +358,17 @@ final class Condition extends Model
             order: $data['order'],
             rules: $rules
         );
+    }
+
+    /**
+     * Set the rules attribute (raw storage).
+     *
+     * @param  array{factory_keys?: array<int, string>, context?: array<string, mixed>}|null  $rules
+     */
+    public function setRulesAttribute(?array $rules): void
+    {
+        // Store as JSON string - will be normalized during save
+        $this->attributes['rules'] = json_encode($rules);
     }
 
     /**
@@ -287,6 +386,16 @@ final class Condition extends Model
     {
         self::saving(function (Condition $condition) {
             $condition->computeDerivedFields();
+
+            // Normalize rules after is_dynamic is computed
+            if (isset($condition->attributes['rules']) && is_string($condition->attributes['rules'])) {
+                $rawRules = json_decode($condition->attributes['rules'], true);
+                if (is_array($rawRules)) {
+                    $condition->attributes['rules'] = json_encode(
+                        self::normalizeRulesDefinition($rawRules, $condition->is_dynamic)
+                    );
+                }
+            }
         });
     }
 
@@ -377,6 +486,90 @@ final class Condition extends Model
     protected function percentageBased(Builder $query): void
     {
         $query->where('is_percentage', true);
+    }
+
+    private static function normalizeContextValue(mixed $value): mixed
+    {
+        if (is_array($value)) {
+            return array_map(static fn (mixed $item): mixed => self::normalizeContextValue($item), $value);
+        }
+
+        if (is_bool($value) || (is_numeric($value) && ! is_string($value))) {
+            return $value;
+        }
+
+        if (! is_string($value)) {
+            return $value;
+        }
+
+        $trimmed = Str::of($value)->trim()->toString();
+
+        if ($trimmed === '') {
+            return null;
+        }
+
+        $lower = mb_strtolower($trimmed);
+        if ($lower === 'true') {
+            return true;
+        }
+
+        if ($lower === 'false') {
+            return false;
+        }
+
+        if (str_starts_with($trimmed, '[') || str_starts_with($trimmed, '{')) {
+            $decoded = json_decode($trimmed, true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                return $decoded;
+            }
+        }
+
+        if (str_contains($trimmed, ',')) {
+            return array_values(array_filter(
+                array_map(static fn (string $segment): mixed => self::normalizeContextValue($segment), explode(',', $trimmed)),
+                static fn (mixed $segment): bool => ! (is_string($segment) && $segment === ''),
+            ));
+        }
+
+        if (is_numeric($trimmed)) {
+            if (str_contains($trimmed, '.') || str_contains($trimmed, 'e') || str_contains($trimmed, 'E')) {
+                return (float) $trimmed;
+            }
+
+            return (int) $trimmed;
+        }
+
+        return $trimmed;
+    }
+
+    /**
+     * @return array<callable>|null
+     */
+    private function buildRuleCallables(): ?array
+    {
+        $factoryKeys = $this->getRuleFactoryKeys();
+
+        if ($factoryKeys === []) {
+            return null;
+        }
+
+        $rulesFactory = app(RulesFactoryInterface::class);
+        $context = $this->getRuleContext();
+
+        $rules = [];
+
+        foreach ($factoryKeys as $factoryKey) {
+            if (! $rulesFactory->canCreateRules($factoryKey)) {
+                throw new InvalidArgumentException("Unsupported rule factory key [{$factoryKey}]");
+            }
+
+            $rules = array_merge(
+                $rules,
+                $rulesFactory->createRules($factoryKey, ['context' => $context])
+            );
+        }
+
+        return $rules;
     }
 
     private function resolveCurrency(): string

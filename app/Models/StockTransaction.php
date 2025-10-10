@@ -39,6 +39,27 @@ final class StockTransaction extends Model
         return $this->belongsTo(User::class);
     }
 
+    // Helper methods
+    public function isInbound(): bool
+    {
+        return $this->type === 'in';
+    }
+
+    public function isOutbound(): bool
+    {
+        return $this->type === 'out';
+    }
+
+    public function isSale(): bool
+    {
+        return $this->reason === 'sale';
+    }
+
+    public function isAdjustment(): bool
+    {
+        return $this->reason === 'adjustment';
+    }
+
     // Scopes
     #[\Illuminate\Database\Eloquent\Attributes\Scope]
     protected function forProduct($query, $productId)
@@ -68,27 +89,6 @@ final class StockTransaction extends Model
     protected function byUser($query, $userId)
     {
         return $query->where('user_id', $userId);
-    }
-
-    // Helper methods
-    public function isInbound(): bool
-    {
-        return $this->type === 'in';
-    }
-
-    public function isOutbound(): bool
-    {
-        return $this->type === 'out';
-    }
-
-    public function isSale(): bool
-    {
-        return $this->reason === 'sale';
-    }
-
-    public function isAdjustment(): bool
-    {
-        return $this->reason === 'adjustment';
     }
 
     protected function casts(): array

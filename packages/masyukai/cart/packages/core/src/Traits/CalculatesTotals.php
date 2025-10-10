@@ -98,6 +98,15 @@ trait CalculatesTotals
     }
 
     /**
+     * Get raw total without any conditions (for internal use in rule evaluation)
+     * This prevents circular dependency when dynamic conditions need to check the total
+     */
+    public function getRawTotalWithoutConditions(): float
+    {
+        return $this->getTotalWithoutConditions()->getAmount();
+    }
+
+    /**
      * Count items in cart (total quantity, shopping-cart style)
      */
     public function count(): int
@@ -129,6 +138,18 @@ trait CalculatesTotals
      */
     protected function getSubtotalWithoutConditions(): Money
     {
+        $totalAmount = $this->getItems()->sum(fn (CartItem $item) => $item->getRawSubtotalWithoutConditions());
+        $currency = config('cart.money.default_currency', 'USD');
+
+        return Money::{$currency}($totalAmount);
+    }
+
+    /**
+     * Get cart total without any conditions (for rule evaluation)
+     */
+    protected function getTotalWithoutConditions(): Money
+    {
+        // Same as subtotal without conditions since we're not applying any conditions
         $totalAmount = $this->getItems()->sum(fn (CartItem $item) => $item->getRawSubtotalWithoutConditions());
         $currency = config('cart.money.default_currency', 'USD');
 

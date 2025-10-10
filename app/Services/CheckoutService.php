@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use MasyukAI\Cart\Cart;
 use MasyukAI\Cart\Facades\Cart as CartFacade;
+use MasyukAI\FilamentCart\Services\CartConditionValidator;
 use Throwable;
 
 final class CheckoutService
@@ -22,7 +23,8 @@ final class CheckoutService
     public function __construct(
         private PaymentService $paymentService,
         private OrderService $orderService,
-        private ChipDataRecorder $chipDataRecorder
+        private ChipDataRecorder $chipDataRecorder,
+        private CartConditionValidator $conditionValidator
     ) {}
 
     /**
@@ -39,6 +41,32 @@ final class CheckoutService
                     'success' => false,
                     'error' => 'Cart is empty',
                 ];
+            }
+
+            // Validate and clean cart conditions before checkout
+            // This removes deactivated global conditions (e.g., expired promotions)
+            $validationResult = $this->conditionValidator->validateAndClean($cart);
+
+            if (! $validationResult['is_valid']) {
+                Log::warning('Cart conditions were removed at checkout', [
+                    'removed_conditions' => $validationResult['removed_conditions'],
+                    'price_changed' => $validationResult['price_changed'],
+                    'old_total' => $validationResult['old_total'],
+                    'new_total' => $validationResult['new_total'],
+                    'cart_id' => $cart->getId(),
+                ]);
+
+                // Return error if price changed - user should review updated cart
+                if ($validationResult['price_changed']) {
+                    return [
+                        'success' => false,
+                        'error' => 'Some promotions have expired and your cart total has been updated. Please review your cart before proceeding.',
+                        'price_changed' => true,
+                        'removed_conditions' => $validationResult['removed_conditions'],
+                        'old_total' => $validationResult['old_total'],
+                        'new_total' => $validationResult['new_total'],
+                    ];
+                }
             }
 
             // Check for existing valid payment intent

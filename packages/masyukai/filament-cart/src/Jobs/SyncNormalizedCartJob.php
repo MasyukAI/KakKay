@@ -10,7 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
-use MasyukAI\Cart\Facades\Cart as CartFacade;
+use MasyukAI\FilamentCart\Services\CartInstanceManager;
 use MasyukAI\FilamentCart\Services\CartSyncManager;
 use Throwable;
 
@@ -32,7 +32,7 @@ final class SyncNormalizedCartJob implements ShouldQueue
     public function handle(CartSyncManager $syncManager): void
     {
         try {
-            $cart = CartFacade::getCartInstance($this->instance, $this->identifier);
+            $cart = app(CartInstanceManager::class)->resolve($this->instance, $this->identifier);
             $syncManager->sync($cart, force: true);
         } catch (Throwable $e) {
             Log::error('Failed to synchronize normalized cart snapshot', [

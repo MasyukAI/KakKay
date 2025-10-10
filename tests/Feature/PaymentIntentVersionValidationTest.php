@@ -21,30 +21,20 @@ beforeEach(function () {
             ]);
     });
 
-    // Register cart sync event listeners (mimic FilamentCartServiceProvider)
+    // Register unified cart sync event listener (mimic FilamentCartServiceProvider)
     Illuminate\Support\Facades\Event::listen(
-        MasyukAI\Cart\Events\CartCreated::class,
-        MasyukAI\FilamentCart\Listeners\SyncCompleteCart::class
-    );
-    Illuminate\Support\Facades\Event::listen(
-        MasyukAI\Cart\Events\CartUpdated::class,
-        MasyukAI\FilamentCart\Listeners\SyncCompleteCart::class
-    );
-    Illuminate\Support\Facades\Event::listen(
-        MasyukAI\Cart\Events\CartCleared::class,
-        MasyukAI\FilamentCart\Listeners\SyncCartOnClear::class
-    );
-    Illuminate\Support\Facades\Event::listen(
-        MasyukAI\Cart\Events\ItemAdded::class,
-        MasyukAI\FilamentCart\Listeners\SyncCartItemOnAdd::class
-    );
-    Illuminate\Support\Facades\Event::listen(
-        MasyukAI\Cart\Events\ItemUpdated::class,
-        MasyukAI\FilamentCart\Listeners\SyncCartItemOnUpdate::class
-    );
-    Illuminate\Support\Facades\Event::listen(
-        MasyukAI\Cart\Events\ItemRemoved::class,
-        MasyukAI\FilamentCart\Listeners\SyncCartItemOnRemove::class
+        [
+            MasyukAI\Cart\Events\CartCreated::class,
+            MasyukAI\Cart\Events\CartCleared::class,
+            MasyukAI\Cart\Events\ItemAdded::class,
+            MasyukAI\Cart\Events\ItemUpdated::class,
+            MasyukAI\Cart\Events\ItemRemoved::class,
+            MasyukAI\Cart\Events\CartConditionAdded::class,
+            MasyukAI\Cart\Events\CartConditionRemoved::class,
+            MasyukAI\Cart\Events\ItemConditionAdded::class,
+            MasyukAI\Cart\Events\ItemConditionRemoved::class,
+        ],
+        MasyukAI\FilamentCart\Listeners\SyncCartOnEvent::class
     );
 });
 

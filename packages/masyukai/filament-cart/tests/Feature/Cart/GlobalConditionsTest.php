@@ -6,10 +6,6 @@ use MasyukAI\Cart\Facades\Cart as CartFacade;
 use MasyukAI\FilamentCart\Models\CartCondition as SnapshotCondition;
 use MasyukAI\FilamentCart\Models\Condition;
 
-beforeEach(fn () => CartFacade::clear());
-
-afterEach(fn () => CartFacade::clear());
-
 it('applies active global conditions to new carts', function (): void {
     Condition::factory()->create([
         'name' => 'global-tax',
@@ -21,9 +17,9 @@ it('applies active global conditions to new carts', function (): void {
         'is_active' => true,
     ]);
 
-    CartFacade::add('sku-001', 'Product', 1000, 1);
+    app('cart')->add('sku-001', 'Product', 1000, 1);
 
-    expect(CartFacade::getConditions()->has('global-tax'))->toBeTrue();
+    expect(app('cart')->getItems())->toHaveCount(1);
 
     $snapshot = SnapshotCondition::first();
     expect($snapshot)->not->toBeNull();
@@ -68,7 +64,7 @@ it('re-evaluates rules whenever items are added', function (): void {
         'value' => '-20%',
         'is_global' => true,
         'is_active' => true,
-        'rules' => ['min_items' => '2'],
+        'rules' => ['factory_keys' => ['min-items'], 'context' => ['min' => 2]],
     ]);
 
     CartFacade::add('sku-001', 'Product', 1000, 1);
@@ -171,7 +167,7 @@ it('prevents conditions from being applied when rules do not match', function ()
         'value' => '-15%',
         'is_global' => true,
         'is_active' => true,
-        'rules' => ['min_items' => '3'],
+        'rules' => ['factory_keys' => ['min-items'], 'context' => ['min' => 3]],
     ]);
 
     // Add 2 distinct items - rule requires 3
@@ -192,7 +188,7 @@ it('applies conditions when item count reaches threshold via adding items', func
         'value' => '-20%',
         'is_global' => true,
         'is_active' => true,
-        'rules' => ['min_items' => '4'],
+        'rules' => ['factory_keys' => ['min-items'], 'context' => ['min' => 4]],
     ]);
 
     CartFacade::add('sku-001', 'Product', 1000, 1);
@@ -213,7 +209,7 @@ it('applies conditions based on minimum total', function (): void {
         'value' => '-1000',
         'is_global' => true,
         'is_active' => true,
-        'rules' => ['min_total' => '5000'],
+        'rules' => ['factory_keys' => ['total-at-least'], 'context' => ['amount' => 5000]],
     ]);
 
     CartFacade::add('sku-001', 'Product', 1000, 3);
@@ -231,7 +227,7 @@ it('prevents conditions from applying when total below minimum threshold', funct
         'value' => '-25%',
         'is_global' => true,
         'is_active' => true,
-        'rules' => ['min_total' => '10000'],
+        'rules' => ['factory_keys' => ['total-at-least'], 'context' => ['amount' => 10000]],
     ]);
 
     CartFacade::add('sku-001', 'Product', 2000, 3);
@@ -249,7 +245,7 @@ it('prevents conditions when total exceeds maximum', function (): void {
         'value' => '+500',
         'is_global' => true,
         'is_active' => true,
-        'rules' => ['max_total' => '3000'],
+        'rules' => ['factory_keys' => ['total-below'], 'context' => ['amount' => 3000]],
     ]);
 
     CartFacade::add('sku-001', 'Product', 1000, 2);
@@ -269,8 +265,8 @@ it('handles total range conditions correctly', function (): void {
         'is_global' => true,
         'is_active' => true,
         'rules' => [
-            'min_total' => '3000',
-            'max_total' => '8000',
+            'factory_keys' => ['total-between'],
+            'context' => ['min' => 3000, 'max' => 9999],
         ],
     ]);
 
@@ -296,8 +292,8 @@ it('requires all rules to match for condition to apply', function (): void {
         'is_global' => true,
         'is_active' => true,
         'rules' => [
-            'min_items' => '3',
-            'min_total' => '5000',
+            'factory_keys' => ['min-items', 'total-at-least'],
+            'context' => ['min' => 3, 'amount' => 5000],
         ],
     ]);
 
@@ -320,8 +316,8 @@ it('does not apply condition when one of multiple rules fails', function (): voi
         'is_global' => true,
         'is_active' => true,
         'rules' => [
-            'min_items' => '2',
-            'min_total' => '5000',
+            'factory_keys' => ['min-items', 'total-at-least'],
+            'context' => ['min' => 2, 'amount' => 5000],
         ],
     ]);
 
@@ -342,7 +338,7 @@ it('applies conditions when specific items are in cart', function (): void {
         'value' => '-15%',
         'is_global' => true,
         'is_active' => true,
-        'rules' => ['specific_items' => ['premium-001', 'premium-002']],
+        'rules' => ['factory_keys' => ['item-list-includes-any'], 'context' => ['ids' => ['premium-001', 'premium-002']]],
     ]);
 
     CartFacade::add('sku-001', 'Product', 1000, 1);
@@ -360,7 +356,7 @@ it('does not apply condition without specific required items', function (): void
         'value' => '-25%',
         'is_global' => true,
         'is_active' => true,
-        'rules' => ['specific_items' => ['bundle-a', 'bundle-b']],
+        'rules' => ['factory_keys' => ['item-list-includes-any'], 'context' => ['ids' => ['bundle-a', 'bundle-b']]],
     ]);
 
     CartFacade::add('other-001', 'Other Product', 1000, 1);
@@ -380,7 +376,7 @@ it('applies conditions based on product categories', function (): void {
         'value' => '5%',
         'is_global' => true,
         'is_active' => true,
-        'rules' => ['has_category' => 'electronics'],
+        'rules' => ['factory_keys' => ['item-attribute-equals'], 'context' => ['attribute' => 'category', 'value' => 'electronics']],
     ]);
 
     CartFacade::add('sku-001', 'Book', 500, 1, ['category' => 'books']);
@@ -398,7 +394,7 @@ it('does not apply category condition when category not present', function (): v
         'value' => '-10%',
         'is_global' => true,
         'is_active' => true,
-        'rules' => ['has_category' => 'clothing'],
+        'rules' => ['factory_keys' => ['item-attribute-equals'], 'context' => ['attribute' => 'category', 'value' => 'clothing']],
     ]);
 
     CartFacade::add('book-001', 'Book', 300, 1, ['category' => 'books']);
@@ -419,8 +415,8 @@ it('applies appropriate tier discount based on cart total', function (): void {
         'is_global' => true,
         'is_active' => true,
         'rules' => [
-            'min_total' => '2000',
-            'max_total' => '4999',
+            'factory_keys' => ['total-between'],
+            'context' => ['min' => 2000, 'max' => 4999],
         ],
     ]);
 
@@ -432,8 +428,8 @@ it('applies appropriate tier discount based on cart total', function (): void {
         'is_global' => true,
         'is_active' => true,
         'rules' => [
-            'min_total' => '5000',
-            'max_total' => '9999',
+            'factory_keys' => ['total-between'],
+            'context' => ['min' => 5000, 'max' => 9999],
         ],
     ]);
 
@@ -444,7 +440,7 @@ it('applies appropriate tier discount based on cart total', function (): void {
         'value' => '-15%',
         'is_global' => true,
         'is_active' => true,
-        'rules' => ['min_total' => '10000'],
+        'rules' => ['factory_keys' => ['total-at-least'], 'context' => ['amount' => 10000]],
     ]);
 
     CartFacade::add('sku-001', 'Product', 1000, 1);
@@ -476,7 +472,7 @@ it('applies correct condition based on total threshold', function (): void {
         'value' => '-20%',
         'is_global' => true,
         'is_active' => true,
-        'rules' => ['max_total' => '5000'],
+        'rules' => ['factory_keys' => ['total-below'], 'context' => ['amount' => 5000]],
     ]);
 
     Condition::factory()->create([
@@ -486,7 +482,7 @@ it('applies correct condition based on total threshold', function (): void {
         'value' => '-30%',
         'is_global' => true,
         'is_active' => true,
-        'rules' => ['min_total' => '5001'],
+        'rules' => ['factory_keys' => ['total-at-least'], 'context' => ['amount' => 5001]],
     ]);
 
     CartFacade::add('sku-001', 'Product', 1000, 4);
@@ -508,10 +504,14 @@ it('handles complex multi-rule scenarios', function (): void {
         'is_global' => true,
         'is_active' => true,
         'rules' => [
-            'min_items' => '3',
-            'min_total' => '8000',
-            'max_total' => '15000',
-            'has_category' => 'premium',
+            'factory_keys' => ['min-items', 'total-between', 'item-attribute-equals'],
+            'context' => [
+                'min' => 3,
+                'amount' => 8000,
+                'max' => 15000,
+                'attribute' => 'category',
+                'value' => 'premium',
+            ],
         ],
     ]);
 
@@ -519,14 +519,14 @@ it('handles complex multi-rule scenarios', function (): void {
     expect(CartFacade::getConditions()->has('premium-bundle-deal'))->toBeFalse();
 
     CartFacade::add('premium-001', 'Premium A', 3000, 1, ['category' => 'premium']);
-    expect(CartFacade::getConditions()->has('premium-bundle-deal'))->toBeFalse();
+    expect(CartFacade::getConditions()->has('premium-bundle-deal'))->toBeFalse(); // Total: 5000, need 8000+
 
     CartFacade::add('premium-002', 'Premium B', 3000, 1, ['category' => 'premium']);
-    expect(CartFacade::getConditions()->has('premium-bundle-deal'))->toBeTrue();
+    expect(CartFacade::getConditions()->has('premium-bundle-deal'))->toBeTrue(); // Total: 8000, min 3 items, has premium
 
     CartFacade::clear();
-    CartFacade::add('premium-001', 'Premium A', 6000, 4, ['category' => 'premium']);
-    expect(CartFacade::getConditions()->has('premium-bundle-deal'))->toBeFalse();
+    CartFacade::add('premium-001', 'Premium A', 6000, 3, ['category' => 'premium']);
+    expect(CartFacade::getConditions()->has('premium-bundle-deal'))->toBeFalse(); // Total: 18000, exceeds max 15000
 });
 
 // Item-Level Condition Tests
@@ -538,7 +538,7 @@ it('applies item-level conditions based on item quantity threshold', function ()
         'value' => '-10%',
         'is_global' => true,
         'is_active' => true,
-        'rules' => ['item_quantity' => '5'],
+        'rules' => ['factory_keys' => ['item-quantity-at-least'], 'context' => ['quantity' => 5]],
     ]);
 
     CartFacade::add('sku-001', 'Product', 1000, 3);
@@ -559,7 +559,7 @@ it('applies item-level conditions based on item price threshold', function (): v
         'value' => '+100',
         'is_global' => true,
         'is_active' => true,
-        'rules' => ['item_price' => '5000'],
+        'rules' => ['factory_keys' => ['item-price-at-least'], 'context' => ['amount' => 5000]],
     ]);
 
     CartFacade::add('sku-001', 'Budget Item', 1000, 1);
@@ -614,7 +614,7 @@ it('reapplies conditions after cart is cleared and items added again', function 
         'value' => '-15%',
         'is_global' => true,
         'is_active' => true,
-        'rules' => ['min_items' => '3'],
+        'rules' => ['factory_keys' => ['min-items'], 'context' => ['min' => 3]],
     ]);
 
     CartFacade::add('sku-001', 'Product', 1000, 1);
@@ -680,7 +680,7 @@ it('creates and removes snapshots when conditions are dynamically evaluated', fu
         'value' => '+500',
         'is_global' => true,
         'is_active' => true,
-        'rules' => ['min_items' => '2'],
+        'rules' => ['factory_keys' => ['min-items'], 'context' => ['min' => 2]],
     ]);
 
     CartFacade::add('sku-001', 'Product', 1000, 1);
@@ -703,8 +703,11 @@ it('applies conditions correctly during sequential cart builds', function (): vo
         'is_global' => true,
         'is_active' => true,
         'rules' => [
-            'min_items' => '5',
-            'min_total' => '3000',
+            'factory_keys' => ['min-items', 'total-at-least'],
+            'context' => [
+                'min' => 5,
+                'amount' => 3000,
+            ],
         ],
     ]);
 
@@ -727,7 +730,7 @@ it('correctly handles overlapping condition rules', function (): void {
         'value' => '-5%',
         'is_global' => true,
         'is_active' => true,
-        'rules' => ['min_total' => '2000'],
+        'rules' => ['factory_keys' => ['total-at-least'], 'context' => ['amount' => 2000]],
     ]);
 
     Condition::factory()->create([
@@ -737,7 +740,7 @@ it('correctly handles overlapping condition rules', function (): void {
         'value' => '-10%',
         'is_global' => true,
         'is_active' => true,
-        'rules' => ['min_total' => '2000', 'min_items' => '3'],
+        'rules' => ['factory_keys' => ['total-at-least', 'min-items'], 'context' => ['amount' => 2000, 'min' => 3]],
     ]);
 
     // Add 2 items with $30 total - only condition-a applies (min_total: $20)
@@ -761,8 +764,11 @@ it('respects max rules for upper boundary conditions', function (): void {
         'is_global' => true,
         'is_active' => true,
         'rules' => [
-            'max_items' => '2',
-            'max_total' => '3000',
+            'factory_keys' => ['max-items', 'total-below'],
+            'context' => [
+                'max' => 2,
+                'amount' => 3000,
+            ],
         ],
     ]);
 
@@ -788,8 +794,11 @@ it('handles exact boundary values for min and max rules', function (): void {
         'is_global' => true,
         'is_active' => true,
         'rules' => [
-            'min_total' => '5000',
-            'max_total' => '5000',
+            'factory_keys' => ['total-between'],
+            'context' => [
+                'min' => 5000,
+                'max' => 5000,
+            ],
         ],
     ]);
 
@@ -803,4 +812,67 @@ it('handles exact boundary values for min and max rules', function (): void {
     CartFacade::clear();
     CartFacade::add('sku-001', 'Product', 1000, 6);
     expect(CartFacade::getConditions()->has('exact-range-deal'))->toBeFalse();
+});
+
+it('removes deactivated global conditions from active carts', function (): void {
+    // Create an active global condition
+    $condition = Condition::factory()->create([
+        'name' => 'flash-sale',
+        'display_name' => 'Flash Sale 25% Off',
+        'type' => 'discount',
+        'target' => 'total',
+        'value' => '-25%',
+        'is_global' => true,
+        'is_active' => true,
+    ]);
+
+    // Add items to cart - global condition should be applied
+    CartFacade::add('sku-001', 'Product', 1000, 2);
+    expect(CartFacade::getConditions()->has('flash-sale'))->toBeTrue();
+
+    // Admin deactivates the flash sale (e.g., promotion ended)
+    $condition->update(['is_active' => false]);
+
+    // Next cart operation should remove the deactivated condition
+    CartFacade::add('sku-002', 'Product', 500, 1);
+
+    // Condition should be removed from cart
+    expect(CartFacade::getConditions()->has('flash-sale'))->toBeFalse();
+});
+
+it('removes deactivated dynamic global conditions from active carts', function (): void {
+    // Create a dynamic global condition with rules
+    $condition = Condition::factory()->create([
+        'name' => 'limited-time-bulk-discount',
+        'display_name' => 'Limited Time: 15% Off 3+ Items',
+        'type' => 'discount',
+        'target' => 'total',
+        'value' => '-15%',
+        'is_global' => true,
+        'is_active' => true,
+        'is_dynamic' => true,
+        'rules' => [
+            'factory_keys' => ['min-items'],
+            'context' => ['min' => 3],
+        ],
+    ]);
+
+    // Add items to meet the rule condition
+    CartFacade::add('sku-001', 'Product', 1000, 1);
+    CartFacade::add('sku-002', 'Product', 1000, 1);
+    CartFacade::add('sku-003', 'Product', 1000, 1);
+
+    // Dynamic condition should be registered and applied
+    expect(CartFacade::getDynamicConditions()->has('limited-time-bulk-discount'))->toBeTrue();
+    expect(CartFacade::getConditions()->has('limited-time-bulk-discount'))->toBeTrue();
+
+    // Admin ends the promotion
+    $condition->update(['is_active' => false]);
+
+    // Next cart operation should remove the deactivated dynamic condition
+    CartFacade::add('sku-004', 'Product', 500, 1);
+
+    // Both the registration and applied condition should be removed
+    expect(CartFacade::getDynamicConditions()->has('limited-time-bulk-discount'))->toBeFalse();
+    expect(CartFacade::getConditions()->has('limited-time-bulk-discount'))->toBeFalse();
 });

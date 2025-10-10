@@ -37,6 +37,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Dynamic Rule Factory
+    |--------------------------------------------------------------------------
+    |
+    | Controls which rules factory is used when Filament resolves cart
+    | instances. The default leverages the built-in cart package factory to
+    | hydrate persisted dynamic condition rules.
+    |
+    */
+    'dynamic_rules_factory' => MasyukAI\Cart\Services\BuiltInRulesFactory::class,
+
+    /*
+    |--------------------------------------------------------------------------
     | Event Synchronization
     |--------------------------------------------------------------------------
     |

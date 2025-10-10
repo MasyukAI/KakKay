@@ -59,6 +59,14 @@ final class CartConditionRemoved
     }
 
     /**
+     * Backwards-compatible accessor for the removed condition instance.
+     */
+    public function condition(): CartCondition
+    {
+        return $this->condition;
+    }
+
+    /**
      * Get event data for broadcasting or logging
      *
      * @return array<string, mixed>

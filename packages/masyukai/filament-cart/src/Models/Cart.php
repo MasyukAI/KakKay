@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Log;
 use MasyukAI\Cart\Cart as BaseCart;
-use MasyukAI\Cart\Facades\Cart as CartFacade;
+use MasyukAI\FilamentCart\Services\CartInstanceManager;
 use Throwable;
 
 /**
@@ -81,7 +81,7 @@ class Cart extends Model
     public function getCartInstance(): ?BaseCart
     {
         try {
-            return CartFacade::getCartInstance($this->instance, $this->identifier);
+            return app(CartInstanceManager::class)->resolve($this->instance, $this->identifier);
         } catch (Throwable $exception) {
             Log::warning('Failed to resolve cart instance', [
                 'identifier' => $this->identifier,

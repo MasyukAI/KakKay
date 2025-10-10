@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MasyukAI\FilamentCart\Resources\ConditionResource\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
+use MasyukAI\FilamentCart\Models\Condition;
 use MasyukAI\FilamentCart\Resources\ConditionResource;
 
 final class CreateCondition extends CreateRecord
@@ -13,8 +14,11 @@ final class CreateCondition extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        // The model's computeDerivedFields() method will run automatically
-        // via the saving event, but we ensure the data is clean here
+        $data['rules'] = Condition::normalizeRulesDefinition(
+            $data['rules'] ?? null,
+            ! empty($data['rules']['factory_keys'] ?? [])
+        );
+
         return $data;
     }
 

@@ -17,9 +17,9 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use MasyukAI\Cart\Facades\Cart as CartFacade;
 use MasyukAI\FilamentCart\Models\Cart;
 use MasyukAI\FilamentCart\Resources\CartResource;
+use MasyukAI\FilamentCart\Services\CartInstanceManager;
 
 final class CartsTable
 {
@@ -145,8 +145,9 @@ final class CartsTable
                         ->requiresConfirmation()
                         ->action(function (Cart $record): void {
                             /** @phpstan-ignore property.notFound */
-                            $cart = CartFacade::getCartInstance($record->instance, $record->identifier);
-                            $cart->clear();
+                            app(CartInstanceManager::class)
+                                ->resolve($record->instance, $record->identifier)
+                                ->clear();
                         })
                         ->visible(fn (Cart $record): bool => /** @phpstan-ignore property.notFound */ $record->items_count > 0)
                         ->successNotificationTitle('Cart cleared'),
@@ -159,7 +160,8 @@ final class CartsTable
                     DeleteAction::make()
                         ->icon(Heroicon::OutlinedXMark)
                         ->using(function (Cart $record): void {
-                            $cart = CartFacade::getCartInstance($record->instance, $record->identifier);
+                            $cart = app(CartInstanceManager::class)
+                                ->resolve($record->instance, $record->identifier);
                             $cart->clear();
                             $record->delete();
                         })
@@ -178,8 +180,9 @@ final class CartsTable
                         /** @var Collection<int|string, Cart> $records */
                         $records->each(function (Cart $record): void {
                             /** @phpstan-ignore property.notFound */
-                            $cart = CartFacade::getCartInstance($record->instance, $record->identifier);
-                            $cart->clear();
+                            app(CartInstanceManager::class)
+                                ->resolve($record->instance, $record->identifier)
+                                ->clear();
                         });
                     }),
 
@@ -192,7 +195,8 @@ final class CartsTable
                         /** @var Collection<int|string, Cart> $records */
                         $records->each(function (Cart $record): void {
                             /** @phpstan-ignore property.notFound */
-                            $cart = CartFacade::getCartInstance($record->instance, $record->identifier);
+                            $cart = app(CartInstanceManager::class)
+                                ->resolve($record->instance, $record->identifier);
                             $cart->clear();
                             $record->delete();
                         });

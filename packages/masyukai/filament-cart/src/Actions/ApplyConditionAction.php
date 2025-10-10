@@ -8,15 +8,15 @@ use Exception;
 use Filament\Actions\Action;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Support\Icons\Heroicon;
-use MasyukAI\Cart\Facades\Cart;
+use Illuminate\Support\Str;
+use MasyukAI\Cart\Contracts\RulesFactoryInterface;
 use MasyukAI\FilamentCart\Models\Cart as CartModel;
 use MasyukAI\FilamentCart\Models\Condition;
-use MasyukAI\FilamentCart\Services\RuleConverter;
+use MasyukAI\FilamentCart\Services\CartInstanceManager;
 
 final class ApplyConditionAction extends Action
 {
@@ -62,7 +62,8 @@ final class ApplyConditionAction extends Action
 
                 try {
                     // Get a cart instance for this specific cart record
-                    $cartInstance = Cart::getCartInstance($cart->instance, $cart->identifier);
+                    $cartInstance = app(CartInstanceManager::class)
+                        ->resolve($cart->instance, $cart->identifier);
 
                     // Create condition from stored definition
                     $condition = $conditionModel->createCondition($customName);
@@ -130,7 +131,8 @@ final class ApplyConditionAction extends Action
                 try {
                     // Get the cart and item
                     $cart = $record->cart;
-                    $cartInstance = Cart::getCartInstance($cart->instance, $cart->identifier);
+                    $cartInstance = app(CartInstanceManager::class)
+                        ->resolve($cart->instance, $cart->identifier);
 
                     // Create condition from stored definition
                     $condition = $conditionModel->createCondition($customName);
@@ -225,12 +227,31 @@ final class ApplyConditionAction extends Action
                     ->reactive()
                     ->default(false),
 
-                Textarea::make('rules')
-                    ->label('Dynamic Rules (JSON)')
-                    ->placeholder('{"min_items": 3, "min_total": 100}')
-                    ->helperText('JSON rules for auto-applying this condition')
+                Select::make('dynamic_rules.factory_keys')
+                    ->label('Dynamic Rule Keys')
+                    ->options(self::ruleOptions())
+                    ->helperText('Select the built-in rule factories that should govern this condition.')
+                    ->placeholder('Select rule keys')
+                    ->multiple()
+                    ->searchable()
                     ->visible(fn ($get) => $get('is_dynamic'))
-                    ->rows(3),
+                    ->default([]),
+
+                KeyValue::make('dynamic_rules.context')
+                    ->label('Rule Context Values')
+                    ->keyLabel('Parameter')
+                    ->valueLabel('Value')
+                    ->helperText('Provide context values for the selected rules. Use JSON or comma-separated lists for multiple values.')
+                    ->addActionLabel('Add Context Value')
+                    ->columnSpanFull()
+                    ->keyPlaceholder('e.g., min, amount, ids')
+                    ->valuePlaceholder('e.g., 3 or ["VIP","GOLD"]')
+                    ->hint(static fn (): string => 'Available keys: '.self::ruleOptionsHint())
+                    ->hintIcon('heroicon-m-information-circle')
+                    ->reorderable(false)
+                    ->default([])
+                    ->visible(fn ($get) => $get('is_dynamic'))
+                    ->dehydrated(fn ($get): bool => $get('is_dynamic') && ! empty($get('dynamic_rules.factory_keys'))),
 
                 KeyValue::make('attributes')
                     ->label('Custom Attributes')
@@ -245,16 +266,29 @@ final class ApplyConditionAction extends Action
 
                 try {
                     // Get a cart instance for this specific cart record
-                    $cartInstance = Cart::getCartInstance($cart->instance, $cart->identifier);
+                    $cartInstance = app(CartInstanceManager::class)
+                        ->resolve($cart->instance, $cart->identifier);
 
-                    // Parse and convert rules if provided
+                    $rulesDefinition = Condition::normalizeRulesDefinition(
+                        $data['dynamic_rules'] ?? null,
+                        ! empty($data['is_dynamic'])
+                    );
+
                     $rules = null;
-                    if (! empty($data['is_dynamic']) && ! empty($data['rules'])) {
-                        $parsedRules = json_decode($data['rules'], true);
-                        if (json_last_error() !== JSON_ERROR_NONE) {
-                            throw new Exception('Invalid JSON format for rules');
+                    if ($rulesDefinition !== null) {
+                        $rulesFactory = app(RulesFactoryInterface::class);
+                        $rules = [];
+
+                        foreach ($rulesDefinition['factory_keys'] as $factoryKey) {
+                            if (! $rulesFactory->canCreateRules($factoryKey)) {
+                                throw new Exception("Unsupported rule factory key [{$factoryKey}]");
+                            }
+
+                            $rules = array_merge(
+                                $rules,
+                                $rulesFactory->createRules($factoryKey, ['context' => $rulesDefinition['context']])
+                            );
                         }
-                        $rules = RuleConverter::convertRules($parsedRules);
                     }
 
                     // Merge custom attributes with source marker
@@ -274,8 +308,20 @@ final class ApplyConditionAction extends Action
                         rules: $rules
                     );
 
-                    // Apply condition to cart
-                    $cartInstance->addCondition($condition);
+                    // Apply or register the condition based on dynamic rules
+                    if ($rulesDefinition !== null) {
+                        $factoryKeys = $rulesDefinition['factory_keys'];
+
+                        $cartInstance->registerDynamicCondition(
+                            $condition,
+                            ruleFactoryKey: count($factoryKeys) === 1 ? $factoryKeys[0] : $factoryKeys,
+                            metadata: [
+                                'context' => $rulesDefinition['context'],
+                            ]
+                        );
+                    } else {
+                        $cartInstance->addCondition($condition);
+                    }
 
                     Notification::make()
                         ->title('Custom Condition Applied')
@@ -291,5 +337,24 @@ final class ApplyConditionAction extends Action
                         ->send();
                 }
             });
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private static function ruleOptions(): array
+    {
+        $factory = app(RulesFactoryInterface::class);
+
+        return collect($factory->getAvailableKeys())
+            ->mapWithKeys(static fn (string $key): array => [
+                $key => Str::headline(str_replace('-', ' ', $key)),
+            ])
+            ->all();
+    }
+
+    private static function ruleOptionsHint(): string
+    {
+        return collect(self::ruleOptions())->keys()->implode(', ');
     }
 }

@@ -4,14 +4,26 @@ declare(strict_types=1);
 
 namespace MasyukAI\FilamentCart\Listeners;
 
+use InvalidArgumentException;
+use MasyukAI\Cart\Conditions\CartCondition;
+use MasyukAI\Cart\Contracts\RulesFactoryInterface;
 use MasyukAI\Cart\Events\CartCreated;
+use MasyukAI\Cart\Events\ItemAdded;
+use MasyukAI\Cart\Events\ItemRemoved;
+use MasyukAI\Cart\Events\ItemUpdated;
 use MasyukAI\FilamentCart\Models\Condition;
-use MasyukAI\FilamentCart\Services\RuleConverter;
+use MasyukAI\FilamentCart\Services\CartInstanceManager;
 
 final class ApplyGlobalConditions
 {
+    /**
+     * Track if we're currently applying conditions to prevent infinite recursion
+     */
+    private static bool $applying = false;
+
     public function __construct(
-        private RuleConverter $ruleConverter
+        private RulesFactoryInterface $rulesFactory,
+        private CartInstanceManager $cartInstances,
     ) {}
 
     /**
@@ -22,17 +34,27 @@ final class ApplyGlobalConditions
         if (! config('filament-cart.enable_global_conditions', true)) {
             return;
         }
+
+        if (self::$applying) {
+            return;
+        }
+
         $this->applyGlobalConditions($event->cart);
     }
 
     /**
-     * Handle cart updated event.
+     * Handle item changed events (added, updated, removed).
      */
-    public function handleCartUpdated(\MasyukAI\Cart\Events\CartUpdated $event): void
+    public function handleItemChanged(ItemAdded|ItemUpdated|ItemRemoved $event): void
     {
         if (! config('filament-cart.enable_global_conditions', true)) {
             return;
         }
+
+        if (self::$applying) {
+            return;
+        }
+
         $this->applyGlobalConditions($event->cart);
     }
 
@@ -41,56 +63,138 @@ final class ApplyGlobalConditions
      */
     private function applyGlobalConditions(\MasyukAI\Cart\Cart $cart): void
     {
-        $globalConditions = Condition::global()->get();
-        $hasDynamicConditions = false;
+        self::$applying = true;
 
-        foreach ($globalConditions as $condition) {
-            // Build condition data
-            $conditionData = [
-                'name' => $condition->name,
-                'type' => $condition->type,
-                'target' => $condition->target,
-                'value' => $condition->value,
-                'order' => $condition->order,
-                'attributes' => [
-                    'display_name' => $condition->display_name,
-                    'description' => $condition->description,
-                    'is_global' => true,
-                ],
-            ];
+        try {
+            $cart = $this->cartInstances->prepare($cart);
 
-            // Instantiate CartCondition
-            $cartConditionClass = \MasyukAI\Cart\Conditions\CartCondition::class;
+            // Remove deactivated global conditions from cart
+            $this->removeDeactivatedGlobalConditions($cart);
 
-            // Handle dynamic vs static conditions differently
-            if ($condition->isDynamic()) {
-                $hasDynamicConditions = true;
+            $globalConditions = Condition::global()->get();
+            foreach ($globalConditions as $condition) {
+                // Build condition data
+                $conditionData = [
+                    'name' => $condition->name,
+                    'type' => $condition->type,
+                    'target' => $condition->target,
+                    'value' => $condition->value,
+                    'order' => $condition->order,
+                    'attributes' => [
+                        'display_name' => $condition->display_name,
+                        'description' => $condition->description,
+                        'is_global' => true,
+                    ],
+                ];
 
-                // Convert rules to callables
-                $rules = $this->ruleConverter::convertRules($condition->rules);
-                $conditionData['rules'] = $rules;
+                // Instantiate CartCondition
+                $cartConditionClass = CartCondition::class;
 
-                // Create dynamic condition with rules
-                $cartCondition = $cartConditionClass::fromArray($conditionData);
+                // Handle dynamic vs static conditions differently
+                if ($condition->isDynamic()) {
+                    $factoryKeys = $condition->getRuleFactoryKeys();
 
-                // Check if already registered as dynamic condition
-                if (! $cart->getDynamicConditions()->has($condition->name)) {
-                    // Register as dynamic condition for automatic evaluation
-                    // Note: registerDynamicCondition() automatically calls evaluateDynamicConditions()
-                    $cart->registerDynamicCondition($cartCondition);
-                }
-            } else {
-                // Static condition - add only if not already present
-                if (! $cart->getConditions()->has($condition->name)) {
+                    if ($factoryKeys === []) {
+                        continue;
+                    }
+
+                    $context = $condition->getRuleContext();
+                    $rules = $this->buildRuleCallables($factoryKeys, $context);
+                    $conditionData['rules'] = $rules;
+
                     $cartCondition = $cartConditionClass::fromArray($conditionData);
-                    $cart->addCondition($cartCondition);
+
+                    if (! $cart->getDynamicConditions()->has($condition->name)) {
+                        $cart->registerDynamicCondition(
+                            $cartCondition,
+                            ruleFactoryKey: count($factoryKeys) === 1 ? $factoryKeys[0] : $factoryKeys,
+                            metadata: [
+                                'context' => $context,
+                            ]
+                        );
+                    }
+                } else {
+                    // Static condition - add only if not already present
+                    if (! $cart->getConditions()->has($condition->name)) {
+                        $cartCondition = $cartConditionClass::fromArray($conditionData);
+                        $cart->addCondition($cartCondition);
+                    }
                 }
+            }
+        } finally {
+            self::$applying = false;
+        }
+    }
+
+    /**
+     * Remove global conditions that have been deactivated.
+     * This ensures time-limited promotions are removed from active carts when they expire.
+     */
+    private function removeDeactivatedGlobalConditions(\MasyukAI\Cart\Cart $cart): void
+    {
+        // Get all condition names that are currently marked as global in the cart
+        $globalConditionNames = [];
+
+        // Check cart-level conditions
+        foreach ($cart->getConditions() as $condition) {
+            if ($condition->getAttribute('is_global') === true) {
+                $globalConditionNames[] = $condition->getName();
             }
         }
 
-        // Re-evaluate all dynamic conditions after registration to ensure they're applied/removed correctly
-        if ($hasDynamicConditions && method_exists($cart, 'evaluateDynamicConditions')) {
-            $cart->evaluateDynamicConditions();
+        // Check dynamic conditions (they're stored separately)
+        foreach ($cart->getDynamicConditions() as $dynamicCondition) {
+            if ($dynamicCondition->getAttribute('is_global') === true) {
+                $globalConditionNames[] = $dynamicCondition->getName();
+            }
         }
+
+        if ($globalConditionNames === []) {
+            return; // No global conditions in cart, nothing to check
+        }
+
+        // Get names of currently active global conditions from database
+        $activeGlobalNames = Condition::global()
+            ->pluck('name')
+            ->toArray();
+
+        // Find conditions that are marked as global in cart but no longer active in database
+        $deactivatedConditionNames = array_diff($globalConditionNames, $activeGlobalNames);
+
+        // Remove deactivated conditions from cart
+        foreach ($deactivatedConditionNames as $conditionName) {
+            // Try removing from regular conditions
+            if ($cart->getConditions()->has($conditionName)) {
+                $cart->removeCondition($conditionName);
+            }
+
+            // Try removing from dynamic conditions
+            if ($cart->getDynamicConditions()->has($conditionName)) {
+                $cart->removeDynamicCondition($conditionName);
+            }
+        }
+    }
+
+    /**
+     * @param  array<int, string>  $factoryKeys
+     * @param  array<string, mixed>  $context
+     * @return array<callable>
+     */
+    private function buildRuleCallables(array $factoryKeys, array $context): array
+    {
+        $rules = [];
+
+        foreach ($factoryKeys as $factoryKey) {
+            if (! $this->rulesFactory->canCreateRules($factoryKey)) {
+                throw new InvalidArgumentException("Unsupported rule factory key [{$factoryKey}]");
+            }
+
+            $rules = array_merge(
+                $rules,
+                $this->rulesFactory->createRules($factoryKey, ['context' => $context])
+            );
+        }
+
+        return $rules;
     }
 }
