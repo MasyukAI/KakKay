@@ -16,6 +16,35 @@ class Invoice extends Document
 {
     protected $table = 'documents';
 
+    // Support both old and new field names
+    protected $fillable = [
+        'document_number',
+        'invoice_number',
+        'document_type',
+        'document_template_id',
+        'invoice_template_id',
+        'documentable_type',
+        'documentable_id',
+        'invoiceable_type',
+        'invoiceable_id',
+        'status',
+        'issue_date',
+        'due_date',
+        'paid_at',
+        'subtotal',
+        'tax_amount',
+        'discount_amount',
+        'total',
+        'currency',
+        'notes',
+        'terms',
+        'customer_data',
+        'company_data',
+        'items',
+        'metadata',
+        'pdf_path',
+    ];
+
     protected static function booted(): void
     {
         parent::booted();

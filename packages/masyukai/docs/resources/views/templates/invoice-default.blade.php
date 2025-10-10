@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice {{ $invoice->invoice_number }}</title>
+    @php
+        // Support both invoice and document variables for backward compatibility
+        $doc = $document ?? $invoice;
+        $docNumber = $doc->document_number ?? $doc->invoice_number ?? 'N/A';
+    @endphp
+    <title>Invoice {{ $docNumber }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-white">
@@ -12,30 +17,30 @@
         <div class="mb-8 flex items-start justify-between">
             <div>
                 <h1 class="text-4xl font-bold text-gray-900">INVOICE</h1>
-                <p class="mt-2 text-sm text-gray-600">{{ $invoice->invoice_number }}</p>
+                <p class="mt-2 text-sm text-gray-600">{{ $docNumber }}</p>
             </div>
-            @if($invoice->company_data)
+            @if($doc->company_data)
             <div class="text-right">
-                <p class="font-semibold text-gray-900">{{ $invoice->company_data['name'] ?? '' }}</p>
-                @if(!empty($invoice->company_data['address']))
-                <p class="text-sm text-gray-600">{{ $invoice->company_data['address'] ?? '' }}</p>
+                <p class="font-semibold text-gray-900">{{ $doc->company_data['name'] ?? '' }}</p>
+                @if(!empty($doc->company_data['address']))
+                <p class="text-sm text-gray-600">{{ $doc->company_data['address'] ?? '' }}</p>
                 @endif
-                @if(!empty($invoice->company_data['city']))
+                @if(!empty($doc->company_data['city']))
                 <p class="text-sm text-gray-600">
-                    {{ $invoice->company_data['city'] ?? '' }}
-                    @if(!empty($invoice->company_data['state']))
-                    , {{ $invoice->company_data['state'] }}
+                    {{ $doc->company_data['city'] ?? '' }}
+                    @if(!empty($doc->company_data['state']))
+                    , {{ $doc->company_data['state'] }}
                     @endif
-                    @if(!empty($invoice->company_data['postal_code']))
-                    {{ $invoice->company_data['postal_code'] }}
+                    @if(!empty($doc->company_data['postal_code']))
+                    {{ $doc->company_data['postal_code'] }}
                     @endif
                 </p>
                 @endif
-                @if(!empty($invoice->company_data['email']))
-                <p class="text-sm text-gray-600">{{ $invoice->company_data['email'] }}</p>
+                @if(!empty($doc->company_data['email']))
+                <p class="text-sm text-gray-600">{{ $doc->company_data['email'] }}</p>
                 @endif
-                @if(!empty($invoice->company_data['phone']))
-                <p class="text-sm text-gray-600">{{ $invoice->company_data['phone'] }}</p>
+                @if(!empty($doc->company_data['phone']))
+                <p class="text-sm text-gray-600">{{ $doc->company_data['phone'] }}</p>
                 @endif
             </div>
             @endif
@@ -44,30 +49,30 @@
         <!-- Invoice Details -->
         <div class="mb-8 grid grid-cols-2 gap-8">
             <!-- Bill To -->
-            @if($invoice->customer_data)
+            @if($doc->customer_data)
             <div>
                 <h2 class="mb-2 text-sm font-semibold uppercase text-gray-600">Bill To</h2>
                 <div class="text-sm">
-                    <p class="font-semibold text-gray-900">{{ $invoice->customer_data['name'] ?? '' }}</p>
-                    @if(!empty($invoice->customer_data['email']))
-                    <p class="text-gray-600">{{ $invoice->customer_data['email'] }}</p>
+                    <p class="font-semibold text-gray-900">{{ $doc->customer_data['name'] ?? '' }}</p>
+                    @if(!empty($doc->customer_data['email']))
+                    <p class="text-gray-600">{{ $doc->customer_data['email'] }}</p>
                     @endif
-                    @if(!empty($invoice->customer_data['address']))
-                    <p class="text-gray-600">{{ $invoice->customer_data['address'] }}</p>
+                    @if(!empty($doc->customer_data['address']))
+                    <p class="text-gray-600">{{ $doc->customer_data['address'] }}</p>
                     @endif
-                    @if(!empty($invoice->customer_data['city']))
+                    @if(!empty($doc->customer_data['city']))
                     <p class="text-gray-600">
-                        {{ $invoice->customer_data['city'] }}
-                        @if(!empty($invoice->customer_data['state']))
-                        , {{ $invoice->customer_data['state'] }}
+                        {{ $doc->customer_data['city'] }}
+                        @if(!empty($doc->customer_data['state']))
+                        , {{ $doc->customer_data['state'] }}
                         @endif
-                        @if(!empty($invoice->customer_data['postal_code']))
-                        {{ $invoice->customer_data['postal_code'] }}
+                        @if(!empty($doc->customer_data['postal_code']))
+                        {{ $doc->customer_data['postal_code'] }}
                         @endif
                     </p>
                     @endif
-                    @if(!empty($invoice->customer_data['phone']))
-                    <p class="text-gray-600">{{ $invoice->customer_data['phone'] }}</p>
+                    @if(!empty($doc->customer_data['phone']))
+                    <p class="text-gray-600">{{ $doc->customer_data['phone'] }}</p>
                     @endif
                 </div>
             </div>
@@ -79,23 +84,23 @@
                 <div class="space-y-1 text-sm">
                     <div class="flex justify-between">
                         <span class="text-gray-600">Issue Date:</span>
-                        <span class="font-medium text-gray-900">{{ $invoice->issue_date->format('M d, Y') }}</span>
+                        <span class="font-medium text-gray-900">{{ $doc->issue_date->format('M d, Y') }}</span>
                     </div>
-                    @if($invoice->due_date)
+                    @if($doc->due_date)
                     <div class="flex justify-between">
                         <span class="text-gray-600">Due Date:</span>
-                        <span class="font-medium text-gray-900">{{ $invoice->due_date->format('M d, Y') }}</span>
+                        <span class="font-medium text-gray-900">{{ $doc->due_date->format('M d, Y') }}</span>
                     </div>
                     @endif
                     <div class="flex justify-between">
                         <span class="text-gray-600">Status:</span>
                         <span class="rounded-full px-2 py-1 text-xs font-semibold
-                            @if($invoice->status->value === 'paid') bg-green-100 text-green-800
-                            @elseif($invoice->status->value === 'pending' || $invoice->status->value === 'sent') bg-blue-100 text-blue-800
-                            @elseif($invoice->status->value === 'overdue') bg-red-100 text-red-800
+                            @if($doc->status->value === 'paid') bg-green-100 text-green-800
+                            @elseif($doc->status->value === 'pending' || $doc->status->value === 'sent') bg-blue-100 text-blue-800
+                            @elseif($doc->status->value === 'overdue') bg-red-100 text-red-800
                             @else bg-gray-100 text-gray-800
                             @endif">
-                            {{ $invoice->status->label() }}
+                            {{ $doc->status->label() }}
                         </span>
                     </div>
                 </div>
@@ -114,7 +119,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($invoice->items as $item)
+                    @foreach($doc->items as $item)
                     <tr class="border-b border-gray-200">
                         <td class="py-3 text-sm text-gray-900">
                             <div class="font-medium">{{ $item['name'] ?? $item['description'] ?? '' }}</div>
@@ -123,8 +128,8 @@
                             @endif
                         </td>
                         <td class="py-3 text-right text-sm text-gray-900">{{ $item['quantity'] ?? 1 }}</td>
-                        <td class="py-3 text-right text-sm text-gray-900">{{ $invoice->currency }} {{ number_format($item['price'] ?? 0, 2) }}</td>
-                        <td class="py-3 text-right text-sm font-medium text-gray-900">{{ $invoice->currency }} {{ number_format(($item['quantity'] ?? 1) * ($item['price'] ?? 0), 2) }}</td>
+                        <td class="py-3 text-right text-sm text-gray-900">{{ $doc->currency }} {{ number_format($item['price'] ?? 0, 2) }}</td>
+                        <td class="py-3 text-right text-sm font-medium text-gray-900">{{ $doc->currency }} {{ number_format(($item['quantity'] ?? 1) * ($item['price'] ?? 0), 2) }}</td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -137,41 +142,41 @@
                 <div class="space-y-2">
                     <div class="flex justify-between text-sm">
                         <span class="text-gray-600">Subtotal:</span>
-                        <span class="text-gray-900">{{ $invoice->currency }} {{ number_format($invoice->subtotal, 2) }}</span>
+                        <span class="text-gray-900">{{ $doc->currency }} {{ number_format($doc->subtotal, 2) }}</span>
                     </div>
-                    @if($invoice->tax_amount > 0)
+                    @if($doc->tax_amount > 0)
                     <div class="flex justify-between text-sm">
                         <span class="text-gray-600">Tax:</span>
-                        <span class="text-gray-900">{{ $invoice->currency }} {{ number_format($invoice->tax_amount, 2) }}</span>
+                        <span class="text-gray-900">{{ $doc->currency }} {{ number_format($doc->tax_amount, 2) }}</span>
                     </div>
                     @endif
-                    @if($invoice->discount_amount > 0)
+                    @if($doc->discount_amount > 0)
                     <div class="flex justify-between text-sm">
                         <span class="text-gray-600">Discount:</span>
-                        <span class="text-gray-900">-{{ $invoice->currency }} {{ number_format($invoice->discount_amount, 2) }}</span>
+                        <span class="text-gray-900">-{{ $doc->currency }} {{ number_format($doc->discount_amount, 2) }}</span>
                     </div>
                     @endif
                     <div class="flex justify-between border-t-2 border-gray-900 pt-2 text-lg font-bold">
                         <span class="text-gray-900">Total:</span>
-                        <span class="text-gray-900">{{ $invoice->currency }} {{ number_format($invoice->total, 2) }}</span>
+                        <span class="text-gray-900">{{ $doc->currency }} {{ number_format($doc->total, 2) }}</span>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Notes -->
-        @if($invoice->notes)
+        @if($doc->notes)
         <div class="mb-8">
             <h3 class="mb-2 text-sm font-semibold uppercase text-gray-600">Notes</h3>
-            <p class="text-sm text-gray-600">{{ $invoice->notes }}</p>
+            <p class="text-sm text-gray-600">{{ $doc->notes }}</p>
         </div>
         @endif
 
         <!-- Terms -->
-        @if($invoice->terms)
+        @if($doc->terms)
         <div class="mb-8">
             <h3 class="mb-2 text-sm font-semibold uppercase text-gray-600">Terms & Conditions</h3>
-            <p class="text-sm text-gray-600">{{ $invoice->terms }}</p>
+            <p class="text-sm text-gray-600">{{ $doc->terms }}</p>
         </div>
         @endif
 
