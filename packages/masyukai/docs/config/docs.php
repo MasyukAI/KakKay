@@ -15,7 +15,7 @@ return [
 
     'types' => [
         'invoice' => [
-            'default_template' => 'invoice-default',
+            'default_template' => 'document-default',
             'number_format' => [
                 'prefix' => 'INV',
                 'year_format' => 'y',
@@ -23,17 +23,17 @@ return [
                 'suffix_length' => 6,
             ],
             'storage' => [
-                'disk' => env('INVOICE_STORAGE_DISK', 'local'),
-                'path' => env('INVOICE_STORAGE_PATH', 'invoices'),
+                'disk' => env('DOCS_STORAGE_DISK', 'local'),
+                'path' => env('DOCS_STORAGE_PATH', 'documents/invoices'),
             ],
             'defaults' => [
-                'currency' => env('INVOICE_CURRENCY', 'MYR'),
-                'tax_rate' => env('INVOICE_TAX_RATE', 0),
-                'due_days' => env('INVOICE_DUE_DAYS', 30),
+                'currency' => env('DOCS_CURRENCY', 'MYR'),
+                'tax_rate' => env('DOCS_TAX_RATE', 0),
+                'due_days' => env('DOCS_DUE_DAYS', 30),
             ],
         ],
         'receipt' => [
-            'default_template' => 'receipt-default',
+            'default_template' => 'document-default',
             'number_format' => [
                 'prefix' => 'RCP',
                 'year_format' => 'y',
@@ -41,11 +41,11 @@ return [
                 'suffix_length' => 6,
             ],
             'storage' => [
-                'disk' => env('RECEIPT_STORAGE_DISK', 'local'),
-                'path' => env('RECEIPT_STORAGE_PATH', 'receipts'),
+                'disk' => env('DOCS_STORAGE_DISK', 'local'),
+                'path' => env('DOCS_STORAGE_PATH', 'documents/receipts'),
             ],
             'defaults' => [
-                'currency' => env('RECEIPT_CURRENCY', 'MYR'),
+                'currency' => env('DOCS_CURRENCY', 'MYR'),
             ],
         ],
     ],

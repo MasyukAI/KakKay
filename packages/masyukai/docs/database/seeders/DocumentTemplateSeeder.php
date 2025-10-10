@@ -12,10 +12,10 @@ class DocumentTemplateSeeder extends Seeder
     public function run(): void
     {
         DocumentTemplate::create([
-            'name' => 'Default Invoice Template',
-            'slug' => 'invoice-default',
-            'description' => 'Clean and professional default invoice template with Tailwind CSS',
-            'view_name' => 'invoice-default',
+            'name' => 'Default Document Template',
+            'slug' => 'document-default',
+            'description' => 'Clean and professional default document template with Tailwind CSS',
+            'view_name' => 'document-default',
             'document_type' => 'invoice',
             'is_default' => true,
             'settings' => [
