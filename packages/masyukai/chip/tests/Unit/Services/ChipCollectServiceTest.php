@@ -415,7 +415,7 @@ describe('ChipCollectService Purchase Management', function (): void {
     });
 
     it('automatically uses configured brand_id and currency for payment methods', function (): void {
-        config(['chip.collect.currency' => 'MYR']);
+        config(['chip.defaults.currency' => 'MYR']);
 
         $paymentMethods = [
             'available_payment_methods' => ['fpx', 'visa'],
@@ -435,7 +435,7 @@ describe('ChipCollectService Purchase Management', function (): void {
     });
 
     it('allows overriding brand_id and currency for payment methods', function (): void {
-        config(['chip.collect.currency' => 'MYR']);
+        config(['chip.defaults.currency' => 'MYR']);
 
         $paymentMethods = [
             'available_payment_methods' => ['visa'],
@@ -454,7 +454,7 @@ describe('ChipCollectService Purchase Management', function (): void {
     });
 
     it('uses cache repository when available for payment methods', function (): void {
-        config(['chip.collect.currency' => 'MYR']);
+        config(['chip.defaults.currency' => 'MYR']);
 
         $cache = Mockery::mock(CacheRepository::class);
         $service = new ChipCollectService($this->client, $cache);

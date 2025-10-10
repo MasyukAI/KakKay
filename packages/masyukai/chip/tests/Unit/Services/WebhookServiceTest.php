@@ -146,4 +146,27 @@ describe('WebhookService', function (): void {
             app()->instance(ChipCollectService::class, $originalCollect);
         }
     });
+
+    it('prevents disabling signature verification in production', function (): void {
+        // Temporarily set the app environment to production
+        $originalEnv = app()->environment();
+
+        // Force the environment to production for this test
+        app()->bind('env', fn () => 'production');
+
+        try {
+            // Verify we're actually in production
+            expect(app()->environment())->toBe('production');
+
+            // Try to disable signature verification
+            config()->set('chip.webhooks.verify_signature', false);
+
+            // Should throw an exception
+            expect(fn () => $this->webhookService->verifySignature('payload'))
+                ->toThrow(WebhookVerificationException::class, 'Signature verification cannot be disabled in production environment');
+        } finally {
+            // Restore original environment
+            app()->bind('env', fn () => $originalEnv);
+        }
+    });
 });

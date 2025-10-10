@@ -25,7 +25,16 @@ class WebhookService
             $payload = (string) $payloadOrRequest;
         }
 
-        if (! config('chip.webhooks.verify_signature')) {
+        // Always verify signatures in production for security
+        // Only allow disabling in non-production environments (testing, development)
+        $shouldVerify = config('chip.webhooks.verify_signature', true);
+        $isProduction = app()->environment('production');
+
+        if (! $shouldVerify && $isProduction) {
+            throw new WebhookVerificationException('Signature verification cannot be disabled in production environment');
+        }
+
+        if (! $shouldVerify) {
             return true;
         }
 

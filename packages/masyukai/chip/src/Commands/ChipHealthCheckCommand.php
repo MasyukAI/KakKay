@@ -176,17 +176,12 @@ final class ChipHealthCheckCommand extends Command
         $this->line('⚙️  <fg=cyan>Configuration Status</>');
 
         // Environment
-        $environment = config('chip.send.environment', 'sandbox');
+        $environment = config('chip.environment', 'sandbox');
         $this->line("   Environment: <fg=yellow>{$environment}</>");
 
         // Logging
         $loggingEnabled = config('chip.logging.log_requests', false);
         $status = $loggingEnabled ? '<fg=green>Enabled</>' : '<fg=red>Disabled</>';
         $this->line("   Logging: {$status}");
-
-        // Webhooks
-        $webhookEvents = config('chip.events.dispatch_webhook_events', true);
-        $status = $webhookEvents ? '<fg=green>Enabled</>' : '<fg=red>Disabled</>';
-        $this->line("   Webhook Events: {$status}");
     }
 }

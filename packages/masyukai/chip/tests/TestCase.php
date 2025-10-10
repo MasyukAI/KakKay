@@ -43,8 +43,8 @@ abstract class TestCase extends Orchestra
         $app['config']->set('chip.collect.secret_key', 'test_secret_key');
         $app['config']->set('chip.collect.environment', 'sandbox');
         $app['config']->set('chip.collect.base_url', 'https://gate.chip-in.asia/api/v1/');
-        $app['config']->set('chip.collect.timeout', 30);
-        $app['config']->set('chip.collect.retry', ['times' => 3, 'sleep' => 1000]);
+        $app['config']->set('chip.http.timeout', 30);
+        $app['config']->set('chip.http.retry', ['attempts' => 3, 'delay' => 1000]);
         $app['config']->set('chip.send.api_key', 'test_api_key');
         $app['config']->set('chip.send.secret_key', 'test_send_secret');
         $app['config']->set('chip.send.base_url', [

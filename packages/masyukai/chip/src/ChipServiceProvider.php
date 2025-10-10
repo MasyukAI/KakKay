@@ -86,7 +86,7 @@ final class ChipServiceProvider extends PackageServiceProvider
             }
 
             $baseUrlConfig = config('chip.collect.base_url', 'https://gate.chip-in.asia/api/v1/');
-            $environment = config('chip.collect.environment', 'sandbox');
+            $environment = config('chip.environment', 'sandbox');
 
             if (is_array($baseUrlConfig)) {
                 $baseUrl = $baseUrlConfig[$environment] ?? reset($baseUrlConfig);
@@ -98,8 +98,8 @@ final class ChipServiceProvider extends PackageServiceProvider
                 $apiKey,
                 $brandId,
                 (string) $baseUrl,
-                config('chip.collect.timeout', 30),
-                config('chip.collect.retry', [
+                config('chip.http.timeout', 30),
+                config('chip.http.retry', [
                     'attempts' => 3,
                     'delay' => 1000,
                 ])
@@ -116,7 +116,7 @@ final class ChipServiceProvider extends PackageServiceProvider
                 );
             }
 
-            $environment = config('chip.send.environment', 'sandbox');
+            $environment = config('chip.environment', 'sandbox');
 
             return new ChipSendClient(
                 apiKey: $apiKey,
@@ -124,8 +124,8 @@ final class ChipServiceProvider extends PackageServiceProvider
                 environment: $environment,
                 baseUrl: config("chip.send.base_url.{$environment}")
                     ?? config('chip.send.base_url.sandbox', 'https://staging-api.chip-in.asia/api'),
-                timeout: config('chip.send.timeout', 30),
-                retryConfig: config('chip.send.retry', [
+                timeout: config('chip.http.timeout', 30),
+                retryConfig: config('chip.http.retry', [
                     'attempts' => 3,
                     'delay' => 1000,
                 ])

@@ -76,7 +76,7 @@ class ChipCollectService
     {
         // Set default brand_id and currency from config if not provided
         $filters['brand_id'] ??= $this->getBrandId();
-        $filters['currency'] ??= config('chip.collect.currency', 'MYR');
+        $filters['currency'] ??= config('chip.defaults.currency', 'MYR');
 
         return $this->purchases->paymentMethods($filters);
     }

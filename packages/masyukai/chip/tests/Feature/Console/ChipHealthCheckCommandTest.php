@@ -21,7 +21,6 @@ describe('ChipHealthCheckCommand', function (): void {
             'chip.logging.enabled' => true,
             'chip.logging.log_requests' => true,
             'chip.webhooks.events' => ['purchase.paid', 'purchase.refunded'],
-            'chip.events.dispatch_webhook_events' => true,
             'chip.send.environment' => 'sandbox',
         ]);
     });
@@ -69,7 +68,6 @@ describe('ChipHealthCheckCommand', function (): void {
         expect($status)->toBe(0);
         expect($buffer)->toContain('Environment:');
         expect($buffer)->toContain('Logging:');
-        expect($buffer)->toContain('Webhook Events:');
         expect($buffer)->toContain('Available payment methods: 1');
         expect($buffer)->toContain('Accounts retrieved: 1');
     });
