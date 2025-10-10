@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MasyukAI\Cart;
 
 use Illuminate\Contracts\Events\Dispatcher;
+use MasyukAI\Cart\Contracts\RulesFactoryInterface;
 use MasyukAI\Cart\Storage\StorageInterface;
 use MasyukAI\Cart\Traits\CalculatesTotals;
 use MasyukAI\Cart\Traits\ManagesConditions;
@@ -34,6 +35,22 @@ final class Cart
         private bool $eventsEnabled = true
     ) {
         // Cart is now created when first item is added, not during instantiation
+    }
+
+    /**
+     * Initialize cart with rules factory for dynamic condition persistence.
+     *
+     * This method sets up the rules factory and automatically restores
+     * any previously persisted dynamic conditions.
+     *
+     * @param  RulesFactoryInterface  $factory  Factory to create rule closures
+     */
+    public function withRulesFactory(RulesFactoryInterface $factory): static
+    {
+        $this->setRulesFactory($factory);
+        $this->restoreDynamicConditions();
+
+        return $this;
     }
 
     /**

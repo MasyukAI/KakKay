@@ -76,7 +76,7 @@ trait ManagesItems
         }
 
         // Evaluate dynamic conditions after adding item
-        $this->evaluateDynamicConditionsIfAvailable();
+        $this->evaluateDynamicConditions();
 
         return $item;
     }
@@ -138,7 +138,7 @@ trait ManagesItems
         }
 
         // Evaluate dynamic conditions after updating item
-        $this->evaluateDynamicConditionsIfAvailable();
+        $this->evaluateDynamicConditions();
 
         return $item;
     }
@@ -167,7 +167,7 @@ trait ManagesItems
         }
 
         // Evaluate dynamic conditions after removing item
-        $this->evaluateDynamicConditionsIfAvailable();
+        $this->evaluateDynamicConditions();
 
         return $item;
     }
@@ -200,14 +200,6 @@ trait ManagesItems
     public function search(callable $callback): CartCollection
     {
         return $this->getItems()->filter($callback);
-    }
-
-    /**
-     * Evaluate dynamic conditions if the method exists
-     */
-    private function evaluateDynamicConditionsIfAvailable(): void
-    {
-        $this->evaluateDynamicConditions();
     }
 
     /**
