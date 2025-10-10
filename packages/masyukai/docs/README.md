@@ -57,7 +57,42 @@ The package configuration is located in `config/docs.php`. You can customize:
 
 ## Usage
 
-### Creating an Invoice
+### Using the Generic Document Service (Recommended)
+
+The package now provides generic `Document` classes that can handle any document type:
+
+```php
+use MasyukAI\Docs\Facades\Document;
+use MasyukAI\Docs\DataObjects\DocumentData;
+use MasyukAI\Docs\Enums\DocumentStatus;
+
+// Create an invoice
+$document = Document::createDocument(DocumentData::from([
+    'document_type' => 'invoice',
+    'items' => [
+        [
+            'name' => 'Web Development Service',
+            'quantity' => 1,
+            'price' => 2500.00,
+        ],
+    ],
+    'customer_data' => [
+        'name' => 'John Doe',
+        'email' => 'john@example.com',
+    ],
+    'generate_pdf' => true,
+]));
+
+// Update status
+Document::updateDocumentStatus($document, DocumentStatus::PAID);
+
+// Generate PDF
+$pdfUrl = Document::generatePdf($document);
+```
+
+### Creating an Invoice (Backward Compatible)
+
+For backward compatibility, you can still use the `Invoice` facade which wraps the new `Document` classes:
 
 ```php
 use MasyukAI\Docs\Facades\Invoice;
@@ -215,6 +250,53 @@ Available invoice statuses:
 - PHP 8.3+
 - Laravel 12.0+
 - Spatie Laravel PDF 1.5+
+
+## Migration from Invoice-only Package
+
+The package has been refactored from an invoice-specific package to a generic document package. All old `Invoice*` classes are still available for backward compatibility and now internally use the new `Document*` classes.
+
+### What Changed
+
+1. **New Generic Classes:**
+   - `Document` model (replaces direct use of `Invoice` table)
+   - `DocumentTemplate` model (supports multiple document types)
+   - `DocumentService` (generic document operations)
+   - `DocumentStatus` enum
+   - `DocumentData` DTO
+
+2. **Database Structure:**
+   - `documents` table (with `document_type` field for invoices, receipts, etc.)
+   - `document_templates` table (with `document_type` field)
+   - `document_status_histories` table
+
+3. **Backward Compatibility:**
+   - All `Invoice*` classes still work and wrap the new `Document*` classes
+   - Old field names like `invoice_number`, `invoiceable_type` are supported
+   - Existing code will continue to work without changes
+
+### Migration Guide
+
+**Option 1: Gradual Migration (Recommended)**
+```php
+// Old code still works
+use MasyukAI\Docs\Facades\Invoice;
+$invoice = Invoice::createInvoice($data);
+
+// New code for new features
+use MasyukAI\Docs\Facades\Document;
+$document = Document::createDocument($data);
+```
+
+**Option 2: Full Migration**
+```php
+// Replace
+use MasyukAI\Docs\Models\Invoice;
+use MasyukAI\Docs\DataObjects\InvoiceData;
+
+// With
+use MasyukAI\Docs\Models\Document;
+use MasyukAI\Docs\DataObjects\DocumentData;
+```
 
 ## Development Tools
 
