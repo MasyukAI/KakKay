@@ -16,22 +16,22 @@ final class ChipCompanyStatement extends ChipModel
 
     public function createdOn(): Attribute
     {
-        return Attribute::get(fn (?int $value, array $attributes) => $this->toTimestamp($attributes['created_on'] ?? null));
+        return Attribute::get(fn (?int $value, array $attributes): ?\Illuminate\Support\Carbon => $this->toTimestamp($attributes['created_on'] ?? null));
     }
 
     public function updatedOn(): Attribute
     {
-        return Attribute::get(fn (?int $value, array $attributes) => $this->toTimestamp($attributes['updated_on'] ?? null));
+        return Attribute::get(fn (?int $value, array $attributes): ?\Illuminate\Support\Carbon => $this->toTimestamp($attributes['updated_on'] ?? null));
     }
 
     public function beganOn(): Attribute
     {
-        return Attribute::get(fn (?int $value, array $attributes) => $this->toTimestamp($attributes['began_on'] ?? null));
+        return Attribute::get(fn (?int $value, array $attributes): ?\Illuminate\Support\Carbon => $this->toTimestamp($attributes['began_on'] ?? null));
     }
 
     public function finishedOn(): Attribute
     {
-        return Attribute::get(fn (?int $value, array $attributes) => $this->toTimestamp($attributes['finished_on'] ?? null));
+        return Attribute::get(fn (?int $value, array $attributes): ?\Illuminate\Support\Carbon => $this->toTimestamp($attributes['finished_on'] ?? null));
     }
 
     public function statusColor(): string

@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Facades\Cache;
 use MasyukAI\Cart\Cart;
 use MasyukAI\Cart\Conditions\CartCondition;
 use MasyukAI\Cart\Examples\ExampleRulesFactory;
-use MasyukAI\Cart\Testing\InMemoryStorage;
+use MasyukAI\Cart\Storage\CacheStorage;
 
 beforeEach(function () {
-    $this->storage = new InMemoryStorage();
+    $this->storage = new CacheStorage(Cache::store('array'));
     $this->cart = new Cart($this->storage, 'test-identifier');
     $this->rulesFactory = new ExampleRulesFactory();
 });

@@ -23,6 +23,7 @@ use MasyukAI\FilamentChip\Models\ChipPayment;
 use MasyukAI\FilamentChip\Resources\PaymentResource\Pages\ListPayments;
 use MasyukAI\FilamentChip\Resources\PaymentResource\Pages\ViewPayment;
 use MasyukAI\FilamentChip\Resources\PaymentResource\Schemas\PaymentInfolist;
+use Override;
 
 final class PaymentResource extends BaseChipResource
 {
@@ -36,6 +37,7 @@ final class PaymentResource extends BaseChipResource
 
     protected static ?string $recordTitleAttribute = 'id';
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -135,6 +137,7 @@ final class PaymentResource extends BaseChipResource
             ->poll(self::pollingInterval());
     }
 
+    #[Override]
     public static function infolist(Schema $schema): Schema
     {
         return PaymentInfolist::configure($schema);

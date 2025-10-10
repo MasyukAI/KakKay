@@ -12,12 +12,12 @@ final class ChipSendInstruction extends ChipModel
 
     public function amountNumeric(): Attribute
     {
-        return Attribute::get(fn () => (float) $this->amount);
+        return Attribute::get(fn (): float => (float) $this->amount);
     }
 
     public function stateLabel(): Attribute
     {
-        return Attribute::get(fn () => (string) str($this->state)->headline());
+        return Attribute::get(fn (): string => (string) str($this->state)->headline());
     }
 
     public function stateColor(): string

@@ -76,7 +76,7 @@ final class ClientInfolist
                             TextEntry::make('country')
                                 ->label('Country')
                                 ->badge()
-                                ->formatStateUsing(fn (?string $state): ?string => $state ? mb_strtoupper($state) : null)
+                                ->formatStateUsing(fn (?string $state): ?string => $state !== null && $state !== '' && $state !== '0' ? mb_strtoupper($state) : null)
                                 ->placeholder('—'),
                         ]),
                     Fieldset::make('Shipping')->inlineLabelled()
@@ -96,7 +96,7 @@ final class ClientInfolist
                             TextEntry::make('shipping_country')
                                 ->label('Country')
                                 ->badge()
-                                ->formatStateUsing(fn (?string $state): ?string => $state ? mb_strtoupper($state) : null)
+                                ->formatStateUsing(fn (?string $state): ?string => $state !== null && $state !== '' && $state !== '0' ? mb_strtoupper($state) : null)
                                 ->placeholder('—'),
                         ])
                         ->visible(fn (ChipClient $record): bool => filled(array_filter([
@@ -162,10 +162,10 @@ final class ClientInfolist
                         ->placeholder('—'),
                 ])
                 ->collapsible()
-                ->collapsed(fn (ChipClient $record): bool => empty(array_filter([
+                ->collapsed(fn (ChipClient $record): bool => array_filter([
                     $record->cc,
                     $record->bcc,
-                ]))),
+                ]) === []),
         ]);
     }
 
@@ -191,7 +191,7 @@ final class ClientInfolist
 
         return Collection::make($emails)
             ->filter(fn (?string $email): bool => filled($email))
-            ->map(fn (string $email): string => trim($email))
+            ->map(fn (string $email): string => mb_trim($email))
             ->implode(', ');
     }
 }

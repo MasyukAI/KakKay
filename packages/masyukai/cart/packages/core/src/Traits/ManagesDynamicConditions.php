@@ -299,6 +299,10 @@ trait ManagesDynamicConditions
      *
      * @param  array<string|callable>  $rules  Mixed array of factory keys and closures
      * @param  string|array<string>|null  $ruleFactoryKey  Reference to store factory keys for persistence
+     *
+     * @param-out list<string>|null  $ruleFactoryKey
+     *
+     * @param  array<mixed>  $metadata  Additional metadata for rule evaluation
      * @return array<callable>
      */
     protected function evaluateMixedRules(array $rules, string|array|null &$ruleFactoryKey, array $metadata = []): array
@@ -374,6 +378,10 @@ trait ManagesDynamicConditions
      * @param  array<string, mixed>  $data  Condition data
      * @param  array<callable>|string|array<string>|Closure|null  $rules  Rules in any format
      * @param  string|array<string>|null  $ruleFactoryKey  Optional factory key(s)
+     *
+     * @param-out string|array<string>|null  $ruleFactoryKey
+     *
+     * @param  array<mixed>  $metadata  Additional metadata for rule evaluation
      */
     protected function createConditionFromArray(
         array $data,
@@ -400,6 +408,10 @@ trait ManagesDynamicConditions
      *
      * @param  array<callable>|string|array<string>|Closure|null  $rules  Rules in various formats
      * @param  string|array<string>|null  $ruleFactoryKey  Will be set if string/array key is provided
+     *
+     * @param-out string|array<string>|null  $ruleFactoryKey
+     *
+     * @param  array<mixed>  $metadata  Additional metadata for rule evaluation
      * @return array<callable> Evaluated rules
      */
     protected function evaluateRules(
@@ -460,6 +472,10 @@ trait ManagesDynamicConditions
      *
      * @param  string  $factoryKey  The factory key
      * @param  string|array<string>|null  $ruleFactoryKey  Reference to store key for persistence
+     *
+     * @param-out string  $ruleFactoryKey
+     *
+     * @param  array<mixed>  $metadata  Additional metadata for rule evaluation
      * @return array<callable>
      */
     protected function evaluateFactoryKey(string $factoryKey, string|array|null &$ruleFactoryKey, array $metadata = []): array
@@ -484,6 +500,10 @@ trait ManagesDynamicConditions
      *
      * @param  array<string>  $factoryKeys  Array of factory keys
      * @param  string|array<string>|null  $ruleFactoryKey  Reference to store keys for persistence
+     *
+     * @param-out array<string>  $ruleFactoryKey
+     *
+     * @param  array<mixed>  $metadata  Additional metadata for rule evaluation
      * @return array<callable>
      */
     protected function evaluateFactoryKeyArray(array $factoryKeys, string|array|null &$ruleFactoryKey, array $metadata = []): array
@@ -497,10 +517,6 @@ trait ManagesDynamicConditions
         $combinedRules = [];
 
         foreach ($factoryKeys as $key) {
-            if (! is_string($key)) {
-                throw new InvalidArgumentException('All factory keys must be strings');
-            }
-
             if (! $this->rulesFactory->canCreateRules($key)) {
                 throw new InvalidArgumentException("Unknown factory key: {$key}");
             }

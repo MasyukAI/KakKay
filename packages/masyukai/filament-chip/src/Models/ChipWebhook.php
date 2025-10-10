@@ -16,12 +16,12 @@ final class ChipWebhook extends ChipModel
 
     public function createdOn(): Attribute
     {
-        return Attribute::get(fn (?int $value, array $attributes) => $this->toTimestamp($attributes['created_on'] ?? null));
+        return Attribute::get(fn (?int $value, array $attributes): ?\Illuminate\Support\Carbon => $this->toTimestamp($attributes['created_on'] ?? null));
     }
 
     public function updatedOn(): Attribute
     {
-        return Attribute::get(fn (?int $value, array $attributes) => $this->toTimestamp($attributes['updated_on'] ?? null));
+        return Attribute::get(fn (?int $value, array $attributes): ?\Illuminate\Support\Carbon => $this->toTimestamp($attributes['updated_on'] ?? null));
     }
 
     protected static function tableSuffix(): string

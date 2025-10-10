@@ -17,7 +17,7 @@ final class FilamentChipServiceProvider extends PackageServiceProvider
     {
         $package
             ->name('filament-chip')
-            ->hasConfigFile('filament-chip');
+            ->hasConfigFile();
     }
 
     public function packageRegistered(): void
@@ -27,45 +27,65 @@ final class FilamentChipServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
-        $this->registerMacros();
+        $this->registerFilamentMacros();
     }
 
-    private function registerMacros(): void
+    /**
+     * Register custom Filament component macros for enhanced styling.
+     */
+    private function registerFilamentMacros(): void
+    {
+        $this->registerPanelMacros();
+        $this->registerSplitMacros();
+        $this->registerStackMacros();
+        $this->registerFieldsetMacros();
+    }
+
+    /**
+     * Register Panel component macros.
+     */
+    private function registerPanelMacros(): void
     {
         if (! Panel::hasMacro('softShadow')) {
-            Panel::macro('softShadow', function (string $color = 'gray-200') {
-                /** @var Panel $this */
-                return $this->extraAttributes([
-                    'class' => "shadow-lg shadow-{$color}/40 ring-1 ring-black/5",
-                ]);
-            });
+            Panel::macro('softShadow', fn (string $color = 'gray-200'): Panel => $this->extraAttributes([
+                'class' => sprintf('shadow-lg shadow-%s/40 ring-1 ring-black/5', $color),
+            ]));
         }
+    }
 
+    /**
+     * Register Split component macros.
+     */
+    private function registerSplitMacros(): void
+    {
         if (! Split::hasMacro('glow')) {
-            Split::macro('glow', function (string $glowColor = 'primary') {
-                /** @var Split $this */
-                return $this->extraAttributes([
-                    'class' => "after:absolute after:inset-0 after:-z-10 after:rounded-2xl after:bg-gradient-to-r after:from-{$glowColor}-500/20 after:to-transparent",
-                ]);
-            });
+            Split::macro('glow', fn (string $glowColor = 'primary'): Split => $this->extraAttributes([
+                'class' => sprintf('after:absolute after:inset-0 after:-z-10 after:rounded-2xl after:bg-gradient-to-r after:from-%s-500/20 after:to-transparent', $glowColor),
+            ]));
         }
+    }
 
+    /**
+     * Register Stack component macros.
+     */
+    private function registerStackMacros(): void
+    {
         if (! Stack::hasMacro('carded')) {
-            Stack::macro('carded', function () {
-                /** @var Stack $this */
-                return $this->extraAttributes([
-                    'class' => 'rounded-2xl border border-white/60 bg-white/80 p-6 shadow-sm backdrop-blur dark:border-white/10 dark:bg-white/5',
-                ]);
-            });
+            Stack::macro('carded', fn (): Stack => $this->extraAttributes([
+                'class' => 'rounded-2xl border border-white/60 bg-white/80 p-6 shadow-sm backdrop-blur dark:border-white/10 dark:bg-white/5',
+            ]));
         }
+    }
 
+    /**
+     * Register Fieldset component macros.
+     */
+    private function registerFieldsetMacros(): void
+    {
         if (! Fieldset::hasMacro('inlineLabelled')) {
-            Fieldset::macro('inlineLabelled', function () {
-                /** @var Fieldset $this */
-                return $this->columns(2)->extraAttributes([
-                    'class' => 'gap-x-8',
-                ]);
-            });
+            Fieldset::macro('inlineLabelled', fn (): Fieldset => $this->columns(2)->extraAttributes([
+                'class' => 'gap-x-8',
+            ]));
         }
     }
 }

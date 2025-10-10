@@ -8,7 +8,7 @@ use MasyukAI\FilamentChip\Models\ChipClient;
 use MasyukAI\FilamentChip\Resources\ClientResource\Pages\ListClients;
 use MasyukAI\FilamentChip\Resources\ClientResource\Pages\ViewClient;
 
-it('renders clients in the list table', function () {
+it('renders clients in the list table', function (): void {
     $client = createChipClient();
 
     Livewire::test(ListClients::class)
@@ -16,7 +16,7 @@ it('renders clients in the list table', function () {
         ->assertCanSeeTableRecords([$client]);
 });
 
-it('renders client detail infolist', function () {
+it('renders client detail infolist', function (): void {
     $client = createChipClient();
 
     Livewire::test(ViewClient::class, [

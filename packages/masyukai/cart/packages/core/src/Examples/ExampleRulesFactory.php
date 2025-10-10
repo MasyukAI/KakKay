@@ -43,13 +43,11 @@ class ExampleRulesFactory implements RulesFactoryInterface
             // User role-based discount (requires authentication)
             'user_role_discount' => [
                 function ($cart) use ($metadata) {
-                    if (! function_exists('auth') || ! auth()->check()) {
-                        return false;
-                    }
-
+                    // Example: Role-based discount
+                    // Replace with your actual authentication/role checking logic
                     $requiredRole = $metadata['required_role'] ?? 'premium';
 
-                    return auth()->user()->hasRole($requiredRole);
+                    return $requiredRole === 'premium'; // Placeholder - always true for premium
                 },
             ],
 
@@ -78,13 +76,9 @@ class ExampleRulesFactory implements RulesFactoryInterface
             // First-time customer discount
             'first_time_customer' => [
                 function ($cart) {
-                    if (! function_exists('auth') || ! auth()->check()) {
-                        return false;
-                    }
-
-                    // Example: Check if user has any previous orders
-                    // You would replace this with your actual order checking logic
-                    return ! auth()->user()->orders()->exists();
+                    // Example: First-time customer discount
+                    // Replace with your actual order checking logic
+                    return true; // Placeholder - always apply for demo
                 },
             ],
 

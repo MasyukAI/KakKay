@@ -27,7 +27,7 @@ final class ChipBankAccount extends ChipModel
 
     public function isActive(): Attribute
     {
-        return Attribute::get(fn () => $this->status === 'active' || $this->status === 'approved');
+        return Attribute::get(fn (): bool => $this->status === 'active' || $this->status === 'approved');
     }
 
     protected static function tableSuffix(): string

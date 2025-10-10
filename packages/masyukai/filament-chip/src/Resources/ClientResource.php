@@ -22,6 +22,7 @@ use MasyukAI\FilamentChip\Models\ChipClient;
 use MasyukAI\FilamentChip\Resources\ClientResource\Pages\ListClients;
 use MasyukAI\FilamentChip\Resources\ClientResource\Pages\ViewClient;
 use MasyukAI\FilamentChip\Resources\ClientResource\Schemas\ClientInfolist;
+use Override;
 
 final class ClientResource extends BaseChipResource
 {
@@ -35,6 +36,7 @@ final class ClientResource extends BaseChipResource
 
     protected static ?string $recordTitleAttribute = 'email';
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -73,7 +75,7 @@ final class ClientResource extends BaseChipResource
                             TextColumn::make('country')
                                 ->label('Country')
                                 ->badge()
-                                ->formatStateUsing(fn (?string $state): ?string => $state ? mb_strtoupper($state) : null)
+                                ->formatStateUsing(fn (?string $state): ?string => $state !== null && $state !== '' && $state !== '0' ? mb_strtoupper($state) : null)
                                 ->placeholder('—'),
                         ])->carded(),
                     ])->softShadow(),
@@ -145,6 +147,7 @@ final class ClientResource extends BaseChipResource
             ->poll(self::pollingInterval());
     }
 
+    #[Override]
     public static function infolist(Schema $schema): Schema
     {
         return ClientInfolist::configure($schema);

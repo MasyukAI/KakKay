@@ -119,6 +119,10 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         return self::SUPPORTED_KEYS;
     }
 
+    /**
+     * @param  array<mixed>  $metadata
+     * @return array<mixed>
+     */
     private function resolveContext(array $metadata): array
     {
         $context = $metadata['context'] ?? $metadata;
@@ -130,6 +134,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         return $context;
     }
 
+    /**
+     * @param  array<mixed>  $context
+     */
     private function stringValue(array $context, string $key, ?string $default = null): string
     {
         if (! array_key_exists($key, $context)) {
@@ -149,6 +156,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         return $value;
     }
 
+    /**
+     * @param  array<mixed>  $context
+     */
     private function intValue(array $context, string $key): int
     {
         $value = $this->requireContextValue($context, $key);
@@ -160,6 +170,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         return (int) $value;
     }
 
+    /**
+     * @param  array<mixed>  $context
+     */
     private function floatValue(array $context, string $key): float
     {
         $value = $this->requireContextValue($context, $key);
@@ -171,6 +184,10 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         return (float) $value;
     }
 
+    /**
+     * @param  array<mixed>  $context
+     * @return array<mixed>
+     */
     private function arrayValue(array $context, string $key): array
     {
         $value = $this->requireContextValue($context, $key);
@@ -182,6 +199,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         return $value;
     }
 
+    /**
+     * @param  array<mixed>  $context
+     */
     private function requireContextValue(array $context, string $key): mixed
     {
         if (! array_key_exists($key, $context)) {
@@ -191,6 +211,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         return $context[$key];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function alwaysTrueRule(): array
     {
         return [
@@ -198,6 +221,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function alwaysFalseRule(): array
     {
         return [
@@ -205,6 +231,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function hasAnyItemRule(): array
     {
         return [
@@ -212,6 +241,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function minItemsRule(int $minimum): array
     {
         return [
@@ -219,6 +251,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function maxItemsRule(int $maximum): array
     {
         return [
@@ -226,6 +261,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function minQuantityRule(int $minimum): array
     {
         return [
@@ -233,6 +271,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function maxQuantityRule(int $maximum): array
     {
         return [
@@ -240,6 +281,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function subtotalAtLeastRule(float $amount): array
     {
         return [
@@ -247,6 +291,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function subtotalBelowRule(float $amount): array
     {
         return [
@@ -254,6 +301,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function subtotalBetweenRule(float $min, float $max): array
     {
         if ($max < $min) {
@@ -265,6 +315,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function totalAtLeastRule(float $amount): array
     {
         return [
@@ -272,6 +325,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function totalBelowRule(float $amount): array
     {
         return [
@@ -279,6 +335,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function totalBetweenRule(float $min, float $max): array
     {
         if ($max < $min) {
@@ -290,6 +349,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function hasItemRule(string $id): array
     {
         return [
@@ -297,6 +359,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function missingItemRule(string $id): array
     {
         return [
@@ -304,6 +369,10 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @param  array<mixed>  $ids
+     * @return array<callable>
+     */
     private function itemListIncludesAnyRule(array $ids): array
     {
         $expected = array_map(static fn (mixed $value): string => (string) $value, $ids);
@@ -317,6 +386,10 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @param  array<mixed>  $ids
+     * @return array<callable>
+     */
     private function itemListIncludesAllRule(array $ids): array
     {
         $expected = array_map(static fn (mixed $value): string => (string) $value, $ids);
@@ -330,6 +403,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function hasMetadataRule(string $key): array
     {
         return [
@@ -337,6 +413,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function metadataEqualsRule(string $key, mixed $value): array
     {
         return [
@@ -344,6 +423,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function metadataNotEqualsRule(string $key, mixed $value): array
     {
         return [
@@ -351,6 +433,10 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @param  array<mixed>  $values
+     * @return array<callable>
+     */
     private function metadataInRule(string $key, array $values): array
     {
         return [
@@ -362,6 +448,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function metadataContainsRule(string $key, mixed $needle): array
     {
         return [
@@ -381,6 +470,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function metadataFlagTrueRule(string $key): array
     {
         return [
@@ -388,6 +480,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function customerTagRule(string $tag, string $metadataKey): array
     {
         return [
@@ -409,6 +504,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function currencyIsRule(string $currency): array
     {
         return [
@@ -416,6 +514,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function cartConditionExistsRule(string $condition): array
     {
         return [
@@ -423,6 +524,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function cartConditionTypeExistsRule(string $type): array
     {
         return [
@@ -430,6 +534,10 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @param  array<mixed>  $days
+     * @return array<callable>
+     */
     private function dayOfWeekRule(array $days): array
     {
         $normalized = [];
@@ -470,6 +578,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function dateWindowRule(string $start, string $end): array
     {
         try {
@@ -488,6 +599,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function timeWindowRule(string $start, string $end): array
     {
         $startMinutes = $this->parseMinutes($start, 'start');
@@ -522,6 +636,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         return ($hour * 60) + $minute;
     }
 
+    /**
+     * @return array<callable>
+     */
     private function itemAttributeEqualsRule(string $attribute, mixed $value): array
     {
         return [
@@ -537,6 +654,10 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @param  array<mixed>  $values
+     * @return array<callable>
+     */
     private function itemAttributeInRule(string $attribute, array $values): array
     {
         return [
@@ -555,6 +676,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function itemQuantityAtLeastRule(int $quantity): array
     {
         return [
@@ -564,6 +688,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function itemQuantityAtMostRule(int $quantity): array
     {
         return [
@@ -573,6 +700,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function itemPriceAtLeastRule(float $amount): array
     {
         return [
@@ -582,6 +712,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function itemPriceAtMostRule(float $amount): array
     {
         return [
@@ -591,6 +724,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function itemTotalAtLeastRule(float $amount): array
     {
         return [
@@ -600,6 +736,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function itemTotalAtMostRule(float $amount): array
     {
         return [
@@ -609,6 +748,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function itemHasConditionRule(string $condition): array
     {
         return [
@@ -618,6 +760,9 @@ final class BuiltInRulesFactory implements RulesFactoryInterface
         ];
     }
 
+    /**
+     * @return array<callable>
+     */
     private function itemIdPrefixRule(string $prefix): array
     {
         return [

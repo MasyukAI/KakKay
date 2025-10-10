@@ -13,6 +13,7 @@ use MasyukAI\FilamentChip\Resources\PurchaseResource\Pages\ListPurchases;
 use MasyukAI\FilamentChip\Resources\PurchaseResource\Pages\ViewPurchase;
 use MasyukAI\FilamentChip\Resources\PurchaseResource\Schemas\PurchaseInfolist;
 use MasyukAI\FilamentChip\Resources\PurchaseResource\Tables\PurchaseTable;
+use Override;
 
 final class PurchaseResource extends BaseChipResource
 {
@@ -26,11 +27,13 @@ final class PurchaseResource extends BaseChipResource
 
     protected static ?string $recordTitleAttribute = 'reference';
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return PurchaseTable::configure($table);
     }
 
+    #[Override]
     public static function infolist(Schema $schema): Schema
     {
         return PurchaseInfolist::configure($schema);

@@ -6,7 +6,6 @@ namespace MasyukAI\FilamentChip\Resources\PaymentResource\Schemas;
 
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Infolist;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -14,9 +13,6 @@ use Filament\Schemas\Schema;
 
 final class PaymentInfolist
 {
-    /**
-     * @param  Schema<Infolist>  $schema
-     */
     public static function configure(Schema $schema): Schema
     {
         return $schema

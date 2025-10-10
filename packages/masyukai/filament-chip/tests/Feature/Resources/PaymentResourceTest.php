@@ -9,7 +9,7 @@ use MasyukAI\FilamentChip\Models\ChipPurchase;
 use MasyukAI\FilamentChip\Resources\PaymentResource\Pages\ListPayments;
 use MasyukAI\FilamentChip\Resources\PaymentResource\Pages\ViewPayment;
 
-it('renders payments in the list table', function () {
+it('renders payments in the list table', function (): void {
     $purchase = createChipPurchase();
     $payment = createChipPayment($purchase->getKey());
 
@@ -18,7 +18,7 @@ it('renders payments in the list table', function () {
         ->assertCanSeeTableRecords([$payment]);
 });
 
-it('renders payment detail infolist', function () {
+it('renders payment detail infolist', function (): void {
     $purchase = createChipPurchase();
     $payment = createChipPayment($purchase->getKey());
 

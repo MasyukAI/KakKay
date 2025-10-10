@@ -7,17 +7,18 @@ namespace MasyukAI\FilamentChip\Tests;
 use Filament\Facades\Filament;
 use Filament\Panel;
 use Filament\PanelRegistry;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use MasyukAI\FilamentChip\FilamentChip;
 use MasyukAI\FilamentChip\FilamentChipServiceProvider;
+use Override;
 
 abstract class TestCase extends \Orchestra\Testbench\TestCase
 {
     use RefreshDatabase;
 
+    #[Override]
     protected function setUp(): void
     {
         parent::setUp();
@@ -48,15 +49,15 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
         Route::name('filament.admin.resources.payments.')
             ->prefix('admin/payments')
             ->group(function (): void {
-                Route::get('/', fn () => null)->name('index');
-                Route::get('/{record}', fn () => null)->name('view');
+                Route::get('/', fn (): null => null)->name('index');
+                Route::get('/{record}', fn (): null => null)->name('view');
             });
 
         Route::name('filament.admin.resources.clients.')
             ->prefix('admin/clients')
             ->group(function (): void {
-                Route::get('/', fn () => null)->name('index');
-                Route::get('/{record}', fn () => null)->name('view');
+                Route::get('/', fn (): null => null)->name('index');
+                Route::get('/{record}', fn (): null => null)->name('view');
             });
 
         Artisan::call('migrate', ['--force' => true]);
@@ -96,21 +97,5 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
             'prefix' => '',
             'foreign_key_constraints' => true,
         ]);
-
-        if (! Blueprint::hasMacro('jsonb')) {
-            Blueprint::macro('jsonb', function (string $column, ?int $length = null) {
-                /** @var \Illuminate\Database\Schema\Blueprint $this */
-
-                return $this->json($column, $length);
-            });
-        }
-
-        if (! Blueprint::hasMacro('jsonbb')) {
-            Blueprint::macro('jsonbb', function (string $column, ?int $length = null) {
-                /** @var \Illuminate\Database\Schema\Blueprint $this */
-
-                return $this->json($column, $length);
-            });
-        }
     }
 }

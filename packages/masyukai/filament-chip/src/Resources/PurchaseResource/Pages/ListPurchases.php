@@ -6,17 +6,20 @@ namespace MasyukAI\FilamentChip\Resources\PurchaseResource\Pages;
 
 use MasyukAI\FilamentChip\Resources\Pages\ReadOnlyListRecords;
 use MasyukAI\FilamentChip\Resources\PurchaseResource;
+use Override;
 
 final class ListPurchases extends ReadOnlyListRecords
 {
     protected static string $resource = PurchaseResource::class;
 
+    #[Override]
     public function getTitle(): string
     {
         return 'CHIP Purchases';
     }
 
-    public function getSubheading(): ?string
+    #[Override]
+    public function getSubheading(): string
     {
         return 'Review every purchase ingested from CHIP Collect with rich, read-only insights.';
     }

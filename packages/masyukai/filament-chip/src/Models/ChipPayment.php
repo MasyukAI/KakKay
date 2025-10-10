@@ -15,47 +15,47 @@ final class ChipPayment extends ChipModel
 
     public function paidOn(): Attribute
     {
-        return Attribute::get(fn (?int $value, array $attributes) => $this->toTimestamp($attributes['paid_on'] ?? null));
+        return Attribute::get(fn (?int $value, array $attributes): ?\Illuminate\Support\Carbon => $this->toTimestamp($attributes['paid_on'] ?? null));
     }
 
     public function remotePaidOn(): Attribute
     {
-        return Attribute::get(fn (?int $value, array $attributes) => $this->toTimestamp($attributes['remote_paid_on'] ?? null));
+        return Attribute::get(fn (?int $value, array $attributes): ?\Illuminate\Support\Carbon => $this->toTimestamp($attributes['remote_paid_on'] ?? null));
     }
 
     public function createdOn(): Attribute
     {
-        return Attribute::get(fn (?int $value, array $attributes) => $this->toTimestamp($attributes['created_on'] ?? null));
+        return Attribute::get(fn (?int $value, array $attributes): ?\Illuminate\Support\Carbon => $this->toTimestamp($attributes['created_on'] ?? null));
     }
 
     public function updatedOn(): Attribute
     {
-        return Attribute::get(fn (?int $value, array $attributes) => $this->toTimestamp($attributes['updated_on'] ?? null));
+        return Attribute::get(fn (?int $value, array $attributes): ?\Illuminate\Support\Carbon => $this->toTimestamp($attributes['updated_on'] ?? null));
     }
 
     public function formattedAmount(): Attribute
     {
-        return Attribute::get(fn () => $this->formatMoney($this->amount, $this->currency));
+        return Attribute::get(fn (): ?string => $this->formatMoney($this->amount, $this->currency));
     }
 
     public function formattedNetAmount(): Attribute
     {
-        return Attribute::get(fn () => $this->formatMoney($this->net_amount, $this->currency));
+        return Attribute::get(fn (): ?string => $this->formatMoney($this->net_amount, $this->currency));
     }
 
     public function formattedFeeAmount(): Attribute
     {
-        return Attribute::get(fn () => $this->formatMoney($this->fee_amount, $this->currency));
+        return Attribute::get(fn (): ?string => $this->formatMoney($this->fee_amount, $this->currency));
     }
 
     public function formattedPendingAmount(): Attribute
     {
-        return Attribute::get(fn () => $this->formatMoney($this->pending_amount, $this->currency));
+        return Attribute::get(fn (): ?string => $this->formatMoney($this->pending_amount, $this->currency));
     }
 
     public function pendingUnfreezeOn(): Attribute
     {
-        return Attribute::get(fn (?int $value, array $attributes) => $this->toTimestamp($attributes['pending_unfreeze_on'] ?? null));
+        return Attribute::get(fn (?int $value, array $attributes): ?\Illuminate\Support\Carbon => $this->toTimestamp($attributes['pending_unfreeze_on'] ?? null));
     }
 
     public function purchase(): BelongsTo

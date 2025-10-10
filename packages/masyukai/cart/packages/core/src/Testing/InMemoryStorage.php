@@ -81,6 +81,18 @@ class InMemoryStorage implements StorageInterface
         }
     }
 
+    public function forgetIdentifier(string $identifier): void
+    {
+        unset(
+            $this->items[$identifier],
+            $this->conditions[$identifier],
+            $this->metadata[$identifier],
+            $this->versions[$identifier],
+            $this->ids[$identifier],
+            $this->instances[$identifier]
+        );
+    }
+
     public function flush(): void
     {
         $this->items = [];
@@ -121,37 +133,45 @@ class InMemoryStorage implements StorageInterface
         return $this->ids[$identifier][$instance];
     }
 
-    public function swapIdentifier(string $from, string $to): void
+    public function swapIdentifier(string $oldIdentifier, string $newIdentifier, string $instance): bool
     {
-        if (isset($this->items[$from])) {
-            $this->items[$to] = $this->items[$from];
-            unset($this->items[$from]);
+        if (! isset($this->items[$oldIdentifier][$instance]) && ! isset($this->conditions[$oldIdentifier][$instance])) {
+            return false;
         }
 
-        if (isset($this->conditions[$from])) {
-            $this->conditions[$to] = $this->conditions[$from];
-            unset($this->conditions[$from]);
+        if (isset($this->items[$oldIdentifier][$instance])) {
+            $this->items[$newIdentifier][$instance] = $this->items[$oldIdentifier][$instance];
+            unset($this->items[$oldIdentifier][$instance]);
         }
 
-        if (isset($this->metadata[$from])) {
-            $this->metadata[$to] = $this->metadata[$from];
-            unset($this->metadata[$from]);
+        if (isset($this->conditions[$oldIdentifier][$instance])) {
+            $this->conditions[$newIdentifier][$instance] = $this->conditions[$oldIdentifier][$instance];
+            unset($this->conditions[$oldIdentifier][$instance]);
         }
 
-        if (isset($this->instances[$from])) {
-            $this->instances[$to] = $this->instances[$from];
-            unset($this->instances[$from]);
+        if (isset($this->metadata[$oldIdentifier][$instance])) {
+            $this->metadata[$newIdentifier][$instance] = $this->metadata[$oldIdentifier][$instance];
+            unset($this->metadata[$oldIdentifier][$instance]);
         }
 
-        if (isset($this->versions[$from])) {
-            $this->versions[$to] = $this->versions[$from];
-            unset($this->versions[$from]);
+        if (isset($this->versions[$oldIdentifier][$instance])) {
+            $this->versions[$newIdentifier][$instance] = $this->versions[$oldIdentifier][$instance];
+            unset($this->versions[$oldIdentifier][$instance]);
         }
 
-        if (isset($this->ids[$from])) {
-            $this->ids[$to] = $this->ids[$from];
-            unset($this->ids[$from]);
+        if (isset($this->ids[$oldIdentifier][$instance])) {
+            $this->ids[$newIdentifier][$instance] = $this->ids[$oldIdentifier][$instance];
+            unset($this->ids[$oldIdentifier][$instance]);
         }
+
+        return true;
+    }
+
+    public function putBoth(string $identifier, string $instance, array $items, array $conditions): void
+    {
+        $this->items[$identifier][$instance] = $items;
+        $this->conditions[$identifier][$instance] = $conditions;
+        $this->incrementVersion($identifier, $instance);
     }
 
     private function incrementVersion(string $identifier, string $instance): void

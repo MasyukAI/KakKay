@@ -3,7 +3,7 @@ includes:
 
 parameters:
     paths:
-        - packages/core/src
+        - src
         - tests
     
     level: 6
@@ -11,10 +11,6 @@ parameters:
     parallel: { maximumNumberOfProcesses: 4 }
 
     reportUnmatchedIgnoredErrors: false
-
-    # Laravel-specific rules
-    checkMissingIterableValueType: false
-    checkGenericClassInNonGenericObjectType: false
     
     # Ignore Laravel facade undefined methods
     # (Larastan handles this but sometimes needs hints)
@@ -22,6 +18,19 @@ parameters:
         - '#Call to an undefined method Illuminate\\Support\\Facades\\Http::#'
         - '#Access to an undefined property Pest\\.*#'
         - identifier: 'missingType.generics'
+        - identifier: 'missingType.iterableValue'
+        # Ignore macro methods that are registered at runtime
+        - '#Call to an undefined method Filament\\Tables\\Columns\\Layout\\Panel::softShadow\(\)#'
+        - '#Call to an undefined method Filament\\Tables\\Columns\\Layout\\Split::glow\(\)#'
+        - '#Call to an undefined method Filament\\Tables\\Columns\\Layout\\Stack::carded\(\)#'
+        - '#Call to an undefined method Filament\\Schemas\\Components\\Fieldset::inlineLabelled\(\)#'
+        # Ignore $this context inside macro closures (PHPStan can't infer correct type)
+        - '#Call to an undefined method MasyukAI\\FilamentChip\\FilamentChipServiceProvider::(extraAttributes|columns)\(\)#'
+        # Ignore Filament test assertion methods
+        - '#Call to an undefined method Illuminate\\Testing\\TestResponse::assertCanSeeTableRecords\(\)#'
+        - '#Call to an undefined method Illuminate\\Testing\\TestResponse::assertSchemaStateSet\(\)#'
+        # Ignore dynamic model properties from JSON columns
+        - '#Access to an undefined property MasyukAI\\FilamentChip\\Models\\.*::\$.*#'
 
     # Exclude patterns
     excludePaths:

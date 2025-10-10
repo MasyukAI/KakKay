@@ -10,16 +10,11 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use MasyukAI\Cart\Events\CartCleared;
 use MasyukAI\Cart\Events\CartCreated;
-use MasyukAI\Cart\Events\CartUpdated;
 use MasyukAI\Cart\Events\ItemAdded;
 use MasyukAI\Cart\Events\ItemRemoved;
 use MasyukAI\Cart\Events\ItemUpdated;
 use MasyukAI\Cart\Facades\Cart as CartFacade;
-use MasyukAI\FilamentCart\Listeners\SyncCartItemOnAdd;
-use MasyukAI\FilamentCart\Listeners\SyncCartItemOnRemove;
-use MasyukAI\FilamentCart\Listeners\SyncCartItemOnUpdate;
-use MasyukAI\FilamentCart\Listeners\SyncCartOnClear;
-use MasyukAI\FilamentCart\Listeners\SyncCompleteCart;
+use MasyukAI\FilamentCart\Listeners\SyncCartOnEvent;
 
 uses(RefreshDatabase::class);
 
@@ -33,12 +28,13 @@ beforeEach(function (): void {
         $mock->shouldReceive('getPurchaseStatus')->byDefault()->andReturn(null);
     });
 
-    Event::listen(CartCreated::class, SyncCompleteCart::class);
-    Event::listen(CartUpdated::class, SyncCompleteCart::class);
-    Event::listen(CartCleared::class, SyncCartOnClear::class);
-    Event::listen(ItemAdded::class, SyncCartItemOnAdd::class);
-    Event::listen(ItemUpdated::class, SyncCartItemOnUpdate::class);
-    Event::listen(ItemRemoved::class, SyncCartItemOnRemove::class);
+    Event::listen([
+        CartCreated::class,
+        CartCleared::class,
+        ItemAdded::class,
+        ItemUpdated::class,
+        ItemRemoved::class,
+    ], SyncCartOnEvent::class);
 });
 
 test('handlePaymentSuccess uses cart snapshot totals even when cart changes after payment intent creation', function () {

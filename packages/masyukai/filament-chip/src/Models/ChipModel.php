@@ -6,6 +6,7 @@ namespace MasyukAI\FilamentChip\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use Override;
 
 abstract class ChipModel extends Model
 {
@@ -15,6 +16,7 @@ abstract class ChipModel extends Model
 
     abstract protected static function tableSuffix(): string;
 
+    #[Override]
     final public function getTable(): string
     {
         $prefix = (string) config('chip.database.table_prefix', 'chip_');

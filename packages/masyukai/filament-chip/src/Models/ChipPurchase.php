@@ -26,22 +26,22 @@ final class ChipPurchase extends ChipModel
 
     public function createdOn(): Attribute
     {
-        return Attribute::get(fn (?int $value, array $attributes) => $this->toTimestamp($attributes['created_on'] ?? null));
+        return Attribute::get(fn (?int $value, array $attributes): ?\Illuminate\Support\Carbon => $this->toTimestamp($attributes['created_on'] ?? null));
     }
 
     public function updatedOn(): Attribute
     {
-        return Attribute::get(fn (?int $value, array $attributes) => $this->toTimestamp($attributes['updated_on'] ?? null));
+        return Attribute::get(fn (?int $value, array $attributes): ?\Illuminate\Support\Carbon => $this->toTimestamp($attributes['updated_on'] ?? null));
     }
 
     public function dueOn(): Attribute
     {
-        return Attribute::get(fn (?int $value, array $attributes) => $this->toTimestamp($attributes['due'] ?? null));
+        return Attribute::get(fn (?int $value, array $attributes): ?\Illuminate\Support\Carbon => $this->toTimestamp($attributes['due'] ?? null));
     }
 
     public function viewedOn(): Attribute
     {
-        return Attribute::get(fn (?int $value, array $attributes) => $this->toTimestamp($attributes['viewed_on'] ?? null));
+        return Attribute::get(fn (?int $value, array $attributes): ?\Illuminate\Support\Carbon => $this->toTimestamp($attributes['viewed_on'] ?? null));
     }
 
     public function clientEmail(): Attribute
@@ -94,8 +94,9 @@ final class ChipPurchase extends ChipModel
         return Attribute::get(function (): array {
             $history = $this->status_history ?? [];
 
+            /** @var array<int, array<string, mixed>> $history */
             return collect($history)
-                ->map(fn (array $entry) => [
+                ->map(fn (array $entry): array => [
                     'status' => $entry['status'] ?? 'unknown',
                     'timestamp' => isset($entry['timestamp']) ? Carbon::createFromTimestampUTC((int) $entry['timestamp']) : null,
                     'translated' => str($entry['status'] ?? 'unknown')->headline(),

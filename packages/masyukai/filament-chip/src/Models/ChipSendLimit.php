@@ -12,17 +12,17 @@ final class ChipSendLimit extends ChipModel
 
     public function formattedAmount(): Attribute
     {
-        return Attribute::get(fn () => $this->formatMoney((int) $this->amount, $this->currency));
+        return Attribute::get(fn (): ?string => $this->formatMoney((int) $this->amount, $this->currency));
     }
 
     public function formattedNetAmount(): Attribute
     {
-        return Attribute::get(fn () => $this->formatMoney((int) $this->net_amount, $this->currency));
+        return Attribute::get(fn (): ?string => $this->formatMoney((int) $this->net_amount, $this->currency));
     }
 
     public function formattedFee(): Attribute
     {
-        return Attribute::get(fn () => $this->formatMoney((int) $this->fee, $this->currency));
+        return Attribute::get(fn (): ?string => $this->formatMoney((int) $this->fee, $this->currency));
     }
 
     public function statusColor(): string
