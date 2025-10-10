@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 use MasyukAI\Jnt\Exceptions\JntConfigurationException;
 
-describe('JntConfigurationException', function () {
-    it('creates exception for missing API key', function () {
+describe('JntConfigurationException', function (): void {
+    it('creates exception for missing API key', function (): void {
         $exception = JntConfigurationException::missingApiKey();
 
         expect($exception)
@@ -14,7 +14,7 @@ describe('JntConfigurationException', function () {
             ->and($exception->configKey)->toBe('jnt.api_key');
     });
 
-    it('creates exception for invalid API key', function () {
+    it('creates exception for invalid API key', function (): void {
         $exception = JntConfigurationException::invalidApiKey();
 
         expect($exception)
@@ -23,7 +23,7 @@ describe('JntConfigurationException', function () {
             ->and($exception->configKey)->toBe('jnt.api_key');
     });
 
-    it('creates exception for missing private key', function () {
+    it('creates exception for missing private key', function (): void {
         $exception = JntConfigurationException::missingPrivateKey();
 
         expect($exception)
@@ -32,7 +32,7 @@ describe('JntConfigurationException', function () {
             ->and($exception->configKey)->toBe('jnt.private_key');
     });
 
-    it('creates exception for invalid private key', function () {
+    it('creates exception for invalid private key', function (): void {
         $exception = JntConfigurationException::invalidPrivateKey();
 
         expect($exception)
@@ -41,7 +41,7 @@ describe('JntConfigurationException', function () {
             ->and($exception->configKey)->toBe('jnt.private_key');
     });
 
-    it('creates exception for missing public key', function () {
+    it('creates exception for missing public key', function (): void {
         $exception = JntConfigurationException::missingPublicKey();
 
         expect($exception)
@@ -50,7 +50,7 @@ describe('JntConfigurationException', function () {
             ->and($exception->configKey)->toBe('jnt.public_key');
     });
 
-    it('creates exception for invalid public key', function () {
+    it('creates exception for invalid public key', function (): void {
         $exception = JntConfigurationException::invalidPublicKey();
 
         expect($exception)
@@ -59,7 +59,7 @@ describe('JntConfigurationException', function () {
             ->and($exception->configKey)->toBe('jnt.public_key');
     });
 
-    it('creates exception for missing API account', function () {
+    it('creates exception for missing API account', function (): void {
         $exception = JntConfigurationException::missingApiAccount();
 
         expect($exception)
@@ -68,7 +68,7 @@ describe('JntConfigurationException', function () {
             ->and($exception->configKey)->toBe('jnt.api_account');
     });
 
-    it('creates exception for missing webhook URL', function () {
+    it('creates exception for missing webhook URL', function (): void {
         $exception = JntConfigurationException::missingWebhookUrl();
 
         expect($exception)
@@ -77,7 +77,7 @@ describe('JntConfigurationException', function () {
             ->and($exception->configKey)->toBe('jnt.webhook.url');
     });
 
-    it('creates exception for invalid configuration value', function () {
+    it('creates exception for invalid configuration value', function (): void {
         $exception = JntConfigurationException::invalidValue('jnt.timeout', 'Must be a positive integer');
 
         expect($exception)
@@ -87,7 +87,7 @@ describe('JntConfigurationException', function () {
             ->and($exception->configKey)->toBe('jnt.timeout');
     });
 
-    it('creates exception for missing configuration key', function () {
+    it('creates exception for missing configuration key', function (): void {
         $exception = JntConfigurationException::missingKey('jnt.custom_setting');
 
         expect($exception)
@@ -96,7 +96,7 @@ describe('JntConfigurationException', function () {
             ->and($exception->configKey)->toBe('jnt.custom_setting');
     });
 
-    it('creates exception for invalid environment', function () {
+    it('creates exception for invalid environment', function (): void {
         $exception = JntConfigurationException::invalidEnvironment('development');
 
         expect($exception)

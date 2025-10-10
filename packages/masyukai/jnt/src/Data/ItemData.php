@@ -70,6 +70,6 @@ class ItemData
             'itemValue' => TypeTransformer::forMoney($this->price), // MYR with 2 decimals
             'itemCurrency' => $this->currency,
             'itemDesc' => $this->description,
-        ], fn ($value) => $value !== null);
+        ], fn (?string $value): bool => $value !== null);
     }
 }

@@ -8,11 +8,11 @@ use MasyukAI\Jnt\Data\TrackingData;
 use MasyukAI\Jnt\Data\TrackingDetailData;
 use MasyukAI\Jnt\Notifications\OrderDeliveredNotification;
 
-beforeEach(function () {
+beforeEach(function (): void {
     Notification::fake();
 });
 
-test('OrderDeliveredNotification → it uses mail and database channels', function () {
+test('OrderDeliveredNotification → it uses mail and database channels', function (): void {
     $tracking = new TrackingData(
         trackingNumber: 'TRACK123',
         details: [],
@@ -23,7 +23,7 @@ test('OrderDeliveredNotification → it uses mail and database channels', functi
     expect($notification->via(new stdClass()))->toBe(['mail', 'database']);
 });
 
-test('OrderDeliveredNotification → it generates correct mail message', function () {
+test('OrderDeliveredNotification → it generates correct mail message', function (): void {
     $tracking = new TrackingData(
         trackingNumber: 'TRACK123',
         details: [
@@ -33,9 +33,9 @@ test('OrderDeliveredNotification → it generates correct mail message', functio
                 scanTypeCode: 'D',
                 scanTypeName: 'Delivered',
                 scanType: 'DELIVER',
-                scanNetworkCity: 'Kuala Lumpur',
-                scanNetworkProvince: 'Wilayah Persekutuan',
                 staffName: 'John Delivery',
+                scanNetworkProvince: 'Wilayah Persekutuan',
+                scanNetworkCity: 'Kuala Lumpur',
                 signaturePictureUrl: 'https://example.com/signature.jpg',
             ),
         ],
@@ -57,7 +57,7 @@ test('OrderDeliveredNotification → it generates correct mail message', functio
         ->and($mail->introLines)->toContain('Signature Available: Yes');
 });
 
-test('OrderDeliveredNotification → it handles tracking without order ID', function () {
+test('OrderDeliveredNotification → it handles tracking without order ID', function (): void {
     $tracking = new TrackingData(
         trackingNumber: 'TRACK123',
         details: [],
@@ -71,7 +71,7 @@ test('OrderDeliveredNotification → it handles tracking without order ID', func
         ->and($mail->introLines)->not->toContain('Order ID:');
 });
 
-test('OrderDeliveredNotification → it handles tracking without delivery details', function () {
+test('OrderDeliveredNotification → it handles tracking without delivery details', function (): void {
     $tracking = new TrackingData(
         trackingNumber: 'TRACK123',
         details: [],
@@ -86,7 +86,7 @@ test('OrderDeliveredNotification → it handles tracking without delivery detail
         ->and($mail->introLines)->not->toContain('Signature Available:');
 });
 
-test('OrderDeliveredNotification → it generates correct array representation', function () {
+test('OrderDeliveredNotification → it generates correct array representation', function (): void {
     $tracking = new TrackingData(
         trackingNumber: 'TRACK123',
         details: [
@@ -96,9 +96,9 @@ test('OrderDeliveredNotification → it generates correct array representation',
                 scanTypeCode: 'D',
                 scanTypeName: 'Delivered',
                 scanType: 'DELIVER',
-                scanNetworkCity: 'Kuala Lumpur',
-                scanNetworkProvince: 'Wilayah Persekutuan',
                 staffName: 'John Delivery',
+                scanNetworkProvince: 'Wilayah Persekutuan',
+                scanNetworkCity: 'Kuala Lumpur',
                 signaturePictureUrl: 'https://example.com/signature.jpg',
             ),
         ],
@@ -120,7 +120,7 @@ test('OrderDeliveredNotification → it generates correct array representation',
     ]);
 });
 
-test('OrderDeliveredNotification → it implements ShouldQueue', function () {
+test('OrderDeliveredNotification → it implements ShouldQueue', function (): void {
     $tracking = new TrackingData(
         trackingNumber: 'TRACK123',
         details: [],

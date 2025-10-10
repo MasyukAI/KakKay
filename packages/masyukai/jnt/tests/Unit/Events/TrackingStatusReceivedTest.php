@@ -6,8 +6,8 @@ use MasyukAI\Jnt\Data\TrackingDetailData;
 use MasyukAI\Jnt\Data\WebhookData;
 use MasyukAI\Jnt\Events\TrackingStatusReceived;
 
-describe('TrackingStatusReceived Event', function () {
-    beforeEach(function () {
+describe('TrackingStatusReceived Event', function (): void {
+    beforeEach(function (): void {
         $this->details = [
             new TrackingDetailData(
                 scanTime: '2024-01-15 09:00:00',
@@ -16,8 +16,8 @@ describe('TrackingStatusReceived Event', function () {
                 scanTypeName: 'Collection',
                 scanType: 'collection',
                 scanNetworkName: 'KL Hub',
-                scanNetworkCity: 'Kuala Lumpur',
-                scanNetworkProvince: 'Wilayah Persekutuan'
+                scanNetworkProvince: 'Wilayah Persekutuan',
+                scanNetworkCity: 'Kuala Lumpur'
             ),
             new TrackingDetailData(
                 scanTime: '2024-01-16 14:00:00',
@@ -26,8 +26,8 @@ describe('TrackingStatusReceived Event', function () {
                 scanTypeName: 'Delivery',
                 scanType: 'delivery',
                 scanNetworkName: 'Penang Branch',
-                scanNetworkCity: 'Georgetown',
-                scanNetworkProvince: 'Penang'
+                scanNetworkProvince: 'Penang',
+                scanNetworkCity: 'Georgetown'
             ),
         ];
 
@@ -40,40 +40,40 @@ describe('TrackingStatusReceived Event', function () {
         $this->event = new TrackingStatusReceived($this->webhookData);
     });
 
-    it('exposes webhook data', function () {
+    it('exposes webhook data', function (): void {
         expect($this->event->webhookData)->toBeInstanceOf(WebhookData::class)
             ->and($this->event->webhookData->billCode)->toBe('JNTMY12345678');
     });
 
-    it('gets bill code', function () {
+    it('gets bill code', function (): void {
         expect($this->event->getBillCode())->toBe('JNTMY12345678');
     });
 
-    it('gets txlogistic ID', function () {
+    it('gets txlogistic ID', function (): void {
         expect($this->event->getTxlogisticId())->toBe('ORDER-001');
     });
 
-    it('gets latest status', function () {
+    it('gets latest status', function (): void {
         expect($this->event->getLatestStatus())->toBe('delivery');
     });
 
-    it('gets latest description', function () {
+    it('gets latest description', function (): void {
         expect($this->event->getLatestDescription())->toBe('Package delivered');
     });
 
-    it('gets latest location', function () {
+    it('gets latest location', function (): void {
         expect($this->event->getLatestLocation())->toBe('Penang Branch, Georgetown, Penang');
     });
 
-    it('gets latest timestamp', function () {
+    it('gets latest timestamp', function (): void {
         expect($this->event->getLatestTimestamp())->toBe('2024-01-16 14:00:00');
     });
 
-    it('detects delivery status', function () {
+    it('detects delivery status', function (): void {
         expect($this->event->isDelivered())->toBeTrue();
     });
 
-    it('detects collection status', function () {
+    it('detects collection status', function (): void {
         $collectionData = new WebhookData(
             billCode: 'JNTMY12345678',
             txlogisticId: null,
@@ -94,7 +94,7 @@ describe('TrackingStatusReceived Event', function () {
             ->and($event->isDelivered())->toBeFalse();
     });
 
-    it('detects problem status', function () {
+    it('detects problem status', function (): void {
         $problemData = new WebhookData(
             billCode: 'JNTMY12345678',
             txlogisticId: null,
@@ -115,7 +115,7 @@ describe('TrackingStatusReceived Event', function () {
             ->and($event->isDelivered())->toBeFalse();
     });
 
-    it('detects return status as problem', function () {
+    it('detects return status as problem', function (): void {
         $returnData = new WebhookData(
             billCode: 'JNTMY12345678',
             txlogisticId: null,
@@ -135,7 +135,7 @@ describe('TrackingStatusReceived Event', function () {
         expect($event->hasProblem())->toBeTrue();
     });
 
-    it('detects reject status as problem', function () {
+    it('detects reject status as problem', function (): void {
         $rejectData = new WebhookData(
             billCode: 'JNTMY12345678',
             txlogisticId: null,
@@ -155,7 +155,7 @@ describe('TrackingStatusReceived Event', function () {
         expect($event->hasProblem())->toBeTrue();
     });
 
-    it('detects signed status as delivered', function () {
+    it('detects signed status as delivered', function (): void {
         $signedData = new WebhookData(
             billCode: 'JNTMY12345678',
             txlogisticId: null,
@@ -175,7 +175,7 @@ describe('TrackingStatusReceived Event', function () {
         expect($event->isDelivered())->toBeTrue();
     });
 
-    it('handles null txlogistic ID', function () {
+    it('handles null txlogistic ID', function (): void {
         $data = new WebhookData(
             billCode: 'JNTMY12345678',
             txlogisticId: null,
@@ -187,7 +187,7 @@ describe('TrackingStatusReceived Event', function () {
         expect($event->getTxlogisticId())->toBeNull();
     });
 
-    it('handles empty details array', function () {
+    it('handles empty details array', function (): void {
         $data = new WebhookData(
             billCode: 'JNTMY12345678',
             txlogisticId: null,
@@ -205,7 +205,7 @@ describe('TrackingStatusReceived Event', function () {
             ->and($event->hasProblem())->toBeFalse();
     });
 
-    it('handles partial location data', function () {
+    it('handles partial location data', function (): void {
         $partialData = new WebhookData(
             billCode: 'JNTMY12345678',
             txlogisticId: null,
@@ -226,7 +226,7 @@ describe('TrackingStatusReceived Event', function () {
         expect($event->getLatestLocation())->toBe('Kuala Lumpur');
     });
 
-    it('returns null location when all location fields are empty', function () {
+    it('returns null location when all location fields are empty', function (): void {
         $noLocationData = new WebhookData(
             billCode: 'JNTMY12345678',
             txlogisticId: null,

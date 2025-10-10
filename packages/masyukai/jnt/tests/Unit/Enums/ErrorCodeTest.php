@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 use MasyukAI\Jnt\Enums\ErrorCode;
 
-describe('ErrorCode Enum', function () {
-    it('has correct integer values', function () {
+describe('ErrorCode Enum', function (): void {
+    it('has correct integer values', function (): void {
         expect(ErrorCode::SUCCESS->value)->toBe(1);
         expect(ErrorCode::FAIL->value)->toBe(0);
         expect(ErrorCode::DIGEST_EMPTY->value)->toBe(145003052);
@@ -20,7 +20,7 @@ describe('ErrorCode Enum', function () {
         expect(ErrorCode::ORDER_CANNOT_BE_CANCELLED->value)->toBe(999002010);
     });
 
-    it('returns correct messages', function () {
+    it('returns correct messages', function (): void {
         expect(ErrorCode::SUCCESS->getMessage())->toBe('Success');
         expect(ErrorCode::FAIL->getMessage())->toBe('Operation failed');
         expect(ErrorCode::DIGEST_EMPTY->getMessage())->toBe('Signature digest is empty');
@@ -29,7 +29,7 @@ describe('ErrorCode Enum', function () {
         expect(ErrorCode::DATA_NOT_FOUND->getMessage())->toBe('Data cannot be found');
     });
 
-    it('returns detailed descriptions', function () {
+    it('returns detailed descriptions', function (): void {
         expect(ErrorCode::SUCCESS->getDescription())->toContain('successfully');
         expect(ErrorCode::DIGEST_EMPTY->getDescription())->toContain('Signature Tools');
         expect(ErrorCode::API_ACCOUNT_EMPTY->getDescription())->toContain('Console');
@@ -38,7 +38,7 @@ describe('ErrorCode Enum', function () {
         expect(ErrorCode::DATA_NOT_FOUND->getDescription())->toContain('tracking number');
     });
 
-    it('correctly identifies retryable errors', function () {
+    it('correctly identifies retryable errors', function (): void {
         expect(ErrorCode::TIMESTAMP_EMPTY->isRetryable())->toBeTrue();
         expect(ErrorCode::SIGNATURE_VERIFICATION_FAILED->isRetryable())->toBeTrue();
         expect(ErrorCode::ILLEGAL_PARAMETERS->isRetryable())->toBeTrue();
@@ -48,7 +48,7 @@ describe('ErrorCode Enum', function () {
         expect(ErrorCode::SUCCESS->isRetryable())->toBeFalse();
     });
 
-    it('correctly identifies client errors', function () {
+    it('correctly identifies client errors', function (): void {
         expect(ErrorCode::DIGEST_EMPTY->isClientError())->toBeTrue();
         expect(ErrorCode::API_ACCOUNT_EMPTY->isClientError())->toBeTrue();
         expect(ErrorCode::ILLEGAL_PARAMETERS->isClientError())->toBeTrue();
@@ -59,7 +59,7 @@ describe('ErrorCode Enum', function () {
         expect(ErrorCode::FAIL->isClientError())->toBeFalse();
     });
 
-    it('correctly identifies server errors', function () {
+    it('correctly identifies server errors', function (): void {
         // J&T API does not have explicit server error codes
         expect(ErrorCode::SUCCESS->isServerError())->toBeFalse();
         expect(ErrorCode::FAIL->isServerError())->toBeFalse();
@@ -67,7 +67,7 @@ describe('ErrorCode Enum', function () {
         expect(ErrorCode::DATA_NOT_FOUND->isServerError())->toBeFalse();
     });
 
-    it('returns correct categories', function () {
+    it('returns correct categories', function (): void {
         expect(ErrorCode::SUCCESS->getCategory())->toBe('Success');
         expect(ErrorCode::FAIL->getCategory())->toBe('Generic');
 
@@ -88,7 +88,7 @@ describe('ErrorCode Enum', function () {
         expect(ErrorCode::ORDER_CANNOT_BE_CANCELLED->getCategory())->toBe('Business Logic');
     });
 
-    it('correctly identifies success status', function () {
+    it('correctly identifies success status', function (): void {
         expect(ErrorCode::SUCCESS->isSuccess())->toBeTrue();
 
         expect(ErrorCode::FAIL->isSuccess())->toBeFalse();
@@ -96,7 +96,7 @@ describe('ErrorCode Enum', function () {
         expect(ErrorCode::DATA_NOT_FOUND->isSuccess())->toBeFalse();
     });
 
-    it('correctly identifies failure status', function () {
+    it('correctly identifies failure status', function (): void {
         expect(ErrorCode::FAIL->isFailure())->toBeTrue();
         expect(ErrorCode::DIGEST_EMPTY->isFailure())->toBeTrue();
         expect(ErrorCode::DATA_NOT_FOUND->isFailure())->toBeTrue();
@@ -104,7 +104,7 @@ describe('ErrorCode Enum', function () {
         expect(ErrorCode::SUCCESS->isFailure())->toBeFalse();
     });
 
-    it('creates from API response code', function () {
+    it('creates from API response code', function (): void {
         expect(ErrorCode::fromCode(1))->toBe(ErrorCode::SUCCESS);
         expect(ErrorCode::fromCode(0))->toBe(ErrorCode::FAIL);
         expect(ErrorCode::fromCode(145003052))->toBe(ErrorCode::DIGEST_EMPTY);
@@ -114,7 +114,7 @@ describe('ErrorCode Enum', function () {
         expect(ErrorCode::fromCode(999999))->toBeNull();
     });
 
-    it('returns all authentication errors', function () {
+    it('returns all authentication errors', function (): void {
         $authErrors = ErrorCode::authenticationErrors();
 
         expect($authErrors)->toHaveCount(6);
@@ -126,7 +126,7 @@ describe('ErrorCode Enum', function () {
         expect($authErrors)->toContain(ErrorCode::SIGNATURE_VERIFICATION_FAILED);
     });
 
-    it('returns all validation errors', function () {
+    it('returns all validation errors', function (): void {
         $validationErrors = ErrorCode::validationErrors();
 
         expect($validationErrors)->toHaveCount(4);
@@ -136,7 +136,7 @@ describe('ErrorCode Enum', function () {
         expect($validationErrors)->toContain(ErrorCode::TX_LOGISTIC_ID_REQUIRED);
     });
 
-    it('returns all data errors', function () {
+    it('returns all data errors', function (): void {
         $dataErrors = ErrorCode::dataErrors();
 
         expect($dataErrors)->toHaveCount(2);
@@ -144,7 +144,7 @@ describe('ErrorCode Enum', function () {
         expect($dataErrors)->toContain(ErrorCode::DATA_NOT_FOUND_CANCEL);
     });
 
-    it('returns all business logic errors', function () {
+    it('returns all business logic errors', function (): void {
         $businessErrors = ErrorCode::businessLogicErrors();
 
         expect($businessErrors)->toHaveCount(1);
@@ -152,8 +152,8 @@ describe('ErrorCode Enum', function () {
     });
 });
 
-describe('ErrorCode - Real-World Scenarios', function () {
-    it('handles authentication failure scenario', function () {
+describe('ErrorCode - Real-World Scenarios', function (): void {
+    it('handles authentication failure scenario', function (): void {
         $error = ErrorCode::SIGNATURE_VERIFICATION_FAILED;
 
         expect($error->getCategory())->toBe('Authentication');
@@ -162,7 +162,7 @@ describe('ErrorCode - Real-World Scenarios', function () {
         expect($error->getDescription())->toContain('privateKey');
     });
 
-    it('handles data not found scenario', function () {
+    it('handles data not found scenario', function (): void {
         $error = ErrorCode::DATA_NOT_FOUND;
 
         expect($error->getCategory())->toBe('Data');
@@ -171,7 +171,7 @@ describe('ErrorCode - Real-World Scenarios', function () {
         expect($error->getMessage())->toBe('Data cannot be found');
     });
 
-    it('handles validation error scenario', function () {
+    it('handles validation error scenario', function (): void {
         $error = ErrorCode::CUSTOMER_CODE_REQUIRED;
 
         expect($error->getCategory())->toBe('Validation');
@@ -180,7 +180,7 @@ describe('ErrorCode - Real-World Scenarios', function () {
         expect($error->getDescription())->toContain('mandatory');
     });
 
-    it('handles successful response scenario', function () {
+    it('handles successful response scenario', function (): void {
         $error = ErrorCode::SUCCESS;
 
         expect($error->isSuccess())->toBeTrue();
@@ -189,7 +189,7 @@ describe('ErrorCode - Real-World Scenarios', function () {
         expect($error->getCategory())->toBe('Success');
     });
 
-    it('handles order cancellation failure scenario', function () {
+    it('handles order cancellation failure scenario', function (): void {
         $error = ErrorCode::ORDER_CANNOT_BE_CANCELLED;
 
         expect($error->getCategory())->toBe('Business Logic');

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 use MasyukAI\Jnt\Exceptions\JntApiException;
 
-describe('JntApiException', function () {
-    it('creates exception for order creation failure', function () {
+describe('JntApiException', function (): void {
+    it('creates exception for order creation failure', function (): void {
         $exception = JntApiException::orderCreationFailed('Invalid address', ['error' => 'details']);
 
         expect($exception)
@@ -16,7 +16,7 @@ describe('JntApiException', function () {
             ->and($exception->apiResponse)->toBe(['error' => 'details']);
     });
 
-    it('creates exception for order cancellation failure', function () {
+    it('creates exception for order cancellation failure', function (): void {
         $exception = JntApiException::orderCancellationFailed('ORDER-123', 'Already delivered');
 
         expect($exception)
@@ -26,7 +26,7 @@ describe('JntApiException', function () {
             ->and($exception->endpoint)->toBe('order/cancelOrder');
     });
 
-    it('creates exception for tracking failure', function () {
+    it('creates exception for tracking failure', function (): void {
         $exception = JntApiException::trackingFailed('ORDER-456', ['msg' => 'Not found']);
 
         expect($exception)
@@ -37,7 +37,7 @@ describe('JntApiException', function () {
             ->and($exception->apiResponse)->toBe(['msg' => 'Not found']);
     });
 
-    it('creates exception for order query failure', function () {
+    it('creates exception for order query failure', function (): void {
         $exception = JntApiException::orderQueryFailed('ORDER-789');
 
         expect($exception)
@@ -47,7 +47,7 @@ describe('JntApiException', function () {
             ->and($exception->endpoint)->toBe('order/getOrders');
     });
 
-    it('creates exception for print failure', function () {
+    it('creates exception for print failure', function (): void {
         $exception = JntApiException::printFailed('ORDER-999', 'Template not found');
 
         expect($exception)
@@ -57,7 +57,7 @@ describe('JntApiException', function () {
             ->and($exception->endpoint)->toBe('order/printOrder');
     });
 
-    it('creates exception for invalid API response', function () {
+    it('creates exception for invalid API response', function (): void {
         $response = ['unexpected' => 'format'];
         $exception = JntApiException::invalidApiResponse('order/addOrder', $response);
 
@@ -69,7 +69,7 @@ describe('JntApiException', function () {
             ->and($exception->apiResponse)->toBe($response);
     });
 
-    it('creates exception for rate limit exceeded', function () {
+    it('creates exception for rate limit exceeded', function (): void {
         $exception = JntApiException::rateLimitExceeded('order/addOrder');
 
         expect($exception)
@@ -79,7 +79,7 @@ describe('JntApiException', function () {
             ->and($exception->endpoint)->toBe('order/addOrder');
     });
 
-    it('creates exception for authentication failure', function () {
+    it('creates exception for authentication failure', function (): void {
         $exception = JntApiException::authenticationFailed('Invalid API key');
 
         expect($exception)
@@ -88,7 +88,7 @@ describe('JntApiException', function () {
             ->and($exception->errorCode)->toBe('AUTH_ERROR');
     });
 
-    it('includes API response in exception data', function () {
+    it('includes API response in exception data', function (): void {
         $response = [
             'code' => '0',
             'msg' => 'Error message',
@@ -99,7 +99,7 @@ describe('JntApiException', function () {
         expect($exception->apiResponse)->toBe($response);
     });
 
-    it('allows null API response', function () {
+    it('allows null API response', function (): void {
         $exception = JntApiException::orderCreationFailed('Unknown error');
 
         expect($exception->apiResponse)->toBeNull();

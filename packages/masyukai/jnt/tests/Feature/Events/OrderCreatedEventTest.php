@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Event;
 use MasyukAI\Jnt\Data\OrderData;
 use MasyukAI\Jnt\Events\OrderCreatedEvent;
 
-test('OrderCreatedEvent → it exposes order data', function () {
+test('OrderCreatedEvent → it exposes order data', function (): void {
     $orderData = new OrderData(
         orderId: 'ORDER123',
         trackingNumber: 'TRACK456',
@@ -21,7 +21,7 @@ test('OrderCreatedEvent → it exposes order data', function () {
         ->and($event->hasTrackingNumber())->toBeTrue();
 });
 
-test('OrderCreatedEvent → it handles order without tracking number', function () {
+test('OrderCreatedEvent → it handles order without tracking number', function (): void {
     $orderData = new OrderData(
         orderId: 'ORDER123',
         trackingNumber: null,
@@ -33,7 +33,7 @@ test('OrderCreatedEvent → it handles order without tracking number', function 
         ->and($event->hasTrackingNumber())->toBeFalse();
 });
 
-test('OrderCreatedEvent → it converts to array', function () {
+test('OrderCreatedEvent → it converts to array', function (): void {
     $orderData = new OrderData(
         orderId: 'ORDER123',
         trackingNumber: 'TRACK456',
@@ -49,7 +49,7 @@ test('OrderCreatedEvent → it converts to array', function () {
         ->and($array['sortingCode'])->toBe('SC789');
 });
 
-test('OrderCreatedEvent → it can be dispatched', function () {
+test('OrderCreatedEvent → it can be dispatched', function (): void {
     Event::fake();
 
     $orderData = new OrderData(orderId: 'ORDER123');

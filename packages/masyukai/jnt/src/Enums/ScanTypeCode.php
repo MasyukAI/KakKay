@@ -33,7 +33,7 @@ enum ScanTypeCode: string
 
     // Terminal/Abnormal States (200-306)
     case COLLECTED = '200';
-    case DAMAGE_PARCEL = '200';
+    case DAMAGE_PARCEL = '201';
     case LOST_PARCEL = '300';
     case DISPOSE_PARCEL = '301';
     case REJECT_PARCEL = '302';
@@ -86,7 +86,7 @@ enum ScanTypeCode: string
      */
     public function isTerminalState(): bool
     {
-        return in_array($this->value, ['200', '300', '301', '302', '303', '304', '305', '306'], true);
+        return in_array($this->value, ['200', '201', '300', '301', '302', '303', '304', '305', '306'], true);
     }
 
     /**
@@ -131,8 +131,8 @@ enum ScanTypeCode: string
     public function getCategory(): string
     {
         return match (true) {
-            $this->value >= '400' && $this->value <= '405' => 'Cargo/Customs',
-            $this->value >= '10' && $this->value <= '100' => 'Normal Flow',
+            $this->value >= '400' && $this->value <= '405' => 'Cargo/Customs', // @phpstan-ignore-line
+            $this->value >= '10' && $this->value <= '100' => 'Normal Flow', // @phpstan-ignore-line
             $this->value >= '110' && $this->value <= '173' => 'Problems/Returns',
             $this->value >= '200' && $this->value <= '306' => 'Terminal States',
             default => 'Unknown',

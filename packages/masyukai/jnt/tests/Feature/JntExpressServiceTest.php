@@ -7,7 +7,7 @@ use MasyukAI\Jnt\Exceptions\JntException;
 use MasyukAI\Jnt\Exceptions\JntNetworkException;
 use MasyukAI\Jnt\Services\JntExpressService;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->config = [
         'environment' => 'testing',
         'api_account' => 'test-account',
@@ -36,7 +36,7 @@ beforeEach(function () {
     );
 });
 
-test('creates order successfully with Http facade', function () {
+test('creates order successfully with Http facade', function (): void {
     Http::fake([
         '*/api/order/addOrder' => Http::response([
             'code' => '1',
@@ -61,15 +61,13 @@ test('creates order successfully with Http facade', function () {
         ->and($result->orderId)->toBe('TXN-001');
 
     // Verify request was sent with correct headers
-    Http::assertSent(function ($request) {
-        return $request->hasHeader('apiAccount')
-            && $request->hasHeader('digest')
-            && $request->hasHeader('timestamp')
-            && $request->url() === 'https://jtjms-api.jtexpress.my/api/order/addOrder';
-    });
+    Http::assertSent(fn ($request): bool => $request->hasHeader('apiAccount')
+        && $request->hasHeader('digest')
+        && $request->hasHeader('timestamp')
+        && $request->url() === 'https://jtjms-api.jtexpress.my/api/order/addOrder');
 });
 
-test('handles API errors correctly', function () {
+test('handles API errors correctly', function (): void {
     Http::fake([
         '*/api/order/addOrder' => Http::response([
             'code' => '0',
@@ -87,8 +85,8 @@ test('handles API errors correctly', function () {
     ]);
 })->throws(JntException::class, 'Invalid customer code');
 
-test('handles connection errors', function () {
-    Http::fake(function () {
+test('handles connection errors', function (): void {
+    Http::fake(function (): void {
         throw new Illuminate\Http\Client\ConnectionException('Connection timeout');
     });
 
@@ -101,7 +99,7 @@ test('handles connection errors', function () {
     ]);
 })->throws(JntNetworkException::class);
 
-test('retries on 5xx errors', function () {
+test('retries on 5xx errors', function (): void {
     Http::fake([
         '*/api/order/addOrder' => Http::sequence()
             ->push(['code' => '0', 'msg' => 'Server error'], 500)
@@ -123,7 +121,7 @@ test('retries on 5xx errors', function () {
     Http::assertSentCount(3);
 });
 
-test('handles HTTP errors', function () {
+test('handles HTTP errors', function (): void {
     Http::fake([
         '*/api/order/addOrder' => Http::response('Server Error', 503),
     ]);
@@ -137,7 +135,7 @@ test('handles HTTP errors', function () {
     ]);
 })->throws(JntException::class, 'HTTP 503');
 
-test('verifies request payload structure', function () {
+test('verifies request payload structure', function (): void {
     Http::fake([
         '*/api/order/addOrder' => Http::response([
             'code' => '1',
@@ -154,7 +152,7 @@ test('verifies request payload structure', function () {
         'packageInfo' => ['weight' => '1'],
     ]);
 
-    Http::assertSent(function ($request) {
+    Http::assertSent(function ($request): bool {
         $body = $request->data();
 
         // Verify it's form-encoded
@@ -164,7 +162,7 @@ test('verifies request payload structure', function () {
     });
 });
 
-test('creates order with data objects', function () {
+test('creates order with data objects', function (): void {
     Http::fake([
         '*/api/order/addOrder' => Http::response([
             'code' => '1',
@@ -224,8 +222,8 @@ test('creates order with data objects', function () {
     expect($result->trackingNumber)->toBe('JT987654321')
         ->and($result->orderId)->toBe('TXN-002');
 
-    Http::assertSent(function ($request) {
-        $body = json_decode($request->data()['bizContent'], true);
+    Http::assertSent(function ($request): bool {
+        $body = json_decode((string) $request->data()['bizContent'], true);
 
         return $body['sender']['name'] === 'John Doe'
             && $body['receiver']['name'] === 'Jane Doe'
@@ -233,7 +231,7 @@ test('creates order with data objects', function () {
     });
 });
 
-test('uses builder pattern', function () {
+test('uses builder pattern', function (): void {
     Http::fake([
         '*/api/order/addOrder' => Http::response([
             'code' => '1',
@@ -290,8 +288,8 @@ test('uses builder pattern', function () {
 
     expect($result->trackingNumber)->toBe('JT555');
 
-    Http::assertSent(function ($request) {
-        $body = json_decode($request->data()['bizContent'], true);
+    Http::assertSent(function ($request): bool {
+        $body = json_decode((string) $request->data()['bizContent'], true);
 
         return $body['txlogisticId'] === 'TXN-BUILDER'
             && $body['sender']['name'] === 'Builder Sender';

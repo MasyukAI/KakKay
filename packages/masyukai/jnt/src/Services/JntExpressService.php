@@ -20,10 +20,13 @@ class JntExpressService
 {
     protected ?JntClient $client = null;
 
+    /**
+     * @param  array<string, mixed>  $config
+     */
     public function __construct(
         protected readonly string $customerCode,
         protected readonly string $password,
-        protected readonly array $config,
+        protected readonly array $config = [],
     ) {
         // Client is now lazy-loaded on first use
     }
@@ -40,6 +43,7 @@ class JntExpressService
      * Option 2: Direct method with data objects (type-safe)
      *
      * @param  array<ItemData>  $items
+     * @param  array<string, mixed>  $additionalData
      */
     public function createOrder(
         AddressData $sender,
@@ -59,7 +63,7 @@ class JntExpressService
             'password' => $this->password,
             'sender' => $sender->toApiArray(),
             'receiver' => $receiver->toApiArray(),
-            'items' => array_map(fn (ItemData $item) => $item->toApiArray(), $items),
+            'items' => array_map(fn (ItemData $item): array => $item->toApiArray(), $items),
             'packageInfo' => $packageInfo->toApiArray(),
             ...$additionalData,
         ];
@@ -69,6 +73,8 @@ class JntExpressService
 
     /**
      * Option 3: Array passthrough (quick prototyping, less type safety)
+     *
+     * @param  array<string, mixed>  $orderData
      */
     public function createOrderFromArray(array $orderData): OrderData
     {
@@ -77,6 +83,9 @@ class JntExpressService
         return OrderData::fromApiArray($response['data']);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function queryOrder(string $orderId): array
     {
         $response = $this->getClient()->post('/api/order/getOrders', [
@@ -116,6 +125,9 @@ class JntExpressService
      * $result = $service->cancelOrder('ORDER123', 'Custom cancellation reason');
      * ```
      */
+    /**
+     * @return array<string, mixed>
+     */
     public function cancelOrder(string $orderId, \MasyukAI\Jnt\Enums\CancellationReason|string $reason, ?string $trackingNumber = null): array
     {
         $payload = [
@@ -134,6 +146,9 @@ class JntExpressService
         return $response['data'];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function printOrder(string $orderId, ?string $trackingNumber = null, ?string $templateName = null): array
     {
         $payload = [
@@ -189,6 +204,7 @@ class JntExpressService
     }
 
     /**
+     * @param  array<string, mixed>  $webhookData
      * @return array<TrackingData>
      */
     public function parseWebhookPayload(array $webhookData): array
@@ -206,7 +222,7 @@ class JntExpressService
         }
 
         return array_map(
-            fn (array $item) => TrackingData::fromApiArray($item),
+            fn (array $item): TrackingData => TrackingData::fromApiArray($item),
             $bizContent
         );
     }
@@ -220,8 +236,8 @@ class JntExpressService
      * Accepts clean field names (orderId, trackingNumber) which are automatically
      * converted to J&T API format internally for consistency with the rest of the package.
      *
-     * @param  array<array>  $ordersData  Array of order data arrays with clean field names
-     * @return array{successful: array<OrderData>, failed: array{orderId: string, error: string, exception: Throwable}}
+     * @param  array<array<string, mixed>>  $ordersData  Array of order data arrays with clean field names
+     * @return array{successful: array<OrderData>, failed: array<array{orderId: string, error: string, exception: Throwable}>}
      *
      * @example
      * ```php
@@ -278,7 +294,7 @@ class JntExpressService
      *
      * @param  array<string>  $orderIds  Array of order IDs to track
      * @param  array<string>  $trackingNumbers  Array of tracking numbers to track
-     * @return array{successful: array<TrackingData>, failed: array{identifier: string, error: string, exception: Throwable}}
+     * @return array{successful: array<TrackingData>, failed: array<array{identifier: string, type: string, error: string, exception: Throwable}>}
      *
      * @example
      * ```php
@@ -344,7 +360,7 @@ class JntExpressService
      *
      * @param  array<string>  $orderIds  Array of order IDs to cancel
      * @param  \MasyukAI\Jnt\Enums\CancellationReason|string  $reason  Cancellation reason
-     * @return array{successful: array{orderId: string, data: array}, failed: array{orderId: string, error: string, exception: Throwable}}
+     * @return array{successful: array<array{orderId: string, data: array<string, mixed>}>, failed: array<array{orderId: string, error: string, exception: Throwable}>}
      *
      * @example
      * ```php
@@ -394,7 +410,7 @@ class JntExpressService
      *
      * @param  array<string>  $orderIds  Array of order IDs to print
      * @param  string|null  $templateName  Optional template name for all waybills
-     * @return array{successful: array{orderId: string, data: array}, failed: array{orderId: string, error: string, exception: Throwable}}
+     * @return array{successful: array<array{orderId: string, data: array<string, mixed>}>, failed: array<array{orderId: string, error: string, exception: Throwable}>}
      *
      * @example
      * ```php
@@ -444,7 +460,7 @@ class JntExpressService
      */
     protected function getClient(): JntClient
     {
-        if ($this->client === null) {
+        if (! $this->client instanceof JntClient) {
             $baseUrl = $this->getBaseUrl();
             $apiAccount = $this->config['api_account'] ?? throw JntConfigurationException::missingApiAccount();
             $privateKey = $this->config['private_key'] ?? throw JntConfigurationException::missingPrivateKey();

@@ -24,6 +24,8 @@ final readonly class PrintWaybillData
 
     /**
      * Create instance from J&T API response array.
+     *
+     * @param  array<string, mixed>  $data
      */
     public static function fromApiArray(array $data): self
     {
@@ -45,6 +47,8 @@ final readonly class PrintWaybillData
 
     /**
      * Convert to array representation.
+     *
+     * @return array<string, string|bool|null>
      */
     public function toArray(): array
     {
@@ -86,7 +90,7 @@ final readonly class PrintWaybillData
             return false;
         }
 
-        $pdfContent = base64_decode($this->base64Content, true);
+        $pdfContent = base64_decode((string) $this->base64Content, true);
 
         if ($pdfContent === false) {
             return false;
@@ -112,7 +116,7 @@ final readonly class PrintWaybillData
             return null;
         }
 
-        $decoded = base64_decode($this->base64Content, true);
+        $decoded = base64_decode((string) $this->base64Content, true);
 
         return $decoded !== false ? $decoded : null;
     }

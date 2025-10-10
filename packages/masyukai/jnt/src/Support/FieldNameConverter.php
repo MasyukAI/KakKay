@@ -25,8 +25,8 @@ class FieldNameConverter
      * - Item fields: name → itemName, quantity → number, price → itemValue, description → itemDesc
      * - Package fields: quantity → packageQuantity, value → packageValue
      *
-     * @param  array  $data  Order data with clean field names
-     * @return array Order data with J&T API field names
+     * @param  array<string, mixed>  $data  Order data with clean field names
+     * @return array<string, mixed> Order data with J&T API field names
      *
      * @example
      * ```php
@@ -68,7 +68,7 @@ class FieldNameConverter
         // Convert items array
         if (isset($data['items']) && is_array($data['items'])) {
             $converted['items'] = array_map(
-                fn ($item) => is_array($item) ? self::convertItem($item) : $item,
+                fn ($item): mixed => is_array($item) ? self::convertItem($item) : $item,
                 $data['items']
             );
         }
@@ -97,6 +97,10 @@ class FieldNameConverter
      * $api = FieldNameConverter::convertAddress($clean);
      * // Result: ['name' => 'John Doe', 'prov' => 'Selangor']
      * ```
+     */
+    /**
+     * @param  array<string, mixed>  $address
+     * @return array<string, mixed>
      */
     public static function convertAddress(array $address): array
     {
@@ -135,6 +139,10 @@ class FieldNameConverter
      * $api = FieldNameConverter::convertItem($clean);
      * // Result: ['itemName' => 'Widget', 'number' => 2, 'itemValue' => 99.99, 'itemDesc' => 'Test product']
      * ```
+     */
+    /**
+     * @param  array<string, mixed>  $item
+     * @return array<string, mixed>
      */
     public static function convertItem(array $item): array
     {
@@ -181,6 +189,10 @@ class FieldNameConverter
      * $api = FieldNameConverter::convertPackageInfo($clean);
      * // Result: ['packageQuantity' => 1, 'packageValue' => 100.00, 'weight' => 1.5]
      * ```
+     */
+    /**
+     * @param  array<string, mixed>  $packageInfo
+     * @return array<string, mixed>
      */
     public static function convertPackageInfo(array $packageInfo): array
     {

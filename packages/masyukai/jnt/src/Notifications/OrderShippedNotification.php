@@ -49,16 +49,14 @@ class OrderShippedNotification extends Notification implements ShouldQueue
         }
 
         $details = $this->tracking->details;
-        if (! empty($details)) {
+        if ($details !== []) {
             $latest = end($details);
-            if ($latest instanceof \MasyukAI\Jnt\Data\TrackingDetailData) {
-                if ($latest->scanNetworkCity !== null || $latest->scanNetworkProvince !== null) {
-                    $location = implode(', ', array_filter([
-                        $latest->scanNetworkCity,
-                        $latest->scanNetworkProvince,
-                    ]));
-                    $message->line('Current Location: '.$location);
-                }
+            if ($latest instanceof \MasyukAI\Jnt\Data\TrackingDetailData && ($latest->scanNetworkCity !== null || $latest->scanNetworkProvince !== null)) {
+                $location = implode(', ', array_filter([
+                    $latest->scanNetworkCity,
+                    $latest->scanNetworkProvince,
+                ]));
+                $message->line('Current Location: '.$location);
             }
         }
 
@@ -76,15 +74,13 @@ class OrderShippedNotification extends Notification implements ShouldQueue
         $details = $this->tracking->details;
         $location = null;
 
-        if (! empty($details)) {
+        if ($details !== []) {
             $latest = end($details);
-            if ($latest instanceof \MasyukAI\Jnt\Data\TrackingDetailData) {
-                if ($latest->scanNetworkCity !== null || $latest->scanNetworkProvince !== null) {
-                    $location = implode(', ', array_filter([
-                        $latest->scanNetworkCity,
-                        $latest->scanNetworkProvince,
-                    ]));
-                }
+            if ($latest instanceof \MasyukAI\Jnt\Data\TrackingDetailData && ($latest->scanNetworkCity !== null || $latest->scanNetworkProvince !== null)) {
+                $location = implode(', ', array_filter([
+                    $latest->scanNetworkCity,
+                    $latest->scanNetworkProvince,
+                ]));
             }
         }
 

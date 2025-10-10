@@ -14,6 +14,9 @@ use Throwable;
  */
 class JntValidationException extends JntException
 {
+    /**
+     * @param  array<string, mixed>  $errors
+     */
     public function __construct(
         string $message,
         public readonly array $errors = [],
@@ -26,11 +29,13 @@ class JntValidationException extends JntException
 
     /**
      * Create exception for field validation failure.
+     *
+     * @param  array<string, mixed>  $errors
      */
     public static function fieldValidationFailed(string $field, string $reason, array $errors = []): self
     {
         return new self(
-            message: "Validation failed for field '{$field}': {$reason}",
+            message: sprintf("Validation failed for field '%s': %s", $field, $reason),
             errors: $errors,
             field: $field
         );
@@ -42,7 +47,7 @@ class JntValidationException extends JntException
     public static function requiredFieldMissing(string $field): self
     {
         return new self(
-            message: "Required field '{$field}' is missing",
+            message: sprintf("Required field '%s' is missing", $field),
             errors: [$field => ['The field is required']],
             field: $field
         );
@@ -56,8 +61,8 @@ class JntValidationException extends JntException
         $valueStr = is_scalar($value) ? (string) $value : gettype($value);
 
         return new self(
-            message: "Invalid value for field '{$field}': expected {$expected}, got {$valueStr}",
-            errors: [$field => ["Expected {$expected}"]],
+            message: sprintf("Invalid value for field '%s': expected %s, got %s", $field, $expected, $valueStr),
+            errors: [$field => ['Expected '.$expected]],
             field: $field
         );
     }
@@ -68,8 +73,8 @@ class JntValidationException extends JntException
     public static function fieldTooLong(string $field, int $maxLength, int $actualLength): self
     {
         return new self(
-            message: "Field '{$field}' exceeds maximum length of {$maxLength} characters (got {$actualLength})",
-            errors: [$field => ["Maximum length is {$maxLength} characters"]],
+            message: sprintf("Field '%s' exceeds maximum length of %d characters (got %d)", $field, $maxLength, $actualLength),
+            errors: [$field => [sprintf('Maximum length is %d characters', $maxLength)]],
             field: $field
         );
     }
@@ -80,8 +85,8 @@ class JntValidationException extends JntException
     public static function fieldTooShort(string $field, int $minLength, int $actualLength): self
     {
         return new self(
-            message: "Field '{$field}' is below minimum length of {$minLength} characters (got {$actualLength})",
-            errors: [$field => ["Minimum length is {$minLength} characters"]],
+            message: sprintf("Field '%s' is below minimum length of %d characters (got %d)", $field, $minLength, $actualLength),
+            errors: [$field => [sprintf('Minimum length is %d characters', $minLength)]],
             field: $field
         );
     }
@@ -92,8 +97,8 @@ class JntValidationException extends JntException
     public static function valueOutOfRange(string $field, float $min, float $max, float $actual): self
     {
         return new self(
-            message: "Field '{$field}' value {$actual} is outside valid range ({$min}-{$max})",
-            errors: [$field => ["Value must be between {$min} and {$max}"]],
+            message: sprintf("Field '%s' value %s is outside valid range (%s-%s)", $field, $actual, $min, $max),
+            errors: [$field => [sprintf('Value must be between %s and %s', $min, $max)]],
             field: $field
         );
     }
@@ -103,21 +108,23 @@ class JntValidationException extends JntException
      */
     public static function invalidFormat(string $field, string $expectedFormat, mixed $value = null): self
     {
-        $message = "Field '{$field}' has invalid format: expected {$expectedFormat}";
+        $message = sprintf("Field '%s' has invalid format: expected %s", $field, $expectedFormat);
         if ($value !== null) {
             $valueStr = is_scalar($value) ? (string) $value : gettype($value);
-            $message .= ", got '{$valueStr}'";
+            $message .= sprintf(", got '%s'", $valueStr);
         }
 
         return new self(
             message: $message,
-            errors: [$field => ["Expected format: {$expectedFormat}"]],
+            errors: [$field => ['Expected format: '.$expectedFormat]],
             field: $field
         );
     }
 
     /**
      * Create exception for multiple validation errors.
+     *
+     * @param  array<string, mixed>  $errors
      */
     public static function multiple(array $errors): self
     {
@@ -125,7 +132,7 @@ class JntValidationException extends JntException
         $fields = implode(', ', array_keys($errors));
 
         return new self(
-            message: "Validation failed for {$fieldCount} field(s): {$fields}",
+            message: sprintf('Validation failed for %d field(s): %s', $fieldCount, $fields),
             errors: $errors
         );
     }

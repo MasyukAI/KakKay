@@ -43,8 +43,8 @@ class VerifyWebhookSignature
         if (! $this->webhookService->verifySignature($digest, $bizContent)) {
             Log::warning('J&T webhook signature verification failed', [
                 'ip' => $request->ip(),
-                'digest_present' => ! empty($digest),
-                'bizContent_present' => ! empty($bizContent),
+                'digest_present' => $digest !== '' && $digest !== '0',
+                'bizContent_present' => $bizContent !== '' && $bizContent !== '0',
             ]);
 
             $response = $this->webhookService->failureResponse('Invalid signature');

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 use MasyukAI\Jnt\Enums\CancellationReason;
 
-describe('CancellationReason Enum', function () {
-    it('has correct string values', function () {
+describe('CancellationReason Enum', function (): void {
+    it('has correct string values', function (): void {
         expect(CancellationReason::CUSTOMER_REQUEST->value)->toBe('customer_request');
         expect(CancellationReason::OUT_OF_STOCK->value)->toBe('out_of_stock');
         expect(CancellationReason::INCORRECT_ADDRESS->value)->toBe('incorrect_address');
@@ -14,14 +14,14 @@ describe('CancellationReason Enum', function () {
         expect(CancellationReason::OTHER->value)->toBe('other');
     });
 
-    it('returns correct descriptions', function () {
+    it('returns correct descriptions', function (): void {
         expect(CancellationReason::CUSTOMER_REQUEST->getDescription())->toBe('Customer requested cancellation');
         expect(CancellationReason::OUT_OF_STOCK->getDescription())->toBe('Product is out of stock');
         expect(CancellationReason::INCORRECT_ADDRESS->getDescription())->toBe('Incorrect or incomplete delivery address');
         expect(CancellationReason::PAYMENT_FAILED->getDescription())->toBe('Payment processing failed');
     });
 
-    it('correctly identifies reasons requiring customer contact', function () {
+    it('correctly identifies reasons requiring customer contact', function (): void {
         // Should contact customer
         expect(CancellationReason::OUT_OF_STOCK->requiresCustomerContact())->toBeTrue();
         expect(CancellationReason::INCORRECT_PRICING->requiresCustomerContact())->toBeTrue();
@@ -34,7 +34,7 @@ describe('CancellationReason Enum', function () {
         expect(CancellationReason::CUSTOMER_CHANGED_MIND->requiresCustomerContact())->toBeFalse();
     });
 
-    it('correctly identifies merchant responsibility', function () {
+    it('correctly identifies merchant responsibility', function (): void {
         // Merchant responsibility
         expect(CancellationReason::OUT_OF_STOCK->isMerchantResponsibility())->toBeTrue();
         expect(CancellationReason::INCORRECT_PRICING->isMerchantResponsibility())->toBeTrue();
@@ -47,7 +47,7 @@ describe('CancellationReason Enum', function () {
         expect(CancellationReason::INCORRECT_ADDRESS->isMerchantResponsibility())->toBeFalse();
     });
 
-    it('correctly identifies customer responsibility', function () {
+    it('correctly identifies customer responsibility', function (): void {
         // Customer responsibility
         expect(CancellationReason::CUSTOMER_REQUEST->isCustomerResponsibility())->toBeTrue();
         expect(CancellationReason::CUSTOMER_CHANGED_MIND->isCustomerResponsibility())->toBeTrue();
@@ -59,7 +59,7 @@ describe('CancellationReason Enum', function () {
         expect(CancellationReason::PAYMENT_FAILED->isCustomerResponsibility())->toBeFalse();
     });
 
-    it('correctly identifies delivery issues', function () {
+    it('correctly identifies delivery issues', function (): void {
         // Delivery issues
         expect(CancellationReason::INCORRECT_ADDRESS->isDeliveryIssue())->toBeTrue();
         expect(CancellationReason::ADDRESS_NOT_SERVICEABLE->isDeliveryIssue())->toBeTrue();
@@ -70,7 +70,7 @@ describe('CancellationReason Enum', function () {
         expect(CancellationReason::OUT_OF_STOCK->isDeliveryIssue())->toBeFalse();
     });
 
-    it('correctly identifies payment issues', function () {
+    it('correctly identifies payment issues', function (): void {
         // Payment issues
         expect(CancellationReason::PAYMENT_FAILED->isPaymentIssue())->toBeTrue();
         expect(CancellationReason::PAYMENT_PENDING_TOO_LONG->isPaymentIssue())->toBeTrue();
@@ -80,7 +80,7 @@ describe('CancellationReason Enum', function () {
         expect(CancellationReason::OUT_OF_STOCK->isPaymentIssue())->toBeFalse();
     });
 
-    it('returns correct categories', function () {
+    it('returns correct categories', function (): void {
         // Customer-Initiated
         expect(CancellationReason::CUSTOMER_REQUEST->getCategory())->toBe('Customer-Initiated');
         expect(CancellationReason::CUSTOMER_CHANGED_MIND->getCategory())->toBe('Customer-Initiated');
@@ -103,7 +103,7 @@ describe('CancellationReason Enum', function () {
         expect(CancellationReason::OTHER->getCategory())->toBe('Other');
     });
 
-    it('returns all customer-initiated reasons', function () {
+    it('returns all customer-initiated reasons', function (): void {
         $reasons = CancellationReason::customerInitiated();
 
         expect($reasons)->toHaveCount(4);
@@ -113,7 +113,7 @@ describe('CancellationReason Enum', function () {
         expect($reasons)->toContain(CancellationReason::CUSTOMER_FOUND_BETTER_PRICE);
     });
 
-    it('returns all merchant-initiated reasons', function () {
+    it('returns all merchant-initiated reasons', function (): void {
         $reasons = CancellationReason::merchantInitiated();
 
         expect($reasons)->toHaveCount(4);
@@ -123,7 +123,7 @@ describe('CancellationReason Enum', function () {
         expect($reasons)->toContain(CancellationReason::DUPLICATE_ORDER);
     });
 
-    it('returns all delivery issue reasons', function () {
+    it('returns all delivery issue reasons', function (): void {
         $reasons = CancellationReason::deliveryIssues();
 
         expect($reasons)->toHaveCount(3);
@@ -132,7 +132,7 @@ describe('CancellationReason Enum', function () {
         expect($reasons)->toContain(CancellationReason::DELIVERY_NOT_AVAILABLE);
     });
 
-    it('returns all payment issue reasons', function () {
+    it('returns all payment issue reasons', function (): void {
         $reasons = CancellationReason::paymentIssues();
 
         expect($reasons)->toHaveCount(2);
@@ -140,7 +140,7 @@ describe('CancellationReason Enum', function () {
         expect($reasons)->toContain(CancellationReason::PAYMENT_PENDING_TOO_LONG);
     });
 
-    it('creates from string (case-insensitive)', function () {
+    it('creates from string (case-insensitive)', function (): void {
         expect(CancellationReason::fromString('customer_request'))->toBe(CancellationReason::CUSTOMER_REQUEST);
         expect(CancellationReason::fromString('CUSTOMER_REQUEST'))->toBe(CancellationReason::CUSTOMER_REQUEST);
         expect(CancellationReason::fromString('out_of_stock'))->toBe(CancellationReason::OUT_OF_STOCK);
@@ -150,8 +150,8 @@ describe('CancellationReason Enum', function () {
     });
 });
 
-describe('CancellationReason - Real-World Scenarios', function () {
-    it('handles out of stock scenario', function () {
+describe('CancellationReason - Real-World Scenarios', function (): void {
+    it('handles out of stock scenario', function (): void {
         $reason = CancellationReason::OUT_OF_STOCK;
 
         expect($reason->getCategory())->toBe('Merchant-Initiated');
@@ -160,7 +160,7 @@ describe('CancellationReason - Real-World Scenarios', function () {
         expect($reason->getDescription())->toBe('Product is out of stock');
     });
 
-    it('handles customer changed mind scenario', function () {
+    it('handles customer changed mind scenario', function (): void {
         $reason = CancellationReason::CUSTOMER_CHANGED_MIND;
 
         expect($reason->getCategory())->toBe('Customer-Initiated');
@@ -168,7 +168,7 @@ describe('CancellationReason - Real-World Scenarios', function () {
         expect($reason->requiresCustomerContact())->toBeFalse();
     });
 
-    it('handles incorrect address scenario', function () {
+    it('handles incorrect address scenario', function (): void {
         $reason = CancellationReason::INCORRECT_ADDRESS;
 
         expect($reason->getCategory())->toBe('Delivery Issue');
@@ -176,7 +176,7 @@ describe('CancellationReason - Real-World Scenarios', function () {
         expect($reason->isCustomerResponsibility())->toBeTrue();
     });
 
-    it('handles payment failed scenario', function () {
+    it('handles payment failed scenario', function (): void {
         $reason = CancellationReason::PAYMENT_FAILED;
 
         expect($reason->getCategory())->toBe('Payment Issue');
@@ -184,7 +184,7 @@ describe('CancellationReason - Real-World Scenarios', function () {
         expect($reason->requiresCustomerContact())->toBeTrue();
     });
 
-    it('handles system error scenario', function () {
+    it('handles system error scenario', function (): void {
         $reason = CancellationReason::SYSTEM_ERROR;
 
         expect($reason->getCategory())->toBe('System Error');

@@ -30,7 +30,7 @@ class TrackingUpdatedEvent
     public function getLatestStatus(): ?string
     {
         $details = $this->tracking->details;
-        if (empty($details)) {
+        if ($details === []) {
             return null;
         }
 
@@ -44,7 +44,7 @@ class TrackingUpdatedEvent
     public function getLatestDescription(): ?string
     {
         $details = $this->tracking->details;
-        if (empty($details)) {
+        if ($details === []) {
             return null;
         }
 
@@ -58,7 +58,7 @@ class TrackingUpdatedEvent
     public function getLatestLocation(): ?string
     {
         $details = $this->tracking->details;
-        if (empty($details)) {
+        if ($details === []) {
             return null;
         }
 
@@ -73,55 +73,31 @@ class TrackingUpdatedEvent
             $latest->scanNetworkProvince ?? null,
         ]);
 
-        return ! empty($parts) ? implode(', ', $parts) : null;
+        return $parts === [] ? null : implode(', ', $parts);
     }
 
     public function isDelivered(): bool
     {
-        foreach ($this->tracking->details as $detail) {
-            if ($detail instanceof \MasyukAI\Jnt\Data\TrackingDetailData && in_array($detail->scanType, ['DELIVER', 'SIGNED'], true)) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any($this->tracking->details, fn ($detail): bool => $detail instanceof \MasyukAI\Jnt\Data\TrackingDetailData && in_array($detail->scanType, ['DELIVER', 'SIGNED'], true));
     }
 
     public function isInTransit(): bool
     {
-        foreach ($this->tracking->details as $detail) {
-            if ($detail instanceof \MasyukAI\Jnt\Data\TrackingDetailData && in_array($detail->scanType, ['TRANSFER', 'ARRIVAL'], true)) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any($this->tracking->details, fn ($detail): bool => $detail instanceof \MasyukAI\Jnt\Data\TrackingDetailData && in_array($detail->scanType, ['TRANSFER', 'ARRIVAL'], true));
     }
 
     public function hasProblems(): bool
     {
-        foreach ($this->tracking->details as $detail) {
-            if ($detail instanceof \MasyukAI\Jnt\Data\TrackingDetailData && in_array($detail->scanType, ['RETURN', 'REJECT', 'PROBLEM'], true)) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any($this->tracking->details, fn ($detail): bool => $detail instanceof \MasyukAI\Jnt\Data\TrackingDetailData && in_array($detail->scanType, ['RETURN', 'REJECT', 'PROBLEM'], true));
     }
 
     public function isCollected(): bool
     {
-        foreach ($this->tracking->details as $detail) {
-            if ($detail instanceof \MasyukAI\Jnt\Data\TrackingDetailData && $detail->scanType === 'COLLECT') {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any($this->tracking->details, fn ($detail): bool => $detail instanceof \MasyukAI\Jnt\Data\TrackingDetailData && $detail->scanType === 'COLLECT');
     }
 
     /**
-     * @return array<int, array<string, mixed>>
+     * @return array<int, \MasyukAI\Jnt\Data\TrackingDetailData>
      */
     public function getDetails(): array
     {

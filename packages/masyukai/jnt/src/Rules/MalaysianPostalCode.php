@@ -26,7 +26,7 @@ class MalaysianPostalCode implements ValidationRule
             return;
         }
 
-        if (! preg_match('/^\d{5}$/', $value)) {
+        if (in_array(preg_match('/^\d{5}$/', $value), [0, false], true)) {
             $fail('The :attribute must be 5 digits');
         }
     }

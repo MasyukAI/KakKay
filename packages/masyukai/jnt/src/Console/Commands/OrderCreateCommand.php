@@ -44,8 +44,8 @@ class OrderCreateCommand extends Command
             $receiverMobile = $this->option('receiver-mobile') ?: $this->ask('Receiver Mobile');
             $receiverAddress = $this->option('receiver-address') ?: $this->ask('Receiver Address');
             $itemName = $this->option('item-name') ?: $this->ask('Item Name');
-            $itemQty = (int) ($this->option('item-qty') ?: $this->ask('Item Quantity', 1));
-            $weight = (float) ($this->option('weight') ?: $this->ask('Package Weight (kg)', 1));
+            $itemQty = (int) ($this->option('item-qty') ?: $this->ask('Item Quantity', '1'));
+            $weight = (float) ($this->option('weight') ?: $this->ask('Package Weight (kg)', '1'));
 
             // Create data objects
             $sender = new AddressData(
@@ -98,12 +98,12 @@ class OrderCreateCommand extends Command
             $this->newLine();
             $this->error('Validation Error: '.$e->getMessage());
 
-            if (! empty($e->errors)) {
+            if ($e->errors !== []) {
                 $this->newLine();
                 $this->warn('Validation Errors:');
                 foreach ($e->errors as $field => $errors) {
                     foreach ((array) $errors as $error) {
-                        $this->line("  • {$field}: {$error}");
+                        $this->line(sprintf('  • %s: %s', $field, $error));
                     }
                 }
             }
@@ -119,8 +119,8 @@ class OrderCreateCommand extends Command
             $this->newLine();
             $this->error('API Error: '.$e->getMessage());
 
-            if ($e->errorCode) {
-                $this->warn("Error Code: {$e->errorCode}");
+            if ($e->errorCode !== null && $e->errorCode !== '' && $e->errorCode !== '0') {
+                $this->warn('Error Code: '.$e->errorCode);
             }
 
             return self::FAILURE;

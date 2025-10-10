@@ -30,7 +30,7 @@ class JntNetworkException extends JntException
     public static function connectionFailed(string $endpoint, Throwable $previous): self
     {
         return new self(
-            message: "Failed to connect to J&T API endpoint: {$endpoint}",
+            message: 'Failed to connect to J&T API endpoint: '.$endpoint,
             endpoint: $endpoint,
             previous: $previous
         );
@@ -42,7 +42,7 @@ class JntNetworkException extends JntException
     public static function timeout(string $endpoint, int $seconds): self
     {
         return new self(
-            message: "Request to {$endpoint} timed out after {$seconds} seconds",
+            message: sprintf('Request to %s timed out after %d seconds', $endpoint, $seconds),
             endpoint: $endpoint
         );
     }
@@ -53,7 +53,7 @@ class JntNetworkException extends JntException
     public static function serverError(string $endpoint, int $httpStatus, mixed $response = null): self
     {
         return new self(
-            message: "J&T API server error (HTTP {$httpStatus}) at {$endpoint}",
+            message: sprintf('J&T API server error (HTTP %d) at %s', $httpStatus, $endpoint),
             endpoint: $endpoint,
             httpStatus: $httpStatus
         );
@@ -65,7 +65,7 @@ class JntNetworkException extends JntException
     public static function clientError(string $endpoint, int $httpStatus, mixed $response = null): self
     {
         return new self(
-            message: "J&T API client error (HTTP {$httpStatus}) at {$endpoint}",
+            message: sprintf('J&T API client error (HTTP %d) at %s', $httpStatus, $endpoint),
             endpoint: $endpoint,
             httpStatus: $httpStatus
         );
@@ -77,7 +77,7 @@ class JntNetworkException extends JntException
     public static function dnsResolutionFailed(string $host): self
     {
         return new self(
-            message: "Failed to resolve DNS for J&T API host: {$host}",
+            message: 'Failed to resolve DNS for J&T API host: '.$host,
             endpoint: $host
         );
     }
@@ -88,7 +88,7 @@ class JntNetworkException extends JntException
     public static function sslError(string $endpoint, string $reason): self
     {
         return new self(
-            message: "SSL/TLS error connecting to {$endpoint}: {$reason}",
+            message: sprintf('SSL/TLS error connecting to %s: %s', $endpoint, $reason),
             endpoint: $endpoint
         );
     }
@@ -99,7 +99,7 @@ class JntNetworkException extends JntException
     public static function proxyError(string $endpoint, string $reason): self
     {
         return new self(
-            message: "Proxy error connecting to {$endpoint}: {$reason}",
+            message: sprintf('Proxy error connecting to %s: %s', $endpoint, $reason),
             endpoint: $endpoint
         );
     }
@@ -110,7 +110,7 @@ class JntNetworkException extends JntException
     public static function tooManyRedirects(string $endpoint, int $count): self
     {
         return new self(
-            message: "Too many redirects ({$count}) when connecting to {$endpoint}",
+            message: sprintf('Too many redirects (%d) when connecting to %s', $count, $endpoint),
             endpoint: $endpoint
         );
     }

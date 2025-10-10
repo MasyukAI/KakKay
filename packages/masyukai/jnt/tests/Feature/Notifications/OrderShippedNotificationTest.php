@@ -8,11 +8,11 @@ use MasyukAI\Jnt\Data\TrackingData;
 use MasyukAI\Jnt\Data\TrackingDetailData;
 use MasyukAI\Jnt\Notifications\OrderShippedNotification;
 
-beforeEach(function () {
+beforeEach(function (): void {
     Notification::fake();
 });
 
-test('OrderShippedNotification → it uses mail and database channels', function () {
+test('OrderShippedNotification → it uses mail and database channels', function (): void {
     $tracking = new TrackingData(
         trackingNumber: 'TRACK123',
         details: [],
@@ -23,7 +23,7 @@ test('OrderShippedNotification → it uses mail and database channels', function
     expect($notification->via(new stdClass()))->toBe(['mail', 'database']);
 });
 
-test('OrderShippedNotification → it generates correct mail message', function () {
+test('OrderShippedNotification → it generates correct mail message', function (): void {
     $tracking = new TrackingData(
         trackingNumber: 'TRACK123',
         details: [
@@ -33,8 +33,8 @@ test('OrderShippedNotification → it generates correct mail message', function 
                 scanTypeCode: 'T',
                 scanTypeName: 'Transfer',
                 scanType: 'TRANSFER',
-                scanNetworkCity: 'Kuala Lumpur',
                 scanNetworkProvince: 'Wilayah Persekutuan',
+                scanNetworkCity: 'Kuala Lumpur',
             ),
         ],
         orderId: 'ORDER123',
@@ -53,7 +53,7 @@ test('OrderShippedNotification → it generates correct mail message', function 
         ->and($mail->introLines)->toContain('Current Location: Kuala Lumpur, Wilayah Persekutuan');
 });
 
-test('OrderShippedNotification → it handles tracking without order ID', function () {
+test('OrderShippedNotification → it handles tracking without order ID', function (): void {
     $tracking = new TrackingData(
         trackingNumber: 'TRACK123',
         details: [],
@@ -67,7 +67,7 @@ test('OrderShippedNotification → it handles tracking without order ID', functi
         ->and($mail->introLines)->not->toContain('Order ID:');
 });
 
-test('OrderShippedNotification → it handles tracking without estimated delivery', function () {
+test('OrderShippedNotification → it handles tracking without estimated delivery', function (): void {
     $tracking = new TrackingData(
         trackingNumber: 'TRACK123',
         details: [],
@@ -79,7 +79,7 @@ test('OrderShippedNotification → it handles tracking without estimated deliver
     expect($mail->introLines)->not->toContain('Estimated Delivery:');
 });
 
-test('OrderShippedNotification → it generates correct array representation', function () {
+test('OrderShippedNotification → it generates correct array representation', function (): void {
     $tracking = new TrackingData(
         trackingNumber: 'TRACK123',
         details: [
@@ -89,8 +89,8 @@ test('OrderShippedNotification → it generates correct array representation', f
                 scanTypeCode: 'T',
                 scanTypeName: 'Transfer',
                 scanType: 'TRANSFER',
-                scanNetworkCity: 'Kuala Lumpur',
                 scanNetworkProvince: 'Wilayah Persekutuan',
+                scanNetworkCity: 'Kuala Lumpur',
             ),
         ],
         orderId: 'ORDER123',
@@ -109,7 +109,7 @@ test('OrderShippedNotification → it generates correct array representation', f
     ]);
 });
 
-test('OrderShippedNotification → it implements ShouldQueue', function () {
+test('OrderShippedNotification → it implements ShouldQueue', function (): void {
     $tracking = new TrackingData(
         trackingNumber: 'TRACK123',
         details: [],

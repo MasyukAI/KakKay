@@ -7,18 +7,16 @@ use Illuminate\Support\Facades\Log;
 use MasyukAI\Jnt\Events\TrackingStatusReceived;
 use MasyukAI\Jnt\Services\WebhookService;
 
-describe('Webhook Endpoint', function () {
-    beforeEach(function () {
+describe('Webhook Endpoint', function (): void {
+    beforeEach(function (): void {
         $this->privateKey = 'test-private-key-12345';
         config(['jnt.private_key' => $this->privateKey]);
 
         // Bind WebhookService with test private key
-        $this->app->singleton(WebhookService::class, function () {
-            return new WebhookService($this->privateKey);
-        });
+        $this->app->singleton(WebhookService::class, fn (): WebhookService => new WebhookService($this->privateKey));
     });
 
-    it('accepts valid webhook with correct signature', function () {
+    it('accepts valid webhook with correct signature', function (): void {
         Event::fake();
 
         $bizContent = json_encode([
@@ -61,7 +59,7 @@ describe('Webhook Endpoint', function () {
         Event::assertDispatched(TrackingStatusReceived::class);
     });
 
-    it('rejects webhook with invalid signature', function () {
+    it('rejects webhook with invalid signature', function (): void {
         Event::fake();
 
         $bizContent = json_encode([
@@ -86,7 +84,7 @@ describe('Webhook Endpoint', function () {
         Event::assertNotDispatched(TrackingStatusReceived::class);
     });
 
-    it('rejects webhook without digest header', function () {
+    it('rejects webhook without digest header', function (): void {
         Event::fake();
 
         $bizContent = json_encode([
@@ -107,7 +105,7 @@ describe('Webhook Endpoint', function () {
         Event::assertNotDispatched(TrackingStatusReceived::class);
     });
 
-    it('rejects webhook with missing bizContent', function () {
+    it('rejects webhook with missing bizContent', function (): void {
         Event::fake();
 
         // Even with a valid signature, missing bizContent fails signature verification
@@ -129,7 +127,7 @@ describe('Webhook Endpoint', function () {
         Event::assertNotDispatched(TrackingStatusReceived::class);
     });
 
-    it('rejects webhook with invalid JSON in bizContent', function () {
+    it('rejects webhook with invalid JSON in bizContent', function (): void {
         Event::fake();
 
         $bizContent = 'invalid-json';
@@ -150,7 +148,7 @@ describe('Webhook Endpoint', function () {
         Event::assertNotDispatched(TrackingStatusReceived::class);
     });
 
-    it('rejects webhook with missing billCode in bizContent', function () {
+    it('rejects webhook with missing billCode in bizContent', function (): void {
         Event::fake();
 
         $bizContent = json_encode([
@@ -174,7 +172,7 @@ describe('Webhook Endpoint', function () {
         Event::assertNotDispatched(TrackingStatusReceived::class);
     });
 
-    it('handles multiple tracking details correctly', function () {
+    it('handles multiple tracking details correctly', function (): void {
         Event::fake();
 
         $bizContent = json_encode([
@@ -222,14 +220,12 @@ describe('Webhook Endpoint', function () {
                 'msg' => 'success',
             ]);
 
-        Event::assertDispatched(TrackingStatusReceived::class, function ($event) {
-            return $event->webhookData->billCode === 'JNTMY12345678'
-                && count($event->webhookData->details) === 3
-                && $event->getLatestStatus() === '派件';
-        });
+        Event::assertDispatched(TrackingStatusReceived::class, fn ($event): bool => $event->webhookData->billCode === 'JNTMY12345678'
+            && count($event->webhookData->details) === 3
+            && $event->getLatestStatus() === '派件');
     });
 
-    it('logs webhook reception when logging is enabled', function () {
+    it('logs webhook reception when logging is enabled', function (): void {
         Log::spy();
         Event::fake();
 
@@ -259,14 +255,12 @@ describe('Webhook Endpoint', function () {
 
         Log::shouldHaveReceived('info')
             ->once()
-            ->with('J&T webhook received', Mockery::on(function ($context) {
-                return $context['billCode'] === 'JNTMY12345678'
-                    && $context['txlogisticId'] === 'ORDER-001'
-                    && $context['detailsCount'] === 1;
-            }));
+            ->with('J&T webhook received', Mockery::on(fn ($context): bool => $context['billCode'] === 'JNTMY12345678'
+                && $context['txlogisticId'] === 'ORDER-001'
+                && $context['detailsCount'] === 1));
     });
 
-    it('does not log webhook when logging is disabled', function () {
+    it('does not log webhook when logging is disabled', function (): void {
         Log::spy();
         Event::fake();
 
@@ -296,7 +290,7 @@ describe('Webhook Endpoint', function () {
         Log::shouldNotHaveReceived('info');
     });
 
-    it('logs warnings for signature verification failures', function () {
+    it('logs warnings for signature verification failures', function (): void {
         Log::spy();
         Event::fake();
 
@@ -316,7 +310,7 @@ describe('Webhook Endpoint', function () {
             ->with('J&T webhook signature verification failed', Mockery::any());
     });
 
-    it('handles webhook with optional txlogisticId', function () {
+    it('handles webhook with optional txlogisticId', function (): void {
         Event::fake();
 
         $bizContent = json_encode([
@@ -342,12 +336,10 @@ describe('Webhook Endpoint', function () {
 
         $response->assertOk();
 
-        Event::assertDispatched(TrackingStatusReceived::class, function ($event) {
-            return $event->webhookData->txlogisticId === null;
-        });
+        Event::assertDispatched(TrackingStatusReceived::class, fn ($event): bool => $event->webhookData->txlogisticId === null);
     });
 
-    it('returns unique requestId for each webhook', function () {
+    it('returns unique requestId for each webhook', function (): void {
         Event::fake();
 
         $bizContent = json_encode([

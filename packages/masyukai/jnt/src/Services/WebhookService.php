@@ -39,11 +39,11 @@ class WebhookService
      */
     public function verifySignature(string $digest, string $bizContent): bool
     {
-        if (empty($digest)) {
+        if ($digest === '' || $digest === '0') {
             return false;
         }
 
-        if (empty($bizContent)) {
+        if ($bizContent === '' || $bizContent === '0') {
             return false;
         }
 
@@ -76,7 +76,6 @@ class WebhookService
      * @return WebhookData The parsed and validated webhook data
      *
      * @throws \Illuminate\Validation\ValidationException If request validation fails
-     * @throws InvalidArgumentException If bizContent is invalid JSON or missing required fields
      */
     public function parseWebhook(Request $request): WebhookData
     {

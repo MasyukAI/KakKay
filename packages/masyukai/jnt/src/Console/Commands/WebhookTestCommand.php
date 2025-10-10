@@ -19,7 +19,7 @@ class WebhookTestCommand extends Command
     {
         $url = $this->option('url') ?: config('jnt.webhook.url', route('jnt.webhook'));
 
-        $this->info("Testing webhook endpoint: {$url}");
+        $this->info('Testing webhook endpoint: '.$url);
         $this->newLine();
 
         // Generate sample webhook payload
@@ -51,20 +51,20 @@ class WebhookTestCommand extends Command
 
             if ($response->successful()) {
                 $this->info('✓ Webhook test successful!');
-                $this->line("Status: {$response->status()}");
-                $this->line("Response: {$response->body()}");
+                $this->line('Status: '.$response->status());
+                $this->line('Response: '.$response->body());
             } else {
                 $this->error('✗ Webhook test failed!');
-                $this->line("Status: {$response->status()}");
-                $this->line("Response: {$response->body()}");
+                $this->line('Status: '.$response->status());
+                $this->line('Response: '.$response->body());
 
                 return self::FAILURE;
             }
 
             return self::SUCCESS;
-        } catch (Exception $e) {
+        } catch (Exception $exception) {
             $this->newLine();
-            $this->error('Error: '.$e->getMessage());
+            $this->error('Error: '.$exception->getMessage());
 
             return self::FAILURE;
         }

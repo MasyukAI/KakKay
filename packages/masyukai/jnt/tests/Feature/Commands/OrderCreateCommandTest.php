@@ -5,8 +5,8 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Http;
 use MasyukAI\Jnt\Console\Commands\OrderCreateCommand;
 
-describe('OrderCreateCommand', function () {
-    it('creates order with command-line options', function () {
+describe('OrderCreateCommand', function (): void {
+    it('creates order with command-line options', function (): void {
         Http::fake([
             '*/addOrder' => Http::response([
                 'code' => '1',
@@ -33,7 +33,7 @@ describe('OrderCreateCommand', function () {
             ->assertExitCode(0);
     });
 
-    it('handles API errors', function () {
+    it('handles API errors', function (): void {
         Http::fake([
             '*/addOrder' => Http::response([
                 'code' => '0',

@@ -24,7 +24,7 @@ class OrderCancelCommand extends Command
         // If no reason provided, ask for it
         if (! $reasonInput) {
             $reasons = collect(CancellationReason::cases())
-                ->mapWithKeys(fn ($reason) => [$reason->value => $reason->value])
+                ->mapWithKeys(fn ($reason): array => [$reason->value => $reason->value])
                 ->toArray();
 
             $reasonInput = $this->choice('Select cancellation reason', $reasons);
@@ -33,7 +33,7 @@ class OrderCancelCommand extends Command
         // Try to match to enum, otherwise use as string
         $reason = CancellationReason::tryFrom($reasonInput) ?? $reasonInput;
 
-        if (! $this->confirm("Cancel order {$orderId}?", true)) {
+        if (! $this->confirm(sprintf('Cancel order %s?', $orderId), true)) {
             $this->info('Cancellation aborted.');
 
             return self::SUCCESS;

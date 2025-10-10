@@ -43,12 +43,10 @@ class OrderDeliveredNotification extends Notification implements ShouldQueue
 
         // Get delivery details
         $details = $this->tracking->details;
-        if (! empty($details)) {
+        if ($details !== []) {
             $latest = end($details);
             if ($latest instanceof \MasyukAI\Jnt\Data\TrackingDetailData) {
-                if ($latest->scanTime !== null) {
-                    $message->line('Delivered At: '.$latest->scanTime);
-                }
+                $message->line('Delivered At: '.$latest->scanTime);
 
                 if ($latest->scanNetworkCity !== null || $latest->scanNetworkProvince !== null) {
                     $location = implode(', ', array_filter([
@@ -85,7 +83,7 @@ class OrderDeliveredNotification extends Notification implements ShouldQueue
         $deliveredBy = null;
         $hasSignature = false;
 
-        if (! empty($details)) {
+        if ($details !== []) {
             $latest = end($details);
             if ($latest instanceof \MasyukAI\Jnt\Data\TrackingDetailData) {
                 $deliveryTime = $latest->scanTime;

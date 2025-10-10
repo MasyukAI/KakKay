@@ -43,7 +43,7 @@ readonly class WebhookData
         ]);
 
         // Parse bizContent JSON
-        $bizContent = json_decode($validated['bizContent'], true);
+        $bizContent = json_decode((string) $validated['bizContent'], true);
 
         if (! is_array($bizContent)) {
             throw JntValidationException::invalidFormat('bizContent', 'valid JSON', $validated['bizContent']);
@@ -60,7 +60,7 @@ readonly class WebhookData
 
         // Parse tracking details
         $details = array_map(
-            fn (array $detail) => TrackingDetailData::fromApiArray($detail),
+            fn (array $detail): TrackingDetailData => TrackingDetailData::fromApiArray($detail),
             $bizContent['details']
         );
 
@@ -93,7 +93,7 @@ readonly class WebhookData
      */
     public function getLatestDetail(): ?TrackingDetailData
     {
-        if (empty($this->details)) {
+        if ($this->details === []) {
             return null;
         }
 
@@ -112,6 +112,11 @@ readonly class WebhookData
      *     latestTime: string|null
      * }
      */
+    /**
+     * Convert to array representation
+     *
+     * @return array<string,mixed>
+     */
     public function toArray(): array
     {
         $latest = $this->getLatestDetail();
@@ -119,7 +124,7 @@ readonly class WebhookData
         return [
             'billCode' => $this->billCode,
             'txlogisticId' => $this->txlogisticId,
-            'details' => array_map(fn (TrackingDetailData $detail) => [
+            'details' => array_map(fn (TrackingDetailData $detail): array => [
                 'scanType' => $detail->scanType,
                 'scanNetworkName' => $detail->scanNetworkName,
                 'description' => $detail->description,

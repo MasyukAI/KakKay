@@ -80,6 +80,6 @@ class PackageInfoData
             'length' => $this->length !== null ? TypeTransformer::forDimension($this->length) : null, // CENTIMETERS with 2 decimals
             'width' => $this->width !== null ? TypeTransformer::forDimension($this->width) : null, // CENTIMETERS with 2 decimals
             'height' => $this->height !== null ? TypeTransformer::forDimension($this->height) : null, // CENTIMETERS with 2 decimals
-        ], fn ($value) => $value !== null);
+        ], fn (?string $value): bool => $value !== null);
     }
 }

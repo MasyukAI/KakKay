@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Event;
 use MasyukAI\Jnt\Data\PrintWaybillData;
 use MasyukAI\Jnt\Events\WaybillPrintedEvent;
 
-test('WaybillPrintedEvent → it exposes waybill data', function () {
+test('WaybillPrintedEvent → it exposes waybill data', function (): void {
     $waybillData = new PrintWaybillData(
         orderId: 'ORDER123',
         trackingNumber: 'TRACK456',
@@ -25,7 +25,7 @@ test('WaybillPrintedEvent → it exposes waybill data', function () {
         ->and($event->getTemplateName())->toBe('default');
 });
 
-test('WaybillPrintedEvent → it detects base64 content', function () {
+test('WaybillPrintedEvent → it detects base64 content', function (): void {
     $waybillData = new PrintWaybillData(
         orderId: 'ORDER123',
         trackingNumber: null,
@@ -41,7 +41,7 @@ test('WaybillPrintedEvent → it detects base64 content', function () {
         ->and($event->getPdfContent())->not->toBeNull();
 });
 
-test('WaybillPrintedEvent → it detects URL content', function () {
+test('WaybillPrintedEvent → it detects URL content', function (): void {
     $waybillData = new PrintWaybillData(
         orderId: 'ORDER123',
         trackingNumber: null,
@@ -57,7 +57,7 @@ test('WaybillPrintedEvent → it detects URL content', function () {
         ->and($event->getDownloadUrl())->toBe('https://example.com/waybill.pdf');
 });
 
-test('WaybillPrintedEvent → it handles waybill without tracking number', function () {
+test('WaybillPrintedEvent → it handles waybill without tracking number', function (): void {
     $waybillData = new PrintWaybillData(
         orderId: 'ORDER123',
         trackingNumber: null,
@@ -72,7 +72,7 @@ test('WaybillPrintedEvent → it handles waybill without tracking number', funct
         ->and($event->hasTrackingNumber())->toBeFalse();
 });
 
-test('WaybillPrintedEvent → it provides file size', function () {
+test('WaybillPrintedEvent → it provides file size', function (): void {
     $waybillData = new PrintWaybillData(
         orderId: 'ORDER123',
         trackingNumber: null,
@@ -87,7 +87,7 @@ test('WaybillPrintedEvent → it provides file size', function () {
         ->and($event->getFileSize())->toContain('B'); // Contains byte unit
 });
 
-test('WaybillPrintedEvent → it can save PDF', function () {
+test('WaybillPrintedEvent → it can save PDF', function (): void {
     $waybillData = new PrintWaybillData(
         orderId: 'ORDER123',
         trackingNumber: null,
@@ -108,7 +108,7 @@ test('WaybillPrintedEvent → it can save PDF', function () {
     }
 });
 
-test('WaybillPrintedEvent → it can be dispatched', function () {
+test('WaybillPrintedEvent → it can be dispatched', function (): void {
     Event::fake();
 
     $waybillData = new PrintWaybillData(

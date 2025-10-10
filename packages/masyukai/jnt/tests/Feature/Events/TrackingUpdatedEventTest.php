@@ -7,7 +7,7 @@ use MasyukAI\Jnt\Data\TrackingData;
 use MasyukAI\Jnt\Data\TrackingDetailData;
 use MasyukAI\Jnt\Events\TrackingUpdatedEvent;
 
-test('TrackingUpdatedEvent → it exposes tracking data', function () {
+test('TrackingUpdatedEvent → it exposes tracking data', function (): void {
     $trackingData = new TrackingData(
         trackingNumber: 'TRACK456',
         details: [
@@ -17,8 +17,8 @@ test('TrackingUpdatedEvent → it exposes tracking data', function () {
                 scanTypeCode: 'D',
                 scanTypeName: 'Delivered',
                 scanType: 'DELIVER',
-                scanNetworkCity: 'Kuala Lumpur',
                 scanNetworkProvince: 'Wilayah Persekutuan',
+                scanNetworkCity: 'Kuala Lumpur',
             ),
         ],
         orderId: 'ORDER123',
@@ -34,7 +34,7 @@ test('TrackingUpdatedEvent → it exposes tracking data', function () {
         ->and($event->getLatestLocation())->toBe('Kuala Lumpur, Wilayah Persekutuan');
 });
 
-test('TrackingUpdatedEvent → it detects delivered status', function () {
+test('TrackingUpdatedEvent → it detects delivered status', function (): void {
     $trackingData = new TrackingData(
         trackingNumber: 'TRACK456',
         details: [
@@ -56,7 +56,7 @@ test('TrackingUpdatedEvent → it detects delivered status', function () {
         ->and($event->hasProblems())->toBeFalse();
 });
 
-test('TrackingUpdatedEvent → it detects in-transit status', function () {
+test('TrackingUpdatedEvent → it detects in-transit status', function (): void {
     $trackingData = new TrackingData(
         trackingNumber: 'TRACK456',
         details: [
@@ -78,7 +78,7 @@ test('TrackingUpdatedEvent → it detects in-transit status', function () {
         ->and($event->hasProblems())->toBeFalse();
 });
 
-test('TrackingUpdatedEvent → it detects problem status', function () {
+test('TrackingUpdatedEvent → it detects problem status', function (): void {
     $trackingData = new TrackingData(
         trackingNumber: 'TRACK456',
         details: [
@@ -100,7 +100,7 @@ test('TrackingUpdatedEvent → it detects problem status', function () {
         ->and($event->isInTransit())->toBeFalse();
 });
 
-test('TrackingUpdatedEvent → it detects collected status', function () {
+test('TrackingUpdatedEvent → it detects collected status', function (): void {
     $trackingData = new TrackingData(
         trackingNumber: 'TRACK456',
         details: [
@@ -120,7 +120,7 @@ test('TrackingUpdatedEvent → it detects collected status', function () {
     expect($event->isCollected())->toBeTrue();
 });
 
-test('TrackingUpdatedEvent → it provides details array', function () {
+test('TrackingUpdatedEvent → it provides details array', function (): void {
     $detail1 = new TrackingDetailData(
         scanTime: '2025-01-01 10:00:00',
         description: 'Delivered',
@@ -148,7 +148,7 @@ test('TrackingUpdatedEvent → it provides details array', function () {
         ->and($event->getDetailCount())->toBe(2);
 });
 
-test('TrackingUpdatedEvent → it can be dispatched', function () {
+test('TrackingUpdatedEvent → it can be dispatched', function (): void {
     Event::fake();
 
     $trackingData = new TrackingData(

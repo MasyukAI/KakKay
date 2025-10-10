@@ -13,6 +13,9 @@ use MasyukAI\Jnt\Exceptions\JntNetworkException;
 
 class JntClient
 {
+    /**
+     * @param  array<string, mixed>  $config
+     */
     public function __construct(
         protected readonly string $baseUrl,
         protected readonly string $apiAccount,
@@ -20,6 +23,10 @@ class JntClient
         protected readonly array $config = [],
     ) {}
 
+    /**
+     * @param  array<string, mixed>  $bizContent
+     * @return array<string, mixed>
+     */
     public function post(string $endpoint, array $bizContent): array
     {
         $jsonBizContent = json_encode($bizContent, JSON_UNESCAPED_UNICODE);
@@ -39,22 +46,17 @@ class JntClient
         try {
             $response = Http::timeout($this->config['http']['timeout'] ?? 30)
                 ->connectTimeout($this->config['http']['connect_timeout'] ?? 10)
-                ->retry($retryTimes, $retrySleep, function ($exception, $request) {
+                ->retry($retryTimes, $retrySleep, fn ($exception, $request): bool =>
                     // Retry on connection exceptions
-                    if ($exception instanceof ConnectionException) {
-                        return true;
-                    }
-
                     // Don't retry for other exceptions
-                    return false;
-                }, throw: false)
+                    $exception instanceof ConnectionException, throw: false)
                 ->withHeaders([
                     'apiAccount' => $this->apiAccount,
                     'digest' => $digest,
                     'timestamp' => (string) $timestamp,
                 ])
                 ->asForm()
-                ->post("{$this->baseUrl}{$endpoint}", [
+                ->post($this->baseUrl.$endpoint, [
                     'bizContent' => $jsonBizContent,
                 ]);
 
@@ -73,7 +75,7 @@ class JntClient
                             'timestamp' => (string) $timestamp,
                         ])
                         ->asForm()
-                        ->post("{$this->baseUrl}{$endpoint}", [
+                        ->post($this->baseUrl.$endpoint, [
                             'bizContent' => $jsonBizContent,
                         ]);
 
@@ -91,11 +93,12 @@ class JntClient
                 if ($statusCode >= 500) {
                     throw JntNetworkException::serverError($endpoint, $statusCode, $response->body());
                 }
+
                 if ($statusCode >= 400) {
                     throw JntNetworkException::clientError($endpoint, $statusCode, $response->body());
                 }
 
-                throw JntApiException::invalidApiResponse($endpoint, "HTTP {$statusCode}: {$response->body()}", ['status' => $statusCode, 'body' => $response->body()]);
+                throw JntApiException::invalidApiResponse($endpoint, sprintf('HTTP %d: %s', $statusCode, $response->body()));
             }
 
             $data = $response->json();
@@ -113,8 +116,8 @@ class JntClient
             }
 
             return $data;
-        } catch (ConnectionException $e) {
-            throw JntNetworkException::connectionFailed($endpoint, $e);
+        } catch (ConnectionException $connectionException) {
+            throw JntNetworkException::connectionFailed($endpoint, $connectionException);
         }
     }
 
@@ -128,11 +131,7 @@ class JntClient
     protected function shouldRetry(mixed $exception): bool
     {
         // Retry on connection errors
-        if ($exception instanceof ConnectionException) {
-            return true;
-        }
-
-        return false;
+        return $exception instanceof ConnectionException;
     }
 
     protected function generateDigest(string $bizContent): string
@@ -143,6 +142,9 @@ class JntClient
         return base64_encode($md5Raw);
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     protected function logRequest(string $endpoint, array $data): void
     {
         if (! ($this->config['logging']['enabled'] ?? true)) {
@@ -174,6 +176,10 @@ class JntClient
         ]);
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
     protected function maskSensitiveData(array $data): array
     {
         $masked = $data;
@@ -183,7 +189,7 @@ class JntClient
         }
 
         if (isset($masked['customerCode'])) {
-            $masked['customerCode'] = mb_substr($masked['customerCode'], 0, 3).'***';
+            $masked['customerCode'] = mb_substr((string) $masked['customerCode'], 0, 3).'***';
         }
 
         return $masked;

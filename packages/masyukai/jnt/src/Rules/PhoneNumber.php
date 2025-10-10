@@ -26,7 +26,7 @@ class PhoneNumber implements ValidationRule
             return;
         }
 
-        if (! preg_match('/^\d{10,15}$/', $value)) {
+        if (in_array(preg_match('/^\d{10,15}$/', $value), [0, false], true)) {
             $fail('The :attribute must be 10-15 digits');
         }
     }

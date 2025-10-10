@@ -117,7 +117,7 @@ class JntConfigurationException extends JntException
     public static function invalidValue(string $configKey, string $reason): self
     {
         return new self(
-            message: "Invalid configuration value for '{$configKey}': {$reason}",
+            message: sprintf("Invalid configuration value for '%s': %s", $configKey, $reason),
             configKey: $configKey
         );
     }
@@ -128,7 +128,7 @@ class JntConfigurationException extends JntException
     public static function missingKey(string $configKey): self
     {
         return new self(
-            message: "Required configuration key '{$configKey}' is missing",
+            message: sprintf("Required configuration key '%s' is missing", $configKey),
             configKey: $configKey
         );
     }
@@ -139,7 +139,7 @@ class JntConfigurationException extends JntException
     public static function invalidEnvironment(string $environment): self
     {
         return new self(
-            message: "Invalid J&T environment '{$environment}'. Must be 'production' or 'sandbox'",
+            message: sprintf("Invalid J&T environment '%s'. Must be 'production' or 'sandbox'", $environment),
             configKey: 'jnt.environment'
         );
     }

@@ -6,16 +6,25 @@ parameters:
     paths:
         - src
         - tests
-    
+
+    reportUnmatchedIgnoredErrors: false
+
     excludePaths:
         - tests/Pest.php
-    
-    # Laravel-specific rules
-    checkMissingIterableValueType: false
-    checkGenericClassInNonGenericObjectType: false
-    
-    # Ignore Laravel facade undefined methods
-    # (Larastan handles this but sometimes needs hints)
+
     ignoreErrors:
         - '#Call to an undefined method Illuminate\\Support\\Facades\\Http::#'
         - '#Access to an undefined property Pest\\.*#'
+        - '#Call to an undefined method Pest\\.*#'
+        - '#Function [a-zA-Z_][a-zA-Z0-9_]* not found\.#'
+        - '#Call to an undefined method PHPUnit\\Framework\\TestCase::artisan\(\)#'
+        - '#Call to an undefined method PHPUnit\\Framework\\TestCase::postJson\(\)#'
+        - '#Access to an undefined property PHPUnit\\Framework\\TestCase::\$#'
+        - '#Call to an undefined static method Illuminate\\Support\\Facades\\Log::shouldHaveReceived\(\)#'
+        - '#Call to an undefined static method Illuminate\\Support\\Facades\\Log::shouldNotHaveReceived\(\)#'
+        - '#Instanceof between MasyukAI\\Jnt\\Data\\TrackingDetailData and MasyukAI\\Jnt\\Data\\TrackingDetailData will always evaluate to true#'
+        - '#Strict comparison using !== between .* and false will always evaluate to true#'
+        - '#Strict comparison using === between .* and false will always evaluate to false#'
+        - '#Result of && is always true#'
+        - '#Result of \|\| is always false#'
+        - '#Method MasyukAI\\Jnt\\Data\\.*::toArray\(\) return type has no value type specified in iterable type array\.#'

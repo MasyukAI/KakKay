@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 use MasyukAI\Jnt\Exceptions\JntValidationException;
 
-describe('JntValidationException', function () {
-    it('creates exception for field validation failure', function () {
+describe('JntValidationException', function (): void {
+    it('creates exception for field validation failure', function (): void {
         $errors = ['email' => ['Invalid format']];
         $exception = JntValidationException::fieldValidationFailed('email', 'Invalid format', $errors);
 
@@ -16,7 +16,7 @@ describe('JntValidationException', function () {
             ->and($exception->errors)->toBe($errors);
     });
 
-    it('creates exception for required field missing', function () {
+    it('creates exception for required field missing', function (): void {
         $exception = JntValidationException::requiredFieldMissing('sender_name');
 
         expect($exception)
@@ -26,7 +26,7 @@ describe('JntValidationException', function () {
             ->and($exception->errors)->toBe(['sender_name' => ['The field is required']]);
     });
 
-    it('creates exception for invalid field value with string', function () {
+    it('creates exception for invalid field value with string', function (): void {
         $exception = JntValidationException::invalidFieldValue('quantity', 'abc', 'integer');
 
         expect($exception)
@@ -35,7 +35,7 @@ describe('JntValidationException', function () {
             ->and($exception->field)->toBe('quantity');
     });
 
-    it('creates exception for invalid field value with array', function () {
+    it('creates exception for invalid field value with array', function (): void {
         $exception = JntValidationException::invalidFieldValue('price', ['invalid'], 'number');
 
         expect($exception)
@@ -44,7 +44,7 @@ describe('JntValidationException', function () {
             ->and($exception->field)->toBe('price');
     });
 
-    it('creates exception for field too long', function () {
+    it('creates exception for field too long', function (): void {
         $exception = JntValidationException::fieldTooLong('name', 50, 75);
 
         expect($exception)
@@ -54,7 +54,7 @@ describe('JntValidationException', function () {
             ->and($exception->errors)->toBe(['name' => ['Maximum length is 50 characters']]);
     });
 
-    it('creates exception for field too short', function () {
+    it('creates exception for field too short', function (): void {
         $exception = JntValidationException::fieldTooShort('password', 8, 5);
 
         expect($exception)
@@ -63,7 +63,7 @@ describe('JntValidationException', function () {
             ->and($exception->field)->toBe('password');
     });
 
-    it('creates exception for value out of range', function () {
+    it('creates exception for value out of range', function (): void {
         $exception = JntValidationException::valueOutOfRange('weight', 0.1, 30.0, 35.5);
 
         expect($exception)
@@ -73,7 +73,7 @@ describe('JntValidationException', function () {
             ->and($exception->errors)->toBe(['weight' => ['Value must be between 0.1 and 30']]);
     });
 
-    it('creates exception for invalid format without value', function () {
+    it('creates exception for invalid format without value', function (): void {
         $exception = JntValidationException::invalidFormat('email', 'valid email address');
 
         expect($exception)
@@ -82,7 +82,7 @@ describe('JntValidationException', function () {
             ->and($exception->field)->toBe('email');
     });
 
-    it('creates exception for invalid format with value', function () {
+    it('creates exception for invalid format with value', function (): void {
         $exception = JntValidationException::invalidFormat('phone', 'E.164 format', '123');
 
         expect($exception)
@@ -91,7 +91,7 @@ describe('JntValidationException', function () {
             ->and($exception->field)->toBe('phone');
     });
 
-    it('creates exception for multiple validation errors', function () {
+    it('creates exception for multiple validation errors', function (): void {
         $errors = [
             'name' => ['Required', 'Too short'],
             'email' => ['Invalid format'],
@@ -107,7 +107,7 @@ describe('JntValidationException', function () {
             ->and($exception->field)->toBeNull();
     });
 
-    it('stores all errors for multiple fields', function () {
+    it('stores all errors for multiple fields', function (): void {
         $errors = [
             'field1' => ['Error 1', 'Error 2'],
             'field2' => ['Error 3'],

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 use MasyukAI\Jnt\Data\PrintWaybillData;
 
-describe('PrintWaybillData', function () {
-    it('creates from API array with base64 content (single parcel)', function () {
+describe('PrintWaybillData', function (): void {
+    it('creates from API array with base64 content (single parcel)', function (): void {
         $data = [
             'txlogisticId' => 'ORDER-123',
             'billCode' => 'JT987654321',
@@ -23,7 +23,7 @@ describe('PrintWaybillData', function () {
             ->isMultiParcel->toBeFalse();
     });
 
-    it('creates from API array with URL content (multi parcel)', function () {
+    it('creates from API array with URL content (multi parcel)', function (): void {
         $data = [
             'txlogisticId' => 'ORDER-456',
             'billCode' => 'JT123456789',
@@ -40,7 +40,7 @@ describe('PrintWaybillData', function () {
             ->isMultiParcel->toBeTrue();
     });
 
-    it('handles both base64 and URL content', function () {
+    it('handles both base64 and URL content', function (): void {
         $data = [
             'txlogisticId' => 'ORDER-789',
             'base64EncodeContent' => base64_encode('PDF'),
@@ -55,7 +55,7 @@ describe('PrintWaybillData', function () {
             ->isMultiParcel->toBeFalse(); // Base64 takes precedence
     });
 
-    it('accepts clean field names (orderId, trackingNumber)', function () {
+    it('accepts clean field names (orderId, trackingNumber)', function (): void {
         $data = [
             'orderId' => 'ORDER-CLEAN',
             'trackingNumber' => 'JT-CLEAN',
@@ -68,7 +68,7 @@ describe('PrintWaybillData', function () {
             ->trackingNumber->toBe('JT-CLEAN');
     });
 
-    it('includes template name', function () {
+    it('includes template name', function (): void {
         $data = [
             'txlogisticId' => 'ORDER-123',
             'templateName' => 'custom_template',
@@ -79,7 +79,7 @@ describe('PrintWaybillData', function () {
         expect($result->templateName)->toBe('custom_template');
     });
 
-    it('converts to array', function () {
+    it('converts to array', function (): void {
         $original = [
             'orderId' => 'ORDER-123',
             'trackingNumber' => 'JT123',
@@ -95,7 +95,7 @@ describe('PrintWaybillData', function () {
         expect($array)->toBe($original);
     });
 
-    it('detects base64 content availability', function () {
+    it('detects base64 content availability', function (): void {
         $withBase64 = new PrintWaybillData(
             orderId: 'ORDER-1',
             trackingNumber: null,
@@ -116,7 +116,7 @@ describe('PrintWaybillData', function () {
             ->and($withoutBase64->hasBase64Content())->toBeFalse();
     });
 
-    it('detects URL content availability', function () {
+    it('detects URL content availability', function (): void {
         $withUrl = new PrintWaybillData(
             orderId: 'ORDER-1',
             trackingNumber: null,
@@ -137,7 +137,7 @@ describe('PrintWaybillData', function () {
             ->and($withoutUrl->hasUrlContent())->toBeFalse();
     });
 
-    it('decodes PDF content', function () {
+    it('decodes PDF content', function (): void {
         $pdfContent = 'PDF binary content';
         $data = new PrintWaybillData(
             orderId: 'ORDER-123',
@@ -150,7 +150,7 @@ describe('PrintWaybillData', function () {
         expect($data->getPdfContent())->toBe($pdfContent);
     });
 
-    it('returns null for PDF content when not available', function () {
+    it('returns null for PDF content when not available', function (): void {
         $data = new PrintWaybillData(
             orderId: 'ORDER-123',
             trackingNumber: null,
@@ -162,7 +162,7 @@ describe('PrintWaybillData', function () {
         expect($data->getPdfContent())->toBeNull();
     });
 
-    it('calculates PDF size', function () {
+    it('calculates PDF size', function (): void {
         $pdfContent = str_repeat('X', 1024); // 1 KB
         $data = new PrintWaybillData(
             orderId: 'ORDER-123',
@@ -175,7 +175,7 @@ describe('PrintWaybillData', function () {
         expect($data->getPdfSize())->toBe(1024);
     });
 
-    it('validates PDF format', function () {
+    it('validates PDF format', function (): void {
         $validPdf = new PrintWaybillData(
             orderId: 'ORDER-123',
             trackingNumber: null,
@@ -196,7 +196,7 @@ describe('PrintWaybillData', function () {
             ->and($invalidPdf->isValidPdf())->toBeFalse();
     });
 
-    it('formats file size in human-readable format', function () {
+    it('formats file size in human-readable format', function (): void {
         $sizes = [
             512 => '512.00 B',
             1024 => '1.00 KB',
@@ -218,7 +218,7 @@ describe('PrintWaybillData', function () {
         }
     });
 
-    it('returns null for formatted size when content not available', function () {
+    it('returns null for formatted size when content not available', function (): void {
         $data = new PrintWaybillData(
             orderId: 'ORDER-123',
             trackingNumber: null,
@@ -230,7 +230,7 @@ describe('PrintWaybillData', function () {
         expect($data->getFormattedSize())->toBeNull();
     });
 
-    it('gets download URL for multi-parcel', function () {
+    it('gets download URL for multi-parcel', function (): void {
         $url = 'https://api.jnt.com/download/123.pdf';
         $data = new PrintWaybillData(
             orderId: 'ORDER-123',
@@ -243,7 +243,7 @@ describe('PrintWaybillData', function () {
         expect($data->getDownloadUrl())->toBe($url);
     });
 
-    it('returns null download URL for single parcel', function () {
+    it('returns null download URL for single parcel', function (): void {
         $data = new PrintWaybillData(
             orderId: 'ORDER-123',
             trackingNumber: null,
@@ -255,7 +255,7 @@ describe('PrintWaybillData', function () {
         expect($data->getDownloadUrl())->toBeNull();
     });
 
-    it('saves PDF to file', function () {
+    it('saves PDF to file', function (): void {
         $pdfContent = '%PDF-1.4 Test PDF content';
         $data = new PrintWaybillData(
             orderId: 'ORDER-123',
@@ -280,7 +280,7 @@ describe('PrintWaybillData', function () {
         }
     });
 
-    it('creates directory when saving PDF', function () {
+    it('creates directory when saving PDF', function (): void {
         $pdfContent = 'PDF content';
         $data = new PrintWaybillData(
             orderId: 'ORDER-123',
@@ -303,13 +303,14 @@ describe('PrintWaybillData', function () {
             if (file_exists($tempFile)) {
                 unlink($tempFile);
             }
+
             if (is_dir($tempDir)) {
                 rmdir($tempDir);
             }
         }
     });
 
-    it('returns false when saving PDF without content', function () {
+    it('returns false when saving PDF without content', function (): void {
         $data = new PrintWaybillData(
             orderId: 'ORDER-123',
             trackingNumber: null,
@@ -321,7 +322,7 @@ describe('PrintWaybillData', function () {
         expect($data->savePdf('/tmp/test.pdf'))->toBeFalse();
     });
 
-    it('handles empty base64 content', function () {
+    it('handles empty base64 content', function (): void {
         $data = PrintWaybillData::fromApiArray([
             'orderId' => 'ORDER-123',
             'base64EncodeContent' => '',

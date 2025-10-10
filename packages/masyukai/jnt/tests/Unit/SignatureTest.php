@@ -16,12 +16,11 @@ it('generates correct signature digest', function (): void {
 
     $reflection = new ReflectionClass($client);
     $method = $reflection->getMethod('generateDigest');
-    $method->setAccessible(true);
 
     $digest = $method->invoke($client, $bizContent);
 
     expect($digest)->toBeString()
-        ->and(mb_strlen($digest))->toBeGreaterThan(0);
+        ->and(mb_strlen((string) $digest))->toBeGreaterThan(0);
 });
 
 it('verifies webhook signature correctly', function (): void {
@@ -36,7 +35,6 @@ it('verifies webhook signature correctly', function (): void {
 
     $reflection = new ReflectionClass($client);
     $method = $reflection->getMethod('generateDigest');
-    $method->setAccessible(true);
 
     $digest = $method->invoke($client, $bizContent);
 

@@ -21,21 +21,21 @@ class OrderPrintCommand extends Command
         $orderId = $this->argument('order-id');
         $path = $this->option('path');
 
-        $this->info("Printing waybill for order: {$orderId}");
+        $this->info('Printing waybill for order: '.$orderId);
 
         try {
             $result = $jnt->printOrder($orderId);
             $waybill = PrintWaybillData::fromApiArray($result);
 
             if ($waybill->hasBase64Content()) {
-                $filename = "{$orderId}.pdf";
-                $fullPath = base_path("{$path}/{$filename}");
+                $filename = $orderId.'.pdf';
+                $fullPath = base_path(sprintf('%s/%s', $path, $filename));
 
                 if ($waybill->savePdf($fullPath)) {
                     $this->newLine();
                     $this->info('✓ Waybill saved successfully!');
-                    $this->line("Location: {$fullPath}");
-                    $this->line("Size: {$waybill->getFormattedSize()}");
+                    $this->line('Location: '.$fullPath);
+                    $this->line('Size: '.$waybill->getFormattedSize());
                 } else {
                     $this->error('Failed to save waybill PDF.');
 
@@ -44,7 +44,7 @@ class OrderPrintCommand extends Command
             } elseif ($waybill->hasUrlContent()) {
                 $this->newLine();
                 $this->info('✓ Waybill URL generated!');
-                $this->line("Download URL: {$waybill->getDownloadUrl()}");
+                $this->line('Download URL: '.$waybill->getDownloadUrl());
             } else {
                 $this->warn('No waybill content available.');
 

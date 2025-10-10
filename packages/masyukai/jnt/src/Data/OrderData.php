@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace MasyukAI\Jnt\Data;
 
+use Deprecated;
+
 class OrderData
 {
     /**
@@ -20,6 +22,8 @@ class OrderData
 
     /**
      * Create from API response array
+     *
+     * @param  array<string, mixed>  $data
      */
     public static function fromApiArray(array $data): self
     {
@@ -34,8 +38,9 @@ class OrderData
     }
 
     /**
-     * @deprecated Use fromApiArray() instead
+     * @param  array<string, mixed>  $data
      */
+    #[Deprecated(message: 'Use fromApiArray() instead')]
     public static function fromArray(array $data): self
     {
         return self::fromApiArray($data);
@@ -43,6 +48,8 @@ class OrderData
 
     /**
      * Convert to API request array
+     *
+     * @return array<string,mixed>
      */
     public function toApiArray(): array
     {
@@ -53,11 +60,12 @@ class OrderData
             'thirdSortingCode' => $this->thirdSortingCode,
             'multipleVoteBillCodes' => $this->additionalTrackingNumbers,
             'packageChargeWeight' => $this->chargeableWeight,
-        ], fn ($value) => $value !== null);
+        ], fn (string|array|null $value): bool => $value !== null);
     }
 
+    #[Deprecated(message: 'Use toApiArray() instead')]
     /**
-     * @deprecated Use toApiArray() instead
+     * @return array<string,mixed>
      */
     public function toArray(): array
     {

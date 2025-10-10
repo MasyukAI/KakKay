@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 use MasyukAI\Jnt\Exceptions\JntNetworkException;
 
-describe('JntNetworkException', function () {
-    it('creates exception for connection failure', function () {
+describe('JntNetworkException', function (): void {
+    it('creates exception for connection failure', function (): void {
         $previous = new Exception('Connection refused');
         $exception = JntNetworkException::connectionFailed('order/addOrder', $previous);
 
@@ -16,7 +16,7 @@ describe('JntNetworkException', function () {
             ->and($exception->getPrevious())->toBe($previous);
     });
 
-    it('creates exception for timeout', function () {
+    it('creates exception for timeout', function (): void {
         $exception = JntNetworkException::timeout('logistics/trace', 30);
 
         expect($exception)
@@ -25,7 +25,7 @@ describe('JntNetworkException', function () {
             ->and($exception->endpoint)->toBe('logistics/trace');
     });
 
-    it('creates exception for server error', function () {
+    it('creates exception for server error', function (): void {
         $exception = JntNetworkException::serverError('order/addOrder', 500, ['error' => 'Internal error']);
 
         expect($exception)
@@ -35,7 +35,7 @@ describe('JntNetworkException', function () {
             ->and($exception->httpStatus)->toBe(500);
     });
 
-    it('creates exception for client error', function () {
+    it('creates exception for client error', function (): void {
         $exception = JntNetworkException::clientError('order/cancelOrder', 404);
 
         expect($exception)
@@ -45,7 +45,7 @@ describe('JntNetworkException', function () {
             ->and($exception->httpStatus)->toBe(404);
     });
 
-    it('creates exception for DNS resolution failure', function () {
+    it('creates exception for DNS resolution failure', function (): void {
         $exception = JntNetworkException::dnsResolutionFailed('api.jnt.com');
 
         expect($exception)
@@ -54,7 +54,7 @@ describe('JntNetworkException', function () {
             ->and($exception->endpoint)->toBe('api.jnt.com');
     });
 
-    it('creates exception for SSL error', function () {
+    it('creates exception for SSL error', function (): void {
         $exception = JntNetworkException::sslError('order/addOrder', 'Certificate verification failed');
 
         expect($exception)
@@ -64,7 +64,7 @@ describe('JntNetworkException', function () {
             ->and($exception->endpoint)->toBe('order/addOrder');
     });
 
-    it('creates exception for proxy error', function () {
+    it('creates exception for proxy error', function (): void {
         $exception = JntNetworkException::proxyError('logistics/trace', 'Proxy authentication required');
 
         expect($exception)
@@ -73,7 +73,7 @@ describe('JntNetworkException', function () {
             ->and($exception->endpoint)->toBe('logistics/trace');
     });
 
-    it('creates exception for too many redirects', function () {
+    it('creates exception for too many redirects', function (): void {
         $exception = JntNetworkException::tooManyRedirects('order/printOrder', 10);
 
         expect($exception)

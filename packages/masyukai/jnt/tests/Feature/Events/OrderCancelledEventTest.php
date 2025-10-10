@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Event;
 use MasyukAI\Jnt\Enums\CancellationReason;
 use MasyukAI\Jnt\Events\OrderCancelledEvent;
 
-test('OrderCancelledEvent → it exposes cancellation data', function () {
+test('OrderCancelledEvent → it exposes cancellation data', function (): void {
     $response = ['code' => 1, 'msg' => 'Order cancelled successfully'];
 
     $event = new OrderCancelledEvent(
@@ -24,7 +24,7 @@ test('OrderCancelledEvent → it exposes cancellation data', function () {
         ->and($event->getResponse())->toBe($response);
 });
 
-test('OrderCancelledEvent → it handles cancellation without tracking number', function () {
+test('OrderCancelledEvent → it handles cancellation without tracking number', function (): void {
     $event = new OrderCancelledEvent(
         orderId: 'ORDER123',
         reason: CancellationReason::CUSTOMER_CHANGED_MIND,
@@ -35,7 +35,7 @@ test('OrderCancelledEvent → it handles cancellation without tracking number', 
         ->and($event->hasTrackingNumber())->toBeFalse();
 });
 
-test('OrderCancelledEvent → it detects successful cancellation', function () {
+test('OrderCancelledEvent → it detects successful cancellation', function (): void {
     $event = new OrderCancelledEvent(
         orderId: 'ORDER123',
         reason: CancellationReason::OUT_OF_STOCK,
@@ -46,7 +46,7 @@ test('OrderCancelledEvent → it detects successful cancellation', function () {
         ->and($event->getMessage())->toBe('Success');
 });
 
-test('OrderCancelledEvent → it detects failed cancellation', function () {
+test('OrderCancelledEvent → it detects failed cancellation', function (): void {
     $event = new OrderCancelledEvent(
         orderId: 'ORDER123',
         reason: CancellationReason::OUT_OF_STOCK,
@@ -57,7 +57,7 @@ test('OrderCancelledEvent → it detects failed cancellation', function () {
         ->and($event->getMessage())->toBe('Failed');
 });
 
-test('OrderCancelledEvent → it handles response without message', function () {
+test('OrderCancelledEvent → it handles response without message', function (): void {
     $event = new OrderCancelledEvent(
         orderId: 'ORDER123',
         reason: CancellationReason::OUT_OF_STOCK,
@@ -67,7 +67,7 @@ test('OrderCancelledEvent → it handles response without message', function () 
     expect($event->getMessage())->toBe('Order cancelled');
 });
 
-test('OrderCancelledEvent → it can be dispatched', function () {
+test('OrderCancelledEvent → it can be dispatched', function (): void {
     Event::fake();
 
     $event = new OrderCancelledEvent(

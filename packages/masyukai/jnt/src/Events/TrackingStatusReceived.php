@@ -27,7 +27,9 @@ use MasyukAI\Jnt\Data\WebhookData;
  */
 class TrackingStatusReceived
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable;
+    use InteractsWithSockets;
+    use SerializesModels;
 
     /**
      * Create a new event instance.
@@ -77,7 +79,7 @@ class TrackingStatusReceived
     {
         $detail = $this->webhookData->getLatestDetail();
 
-        if (! $detail) {
+        if (! $detail instanceof \MasyukAI\Jnt\Data\TrackingDetailData) {
             return null;
         }
 
@@ -87,7 +89,7 @@ class TrackingStatusReceived
             $detail->scanNetworkProvince,
         ]);
 
-        return ! empty($parts) ? implode(', ', $parts) : null;
+        return $parts === [] ? null : implode(', ', $parts);
     }
 
     /**

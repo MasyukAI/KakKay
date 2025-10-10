@@ -8,11 +8,11 @@ use MasyukAI\Jnt\Data\TrackingData;
 use MasyukAI\Jnt\Data\TrackingDetailData;
 use MasyukAI\Jnt\Notifications\OrderProblemNotification;
 
-beforeEach(function () {
+beforeEach(function (): void {
     Notification::fake();
 });
 
-test('OrderProblemNotification → it uses mail and database channels', function () {
+test('OrderProblemNotification → it uses mail and database channels', function (): void {
     $tracking = new TrackingData(
         trackingNumber: 'TRACK123',
         details: [],
@@ -23,7 +23,7 @@ test('OrderProblemNotification → it uses mail and database channels', function
     expect($notification->via(new stdClass()))->toBe(['mail', 'database']);
 });
 
-test('OrderProblemNotification → it generates correct mail message', function () {
+test('OrderProblemNotification → it generates correct mail message', function (): void {
     $tracking = new TrackingData(
         trackingNumber: 'TRACK123',
         details: [
@@ -33,8 +33,8 @@ test('OrderProblemNotification → it generates correct mail message', function 
                 scanTypeCode: 'R',
                 scanTypeName: 'Return',
                 scanType: 'RETURN',
-                problemType: 'Address Issue',
                 remark: 'Recipient not available at address',
+                problemType: 'Address Issue',
             ),
         ],
         orderId: 'ORDER123',
@@ -56,7 +56,7 @@ test('OrderProblemNotification → it generates correct mail message', function 
         ->and($mail->introLines)->toContain('For assistance, please contact: support@example.com');
 });
 
-test('OrderProblemNotification → it handles tracking without order ID', function () {
+test('OrderProblemNotification → it handles tracking without order ID', function (): void {
     $tracking = new TrackingData(
         trackingNumber: 'TRACK123',
         details: [],
@@ -70,7 +70,7 @@ test('OrderProblemNotification → it handles tracking without order ID', functi
         ->and($mail->introLines)->not->toContain('Order ID:');
 });
 
-test('OrderProblemNotification → it handles tracking without support contact', function () {
+test('OrderProblemNotification → it handles tracking without support contact', function (): void {
     $tracking = new TrackingData(
         trackingNumber: 'TRACK123',
         details: [],
@@ -82,7 +82,7 @@ test('OrderProblemNotification → it handles tracking without support contact',
     expect($mail->introLines)->not->toContain('For assistance, please contact:');
 });
 
-test('OrderProblemNotification → it handles tracking without problem details', function () {
+test('OrderProblemNotification → it handles tracking without problem details', function (): void {
     $tracking = new TrackingData(
         trackingNumber: 'TRACK123',
         details: [],
@@ -97,7 +97,7 @@ test('OrderProblemNotification → it handles tracking without problem details',
         ->and($mail->introLines)->not->toContain('Reported At:');
 });
 
-test('OrderProblemNotification → it generates correct array representation', function () {
+test('OrderProblemNotification → it generates correct array representation', function (): void {
     $tracking = new TrackingData(
         trackingNumber: 'TRACK123',
         details: [
@@ -107,8 +107,8 @@ test('OrderProblemNotification → it generates correct array representation', f
                 scanTypeCode: 'R',
                 scanTypeName: 'Return',
                 scanType: 'RETURN',
-                problemType: 'Address Issue',
                 remark: 'Recipient not available at address',
+                problemType: 'Address Issue',
             ),
         ],
         orderId: 'ORDER123',
@@ -130,7 +130,7 @@ test('OrderProblemNotification → it generates correct array representation', f
     ]);
 });
 
-test('OrderProblemNotification → it implements ShouldQueue', function () {
+test('OrderProblemNotification → it implements ShouldQueue', function (): void {
     $tracking = new TrackingData(
         trackingNumber: 'TRACK123',
         details: [],

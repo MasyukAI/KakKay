@@ -84,11 +84,9 @@ class JntServiceProvider extends PackageServiceProvider
         $this->app->alias(JntExpressService::class, 'jnt-express');
 
         // Register webhook service
-        $this->app->singleton(WebhookService::class, function (Application $app): WebhookService {
-            return new WebhookService(
-                privateKey: $app['config']['jnt']['private_key']
-            );
-        });
+        $this->app->singleton(WebhookService::class, fn (Application $app): WebhookService => new WebhookService(
+            privateKey: $app['config']['jnt']['private_key']
+        ));
     }
 
     /**
@@ -123,10 +121,10 @@ class JntServiceProvider extends PackageServiceProvider
         $required = ['customer_code', 'password', 'private_key'];
 
         foreach ($required as $key) {
-            $value = config("jnt.{$key}");
+            $value = config('jnt.'.$key);
 
             if (empty($value)) {
-                Log::warning("J&T Express: Missing required configuration key: jnt.{$key}");
+                Log::warning('J&T Express: Missing required configuration key: jnt.'.$key);
             }
         }
     }
@@ -141,7 +139,7 @@ class JntServiceProvider extends PackageServiceProvider
 
         if (! in_array($environment, $validEnvironments, true)) {
             Log::warning(
-                "J&T Express: Invalid environment: {$environment}. Must be 'sandbox' or 'production'."
+                sprintf("J&T Express: Invalid environment: %s. Must be 'sandbox' or 'production'.", $environment)
             );
         }
     }
@@ -158,7 +156,7 @@ class JntServiceProvider extends PackageServiceProvider
         }
 
         if (! filter_var($baseUrl, FILTER_VALIDATE_URL)) {
-            Log::warning("J&T Express: Invalid base URL format: {$baseUrl}");
+            Log::warning('J&T Express: Invalid base URL format: '.$baseUrl);
         }
     }
 }

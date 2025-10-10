@@ -46,12 +46,10 @@ class OrderProblemNotification extends Notification implements ShouldQueue
 
         // Get problem details
         $details = $this->tracking->details;
-        if (! empty($details)) {
+        if ($details !== []) {
             $latest = end($details);
             if ($latest instanceof \MasyukAI\Jnt\Data\TrackingDetailData) {
-                if ($latest->description !== null) {
-                    $message->line('Issue: '.$latest->description);
-                }
+                $message->line('Issue: '.$latest->description);
 
                 if ($latest->problemType !== null) {
                     $message->line('Problem Type: '.$latest->problemType);
@@ -61,9 +59,7 @@ class OrderProblemNotification extends Notification implements ShouldQueue
                     $message->line('Details: '.$latest->remark);
                 }
 
-                if ($latest->scanTime !== null) {
-                    $message->line('Reported At: '.$latest->scanTime);
-                }
+                $message->line('Reported At: '.$latest->scanTime);
             }
         }
 
@@ -88,7 +84,7 @@ class OrderProblemNotification extends Notification implements ShouldQueue
         $problemDetails = null;
         $reportedAt = null;
 
-        if (! empty($details)) {
+        if ($details !== []) {
             $latest = end($details);
             if ($latest instanceof \MasyukAI\Jnt\Data\TrackingDetailData) {
                 $problemDescription = $latest->description;

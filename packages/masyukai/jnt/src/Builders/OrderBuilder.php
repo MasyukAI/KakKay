@@ -22,10 +22,6 @@ use MasyukAI\Jnt\Rules\WeightInKilograms;
 
 class OrderBuilder
 {
-    protected string $customerCode;
-
-    protected string $password;
-
     protected string $orderId;
 
     protected ExpressType|string $expressType = 'EZ';
@@ -55,15 +51,13 @@ class OrderBuilder
 
     protected ?string $remark = null;
 
+    /** @var array<string, mixed>|null */
     protected ?array $customsInfo = null;
 
+    /** @var array<string, mixed>|null */
     protected ?array $additionalParcels = null;
 
-    public function __construct(string $customerCode, string $password)
-    {
-        $this->customerCode = $customerCode;
-        $this->password = $password;
-    }
+    public function __construct(protected string $customerCode, protected string $password) {}
 
     public function orderId(string $orderId): self
     {
@@ -173,6 +167,9 @@ class OrderBuilder
         return $this;
     }
 
+    /**
+     * @param  array<string, mixed>  $customsInfo
+     */
     public function customsInfo(array $customsInfo): self
     {
         $this->customsInfo = $customsInfo;
@@ -180,6 +177,9 @@ class OrderBuilder
         return $this;
     }
 
+    /**
+     * @param  array<string, mixed>  $additionalParcels
+     */
     public function additionalParcels(array $additionalParcels): self
     {
         $this->additionalParcels = $additionalParcels;
@@ -187,6 +187,9 @@ class OrderBuilder
         return $this;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function build(): array
     {
         $this->validate();
@@ -213,11 +216,11 @@ class OrderBuilder
             'expressType' => $expressTypeValue,
             'sender' => $this->sender->toApiArray(),
             'receiver' => $this->receiver->toApiArray(),
-            'items' => array_map(fn (ItemData $item) => $item->toApiArray(), $this->items),
+            'items' => array_map(fn (ItemData $item): array => $item->toApiArray(), $this->items),
             'packageInfo' => $this->packageInfo->toApiArray(),
         ];
 
-        if ($this->returnAddress !== null) {
+        if ($this->returnAddress instanceof AddressData) {
             $payload['returnInfo'] = $this->returnAddress->toApiArray();
         }
 
@@ -352,7 +355,7 @@ class OrderBuilder
         ];
 
         // Add sender data if available
-        if ($this->sender !== null) {
+        if ($this->sender instanceof AddressData) {
             $data['sender_name'] = $this->sender->name;
             $data['sender_phone'] = $this->sender->phone;
             $data['sender_address'] = $this->sender->address;
@@ -360,7 +363,7 @@ class OrderBuilder
         }
 
         // Add receiver data if available
-        if ($this->receiver !== null) {
+        if ($this->receiver instanceof AddressData) {
             $data['receiver_name'] = $this->receiver->name;
             $data['receiver_phone'] = $this->receiver->phone;
             $data['receiver_address'] = $this->receiver->address;
@@ -368,7 +371,7 @@ class OrderBuilder
         }
 
         // Add return address data if provided
-        if ($this->returnAddress !== null) {
+        if ($this->returnAddress instanceof AddressData) {
             $data['return_address_name'] = $this->returnAddress->name;
             $data['return_address_phone'] = $this->returnAddress->phone;
             $data['return_address_address'] = $this->returnAddress->address;
@@ -376,7 +379,7 @@ class OrderBuilder
         }
 
         // Add package info data if available
-        if ($this->packageInfo !== null) {
+        if ($this->packageInfo instanceof PackageInfoData) {
             $data['package_weight'] = $this->packageInfo->weight;
             $data['package_quantity'] = $this->packageInfo->quantity;
             $data['package_value'] = $this->packageInfo->value;
@@ -445,21 +448,21 @@ class OrderBuilder
         ];
 
         // Only add detailed validation rules if the objects are not null
-        if ($this->sender !== null) {
+        if ($this->sender instanceof AddressData) {
             $rules['sender_name'] = ['required', 'string', 'max:200'];
             $rules['sender_phone'] = ['required', 'string', new PhoneNumber];
             $rules['sender_address'] = ['required', 'string', 'max:200'];
             $rules['sender_post_code'] = ['required', 'string', new MalaysianPostalCode];
         }
 
-        if ($this->receiver !== null) {
+        if ($this->receiver instanceof AddressData) {
             $rules['receiver_name'] = ['required', 'string', 'max:200'];
             $rules['receiver_phone'] = ['required', 'string', new PhoneNumber];
             $rules['receiver_address'] = ['required', 'string', 'max:200'];
             $rules['receiver_post_code'] = ['required', 'string', new MalaysianPostalCode];
         }
 
-        if ($this->packageInfo !== null) {
+        if ($this->packageInfo instanceof PackageInfoData) {
             $rules['package_weight'] = ['required', 'numeric', new WeightInKilograms];
             $rules['package_quantity'] = ['required', 'integer', 'min:1', 'max:999'];
             $rules['package_value'] = ['required', 'numeric', new MonetaryValue];
@@ -469,7 +472,7 @@ class OrderBuilder
         }
 
         // Add return address validation if provided
-        if ($this->returnAddress !== null) {
+        if ($this->returnAddress instanceof AddressData) {
             $rules['return_address_name'] = ['required', 'string', 'max:200'];
             $rules['return_address_phone'] = ['required', 'string', new PhoneNumber];
             $rules['return_address_address'] = ['required', 'string', 'max:200'];
@@ -477,7 +480,7 @@ class OrderBuilder
         }
 
         // Add items validation rules using wildcard (only if items exist)
-        if (! empty($this->items)) {
+        if ($this->items !== []) {
             $rules['items.*.name'] = ['required', 'string', 'max:200'];
             $rules['items.*.quantity'] = ['required', 'integer', 'min:1', 'max:999'];
             $rules['items.*.weight'] = ['required', 'numeric', new WeightInGrams];

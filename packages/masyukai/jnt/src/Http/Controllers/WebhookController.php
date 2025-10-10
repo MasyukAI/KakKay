@@ -49,7 +49,7 @@ class WebhookController
                     'billCode' => $webhookData->billCode,
                     'txlogisticId' => $webhookData->txlogisticId,
                     'detailsCount' => count($webhookData->details),
-                    'latestStatus' => $webhookData->getLatestDetail()?->scanType ?? 'unknown',
+                    'latestStatus' => $webhookData->getLatestDetail()->scanType ?? 'unknown',
                 ]);
             }
 

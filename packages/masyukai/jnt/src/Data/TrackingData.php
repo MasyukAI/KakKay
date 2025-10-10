@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace MasyukAI\Jnt\Data;
 
+use Deprecated;
+
 class TrackingData
 {
     /**
@@ -17,11 +19,13 @@ class TrackingData
 
     /**
      * Create from API response array
+     *
+     * @param  array<string, mixed>  $data
      */
     public static function fromApiArray(array $data): self
     {
         $details = array_map(
-            fn (array $detail) => TrackingDetailData::fromApiArray($detail),
+            fn (array $detail): TrackingDetailData => TrackingDetailData::fromApiArray($detail),
             $data['details'] ?? []
         );
 
@@ -33,8 +37,9 @@ class TrackingData
     }
 
     /**
-     * @deprecated Use fromApiArray() instead
+     * @param  array<string, mixed>  $data
      */
+    #[Deprecated(message: 'Use fromApiArray() instead')]
     public static function fromArray(array $data): self
     {
         return self::fromApiArray($data);
@@ -42,18 +47,21 @@ class TrackingData
 
     /**
      * Convert to API request array
+     *
+     * @return array<string,mixed>
      */
     public function toApiArray(): array
     {
         return [
             'billCode' => $this->trackingNumber,
             'txlogisticId' => $this->orderId,
-            'details' => array_map(fn (TrackingDetailData $detail) => $detail->toApiArray(), $this->details),
+            'details' => array_map(fn (TrackingDetailData $detail): array => $detail->toApiArray(), $this->details),
         ];
     }
 
+    #[Deprecated(message: 'Use toApiArray() instead')]
     /**
-     * @deprecated Use toApiArray() instead
+     * @return array<string,mixed>
      */
     public function toArray(): array
     {

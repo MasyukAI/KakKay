@@ -20,13 +20,13 @@ class OrderTrackCommand extends Command
     {
         $orderId = $this->argument('order-id');
 
-        $this->info("Tracking order: {$orderId}");
+        $this->info('Tracking order: '.$orderId);
         $this->newLine();
 
         try {
             $tracking = $jnt->trackParcel($orderId);
 
-            if (empty($tracking->details)) {
+            if ($tracking->details === []) {
                 $this->warn('No tracking information found for this order.');
 
                 return self::SUCCESS;

@@ -41,7 +41,7 @@ class ConfigCheckCommand extends Command
         // Display results table
         $this->table(
             ['Configuration', 'Status', 'Details'],
-            collect($checks)->map(fn ($check) => [
+            collect($checks)->map(fn ($check): array => [
                 $check['name'],
                 $check['valid'] ? '✓' : '✗',
                 $check['message'],
@@ -61,7 +61,7 @@ class ConfigCheckCommand extends Command
 
         // Test API connectivity
         $this->info('Testing API connectivity...');
-        $connectivityCheck = $this->testConnectivity($jnt);
+        $connectivityCheck = $this->testConnectivity();
 
         if (! $connectivityCheck['success']) {
             $this->error('Connectivity test failed: '.$connectivityCheck['message']);
@@ -74,6 +74,9 @@ class ConfigCheckCommand extends Command
         return self::SUCCESS;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function checkConfig(string $name, string $key): array
     {
         $value = config($key);
@@ -82,7 +85,7 @@ class ConfigCheckCommand extends Command
             return [
                 'name' => $name,
                 'valid' => false,
-                'message' => "Missing - Set {$key} in config or environment",
+                'message' => sprintf('Missing - Set %s in config or environment', $key),
             ];
         }
 
@@ -93,6 +96,9 @@ class ConfigCheckCommand extends Command
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function checkPrivateKey(): array
     {
         $privateKey = config('jnt.private_key');
@@ -106,7 +112,7 @@ class ConfigCheckCommand extends Command
         }
 
         // Validate RSA private key format
-        if (! str_contains($privateKey, 'BEGIN RSA PRIVATE KEY') && ! str_contains($privateKey, 'BEGIN PRIVATE KEY')) {
+        if (! str_contains((string) $privateKey, 'BEGIN RSA PRIVATE KEY') && ! str_contains((string) $privateKey, 'BEGIN PRIVATE KEY')) {
             return [
                 'name' => 'Private Key',
                 'valid' => false,
@@ -121,6 +127,9 @@ class ConfigCheckCommand extends Command
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function checkPublicKey(): array
     {
         $publicKey = config('jnt.public_key');
@@ -134,7 +143,7 @@ class ConfigCheckCommand extends Command
         }
 
         // Validate RSA public key format
-        if (! str_contains($publicKey, 'BEGIN PUBLIC KEY')) {
+        if (! str_contains((string) $publicKey, 'BEGIN PUBLIC KEY')) {
             return [
                 'name' => 'Public Key',
                 'valid' => false,
@@ -149,6 +158,9 @@ class ConfigCheckCommand extends Command
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function checkEnvironment(): array
     {
         $environment = config('jnt.environment', 'production');
@@ -164,10 +176,13 @@ class ConfigCheckCommand extends Command
         return [
             'name' => 'Environment',
             'valid' => true,
-            'message' => ucfirst($environment),
+            'message' => ucfirst((string) $environment),
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function checkBaseUrl(): array
     {
         $baseUrl = config('jnt.base_url');
@@ -195,7 +210,10 @@ class ConfigCheckCommand extends Command
         ];
     }
 
-    private function testConnectivity(JntExpressService $jnt): array
+    /**
+     * @return array<string, mixed>
+     */
+    private function testConnectivity(): array
     {
         try {
             $baseUrl = config('jnt.base_url');
@@ -207,7 +225,7 @@ class ConfigCheckCommand extends Command
             if (! $response->successful()) {
                 return [
                     'success' => false,
-                    'message' => "HTTP {$response->status()} error from API endpoint",
+                    'message' => sprintf('HTTP %d error from API endpoint', $response->status()),
                 ];
             }
 
@@ -215,10 +233,10 @@ class ConfigCheckCommand extends Command
                 'success' => true,
                 'message' => 'API endpoint is reachable',
             ];
-        } catch (Exception $e) {
+        } catch (Exception $exception) {
             return [
                 'success' => false,
-                'message' => $e->getMessage(),
+                'message' => $exception->getMessage(),
             ];
         }
     }
