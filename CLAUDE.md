@@ -1011,7 +1011,7 @@ These instructions guide automated agents working with the `masyukai/chip` packa
 
 ## Project layout
 
-- Package root: `packages/masyukai/chip/`
+- Package root: `packages/chip/`
 - Primary namespaces: `MasyukAI\Chip` (services, data objects, builders).
 - Facades: `MasyukAI\Chip\Facades\Chip` (Collect) and `MasyukAI\Chip\Facades\ChipSend` (Send).
 - Core services: `src/Services/ChipCollectService.php`, `src/Services/ChipSendService.php`, `src/Services/WebhookService.php`.

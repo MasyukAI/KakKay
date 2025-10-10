@@ -99,7 +99,7 @@ class CartConditionsChanged implements ShouldBroadcast
 
 ### 4. Update CartConditionBatchRemoval
 
-Modify: `packages/masyukai/filament-cart/src/Services/CartConditionBatchRemoval.php`
+Modify: `packages/filament-cart/src/Services/CartConditionBatchRemoval.php`
 
 ```php
 use App\Events\CartConditionsChanged;

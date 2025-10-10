@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9578b67f8e97f008b111ba3008f7c373",
+    "content-hash": "e0cf4ed01ac71ec3fddcfad73b1db1c5",
     "packages": [
         {
             "name": "akaunting/laravel-money",
@@ -1848,16 +1848,16 @@
         },
         {
             "name": "giggsey/libphonenumber-for-php-lite",
-            "version": "9.0.15",
+            "version": "9.0.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/giggsey/libphonenumber-for-php-lite.git",
-                "reference": "bdb457250790bba0a4f8f03e3a3eceb47805499e"
+                "reference": "e7d67fc9d91529f4eff950b058100fcbefd58dfe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php-lite/zipball/bdb457250790bba0a4f8f03e3a3eceb47805499e",
-                "reference": "bdb457250790bba0a4f8f03e3a3eceb47805499e",
+                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php-lite/zipball/e7d67fc9d91529f4eff950b058100fcbefd58dfe",
+                "reference": "e7d67fc9d91529f4eff950b058100fcbefd58dfe",
                 "shasum": ""
             },
             "require": {
@@ -1922,7 +1922,7 @@
                 "issues": "https://github.com/giggsey/libphonenumber-for-php-lite/issues",
                 "source": "https://github.com/giggsey/libphonenumber-for-php-lite"
             },
-            "time": "2025-09-26T07:21:30+00:00"
+            "time": "2025-10-10T10:54:41+00:00"
         },
         {
             "name": "graham-campbell/result-type",
@@ -4214,7 +4214,7 @@
             "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "./packages/masyukai/chip",
+                "url": "./packages/chip",
                 "reference": "a54b0e3465a43d393246c1315d7414b16d12052d"
             },
             "require": {
@@ -4303,14 +4303,14 @@
             "dist": {
                 "type": "path",
                 "url": "./packages/masyukai/docs",
-                "reference": "ed865da859dc16c787afbd8d950245a4d7bc23cd"
+                "reference": "32ea924dff7427330434c716301f33490371700d"
             },
             "require": {
                 "ext-json": "*",
                 "illuminate/contracts": "^12.0",
                 "illuminate/database": "^12.0",
                 "illuminate/support": "^12.0",
-                "php": "^8.3",
+                "php": "^8.4",
                 "spatie/laravel-package-tools": "^1.92",
                 "spatie/laravel-pdf": "^1.5"
             },
@@ -4388,8 +4388,8 @@
             "version": "1.0.0",
             "dist": {
                 "type": "path",
-                "url": "./packages/masyukai/filament-cart",
-                "reference": "d54d7a2289e942d0d7f6ff2048bd63197ef17ffc"
+                "url": "./packages/filament-cart",
+                "reference": "46674809fc02795fc3fd65d8da0b687f88070d2d"
             },
             "require": {
                 "filament/filament": "^4.0",
@@ -4466,7 +4466,7 @@
             "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "./packages/masyukai/filament-chip",
+                "url": "./packages/filament-chip",
                 "reference": "0f9b830a838f01ba84b6356188f91b8190cbbb8e"
             },
             "require": {
@@ -4542,13 +4542,14 @@
             "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "./packages/masyukai/jnt",
-                "reference": "245c8d54f3ba6f9b937ff2e8ede67c6ef5ba0303"
+                "url": "./packages/jnt",
+                "reference": "0ed2504806e6e69d01b1f5290ce2414fb90ebca9"
             },
             "require": {
                 "guzzlehttp/guzzle": "^7.0",
                 "illuminate/support": "^12.0",
-                "php": "^8.4"
+                "php": "^8.4",
+                "spatie/laravel-package-tools": "^1.92"
             },
             "require-dev": {
                 "larastan/larastan": "^3.7",
@@ -4617,6 +4618,88 @@
                 }
             ],
             "description": "J&T Express Malaysia API Integration Package",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "masyukai/stock",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "./packages/masyukai/stock",
+                "reference": "57eaf24fbf57128cc5115cd7ab575cc75489822e"
+            },
+            "require": {
+                "ext-json": "*",
+                "illuminate/contracts": "^12.0",
+                "illuminate/database": "^12.0",
+                "illuminate/support": "^12.0",
+                "php": "^8.4",
+                "spatie/laravel-package-tools": "^1.92"
+            },
+            "require-dev": {
+                "driftingly/rector-laravel": "^2.0",
+                "larastan/larastan": "^3.0",
+                "laravel/framework": "^12.0",
+                "laravel/pint": "^1.0",
+                "mockery/mockery": "^1.6",
+                "orchestra/testbench": "^10.0",
+                "pestphp/pest": "^4.0",
+                "pestphp/pest-plugin-laravel": "^4.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "MasyukAI\\Stock\\StockServiceProvider"
+                    ],
+                    "aliases": {
+                        "Stock": "MasyukAI\\Stock\\Facades\\Stock"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "MasyukAI\\Stock\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "MasyukAI\\Stock\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "vendor/bin/pest"
+                ],
+                "test-coverage": [
+                    "vendor/bin/pest --coverage"
+                ],
+                "format": [
+                    "vendor/bin/pint"
+                ],
+                "analyse": [
+                    "vendor/bin/phpstan analyse --memory-limit=2G"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Masyukai",
+                    "email": "hello@masyuk.ai"
+                }
+            ],
+            "description": "Laravel stock management system with UUID support",
+            "keywords": [
+                "inventory",
+                "laravel",
+                "management",
+                "stock",
+                "uuid"
+            ],
             "transport-options": {
                 "relative": true
             }
@@ -12421,11 +12504,11 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "2.1.30",
+            "version": "2.1.31",
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/a4a7f159927983dd4f7c8020ed227d80b7f39d7d",
-                "reference": "a4a7f159927983dd4f7c8020ed227d80b7f39d7d",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/ead89849d879fe203ce9292c6ef5e7e76f867b96",
+                "reference": "ead89849d879fe203ce9292c6ef5e7e76f867b96",
                 "shasum": ""
             },
             "require": {
@@ -12470,7 +12553,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-10-02T16:07:52+00:00"
+            "time": "2025-10-10T14:14:11+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -12913,16 +12996,16 @@
         },
         {
             "name": "rector/rector",
-            "version": "2.2.1",
+            "version": "2.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rectorphp/rector.git",
-                "reference": "e1aaf3061e9ae9342ed0824865e3a3360defddeb"
+                "reference": "5b353f7457b9a0c63fc91ef340f5d119a40991ed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rectorphp/rector/zipball/e1aaf3061e9ae9342ed0824865e3a3360defddeb",
-                "reference": "e1aaf3061e9ae9342ed0824865e3a3360defddeb",
+                "url": "https://api.github.com/repos/rectorphp/rector/zipball/5b353f7457b9a0c63fc91ef340f5d119a40991ed",
+                "reference": "5b353f7457b9a0c63fc91ef340f5d119a40991ed",
                 "shasum": ""
             },
             "require": {
@@ -12961,7 +13044,7 @@
             ],
             "support": {
                 "issues": "https://github.com/rectorphp/rector/issues",
-                "source": "https://github.com/rectorphp/rector/tree/2.2.1"
+                "source": "https://github.com/rectorphp/rector/tree/2.2.2"
             },
             "funding": [
                 {
@@ -12969,7 +13052,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-10-06T21:25:14+00:00"
+            "time": "2025-10-09T19:50:20+00:00"
         },
         {
             "name": "sebastian/cli-parser",
@@ -14177,7 +14260,8 @@
         "masyukai/chip": 20,
         "masyukai/docs": 20,
         "masyukai/filament-chip": 20,
-        "masyukai/jnt": 20
+        "masyukai/jnt": 20,
+        "masyukai/stock": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

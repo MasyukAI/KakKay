@@ -49,19 +49,19 @@
         },
         {
             "type": "path",
-            "url": "./packages/masyukai/chip"
+            "url": "./packages/chip"
         },
         {
             "type": "path",
-            "url": "./packages/masyukai/jnt"
+            "url": "./packages/jnt"
         },
         {
             "type": "path",
-            "url": "./packages/masyukai/filament-cart"
+            "url": "./packages/filament-cart"
         },
         {
             "type": "path",
-            "url": "./packages/masyukai/filament-chip"
+            "url": "./packages/filament-chip"
         },
         {
             "type": "path",

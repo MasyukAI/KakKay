@@ -51,22 +51,22 @@ $this->app['events']->listen(
 ## Files Changed
 
 ### Created
-- `packages/masyukai/filament-cart/src/Listeners/SyncCartOnEvent.php`
+- `packages/filament-cart/src/Listeners/SyncCartOnEvent.php`
 
 ### Modified
-- `packages/masyukai/filament-cart/src/FilamentCartServiceProvider.php` - Updated event registration
-- `packages/masyukai/filament-cart/tests/TestCase.php` - Updated test listener registration
+- `packages/filament-cart/src/FilamentCartServiceProvider.php` - Updated event registration
+- `packages/filament-cart/tests/TestCase.php` - Updated test listener registration
 - `tests/Feature/CheckoutServiceTest.php` - Updated to use unified listener
 - `tests/Feature/PaymentIntentVersionValidationTest.php` - Updated to use unified listener
 
 ### Deleted
-- `packages/masyukai/filament-cart/src/Listeners/SyncCartItemOnAdd.php`
-- `packages/masyukai/filament-cart/src/Listeners/SyncCartItemOnUpdate.php`
-- `packages/masyukai/filament-cart/src/Listeners/SyncCartItemOnRemove.php`
-- `packages/masyukai/filament-cart/src/Listeners/SyncCartConditionOnAdd.php`
-- `packages/masyukai/filament-cart/src/Listeners/SyncCartConditionOnRemove.php`
-- `packages/masyukai/filament-cart/src/Listeners/SyncCartOnClear.php`
-- `packages/masyukai/filament-cart/src/Listeners/SyncCompleteCart.php`
+- `packages/filament-cart/src/Listeners/SyncCartItemOnAdd.php`
+- `packages/filament-cart/src/Listeners/SyncCartItemOnUpdate.php`
+- `packages/filament-cart/src/Listeners/SyncCartItemOnRemove.php`
+- `packages/filament-cart/src/Listeners/SyncCartConditionOnAdd.php`
+- `packages/filament-cart/src/Listeners/SyncCartConditionOnRemove.php`
+- `packages/filament-cart/src/Listeners/SyncCartOnClear.php`
+- `packages/filament-cart/src/Listeners/SyncCompleteCart.php`
 
 ## Test Results
 

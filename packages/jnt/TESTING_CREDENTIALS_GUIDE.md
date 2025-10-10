@@ -111,7 +111,7 @@ php artisan jnt:config-check
 
 - **Source**: J&T Express Official API Documentation
 - **Environment**: Sandbox/Testing Only
-- **Configuration File**: `packages/masyukai/jnt/config/jnt.php`
+- **Configuration File**: `packages/jnt/config/jnt.php`
 - **Documentation**: See README.md Configuration section
 
 ---

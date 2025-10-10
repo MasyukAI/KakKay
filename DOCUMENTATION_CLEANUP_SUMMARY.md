@@ -6,7 +6,7 @@ Successfully reorganized and condensed documentation across the JNT Express pack
 
 ## Changes Made
 
-### JNT Package (/packages/masyukai/jnt)
+### JNT Package (/packages/jnt)
 
 **Removed Files:**
 - ✅ `QUICKSTART.md` (274 lines) - Redundant with README
@@ -26,7 +26,7 @@ Successfully reorganized and condensed documentation across the JNT Express pack
 
 **Final Structure:**
 ```
-packages/masyukai/jnt/
+packages/jnt/
 ├── README.md (409 lines)
 └── docs/
     ├── API_REFERENCE.md (438 lines)
@@ -45,7 +45,7 @@ packages/masyukai/jnt/
 - ✅ 13 focused docs totaling ~10,700 lines
 - ✅ Good structure, no changes needed
 
-**Chip Package** (/packages/masyukai/chip)
+**Chip Package** (/packages/chip)
 - ✅ Already concise (415 lines total)
 - ✅ Clean structure, no changes needed
 
@@ -82,7 +82,7 @@ packages/masyukai/jnt/
 All documentation is now accessible via:
 
 ```markdown
-packages/masyukai/jnt/
+packages/jnt/
 ├── README.md
 │   ├── Quick start
 │   ├── Installation

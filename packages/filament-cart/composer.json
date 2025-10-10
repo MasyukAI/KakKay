@@ -21,7 +21,7 @@
     "repositories": [
         {
             "type": "path",
-            "url": "../cart"
+            "url": "../masyukai/cart"
         }
     ],
     "require": {
