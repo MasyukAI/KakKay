@@ -12,13 +12,6 @@ final class StockService
 {
     /**
      * Add stock to a model.
-     *
-     * @param  Model  $model
-     * @param  int  $quantity
-     * @param  string  $reason
-     * @param  string|null  $note
-     * @param  string|null  $userId
-     * @return StockTransaction
      */
     public function addStock(
         Model $model,
@@ -39,13 +32,6 @@ final class StockService
 
     /**
      * Remove stock from a model.
-     *
-     * @param  Model  $model
-     * @param  int  $quantity
-     * @param  string  $reason
-     * @param  string|null  $note
-     * @param  string|null  $userId
-     * @return StockTransaction
      */
     public function removeStock(
         Model $model,
@@ -66,13 +52,6 @@ final class StockService
 
     /**
      * Adjust stock (automatic correction).
-     *
-     * @param  Model  $model
-     * @param  int  $currentStock
-     * @param  int  $actualStock
-     * @param  string|null  $note
-     * @param  string|null  $userId
-     * @return StockTransaction|null
      */
     public function adjustStock(
         Model $model,
@@ -102,9 +81,6 @@ final class StockService
 
     /**
      * Get current stock level for a model.
-     *
-     * @param  Model  $model
-     * @return int
      */
     public function getCurrentStock(Model $model): int
     {
@@ -126,8 +102,6 @@ final class StockService
     /**
      * Get stock history for a model.
      *
-     * @param  Model  $model
-     * @param  int  $limit
      * @return \Illuminate\Database\Eloquent\Collection<int, StockTransaction>
      */
     public function getStockHistory(Model $model, int $limit = 50): \Illuminate\Database\Eloquent\Collection
@@ -137,16 +111,13 @@ final class StockService
             ->where('stockable_id', $model->getKey())
             ->with('user')
             ->latest('transaction_date')
+            ->latest('id')
             ->limit($limit)
             ->get();
     }
 
     /**
      * Check if model has sufficient stock.
-     *
-     * @param  Model  $model
-     * @param  int  $quantity
-     * @return bool
      */
     public function hasStock(Model $model, int $quantity = 1): bool
     {
@@ -155,10 +126,6 @@ final class StockService
 
     /**
      * Check if stock is low for a model.
-     *
-     * @param  Model  $model
-     * @param  int|null  $threshold
-     * @return bool
      */
     public function isLowStock(Model $model, ?int $threshold = null): bool
     {
@@ -169,14 +136,6 @@ final class StockService
 
     /**
      * Create a stock transaction.
-     *
-     * @param  Model  $model
-     * @param  int  $quantity
-     * @param  string  $type
-     * @param  string  $reason
-     * @param  string|null  $note
-     * @param  string|null  $userId
-     * @return StockTransaction
      */
     private function createTransaction(
         Model $model,

@@ -26,17 +26,6 @@ class TestCase extends Orchestra
 
     /**
      * @param  \Illuminate\Foundation\Application  $app
-     * @return array<int, class-string>
-     */
-    protected function getPackageProviders($app): array
-    {
-        return [
-            StockServiceProvider::class,
-        ];
-    }
-
-    /**
-     * @param  \Illuminate\Foundation\Application  $app
      */
     public function getEnvironmentSetUp($app): void
     {
@@ -46,6 +35,17 @@ class TestCase extends Orchestra
             'database' => ':memory:',
             'prefix' => '',
         ]);
+    }
+
+    /**
+     * @param  \Illuminate\Foundation\Application  $app
+     * @return array<int, class-string>
+     */
+    protected function getPackageProviders($app): array
+    {
+        return [
+            StockServiceProvider::class,
+        ];
     }
 
     protected function setUpDatabase(): void

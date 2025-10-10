@@ -36,12 +36,6 @@ trait HasStock
 
     /**
      * Add stock to the model.
-     *
-     * @param  int  $quantity
-     * @param  string  $reason
-     * @param  string|null  $note
-     * @param  string|null  $userId
-     * @return StockTransaction
      */
     public function addStock(int $quantity, string $reason = 'restock', ?string $note = null, ?string $userId = null): StockTransaction
     {
@@ -57,12 +51,6 @@ trait HasStock
 
     /**
      * Remove stock from the model.
-     *
-     * @param  int  $quantity
-     * @param  string  $reason
-     * @param  string|null  $note
-     * @param  string|null  $userId
-     * @return StockTransaction
      */
     public function removeStock(int $quantity, string $reason = 'adjustment', ?string $note = null, ?string $userId = null): StockTransaction
     {
@@ -97,7 +85,6 @@ trait HasStock
     /**
      * Get stock history with optional limit.
      *
-     * @param  int  $limit
      * @return \Illuminate\Database\Eloquent\Collection<int, StockTransaction>
      */
     public function getStockHistory(int $limit = 50): \Illuminate\Database\Eloquent\Collection
@@ -105,6 +92,7 @@ trait HasStock
         return $this->stockTransactions()
             ->with('user')
             ->latest('transaction_date')
+            ->latest('id')
             ->limit($limit)
             ->get();
     }

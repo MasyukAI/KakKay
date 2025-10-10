@@ -30,7 +30,7 @@ return new class extends Migration
             $table->string('document_number')->unique();
             $table->string('document_type')->default('invoice');
             $table->foreignUuid('document_template_id')->nullable()->constrained('document_templates')->nullOnDelete();
-            $table->uuidMorphs('documentable');
+            $table->nullableUuidMorphs('documentable');
             $table->string('status')->default('draft');
             $table->date('issue_date');
             $table->date('due_date')->nullable();

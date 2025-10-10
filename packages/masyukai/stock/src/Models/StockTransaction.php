@@ -9,6 +9,19 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
+/**
+ * @property string $id
+ * @property string $stockable_type
+ * @property string $stockable_id
+ * @property string|null $user_id
+ * @property int $quantity
+ * @property string $type
+ * @property string|null $reason
+ * @property string|null $note
+ * @property \Illuminate\Support\Carbon $transaction_date
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
+ */
 final class StockTransaction extends Model
 {
     use HasUuids;
@@ -16,7 +29,7 @@ final class StockTransaction extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'stockable_type',
@@ -47,10 +60,15 @@ final class StockTransaction extends Model
 
     /**
      * Get the user who performed the transaction.
+     *
+     * @return BelongsTo<\Illuminate\Foundation\Auth\User, $this>
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(config('auth.providers.users.model'));
+        /** @var class-string<\Illuminate\Foundation\Auth\User> $userModel */
+        $userModel = config('auth.providers.users.model');
+
+        return $this->belongsTo($userModel);
     }
 
     /**

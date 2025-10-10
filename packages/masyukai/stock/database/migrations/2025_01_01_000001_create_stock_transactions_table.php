@@ -24,7 +24,6 @@ return new class extends Migration
             $table->timestamp('transaction_date')->useCurrent();
             $table->timestamps();
 
-            $table->index(['stockable_type', 'stockable_id']);
             $table->index('type');
             $table->index('reason');
             $table->index('transaction_date');
