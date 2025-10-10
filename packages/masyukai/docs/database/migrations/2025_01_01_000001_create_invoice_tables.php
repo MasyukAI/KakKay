@@ -49,7 +49,6 @@ return new class extends Migration
             $table->index('status');
             $table->index('issue_date');
             $table->index('due_date');
-            $table->index(['invoiceable_type', 'invoiceable_id']);
         });
 
         Schema::create('invoice_status_histories', function (Blueprint $table): void {
