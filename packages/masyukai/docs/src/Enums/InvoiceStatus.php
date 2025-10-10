@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace MasyukAI\Docs\Enums;
 
+/**
+ * Backward compatibility alias for DocumentStatus
+ * @deprecated Use DocumentStatus instead
+ */
 enum InvoiceStatus: string
 {
     case DRAFT = 'draft';
@@ -17,39 +21,21 @@ enum InvoiceStatus: string
 
     public function label(): string
     {
-        return match ($this) {
-            self::DRAFT => 'Draft',
-            self::PENDING => 'Pending',
-            self::SENT => 'Sent',
-            self::PAID => 'Paid',
-            self::PARTIALLY_PAID => 'Partially Paid',
-            self::OVERDUE => 'Overdue',
-            self::CANCELLED => 'Cancelled',
-            self::REFUNDED => 'Refunded',
-        };
+        return DocumentStatus::from($this->value)->label();
     }
 
     public function color(): string
     {
-        return match ($this) {
-            self::DRAFT => 'gray',
-            self::PENDING => 'warning',
-            self::SENT => 'info',
-            self::PAID => 'success',
-            self::PARTIALLY_PAID => 'warning',
-            self::OVERDUE => 'danger',
-            self::CANCELLED => 'gray',
-            self::REFUNDED => 'info',
-        };
+        return DocumentStatus::from($this->value)->color();
     }
 
     public function isPaid(): bool
     {
-        return $this === self::PAID;
+        return DocumentStatus::from($this->value)->isPaid();
     }
 
     public function isPayable(): bool
     {
-        return in_array($this, [self::PENDING, self::SENT, self::PARTIALLY_PAID, self::OVERDUE], true);
+        return DocumentStatus::from($this->value)->isPayable();
     }
 }

@@ -7,15 +7,20 @@ namespace MasyukAI\Docs\Database\Seeders;
 use Illuminate\Database\Seeder;
 use MasyukAI\Docs\Models\InvoiceTemplate;
 
+/**
+ * Backward compatibility wrapper for DocumentTemplateSeeder
+ * @deprecated Use DocumentTemplateSeeder instead
+ */
 class InvoiceTemplateSeeder extends Seeder
 {
     public function run(): void
     {
         InvoiceTemplate::create([
-            'name' => 'Default Template',
-            'slug' => 'default',
+            'name' => 'Default Invoice Template',
+            'slug' => 'invoice-default',
             'description' => 'Clean and professional default invoice template with Tailwind CSS',
             'view_name' => 'invoice-default',
+            'document_type' => 'invoice',
             'is_default' => true,
             'settings' => [
                 'show_logo' => false,

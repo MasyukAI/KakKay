@@ -7,6 +7,10 @@ namespace MasyukAI\Docs\DataObjects;
 use DateTimeInterface;
 use MasyukAI\Docs\Enums\InvoiceStatus;
 
+/**
+ * Backward compatibility wrapper for DocumentData
+ * @deprecated Use DocumentData instead
+ */
 class InvoiceData
 {
     public function __construct(
@@ -55,5 +59,31 @@ class InvoiceData
             metadata: $data['metadata'] ?? null,
             generatePdf: $data['generate_pdf'] ?? false,
         );
+    }
+
+    public function toDocumentData(): DocumentData
+    {
+        return DocumentData::from([
+            'document_number' => $this->invoiceNumber,
+            'document_type' => 'invoice',
+            'template_id' => $this->templateId,
+            'template_slug' => $this->templateSlug,
+            'documentable_type' => $this->invoiceableType,
+            'documentable_id' => $this->invoiceableId,
+            'status' => $this->status?->value,
+            'issue_date' => $this->issueDate,
+            'due_date' => $this->dueDate,
+            'items' => $this->items,
+            'tax_rate' => $this->taxRate,
+            'tax_amount' => $this->taxAmount,
+            'discount_amount' => $this->discountAmount,
+            'currency' => $this->currency,
+            'notes' => $this->notes,
+            'terms' => $this->terms,
+            'customer_data' => $this->customerData,
+            'company_data' => $this->companyData,
+            'metadata' => $this->metadata,
+            'generate_pdf' => $this->generatePdf,
+        ]);
     }
 }

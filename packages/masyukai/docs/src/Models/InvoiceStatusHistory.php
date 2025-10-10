@@ -4,30 +4,28 @@ declare(strict_types=1);
 
 namespace MasyukAI\Docs\Models;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use MasyukAI\Docs\Enums\InvoiceStatus;
 
-class InvoiceStatusHistory extends Model
+/**
+ * Backward compatibility wrapper for DocumentStatusHistory model
+ * @deprecated Use DocumentStatusHistory model instead
+ */
+class InvoiceStatusHistory extends DocumentStatusHistory
 {
-    use HasFactory;
-    use HasUuids;
+    protected $table = 'document_status_histories';
 
-    protected $fillable = [
-        'invoice_id',
-        'status',
-        'notes',
-        'changed_by',
-    ];
+    public function getInvoiceIdAttribute(): ?string
+    {
+        return $this->document_id;
+    }
 
-    protected $casts = [
-        'status' => InvoiceStatus::class,
-    ];
+    public function setInvoiceIdAttribute(?string $value): void
+    {
+        $this->attributes['document_id'] = $value;
+    }
 
     public function invoice(): BelongsTo
     {
-        return $this->belongsTo(Invoice::class);
+        return $this->belongsTo(Invoice::class, 'document_id');
     }
 }
