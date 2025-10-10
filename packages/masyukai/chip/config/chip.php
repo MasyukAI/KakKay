@@ -8,11 +8,15 @@ declare(strict_types=1);
 |--------------------------------------------------------------------------
 |
 | Process the CHIP_WEBHOOK_PUBLIC_KEYS environment variable which should
-| contain a JSON-encoded array of webhook public keys for signature verification.
-| This allows multiple webhook endpoints to have their own public keys for
-| verifying incoming webhook signatures from CHIP.
+| contain a JSON-encoded array of webhook-specific public keys for signature
+| verification. Each webhook endpoint can have its own unique public key.
 |
-| Expected format: CHIP_WEBHOOK_PUBLIC_KEYS='{"webhook1":"key1","webhook2":"key2"}'
+| This is separate from the company public key, which is site-wide and mandatory.
+|
+| Expected format: CHIP_WEBHOOK_PUBLIC_KEYS='{"wh_123":"key1","wh_456":"key2"}'
+|
+| Reference: https://docs.chip-in.asia/chip-collect/overview/callbacks
+|            https://docs.chip-in.asia/chip-collect/overview/authentication
 */
 
 $webhookKeysEnv = env('CHIP_WEBHOOK_PUBLIC_KEYS');
@@ -93,10 +97,13 @@ return [
     |
     | Configuration for webhook handling and verification
     |
+    | company_public_key: Site-wide company public key from CHIP (mandatory, unique)
+    | webhook_keys: Individual public keys for specific webhook endpoints
+    | verify_signature: Enable/disable signature verification (disabled only in non-production)
+    |
     */
     'webhooks' => [
-        'company_public_key' => env('CHIP_COMPANY_PUBLIC_KEY', env('CHIP_WEBHOOK_PUBLIC_KEY')),
-        'public_key' => env('CHIP_WEBHOOK_PUBLIC_KEY'),
+        'company_public_key' => env('CHIP_COMPANY_PUBLIC_KEY'),
         'webhook_keys' => $webhookKeys,
         'verify_signature' => env('CHIP_WEBHOOK_VERIFY_SIGNATURE', true),
     ],

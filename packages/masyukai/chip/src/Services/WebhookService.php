@@ -76,6 +76,14 @@ class WebhookService
         }
     }
 
+    /**
+     * Get public key for webhook signature verification
+     *
+     * @param  string|null  $webhookId  Optional webhook ID for webhook-specific key
+     * @return string Public key in PEM format
+     *
+     * @throws WebhookVerificationException If no public key is available
+     */
     public function getPublicKey(?string $webhookId = null): string
     {
         $cacheKey = config('chip.cache.prefix').'public_key'.($webhookId ? ":{$webhookId}" : '');
@@ -85,6 +93,7 @@ class WebhookService
             config('chip.cache.ttl.public_key', 86400),
             function () use ($webhookId) {
                 try {
+                    // For webhook-specific requests, try webhook_keys first
                     if ($webhookId) {
                         $configuredKeys = (array) config('chip.webhooks.webhook_keys', []);
 
@@ -92,6 +101,7 @@ class WebhookService
                             return (string) $configuredKeys[$webhookId];
                         }
 
+                        // Try fetching webhook-specific key from CHIP API
                         $webhook = app(ChipCollectService::class)->getWebhook($webhookId);
                         $publicKey = (string) ($webhook['public_key'] ?? '');
 
@@ -100,12 +110,15 @@ class WebhookService
                         }
                     }
 
+                    // For general requests or when webhook-specific key not found,
+                    // use company public key (mandatory, no fallback)
                     if (! $webhookId) {
                         $companyKey = config('chip.webhooks.company_public_key');
                         if ($companyKey) {
                             return (string) $companyKey;
                         }
 
+                        // Try fetching company public key from CHIP API
                         $response = app(ChipCollectClient::class)->get('public_key/');
 
                         $publicKey = is_array($response)
@@ -115,28 +128,39 @@ class WebhookService
                         if ($publicKey !== '') {
                             return $publicKey;
                         }
+
+                        throw new WebhookVerificationException('Company public key is required but not configured. Set CHIP_COMPANY_PUBLIC_KEY environment variable.');
                     }
+                } catch (WebhookVerificationException $e) {
+                    throw $e;
                 } catch (Exception $e) {
                     Log::channel(config('chip.logging.channel'))
                         ->warning('Unable to resolve CHIP public key from API, using fallback', [
                             'webhook_id' => $webhookId,
                             'error' => $e->getMessage(),
                         ]);
-                }
 
-                $fallbackKeys = (array) config('chip.webhooks.webhook_keys', []);
-                if ($webhookId && isset($fallbackKeys[$webhookId])) {
-                    return (string) $fallbackKeys[$webhookId];
-                }
+                    // Fallback for webhook-specific keys only
+                    if ($webhookId) {
+                        $fallbackKeys = (array) config('chip.webhooks.webhook_keys', []);
+                        if (isset($fallbackKeys[$webhookId])) {
+                            return (string) $fallbackKeys[$webhookId];
+                        }
 
-                if (! $webhookId) {
+                        throw new WebhookVerificationException("No public key available for webhook ID: {$webhookId}");
+                    }
+
+                    // For company key, check config again
                     $companyKey = config('chip.webhooks.company_public_key');
                     if ($companyKey) {
                         return (string) $companyKey;
                     }
+
+                    throw new WebhookVerificationException('Company public key is required but not configured. Set CHIP_COMPANY_PUBLIC_KEY environment variable.');
                 }
 
-                return (string) config('chip.webhooks.public_key', '');
+                // Should not reach here, but ensure we don't return empty string
+                throw new WebhookVerificationException('Unable to retrieve public key');
             }
         );
     }

@@ -52,7 +52,7 @@ abstract class TestCase extends Orchestra
             'production' => 'https://api.chip-in.asia/api',
         ]);
         $app['config']->set('chip.is_sandbox', true);
-        $app['config']->set('chip.webhook.public_key', $this->getTestPublicKey());
+        $app['config']->set('chip.webhooks.company_public_key', $this->getTestPublicKey());
         $app['config']->set('chip.webhooks.verify_signature', false); // Disable for testing
         $app['config']->set('chip.database.connection', 'testing');
         $app['config']->set('chip.database.table_prefix', 'chip_');

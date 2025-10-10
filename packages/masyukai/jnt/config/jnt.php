@@ -14,16 +14,16 @@ return [
     | For production, you must provide your own credentials.
     |
     */
-    'environment' => env('JNT_ENVIRONMENT', 'testing'),
+    'environment' => env('JNT_ENVIRONMENT', 'local'),
 
     // Testing environment uses J&T's official public credentials by default
     'api_account' => env('JNT_API_ACCOUNT',
-        env('JNT_ENVIRONMENT', 'testing') === 'testing'
+        env('JNT_ENVIRONMENT', 'production') !== 'production'
             ? '640826271705595946'  // J&T official testing account
             : null
     ),
     'private_key' => env('JNT_PRIVATE_KEY',
-        env('JNT_ENVIRONMENT', 'testing') === 'testing'
+        env('JNT_ENVIRONMENT', 'production') !== 'production'
             ? '8e88c8477d4e4939859c560192fcafbc'  // J&T official testing key
             : null
     ),

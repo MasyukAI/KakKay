@@ -95,6 +95,9 @@ describe('WebhookService', function (): void {
     it('retrieves and caches public keys from the collect service', function (): void {
         Cache::forget(config('chip.cache.prefix').'public_key');
 
+        // Clear the company_public_key to force API fetch
+        config(['chip.webhooks.company_public_key' => null]);
+
         $originalClient = app(MasyukAI\Chip\Clients\ChipCollectClient::class);
         $collectClient = Mockery::mock(MasyukAI\Chip\Clients\ChipCollectClient::class);
         $collectClient->shouldReceive('get')
@@ -131,8 +134,8 @@ describe('WebhookService', function (): void {
         }
     });
 
-    it('falls back to configured public key when api calls fail', function (): void {
-        config(['chip.webhooks.public_key' => 'fallback-key']);
+    it('falls back to configured company public key when api calls fail', function (): void {
+        config(['chip.webhooks.company_public_key' => 'company-fallback-key']);
 
         $originalCollect = app(ChipCollectService::class);
         $collectService = Mockery::mock(ChipCollectService::class);
@@ -141,7 +144,24 @@ describe('WebhookService', function (): void {
         app()->instance(ChipCollectService::class, $collectService);
 
         try {
-            expect($this->webhookService->getPublicKey())->toBe('fallback-key');
+            expect($this->webhookService->getPublicKey())->toBe('company-fallback-key');
+        } finally {
+            app()->instance(ChipCollectService::class, $originalCollect);
+        }
+    });
+
+    it('throws exception when company public key is not configured', function (): void {
+        config(['chip.webhooks.company_public_key' => null]);
+
+        $originalCollect = app(ChipCollectService::class);
+        $collectService = Mockery::mock(ChipCollectService::class);
+        $collectService->shouldReceive('getPublicKey')->andThrow(new RuntimeException('network error'));
+
+        app()->instance(ChipCollectService::class, $collectService);
+
+        try {
+            expect(fn () => $this->webhookService->getPublicKey())
+                ->toThrow(WebhookVerificationException::class, 'Company public key is required but not configured');
         } finally {
             app()->instance(ChipCollectService::class, $originalCollect);
         }
