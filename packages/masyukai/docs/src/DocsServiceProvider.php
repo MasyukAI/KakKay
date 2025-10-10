@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace MasyukAI\Docs;
 
-use MasyukAI\Docs\Services\InvoiceService;
+use MasyukAI\Docs\Services\DocumentService;
 use MasyukAI\Docs\Services\ReceiptService;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -23,9 +23,9 @@ final class DocsServiceProvider extends PackageServiceProvider
 
     public function packageRegistered(): void
     {
-        // Register Invoice Service
-        $this->app->singleton(InvoiceService::class);
-        $this->app->alias(InvoiceService::class, 'invoice');
+        // Register Document Service
+        $this->app->singleton(DocumentService::class);
+        $this->app->alias(DocumentService::class, 'document');
         
         // Register Receipt Service (placeholder for future implementation)
         // $this->app->singleton(ReceiptService::class);
@@ -38,8 +38,8 @@ final class DocsServiceProvider extends PackageServiceProvider
     public function provides(): array
     {
         return [
-            InvoiceService::class,
-            'invoice',
+            DocumentService::class,
+            'document',
             // ReceiptService::class,
             // 'receipt',
         ];

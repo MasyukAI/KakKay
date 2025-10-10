@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class InvoiceTemplate extends Model
+class DocumentTemplate extends Model
 {
     use HasFactory;
     use HasUuids;
@@ -19,6 +19,7 @@ class InvoiceTemplate extends Model
         'slug',
         'description',
         'view_name',
+        'document_type',
         'is_default',
         'settings',
     ];
@@ -28,17 +29,23 @@ class InvoiceTemplate extends Model
         'settings' => 'array',
     ];
 
-    public function invoices(): HasMany
+    public function documents(): HasMany
     {
-        return $this->hasMany(Invoice::class);
+        return $this->hasMany(Document::class);
     }
 
     /**
      * Scope to get default template
      */
-    public function scopeDefault($query)
+    public function scopeDefault($query, ?string $documentType = null)
     {
-        return $query->where('is_default', true)->first();
+        $query = $query->where('is_default', true);
+        
+        if ($documentType) {
+            $query->where('document_type', $documentType);
+        }
+        
+        return $query->first();
     }
 
     /**
@@ -46,8 +53,10 @@ class InvoiceTemplate extends Model
      */
     public function setAsDefault(): void
     {
-        // Remove default from all other templates
-        static::where('id', '!=', $this->id)->update(['is_default' => false]);
+        // Remove default from all other templates of the same type
+        static::where('id', '!=', $this->id)
+            ->where('document_type', $this->document_type)
+            ->update(['is_default' => false]);
 
         // Set this as default
         $this->update(['is_default' => true]);

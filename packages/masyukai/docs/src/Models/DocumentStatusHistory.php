@@ -8,26 +8,26 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use MasyukAI\Docs\Enums\InvoiceStatus;
+use MasyukAI\Docs\Enums\DocumentStatus;
 
-class InvoiceStatusHistory extends Model
+class DocumentStatusHistory extends Model
 {
     use HasFactory;
     use HasUuids;
 
     protected $fillable = [
-        'invoice_id',
+        'document_id',
         'status',
         'notes',
         'changed_by',
     ];
 
     protected $casts = [
-        'status' => InvoiceStatus::class,
+        'status' => DocumentStatus::class,
     ];
 
-    public function invoice(): BelongsTo
+    public function document(): BelongsTo
     {
-        return $this->belongsTo(Invoice::class);
+        return $this->belongsTo(Document::class);
     }
 }

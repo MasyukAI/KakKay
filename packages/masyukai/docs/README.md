@@ -57,13 +57,16 @@ The package configuration is located in `config/docs.php`. You can customize:
 
 ## Usage
 
-### Creating an Invoice
+### Creating Documents
 
 ```php
-use MasyukAI\Docs\Facades\Invoice;
-use MasyukAI\Docs\DataObjects\InvoiceData;
+use MasyukAI\Docs\Facades\Document;
+use MasyukAI\Docs\DataObjects\DocumentData;
+use MasyukAI\Docs\Enums\DocumentStatus;
 
-$invoice = Invoice::createInvoice(InvoiceData::from([
+// Create an invoice
+$document = Document::createDocument(DocumentData::from([
+    'document_type' => 'invoice',
     'items' => [
         [
             'name' => 'Web Development Service',
@@ -96,57 +99,58 @@ $invoice = Invoice::createInvoice(InvoiceData::from([
 
 ```php
 // Generate and save PDF
-$pdfUrl = Invoice::generatePdf($invoice, save: true);
+$pdfUrl = Document::generatePdf($document, save: true);
 
 // Generate PDF without saving
-$pdfContent = Invoice::generatePdf($invoice, save: false);
+$pdfContent = Document::generatePdf($document, save: false);
 ```
 
-### Download Invoice PDF
+### Download Document PDF
 
 ```php
-$pdfUrl = Invoice::downloadPdf($invoice);
+$pdfUrl = Document::downloadPdf($document);
 ```
 
-### Update Invoice Status
+### Update Document Status
 
 ```php
-use MasyukAI\Docs\Enums\InvoiceStatus;
+use MasyukAI\Docs\Enums\DocumentStatus;
 
-Invoice::updateInvoiceStatus($invoice, InvoiceStatus::PAID, 'Payment received via bank transfer');
+Document::updateDocumentStatus($document, DocumentStatus::PAID, 'Payment received via bank transfer');
 ```
 
-### Mark Invoice as Paid
+### Mark Document as Paid
 
 ```php
-$invoice->markAsPaid();
+$document->markAsPaid();
 ```
 
-### Mark Invoice as Sent
+### Mark Document as Sent
 
 ```php
-$invoice->markAsSent();
+$document->markAsSent();
 ```
 
-### Email Invoice
+### Email Document
 
 ```php
-Invoice::emailInvoice($invoice, 'customer@example.com');
+Document::emailDocument($document, 'customer@example.com');
 ```
 
-### Link Invoice to a Model
+### Link Document to a Model
 
-You can link invoices to any model using polymorphic relationships:
+You can link documents to any model using polymorphic relationships:
 
 ```php
-$invoice = Invoice::createInvoice(InvoiceData::from([
-    'invoiceable_type' => 'App\\Models\\Order',
-    'invoiceable_id' => $order->id,
+$document = Document::createDocument(DocumentData::from([
+    'document_type' => 'invoice',
+    'documentable_type' => 'App\\Models\\Order',
+    'documentable_id' => $order->id,
     // ... other data
 ]));
 
 // Access the linked model
-$order = $invoice->invoiceable;
+$order = $document->documentable;
 ```
 
 ## Creating Custom Templates
@@ -159,56 +163,55 @@ $order = $invoice->invoiceable;
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Invoice {{ $invoice->invoice_number }}</title>
+    <title>Document {{ $document->document_number }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
-    <!-- Your custom design here -->
-    <div class="container">
-        <h1>{{ $invoice->invoice_number }}</h1>
-        <!-- Add your custom layout -->
-    </div>
+    <!-- Your custom template design -->
 </body>
 </html>
 ```
 
-2. Create a template record:
+2. Create a template record in the database:
 
 ```php
-use MasyukAI\Docs\Models\InvoiceTemplate;
+use MasyukAI\Docs\Models\DocumentTemplate;
 
-InvoiceTemplate::create([
+DocumentTemplate::create([
     'name' => 'Modern Template',
     'slug' => 'modern',
-    'description' => 'A modern, clean invoice template',
+    'description' => 'A modern, sleek invoice design',
     'view_name' => 'modern',
+    'document_type' => 'invoice',
     'is_default' => false,
+    'settings' => [
+        'show_logo' => true,
+        'primary_color' => '#3b82f6',
+    ],
 ]);
 ```
 
-3. Use the template:
+3. Use the template when creating a document:
 
 ```php
-$invoice = Invoice::createInvoice(InvoiceData::from([
+$document = Document::createDocument(DocumentData::from([
     'template_slug' => 'modern',
     // ... other data
 ]));
 ```
 
-For more information on using Tailwind CSS with invoice templates, see [docs/TAILWIND_USAGE.md](docs/TAILWIND_USAGE.md).
+## Document Status
 
-## Invoice Status
+The package includes predefined statuses for documents:
 
-Available invoice statuses:
-
-- `DRAFT` - Invoice is being prepared
-- `PENDING` - Invoice is ready to be sent
-- `SENT` - Invoice has been sent to customer
-- `PAID` - Invoice has been paid
-- `PARTIALLY_PAID` - Partial payment received
-- `OVERDUE` - Invoice is past due date
-- `CANCELLED` - Invoice has been cancelled
-- `REFUNDED` - Invoice has been refunded
+- **Draft** - Initial state
+- **Pending** - Awaiting approval or action
+- **Sent** - Delivered to customer
+- **Paid** - Payment received
+- **Partially Paid** - Partial payment received
+- **Overdue** - Past due date
+- **Cancelled** - Cancelled
+- **Refunded** - Payment refunded
 
 ## Requirements
 

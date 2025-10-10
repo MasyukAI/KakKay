@@ -5,17 +5,18 @@ declare(strict_types=1);
 namespace MasyukAI\Docs\DataObjects;
 
 use DateTimeInterface;
-use MasyukAI\Docs\Enums\InvoiceStatus;
+use MasyukAI\Docs\Enums\DocumentStatus;
 
-class InvoiceData
+class DocumentData
 {
     public function __construct(
-        public readonly ?string $invoiceNumber = null,
+        public readonly ?string $documentNumber = null,
+        public readonly ?string $documentType = null,
         public readonly ?string $templateId = null,
         public readonly ?string $templateSlug = null,
-        public readonly ?string $invoiceableType = null,
-        public readonly ?string $invoiceableId = null,
-        public readonly ?InvoiceStatus $status = null,
+        public readonly ?string $documentableType = null,
+        public readonly ?string $documentableId = null,
+        public readonly ?DocumentStatus $status = null,
         public readonly ?DateTimeInterface $issueDate = null,
         public readonly ?DateTimeInterface $dueDate = null,
         public readonly array $items = [],
@@ -35,12 +36,13 @@ class InvoiceData
     public static function from(array $data): self
     {
         return new self(
-            invoiceNumber: $data['invoice_number'] ?? null,
+            documentNumber: $data['document_number'] ?? $data['invoice_number'] ?? null,
+            documentType: $data['document_type'] ?? 'invoice',
             templateId: $data['template_id'] ?? null,
             templateSlug: $data['template_slug'] ?? null,
-            invoiceableType: $data['invoiceable_type'] ?? null,
-            invoiceableId: $data['invoiceable_id'] ?? null,
-            status: isset($data['status']) ? (is_string($data['status']) ? InvoiceStatus::from($data['status']) : $data['status']) : null,
+            documentableType: $data['documentable_type'] ?? $data['invoiceable_type'] ?? null,
+            documentableId: $data['documentable_id'] ?? $data['invoiceable_id'] ?? null,
+            status: isset($data['status']) ? (is_string($data['status']) ? DocumentStatus::from($data['status']) : $data['status']) : null,
             issueDate: $data['issue_date'] ?? null,
             dueDate: $data['due_date'] ?? null,
             items: $data['items'] ?? [],

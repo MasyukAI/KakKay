@@ -9,18 +9,19 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use MasyukAI\Docs\Enums\InvoiceStatus;
+use MasyukAI\Docs\Enums\DocumentStatus;
 
-class Invoice extends Model
+class Document extends Model
 {
     use HasFactory;
     use HasUuids;
 
     protected $fillable = [
-        'invoice_number',
-        'invoice_template_id',
-        'invoiceable_type',
-        'invoiceable_id',
+        'document_number',
+        'document_type',
+        'document_template_id',
+        'documentable_type',
+        'documentable_id',
         'status',
         'issue_date',
         'due_date',
@@ -40,7 +41,7 @@ class Invoice extends Model
     ];
 
     protected $casts = [
-        'status' => InvoiceStatus::class,
+        'status' => DocumentStatus::class,
         'issue_date' => 'date',
         'due_date' => 'date',
         'paid_at' => 'datetime',
@@ -54,24 +55,24 @@ class Invoice extends Model
         'metadata' => 'array',
     ];
 
-    public function invoiceable()
+    public function documentable()
     {
         return $this->morphTo();
     }
 
     public function template(): BelongsTo
     {
-        return $this->belongsTo(InvoiceTemplate::class, 'invoice_template_id');
+        return $this->belongsTo(DocumentTemplate::class, 'document_template_id');
     }
 
     public function statusHistories(): HasMany
     {
-        return $this->hasMany(InvoiceStatusHistory::class);
+        return $this->hasMany(DocumentStatusHistory::class);
     }
 
     public function isOverdue(): bool
     {
-        if ($this->status === InvoiceStatus::PAID || $this->status === InvoiceStatus::CANCELLED) {
+        if ($this->status === DocumentStatus::PAID || $this->status === DocumentStatus::CANCELLED) {
             return false;
         }
 
@@ -80,7 +81,7 @@ class Invoice extends Model
 
     public function isPaid(): bool
     {
-        return $this->status === InvoiceStatus::PAID;
+        return $this->status === DocumentStatus::PAID;
     }
 
     public function canBePaid(): bool
@@ -91,22 +92,22 @@ class Invoice extends Model
     public function markAsPaid(): void
     {
         $this->update([
-            'status' => InvoiceStatus::PAID,
+            'status' => DocumentStatus::PAID,
             'paid_at' => now(),
         ]);
     }
 
     public function markAsSent(): void
     {
-        if ($this->status === InvoiceStatus::DRAFT || $this->status === InvoiceStatus::PENDING) {
-            $this->update(['status' => InvoiceStatus::SENT]);
+        if ($this->status === DocumentStatus::DRAFT || $this->status === DocumentStatus::PENDING) {
+            $this->update(['status' => DocumentStatus::SENT]);
         }
     }
 
     public function cancel(): void
     {
-        if ($this->status !== InvoiceStatus::PAID) {
-            $this->update(['status' => InvoiceStatus::CANCELLED]);
+        if ($this->status !== DocumentStatus::PAID) {
+            $this->update(['status' => DocumentStatus::CANCELLED]);
         }
     }
 
@@ -115,8 +116,8 @@ class Invoice extends Model
      */
     public function updateStatus(): void
     {
-        if ($this->isOverdue() && $this->status !== InvoiceStatus::OVERDUE) {
-            $this->update(['status' => InvoiceStatus::OVERDUE]);
+        if ($this->isOverdue() && $this->status !== DocumentStatus::OVERDUE) {
+            $this->update(['status' => DocumentStatus::OVERDUE]);
         }
     }
 }

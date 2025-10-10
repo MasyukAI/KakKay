@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace MasyukAI\Docs\Enums;
 
-enum InvoiceStatus: string
+enum DocumentStatus: string
 {
     case DRAFT = 'draft';
     case PENDING = 'pending';

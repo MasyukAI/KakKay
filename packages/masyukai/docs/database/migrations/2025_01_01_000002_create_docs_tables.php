@@ -10,24 +10,27 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('invoice_templates', function (Blueprint $table): void {
+        Schema::create('document_templates', function (Blueprint $table): void {
             $table->uuid('id')->primary();
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('description')->nullable();
             $table->string('view_name');
+            $table->string('document_type')->default('invoice');
             $table->boolean('is_default')->default(false);
             $table->json('settings')->nullable();
             $table->timestamps();
 
             $table->index('is_default');
+            $table->index('document_type');
         });
 
-        Schema::create('invoices', function (Blueprint $table): void {
+        Schema::create('documents', function (Blueprint $table): void {
             $table->uuid('id')->primary();
-            $table->string('invoice_number')->unique();
-            $table->foreignUuid('invoice_template_id')->nullable()->constrained('invoice_templates')->nullOnDelete();
-            $table->uuidMorphs('invoiceable');
+            $table->string('document_number')->unique();
+            $table->string('document_type')->default('invoice');
+            $table->foreignUuid('document_template_id')->nullable()->constrained('document_templates')->nullOnDelete();
+            $table->uuidMorphs('documentable');
             $table->string('status')->default('draft');
             $table->date('issue_date');
             $table->date('due_date')->nullable();
@@ -46,28 +49,29 @@ return new class extends Migration
             $table->string('pdf_path')->nullable();
             $table->timestamps();
 
+            $table->index('document_type');
             $table->index('status');
             $table->index('issue_date');
             $table->index('due_date');
         });
 
-        Schema::create('invoice_status_histories', function (Blueprint $table): void {
+        Schema::create('document_status_histories', function (Blueprint $table): void {
             $table->uuid('id')->primary();
-            $table->foreignUuid('invoice_id')->constrained('invoices')->cascadeOnDelete();
+            $table->foreignUuid('document_id')->constrained('documents')->cascadeOnDelete();
             $table->string('status');
             $table->text('notes')->nullable();
             $table->string('changed_by')->nullable();
             $table->timestamps();
 
-            $table->index('invoice_id');
+            $table->index('document_id');
             $table->index('status');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('invoice_status_histories');
-        Schema::dropIfExists('invoices');
-        Schema::dropIfExists('invoice_templates');
+        Schema::dropIfExists('document_status_histories');
+        Schema::dropIfExists('documents');
+        Schema::dropIfExists('document_templates');
     }
 };
