@@ -31,7 +31,7 @@ class DocumentService
     public function createDocument(DocumentData $data): Document
     {
         $documentType = $data->documentType ?? 'invoice';
-        
+
         // Generate document number if not provided
         $documentNumber = $data->documentNumber ?? $this->generateDocumentNumber($documentType);
 
@@ -92,7 +92,7 @@ class DocumentService
         $template = $document->template ?? DocumentTemplate::where('is_default', true)
             ->where('document_type', $documentType)
             ->first();
-        $viewName = $template?->view_name ?? config("docs.types.{$documentType}.default_template", "{$documentType}-default");
+        $viewName = $template->view_name ?? config("docs.types.{$documentType}.default_template", "{$documentType}-default");
 
         $pdf = Pdf::view("docs::templates.{$viewName}", [
             'document' => $document,
@@ -112,20 +112,20 @@ class DocumentService
             $path = $this->generatePdfPath($document);
             $disk = config("docs.types.{$documentType}.storage.disk", 'local');
 
-            Storage::disk($disk)->put($path, $pdf->string());
+            Storage::disk($disk)->put($path, $pdf->getBrowsershot()->pdf());
 
             $document->update(['pdf_path' => $path]);
 
             return Storage::disk($disk)->url($path);
         }
 
-        return $pdf->string();
+        return $pdf->getBrowsershot()->pdf();
     }
 
     public function downloadPdf(Document $document): string
     {
         $documentType = $document->document_type ?? 'invoice';
-        
+
         if ($document->pdf_path && Storage::disk(config("docs.types.{$documentType}.storage.disk", 'local'))->exists($document->pdf_path)) {
             return Storage::disk(config("docs.types.{$documentType}.storage.disk", 'local'))->url($document->pdf_path);
         }
@@ -140,6 +140,24 @@ class DocumentService
         $document->markAsSent();
     }
 
+    public function updateDocumentStatus(Document $document, DocumentStatus $status, ?string $notes = null): void
+    {
+        $oldStatus = $document->status;
+
+        $document->update(['status' => $status]);
+
+        // Record status change
+        $document->statusHistories()->create([
+            'status' => $status,
+            'notes' => $notes ?? "Status changed from {$oldStatus->label()} to {$status->label()}",
+        ]);
+    }
+
+    /**
+     * Calculate subtotal from items
+     *
+     * @param  array<int, array<string, mixed>>  $items
+     */
     protected function calculateSubtotal(array $items): float
     {
         $subtotal = 0;
@@ -160,18 +178,5 @@ class DocumentService
         $filename = Str::slug($document->document_number).'.pdf';
 
         return "{$basePath}/{$filename}";
-    }
-
-    public function updateDocumentStatus(Document $document, DocumentStatus $status, ?string $notes = null): void
-    {
-        $oldStatus = $document->status;
-
-        $document->update(['status' => $status]);
-
-        // Record status change
-        $document->statusHistories()->create([
-            'status' => $status,
-            'notes' => $notes ?? "Status changed from {$oldStatus->label()} to {$status->label()}",
-        ]);
     }
 }

@@ -9,6 +9,12 @@ use MasyukAI\Docs\Enums\DocumentStatus;
 
 class DocumentData
 {
+    /**
+     * @param  array<int, array<string, mixed>>  $items
+     * @param  array<string, mixed>|null  $customerData
+     * @param  array<string, mixed>|null  $companyData
+     * @param  array<string, mixed>|null  $metadata
+     */
     public function __construct(
         public readonly ?string $documentNumber = null,
         public readonly ?string $documentType = null,
@@ -30,9 +36,11 @@ class DocumentData
         public readonly ?array $companyData = null,
         public readonly ?array $metadata = null,
         public readonly ?bool $generatePdf = false,
-    ) {
-    }
+    ) {}
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     public static function from(array $data): self
     {
         return new self(

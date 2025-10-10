@@ -26,7 +26,7 @@ final class DocsServiceProvider extends PackageServiceProvider
         // Register Document Service
         $this->app->singleton(DocumentService::class);
         $this->app->alias(DocumentService::class, 'document');
-        
+
         // Register Receipt Service (placeholder for future implementation)
         // $this->app->singleton(ReceiptService::class);
         // $this->app->alias(ReceiptService::class, 'receipt');

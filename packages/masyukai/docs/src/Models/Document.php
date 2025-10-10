@@ -9,8 +9,34 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use MasyukAI\Docs\Enums\DocumentStatus;
 
+/**
+ * @property string $document_number
+ * @property string $document_type
+ * @property string|null $document_template_id
+ * @property string|null $documentable_type
+ * @property string|null $documentable_id
+ * @property DocumentStatus $status
+ * @property \Illuminate\Support\Carbon $issue_date
+ * @property \Illuminate\Support\Carbon|null $due_date
+ * @property \Illuminate\Support\Carbon|null $paid_at
+ * @property string $subtotal
+ * @property string $tax_amount
+ * @property string $discount_amount
+ * @property string $total
+ * @property string $currency
+ * @property string|null $notes
+ * @property string|null $terms
+ * @property array<string, mixed>|null $customer_data
+ * @property array<string, mixed>|null $company_data
+ * @property array<int, array<string, mixed>>|null $items
+ * @property array<string, mixed>|null $metadata
+ * @property string|null $pdf_path
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
+ */
 class Document extends Model
 {
     use HasFactory;
@@ -55,7 +81,7 @@ class Document extends Model
         'metadata' => 'array',
     ];
 
-    public function documentable()
+    public function documentable(): MorphTo
     {
         return $this->morphTo();
     }

@@ -9,6 +9,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property string $id
+ * @property string $name
+ * @property string $slug
+ * @property string|null $description
+ * @property string $view_name
+ * @property string $document_type
+ * @property bool $is_default
+ * @property array<string, mixed>|null $settings
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
+ */
 class DocumentTemplate extends Model
 {
     use HasFactory;
@@ -35,20 +47,6 @@ class DocumentTemplate extends Model
     }
 
     /**
-     * Scope to get default template
-     */
-    public function scopeDefault($query, ?string $documentType = null)
-    {
-        $query = $query->where('is_default', true);
-        
-        if ($documentType) {
-            $query->where('document_type', $documentType);
-        }
-        
-        return $query->first();
-    }
-
-    /**
      * Set this template as default
      */
     public function setAsDefault(): void
@@ -60,5 +58,22 @@ class DocumentTemplate extends Model
 
         // Set this as default
         $this->update(['is_default' => true]);
+    }
+
+    /**
+     * Scope to get default template
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder<DocumentTemplate>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function default($query, ?string $documentType = null): ?self
+    {
+        $query = $query->where('is_default', true);
+
+        if ($documentType) {
+            $query->where('document_type', $documentType);
+        }
+
+        return $query->first();
     }
 }
