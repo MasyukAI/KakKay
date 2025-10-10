@@ -1,0 +1,20 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - src
+    
+    level: 6
+    
+    reportUnmatchedIgnoredErrors: false
+
+    parallel: { maximumNumberOfProcesses: 4 }
+    
+    # Ignore specific errors
+    ignoreErrors:
+        - identifier: 'missingType.generics'
+
+    # Exclude patterns
+    excludePaths:
+        - vendor
