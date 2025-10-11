@@ -1,0 +1,20 @@
+
+
+[1;37;40mCode Coverage Report:      [0m
+[1;37;40m  2025-10-11 00:17:30      [0m
+[1;37;40m                           [0m
+[1;37;40m Summary:                  [0m
+[37;41m  Classes: 12.50% (1/8)    [0m
+[37;41m  Methods: 40.62% (13/32)  [0m
+[30;43m  Lines:   65.00% (117/180)[0m
+
+MasyukAI\Docs\DataObjects\DocumentData
+  [30;42mMethods: 100.00% ( 2/ 2)[0m   [30;42mLines: 100.00% ( 23/ 23)[0m
+MasyukAI\Docs\DocsServiceProvider
+  [30;43mMethods:  66.67% ( 2/ 3)[0m   [30;43mLines:  57.14% (  8/ 14)[0m
+MasyukAI\Docs\Enums\DocumentStatus
+  [37;41mMethods:  25.00% ( 1/ 4)[0m   [30;43mLines:  86.36% ( 19/ 22)[0m
+MasyukAI\Docs\Models\Document
+  [37;41mMethods:  50.00% ( 5/10)[0m   [30;43mLines:  55.56% ( 10/ 18)[0m
+MasyukAI\Docs\Services\DocumentService
+  [37;41mMethods:  37.50% ( 3/ 8)[0m   [30;43mLines:  61.96% ( 57/ 92)[0m

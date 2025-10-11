@@ -1,0 +1,25 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - packages/cart/src
+    
+    level: 6
+    
+    reportUnmatchedIgnoredErrors: false
+
+    parallel: { maximumNumberOfProcesses: 4 }
+    
+    # Ignore specific errors
+    ignoreErrors:
+        - identifier: 'missingType.generics'
+        - identifier: 'larastan.noEnvCallsOutsideOfConfig'
+          paths:
+            - */config/cart.php
+    #    - identifier: 'new.static'
+
+    # Exclude patterns
+    excludePaths:
+        - vendor
+        - packages/cart/src/Testing

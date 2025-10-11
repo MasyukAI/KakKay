@@ -1,14 +1,12 @@
 {
-    "name": "masyukai/filament-cart",
-    "description": "A comprehensive Filament admin interface for managing shopping carts created by the MasyukAI Cart package",
+    "name": "masyukai/cart",
+    "description": "A modern, feature-rich shopping cart package for Laravel 12",
     "license": "MIT",
     "keywords": [
         "laravel",
-        "filament",
-        "plugin",
+        "laravel12",
         "shopping-cart",
         "cart",
-        "admin",
         "e-commerce",
         "masyukai"
     ],
@@ -18,47 +16,42 @@
             "email": "info@masyukai.com"
         }
     ],
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../commerce"
-        }
-    ],
     "require": {
         "php": "^8.2",
-        "filament/filament": "^4.0",
-        "masyukai/cart": "^1.0",
+        "akaunting/laravel-money": "^6.0",
         "spatie/laravel-package-tools": "^1.92"
     },
     "require-dev": {
         "driftingly/rector-laravel": "^2.0",
         "larastan/larastan": "^3.0",
-        "laravel/framework": "^12.0",
-        "livewire/livewire": "^3.0",
+        "laravel/pint": "^1.18",
+        "mockery/mockery": "^1.6",
+        "nunomaduro/collision": "^8.6",
         "orchestra/testbench": "^10.0",
         "pestphp/pest": "^4.0",
         "pestphp/pest-plugin-browser": "^4.0",
         "pestphp/pest-plugin-laravel": "^4.0",
         "pestphp/pest-plugin-type-coverage": "^4.0",
-        "laravel/pint": "^1.18"
+        "phpunit/phpunit": "^12.3"
     },
     "autoload": {
         "psr-4": {
-            "MasyukAI\\FilamentCart\\": "src/",
-            "MasyukAI\\FilamentCart\\Database\\Factories\\": "database/factories/",
-            "MasyukAI\\FilamentCart\\Database\\Seeders\\": "database/seeders/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "MasyukAI\\FilamentCart\\Tests\\": "tests/"
+            "MasyukAI\\Cart\\": "packages/cart/src"
         }
     },
     "extra": {
         "laravel": {
+            "aliases": {
+                "Cart": "MasyukAI\\Cart\\Facades\\Cart"
+            },
             "providers": [
-                "MasyukAI\\FilamentCart\\FilamentCartServiceProvider"
+                "MasyukAI\\Cart\\CartServiceProvider"
             ]
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MasyukAI\\Cart\\Tests\\": "tests/"
         }
     },
     "config": {
@@ -71,8 +64,14 @@
         "test": [
             "vendor/bin/pest"
         ],
+        "test-coverage": [
+            "vendor/bin/pest --coverage"
+        ],
         "format": [
             "vendor/bin/pint"
+        ],
+        "format-test": [
+            "vendor/bin/pint --test"
         ]
     },
     "version": "1.0.0",

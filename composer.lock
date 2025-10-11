@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e0cf4ed01ac71ec3fddcfad73b1db1c5",
+    "content-hash": "bb8a04826f26fa0ac8783735e2e7df3c",
     "packages": [
         {
             "name": "akaunting/laravel-money",
@@ -4131,8 +4131,8 @@
             "version": "1.0.0",
             "dist": {
                 "type": "path",
-                "url": "./packages/masyukai/cart",
-                "reference": "647afd0da87f78d203dc0e9ec7d4513c992061cd"
+                "url": "./packages/commerce",
+                "reference": "3ad8c8562f0841a092234f043e66a42c28d246b2"
             },
             "require": {
                 "akaunting/laravel-money": "^6.0",
@@ -4165,7 +4165,7 @@
             },
             "autoload": {
                 "psr-4": {
-                    "MasyukAI\\Cart\\": "packages/core/src"
+                    "MasyukAI\\Cart\\": "packages/cart/src"
                 }
             },
             "autoload-dev": {
@@ -4302,7 +4302,7 @@
             "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "./packages/masyukai/docs",
+                "url": "./packages/commerce/packages/docs",
                 "reference": "32ea924dff7427330434c716301f33490371700d"
             },
             "require": {
@@ -4389,7 +4389,7 @@
             "dist": {
                 "type": "path",
                 "url": "./packages/filament-cart",
-                "reference": "46674809fc02795fc3fd65d8da0b687f88070d2d"
+                "reference": "9d3103e547f7d6256d28a61f45a5e28a5ad89b1f"
             },
             "require": {
                 "filament/filament": "^4.0",
@@ -4627,7 +4627,7 @@
             "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "./packages/masyukai/stock",
+                "url": "./packages/commerce/packages/stock",
                 "reference": "57eaf24fbf57128cc5115cd7ab575cc75489822e"
             },
             "require": {

@@ -40,7 +40,7 @@ packages/jnt/
 
 ### Other Packages
 
-**Cart Package** (/packages/masyukai/cart)
+**Cart Package** (/packages/commerce)
 - ✅ Already well-organized with clear index
 - ✅ 13 focused docs totaling ~10,700 lines
 - ✅ Good structure, no changes needed

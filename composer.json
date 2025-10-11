@@ -45,7 +45,7 @@
     "repositories": [
         {
             "type": "path",
-            "url": "./packages/masyukai/cart"
+            "url": "./packages/commerce"
         },
         {
             "type": "path",
@@ -65,11 +65,11 @@
         },
         {
             "type": "path",
-            "url": "./packages/masyukai/docs"
+            "url": "./packages/commerce/packages/docs"
         },
         {
             "type": "path",
-            "url": "./packages/masyukai/stock"
+            "url": "./packages/commerce/packages/stock"
         }
     ],
     "autoload": {

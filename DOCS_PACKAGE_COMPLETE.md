@@ -302,7 +302,7 @@ $invoices = \MasyukAI\Docs\Models\Invoice::whereHasMorph(
 ### Running Tests
 
 ```bash
-cd packages/masyukai/docs
+cd packages/commerce/packages/docs
 composer install
 composer test
 ```
