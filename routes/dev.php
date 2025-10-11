@@ -89,7 +89,7 @@ if (app()->environment('local')) {
          * View cart metadata for debugging
          */
         Route::get('/cart/metadata', function () {
-            $cart = MasyukAI\Cart\Facades\Cart::getCurrentCart();
+            $cart = AIArmada\Cart\Facades\Cart::getCurrentCart();
 
             return response()->json([
                 'identifier' => $cart->getIdentifier(),

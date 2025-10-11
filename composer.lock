@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bb8a04826f26fa0ac8783735e2e7df3c",
+    "content-hash": "4dbeb318b062b1bfdb9c039329d1618f",
     "packages": [
         {
             "name": "akaunting/laravel-money",
@@ -4127,94 +4127,43 @@
             "time": "2025-07-25T09:04:22+00:00"
         },
         {
-            "name": "masyukai/cart",
-            "version": "1.0.0",
+            "name": "aiarmada/cart",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "./packages/commerce",
-                "reference": "3ad8c8562f0841a092234f043e66a42c28d246b2"
+                "url": "./packages/commerce/packages/cart",
+                "reference": "c052fbd7e308aa6fbada2f81fb44ccba82c0c35a"
             },
             "require": {
-                "akaunting/laravel-money": "^6.0",
                 "php": "^8.2",
                 "spatie/laravel-package-tools": "^1.92"
-            },
-            "require-dev": {
-                "driftingly/rector-laravel": "^2.0",
-                "larastan/larastan": "^3.0",
-                "laravel/pint": "^1.18",
-                "mockery/mockery": "^1.6",
-                "nunomaduro/collision": "^8.6",
-                "orchestra/testbench": "^10.0",
-                "pestphp/pest": "^4.0",
-                "pestphp/pest-plugin-browser": "^4.0",
-                "pestphp/pest-plugin-laravel": "^4.0",
-                "pestphp/pest-plugin-type-coverage": "^4.0",
-                "phpunit/phpunit": "^12.3"
             },
             "type": "library",
             "extra": {
                 "laravel": {
                     "aliases": {
-                        "Cart": "MasyukAI\\Cart\\Facades\\Cart"
+                        "Cart": "AIArmada\\Cart\\Facades\\Cart"
                     },
                     "providers": [
-                        "MasyukAI\\Cart\\CartServiceProvider"
+                        "AIArmada\\Cart\\CartServiceProvider"
                     ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "MasyukAI\\Cart\\": "packages/cart/src"
+                    "AIArmada\\Cart\\": "src"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "MasyukAI\\Cart\\Tests\\": "tests/"
-                }
-            },
-            "scripts": {
-                "test": [
-                    "vendor/bin/pest"
-                ],
-                "test-coverage": [
-                    "vendor/bin/pest --coverage"
-                ],
-                "format": [
-                    "vendor/bin/pint"
-                ],
-                "format-test": [
-                    "vendor/bin/pint --test"
-                ]
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "MasyukAI",
-                    "email": "info@masyukai.com"
-                }
-            ],
-            "description": "A modern, feature-rich shopping cart package for Laravel 12",
-            "keywords": [
-                "cart",
-                "e-commerce",
-                "laravel",
-                "laravel12",
-                "masyukai",
-                "shopping-cart"
-            ],
             "transport-options": {
                 "relative": true
             }
         },
         {
-            "name": "masyukai/chip",
+            "name": "aiarmada/chip",
             "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "./packages/chip",
+                "url": "./packages/commerce/packages/chip",
                 "reference": "a54b0e3465a43d393246c1315d7414b16d12052d"
             },
             "require": {
@@ -4244,21 +4193,21 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "MasyukAI\\Chip\\ChipServiceProvider"
+                        "AIArmada\\Chip\\ChipServiceProvider"
                     ],
                     "aliases": {
-                        "Chip": "MasyukAI\\Chip\\Facades\\Chip"
+                        "Chip": "AIArmada\\Chip\\Facades\\Chip"
                     }
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "MasyukAI\\Chip\\": "src/"
+                    "AIArmada\\Chip\\": "src/"
                 }
             },
             "autoload-dev": {
                 "psr-4": {
-                    "MasyukAI\\Chip\\Tests\\": "tests/"
+                    "AIArmada\\Chip\\Tests\\": "tests/"
                 }
             },
             "scripts": {
@@ -4298,52 +4247,65 @@
             }
         },
         {
-            "name": "masyukai/docs",
-            "version": "dev-main",
+            "name": "aiarmada/commerce",
+            "version": "1.0.0",
             "dist": {
                 "type": "path",
-                "url": "./packages/commerce/packages/docs",
-                "reference": "32ea924dff7427330434c716301f33490371700d"
+                "url": "./packages/commerce",
+                "reference": "8c2cfa139f920de3459cbade3ec16af14653916f"
             },
             "require": {
-                "ext-json": "*",
-                "illuminate/contracts": "^12.0",
-                "illuminate/database": "^12.0",
-                "illuminate/support": "^12.0",
-                "php": "^8.4",
-                "spatie/laravel-package-tools": "^1.92",
-                "spatie/laravel-pdf": "^1.5"
+                "akaunting/laravel-money": "^6.0",
+                "aiarmada/cart": "@dev",
+                "aiarmada/chip": "@dev",
+                "aiarmada/docs": "@dev",
+                "aiarmada/filament-cart": "@dev",
+                "aiarmada/filament-chip": "@dev",
+                "aiarmada/jnt": "@dev",
+                "aiarmada/stock": "@dev",
+                "aiarmada/vouchers": "@dev",
+                "php": "^8.2",
+                "spatie/laravel-package-tools": "^1.92"
             },
             "require-dev": {
                 "driftingly/rector-laravel": "^2.0",
                 "larastan/larastan": "^3.0",
-                "laravel/framework": "^12.0",
-                "laravel/pint": "^1.0",
+                "laravel/pint": "^1.18",
                 "mockery/mockery": "^1.6",
+                "nunomaduro/collision": "^8.6",
                 "orchestra/testbench": "^10.0",
                 "pestphp/pest": "^4.0",
-                "pestphp/pest-plugin-laravel": "^4.0"
+                "pestphp/pest-plugin-browser": "^4.0",
+                "pestphp/pest-plugin-laravel": "^4.0",
+                "pestphp/pest-plugin-type-coverage": "^4.0",
+                "phpunit/phpunit": "^12.3"
             },
             "type": "library",
             "extra": {
                 "laravel": {
-                    "providers": [
-                        "MasyukAI\\Docs\\DocsServiceProvider"
-                    ],
                     "aliases": {
-                        "Invoice": "MasyukAI\\Docs\\Facades\\Invoice",
-                        "Receipt": "MasyukAI\\Docs\\Facades\\Receipt"
-                    }
+                        "Cart": "AIArmada\\Cart\\Facades\\Cart"
+                    },
+                    "providers": [
+                        "AIArmada\\Cart\\CartServiceProvider"
+                    ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "MasyukAI\\Docs\\": "src/"
+                    "AIArmada\\Cart\\": "packages/cart/src",
+                    "AIArmada\\Chip\\": "packages/chip/src",
+                    "AIArmada\\Docs\\": "packages/docs/src",
+                    "AIArmada\\FilamentCart\\": "packages/filament-cart/src",
+                    "AIArmada\\FilamentChip\\": "packages/filament-chip/src",
+                    "AIArmada\\Jnt\\": "packages/jnt/src",
+                    "AIArmada\\Stock\\": "packages/stock/src",
+                    "AIArmada\\Vouchers\\": "packages/vouchers/src"
                 }
             },
             "autoload-dev": {
                 "psr-4": {
-                    "MasyukAI\\Docs\\Tests\\": "tests/"
+                    "AIArmada\\Commerce\\Tests\\": "tests/src"
                 }
             },
             "scripts": {
@@ -4356,8 +4318,8 @@
                 "format": [
                     "vendor/bin/pint"
                 ],
-                "analyse": [
-                    "vendor/bin/phpstan analyse --memory-limit=2G"
+                "format-test": [
+                    "vendor/bin/pint --test"
                 ]
             },
             "license": [
@@ -4365,35 +4327,75 @@
             ],
             "authors": [
                 {
-                    "name": "Masyukai",
-                    "email": "hello@masyuk.ai"
+                    "name": "MasyukAI",
+                    "email": "info@masyukai.com"
                 }
             ],
-            "description": "Laravel document generation package with PDF support for invoices, receipts, and more using Spatie Laravel PDF",
+            "description": "A modern, feature-rich shopping cart package for Laravel 12",
             "keywords": [
-                "document",
-                "invoice",
+                "cart",
+                "e-commerce",
                 "laravel",
-                "pdf",
-                "receipt",
-                "spatie",
-                "tailwind"
+                "laravel12",
+                "masyukai",
+                "shopping-cart"
             ],
             "transport-options": {
                 "relative": true
             }
         },
         {
-            "name": "masyukai/filament-cart",
+            "name": "aiarmada/docs",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "./packages/commerce/packages/docs",
+                "reference": "6a364dc5a1035a278616fe352df2e5afd3bd7e18"
+            },
+            "require": {
+                "ext-json": "*",
+                "illuminate/contracts": "^12.0",
+                "illuminate/database": "^12.0",
+                "illuminate/support": "^12.0",
+                "php": "^8.4",
+                "spatie/laravel-package-tools": "^1.92",
+                "spatie/laravel-pdf": "^1.5"
+            },
+            "type": "library",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "MasyukAI",
+                    "email": "info@masyukai.com"
+                }
+            ],
+            "description": "Laravel document generation package with PDF support for invoices, receipts, and more",
+            "keywords": [
+                "document",
+                "invoice",
+                "laravel",
+                "masyukai",
+                "pdf",
+                "receipt",
+                "spatie"
+            ],
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "aiarmada/filament-cart",
             "version": "1.0.0",
             "dist": {
                 "type": "path",
-                "url": "./packages/filament-cart",
-                "reference": "9d3103e547f7d6256d28a61f45a5e28a5ad89b1f"
+                "url": "./packages/commerce/packages/filament-cart",
+                "reference": "43f62f031ec13a9f916131a57d24bf430370c761"
             },
             "require": {
                 "filament/filament": "^4.0",
-                "masyukai/cart": "^1.0",
+                "aiarmada/commerce": "@dev",
                 "php": "^8.2",
                 "spatie/laravel-package-tools": "^1.92"
             },
@@ -4413,20 +4415,20 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "MasyukAI\\FilamentCart\\FilamentCartServiceProvider"
+                        "AIArmada\\FilamentCart\\FilamentCartServiceProvider"
                     ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "MasyukAI\\FilamentCart\\": "src/",
-                    "MasyukAI\\FilamentCart\\Database\\Factories\\": "database/factories/",
-                    "MasyukAI\\FilamentCart\\Database\\Seeders\\": "database/seeders/"
+                    "AIArmada\\FilamentCart\\": "src/",
+                    "AIArmada\\FilamentCart\\Database\\Factories\\": "database/factories/",
+                    "AIArmada\\FilamentCart\\Database\\Seeders\\": "database/seeders/"
                 }
             },
             "autoload-dev": {
                 "psr-4": {
-                    "MasyukAI\\FilamentCart\\Tests\\": "tests/"
+                    "AIArmada\\FilamentCart\\Tests\\": "tests/"
                 }
             },
             "scripts": {
@@ -4462,18 +4464,18 @@
             }
         },
         {
-            "name": "masyukai/filament-chip",
+            "name": "aiarmada/filament-chip",
             "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "./packages/filament-chip",
+                "url": "./packages/commerce/packages/filament-chip",
                 "reference": "0f9b830a838f01ba84b6356188f91b8190cbbb8e"
             },
             "require": {
                 "filament/filament": "^4.0",
                 "laravel/framework": "^12.0",
                 "livewire/livewire": "^3.0",
-                "masyukai/chip": "@dev",
+                "aiarmada/chip": "@dev",
                 "php": "^8.3",
                 "spatie/laravel-package-tools": "^1.92"
             },
@@ -4492,18 +4494,18 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "MasyukAI\\FilamentChip\\FilamentChipServiceProvider"
+                        "AIArmada\\FilamentChip\\FilamentChipServiceProvider"
                     ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "MasyukAI\\FilamentChip\\": "src/"
+                    "AIArmada\\FilamentChip\\": "src/"
                 }
             },
             "autoload-dev": {
                 "psr-4": {
-                    "MasyukAI\\FilamentChip\\Tests\\": "tests/"
+                    "AIArmada\\FilamentChip\\Tests\\": "tests/"
                 }
             },
             "scripts": {
@@ -4538,11 +4540,11 @@
             }
         },
         {
-            "name": "masyukai/jnt",
+            "name": "aiarmada/jnt",
             "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "./packages/jnt",
+                "url": "./packages/commerce/packages/jnt",
                 "reference": "0ed2504806e6e69d01b1f5290ce2414fb90ebca9"
             },
             "require": {
@@ -4563,21 +4565,21 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "MasyukAI\\Jnt\\JntServiceProvider"
+                        "AIArmada\\Jnt\\JntServiceProvider"
                     ],
                     "aliases": {
-                        "JntExpress": "MasyukAI\\Jnt\\Facades\\JntExpress"
+                        "JntExpress": "AIArmada\\Jnt\\Facades\\JntExpress"
                     }
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "MasyukAI\\Jnt\\": "src/"
+                    "AIArmada\\Jnt\\": "src/"
                 }
             },
             "autoload-dev": {
                 "psr-4": {
-                    "MasyukAI\\Jnt\\Tests\\": "tests/"
+                    "AIArmada\\Jnt\\Tests\\": "tests/"
                 }
             },
             "scripts": {
@@ -4623,12 +4625,12 @@
             }
         },
         {
-            "name": "masyukai/stock",
+            "name": "aiarmada/stock",
             "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./packages/commerce/packages/stock",
-                "reference": "57eaf24fbf57128cc5115cd7ab575cc75489822e"
+                "reference": "76e530bd5845a8957be9867393c3e36d34f59d98"
             },
             "require": {
                 "ext-json": "*",
@@ -4638,58 +4640,14 @@
                 "php": "^8.4",
                 "spatie/laravel-package-tools": "^1.92"
             },
-            "require-dev": {
-                "driftingly/rector-laravel": "^2.0",
-                "larastan/larastan": "^3.0",
-                "laravel/framework": "^12.0",
-                "laravel/pint": "^1.0",
-                "mockery/mockery": "^1.6",
-                "orchestra/testbench": "^10.0",
-                "pestphp/pest": "^4.0",
-                "pestphp/pest-plugin-laravel": "^4.0"
-            },
             "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "MasyukAI\\Stock\\StockServiceProvider"
-                    ],
-                    "aliases": {
-                        "Stock": "MasyukAI\\Stock\\Facades\\Stock"
-                    }
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "MasyukAI\\Stock\\": "src/"
-                }
-            },
-            "autoload-dev": {
-                "psr-4": {
-                    "MasyukAI\\Stock\\Tests\\": "tests/"
-                }
-            },
-            "scripts": {
-                "test": [
-                    "vendor/bin/pest"
-                ],
-                "test-coverage": [
-                    "vendor/bin/pest --coverage"
-                ],
-                "format": [
-                    "vendor/bin/pint"
-                ],
-                "analyse": [
-                    "vendor/bin/phpstan analyse --memory-limit=2G"
-                ]
-            },
             "license": [
                 "MIT"
             ],
             "authors": [
                 {
-                    "name": "Masyukai",
-                    "email": "hello@masyuk.ai"
+                    "name": "MasyukAI",
+                    "email": "info@masyukai.com"
                 }
             ],
             "description": "Laravel stock management system with UUID support",
@@ -4697,8 +4655,72 @@
                 "inventory",
                 "laravel",
                 "management",
+                "masyukai",
                 "stock",
                 "uuid"
+            ],
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "aiarmada/vouchers",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "./packages/commerce/packages/vouchers",
+                "reference": "3830b236f40a38d5569e80622263a4cb4ef4d0b1"
+            },
+            "require": {
+                "illuminate/database": "^12.0",
+                "illuminate/support": "^12.0",
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.18",
+                "orchestra/testbench": "^10.0",
+                "pestphp/pest": "^4.0",
+                "pestphp/pest-plugin-laravel": "^4.0",
+                "phpunit/phpunit": "^12.3"
+            },
+            "suggest": {
+                "aiarmada/cart": "Required for cart integration features (VoucherCondition, CartWithVouchers)"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "AIArmada\\Vouchers\\VoucherServiceProvider"
+                    ],
+                    "aliases": {
+                        "Voucher": "AIArmada\\Vouchers\\Facades\\Voucher"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "AIArmada\\Vouchers\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "MasyukAI",
+                    "email": "info@masyukai.com"
+                }
+            ],
+            "description": "Voucher and coupon system for Laravel applications",
+            "keywords": [
+                "cart",
+                "coupons",
+                "discounts",
+                "e-commerce",
+                "laravel",
+                "laravel12",
+                "masyukai",
+                "vouchers"
             ],
             "transport-options": {
                 "relative": true
@@ -14254,14 +14276,12 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "stability-flags": {
-        "masyukai/cart": 20,
-        "masyukai/chip": 20,
-        "masyukai/docs": 20,
-        "masyukai/filament-chip": 20,
-        "masyukai/jnt": 20,
-        "masyukai/stock": 20
+        "aiarmada/chip": 20,
+        "aiarmada/commerce": 20,
+        "aiarmada/filament-chip": 20,
+        "aiarmada/jnt": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

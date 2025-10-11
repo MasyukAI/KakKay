@@ -19,9 +19,9 @@ public function __construct(
 **When to use:** Voucher has been pre-validated and you just want to apply the discount without re-validation.
 
 ```php
-use MasyukAI\Cart\Facades\Cart;
-use MasyukAI\Cart\Vouchers\Facades\Voucher;
-use MasyukAI\Cart\Vouchers\Conditions\VoucherCondition;
+use AIArmada\Cart\Facades\Cart;
+use AIArmada\Cart\Vouchers\Facades\Voucher;
+use AIArmada\Cart\Vouchers\Conditions\VoucherCondition;
 
 // Pre-validate once
 $voucherData = Voucher::find('SIMPLE5');
@@ -159,10 +159,10 @@ $condition = new VoucherCondition($voucherData, dynamic: false);
 ### 🎯 The Challenge
 
 When you have multiple cart extensions:
-- `masyukai/cart-vouchers`
-- `masyukai/cart-loyalty-points`
-- `masyukai/cart-gift-cards`
-- `masyukai/cart-subscriptions`
+- `aiarmada/cart-vouchers`
+- `aiarmada/cart-loyalty-points`
+- `aiarmada/cart-gift-cards`
+- `aiarmada/cart-subscriptions`
 
 Each wants to extend Cart, but only one binding can exist!
 
@@ -185,10 +185,10 @@ $this->app->bind(Cart::class, CartWithGiftCards::class); // Gift cards package
 // app/Support/Cart/ExtendedCart.php
 namespace App\Support\Cart;
 
-use MasyukAI\Cart\Cart;
-use MasyukAI\Cart\Vouchers\Traits\HasVouchers;
-use MasyukAI\Cart\Loyalty\Traits\HasLoyaltyPoints;
-use MasyukAI\Cart\GiftCards\Traits\HasGiftCards;
+use AIArmada\Cart\Cart;
+use AIArmada\Cart\Vouchers\Traits\HasVouchers;
+use AIArmada\Cart\Loyalty\Traits\HasLoyaltyPoints;
+use AIArmada\Cart\GiftCards\Traits\HasGiftCards;
 
 class ExtendedCart extends Cart
 {
@@ -204,7 +204,7 @@ Bind in AppServiceProvider:
 ```php
 // app/Providers/AppServiceProvider.php
 use App\Support\Cart\ExtendedCart;
-use MasyukAI\Cart\Cart;
+use AIArmada\Cart\Cart;
 
 public function register(): void
 {
@@ -219,7 +219,7 @@ public function register(): void
 - ✅ Easy to debug
 
 **Setup Steps:**
-1. Install packages: `composer require masyukai/cart-vouchers masyukai/cart-loyalty`
+1. Install packages: `composer require aiarmada/cart-vouchers aiarmada/cart-loyalty`
 2. Create ExtendedCart class with traits
 3. Bind in AppServiceProvider
 4. Use: `Cart::applyVoucher()`, `Cart::addLoyaltyPoints()`, etc.
@@ -243,8 +243,8 @@ protected function bindCartIfSolo(): void
 {
     // Check if other cart extension packages are installed
     $otherExtensions = [
-        'MasyukAI\Cart\Loyalty\LoyaltyServiceProvider',
-        'MasyukAI\Cart\GiftCards\GiftCardServiceProvider',
+        'AIArmada\Cart\Loyalty\LoyaltyServiceProvider',
+        'AIArmada\Cart\GiftCards\GiftCardServiceProvider',
     ];
     
     $hasOtherExtensions = collect($otherExtensions)
@@ -304,7 +304,7 @@ In a dedicated CartExtensionServiceProvider:
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use MasyukAI\Cart\Cart;
+use AIArmada\Cart\Cart;
 
 class CartExtensionServiceProvider extends ServiceProvider
 {
@@ -348,9 +348,9 @@ class CartExtensionServiceProvider extends ServiceProvider
 
 ```bash
 # 1. Install extensions
-composer require masyukai/cart-vouchers
-composer require masyukai/cart-loyalty
-composer require masyukai/cart-gift-cards
+composer require aiarmada/cart-vouchers
+composer require aiarmada/cart-loyalty
+composer require aiarmada/cart-gift-cards
 
 # 2. Create composed cart class
 php artisan make:class Support/Cart/ExtendedCart
@@ -362,10 +362,10 @@ php artisan make:class Support/Cart/ExtendedCart
 
 namespace App\Support\Cart;
 
-use MasyukAI\Cart\Cart;
-use MasyukAI\Cart\Vouchers\Traits\HasVouchers;
-use MasyukAI\Cart\Loyalty\Traits\HasLoyaltyPoints;
-use MasyukAI\Cart\GiftCards\Traits\HasGiftCards;
+use AIArmada\Cart\Cart;
+use AIArmada\Cart\Vouchers\Traits\HasVouchers;
+use AIArmada\Cart\Loyalty\Traits\HasLoyaltyPoints;
+use AIArmada\Cart\GiftCards\Traits\HasGiftCards;
 
 /**
  * Extended Cart with all enabled extensions.
@@ -391,7 +391,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use App\Support\Cart\ExtendedCart;
-use MasyukAI\Cart\Cart;
+use AIArmada\Cart\Cart;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -405,7 +405,7 @@ class AppServiceProvider extends ServiceProvider
 
 ```php
 // Now use anywhere:
-use MasyukAI\Cart\Facades\Cart;
+use AIArmada\Cart\Facades\Cart;
 
 Cart::applyVoucher('SUMMER20');
 Cart::addLoyaltyPoints(100);
@@ -418,7 +418,7 @@ The vouchers package now provides `CartWithVouchers` as a **convenience class**,
 
 ```php
 // Available in package:
-use MasyukAI\Cart\Vouchers\Support\CartWithVouchers;
+use AIArmada\Cart\Vouchers\Support\CartWithVouchers;
 
 // Applications can use it:
 $this->app->bind(Cart::class, CartWithVouchers::class);
@@ -435,11 +435,11 @@ class ExtendedCart extends CartWithVouchers
 If you create other cart extensions, follow this pattern:
 
 ```php
-// packages/masyukai/cart-loyalty/src/Support/CartWithLoyalty.php
-namespace MasyukAI\Cart\Loyalty\Support;
+// packages/aiarmada/cart-loyalty/src/Support/CartWithLoyalty.php
+namespace AIArmada\Cart\Loyalty\Support;
 
-use MasyukAI\Cart\Cart;
-use MasyukAI\Cart\Loyalty\Traits\HasLoyaltyPoints;
+use AIArmada\Cart\Cart;
+use AIArmada\Cart\Loyalty\Traits\HasLoyaltyPoints;
 
 /**
  * Provided for convenience - NOT automatically bound.

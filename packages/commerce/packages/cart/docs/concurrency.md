@@ -104,7 +104,7 @@ Conflicts happen when:
 ### Exception Details
 
 ```php
-namespace MasyukAI\Cart\Exceptions;
+namespace AIArmada\Cart\Exceptions;
 
 final class CartConflictException extends CartException
 {
@@ -116,8 +116,8 @@ final class CartConflictException extends CartException
 ### Handling Conflicts
 
 ```php
-use MasyukAI\Cart\Facades\Cart;
-use MasyukAI\Cart\Exceptions\CartConflictException;
+use AIArmada\Cart\Facades\Cart;
+use AIArmada\Cart\Exceptions\CartConflictException;
 
 try {
     Cart::add('product-1', 'Product 1', 1999, 1);
@@ -156,8 +156,8 @@ while ($attempt < $maxAttempts) {
 ### Exponential Backoff
 
 ```php
-use MasyukAI\Cart\Facades\Cart;
-use MasyukAI\Cart\Exceptions\CartConflictException;
+use AIArmada\Cart\Facades\Cart;
+use AIArmada\Cart\Exceptions\CartConflictException;
 
 function retryWithBackoff(callable $operation, int $maxAttempts = 3): mixed
 {
@@ -189,8 +189,8 @@ retryWithBackoff(fn() => Cart::add('product-1', 'Product 1', 1999, 1));
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use MasyukAI\Cart\Facades\Cart;
-use MasyukAI\Cart\Exceptions\CartConflictException;
+use AIArmada\Cart\Facades\Cart;
+use AIArmada\Cart\Exceptions\CartConflictException;
 
 class CartController extends Controller
 {
@@ -245,8 +245,8 @@ class CartController extends Controller
 
 ```php
 use Illuminate\Support\Facades\DB;
-use MasyukAI\Cart\Facades\Cart;
-use MasyukAI\Cart\Exceptions\CartConflictException;
+use AIArmada\Cart\Facades\Cart;
+use AIArmada\Cart\Exceptions\CartConflictException;
 
 it('detects cart conflicts', function () {
     // Requires database driver

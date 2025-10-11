@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Exceptions;
+namespace AIArmada\Cart\Exceptions;
 
+use AIArmada\Cart\Cart;
 use Exception;
-use MasyukAI\Cart\Cart;
 
 final class CartConflictException extends CartException
 {

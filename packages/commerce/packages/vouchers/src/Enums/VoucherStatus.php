@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Vouchers\Enums;
+namespace AIArmada\Vouchers\Enums;
 
 enum VoucherStatus: string
 {

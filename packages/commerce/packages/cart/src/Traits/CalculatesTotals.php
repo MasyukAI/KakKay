@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Traits;
+namespace AIArmada\Cart\Traits;
 
+use AIArmada\Cart\Models\CartItem;
 use Akaunting\Money\Money;
-use MasyukAI\Cart\Models\CartItem;
 
 trait CalculatesTotals
 {

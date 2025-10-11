@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Vouchers\Exceptions;
+namespace AIArmada\Vouchers\Exceptions;
 
 class VoucherUsageLimitException extends VoucherException
 {

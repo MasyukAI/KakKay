@@ -1,6 +1,6 @@
 # Cart Integration Complete! 🎉
 
-The voucher package is now fully integrated with the MasyukAI Cart package.
+The voucher package is now fully integrated with the AIArmada Cart package.
 
 ## What Was Implemented
 
@@ -123,9 +123,9 @@ Cart calculation ← Voucher validated dynamically on each calculation
 ## Usage Quick Start
 
 ```php
-use MasyukAI\Cart\Facades\Cart;
-use MasyukAI\Cart\Vouchers\Facades\Voucher;
-use MasyukAI\Cart\Vouchers\Enums\VoucherType;
+use AIArmada\Cart\Facades\Cart;
+use AIArmada\Cart\Vouchers\Facades\Voucher;
+use AIArmada\Cart\Vouchers\Enums\VoucherType;
 
 // Create a voucher
 Voucher::create([
@@ -162,7 +162,7 @@ Now that the integration is complete, you should:
 
 1. **Run existing cart tests** to ensure no breaking changes:
    ```bash
-   cd packages/masyukai/cart
+   cd packages/aiarmada/cart
    vendor/bin/pest
    ```
 

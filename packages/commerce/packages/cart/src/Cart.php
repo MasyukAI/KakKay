@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart;
+namespace AIArmada\Cart;
 
+use AIArmada\Cart\Contracts\RulesFactoryInterface;
+use AIArmada\Cart\Storage\StorageInterface;
+use AIArmada\Cart\Traits\CalculatesTotals;
+use AIArmada\Cart\Traits\ManagesConditions;
+use AIArmada\Cart\Traits\ManagesDynamicConditions;
+use AIArmada\Cart\Traits\ManagesIdentifier;
+use AIArmada\Cart\Traits\ManagesInstances;
+use AIArmada\Cart\Traits\ManagesItems;
+use AIArmada\Cart\Traits\ManagesMetadata;
+use AIArmada\Cart\Traits\ManagesStorage;
 use Illuminate\Contracts\Events\Dispatcher;
-use MasyukAI\Cart\Contracts\RulesFactoryInterface;
-use MasyukAI\Cart\Storage\StorageInterface;
-use MasyukAI\Cart\Traits\CalculatesTotals;
-use MasyukAI\Cart\Traits\ManagesConditions;
-use MasyukAI\Cart\Traits\ManagesDynamicConditions;
-use MasyukAI\Cart\Traits\ManagesIdentifier;
-use MasyukAI\Cart\Traits\ManagesInstances;
-use MasyukAI\Cart\Traits\ManagesItems;
-use MasyukAI\Cart\Traits\ManagesMetadata;
-use MasyukAI\Cart\Traits\ManagesStorage;
 
 final class Cart
 {

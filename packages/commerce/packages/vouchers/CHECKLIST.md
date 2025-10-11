@@ -248,7 +248,7 @@ The integration is **complete and production-ready**!
 
 1. **Run tests** to verify everything works
    ```bash
-   cd packages/masyukai/cart
+   cd packages/aiarmada/cart
    vendor/bin/pest tests/Integration/CartIntegrationTest.php
    ```
 

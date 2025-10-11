@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Vouchers\Services;
+namespace AIArmada\Vouchers\Services;
 
-use MasyukAI\Cart\Vouchers\Data\VoucherValidationResult;
-use MasyukAI\Cart\Vouchers\Models\Voucher;
-use MasyukAI\Cart\Vouchers\Models\VoucherUsage;
+use AIArmada\Vouchers\Data\VoucherValidationResult;
+use AIArmada\Vouchers\Models\Voucher;
+use AIArmada\Vouchers\Models\VoucherUsage;
 
 class VoucherValidator
 {

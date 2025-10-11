@@ -166,7 +166,7 @@ The cart automatically migrates when Laravel's `Illuminate\Auth\Events\Login` ev
 namespace App\Listeners;
 
 use Illuminate\Auth\Events\Login;
-use MasyukAI\Cart\Facades\Cart;
+use AIArmada\Cart\Facades\Cart;
 
 class MigrateGuestCart
 {
@@ -354,8 +354,8 @@ Product A: quantity 2  // User cart discarded
 // app/Services/CustomCartMigration.php
 namespace App\Services;
 
-use MasyukAI\Cart\CartItem;
-use MasyukAI\Cart\Collections\CartCollection;
+use AIArmada\Cart\CartItem;
+use AIArmada\Cart\Collections\CartCollection;
 
 class CustomCartMigration
 {

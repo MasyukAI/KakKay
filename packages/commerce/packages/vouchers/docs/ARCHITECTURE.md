@@ -18,7 +18,7 @@
                                     ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                           Cart Facade                                    │
-│                   (MasyukAI\Cart\Facades\Cart)                          │
+│                   (AIArmada\Cart\Facades\Cart)                          │
 └─────────────────────────────────────────────────────────────────────────┘
                                     │
                                     ▼
@@ -294,10 +294,10 @@
 │                                                                          │
 │            Single Repository (Monorepo)                                 │
 │  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │  packages/masyukai/cart/                                          │  │
+│  │  packages/aiarmada/cart/                                          │  │
 │  │  ├── packages/                                                    │  │
-│  │  │   ├── core/          (MasyukAI\Cart)                          │  │
-│  │  │   └── vouchers/      (MasyukAI\Cart\Vouchers)                 │  │
+│  │  │   ├── core/          (AIArmada\Cart)                          │  │
+│  │  │   └── vouchers/      (AIArmada\Cart\Vouchers)                 │  │
 │  │  ├── composer.json                                                │  │
 │  │  └── monorepo-builder.php                                         │  │
 │  └──────────────────────────────────────────────────────────────────┘  │
@@ -312,10 +312,10 @@
 │                    Two Independent Packages                             │
 │  ┌───────────────────────────┐     ┌───────────────────────────────┐  │
 │  │  packagist.org/           │     │  packagist.org/               │  │
-│  │  masyukai/cart            │     │  masyukai/cart-vouchers       │  │
+│  │  aiarmada/cart            │     │  aiarmada/cart-vouchers       │  │
 │  │                           │     │                               │  │
 │  │  Core cart functionality  │     │  Vouchers + Integration       │  │
-│  │  Can be used standalone   │     │  Requires: masyukai/cart ^2.0 │  │
+│  │  Can be used standalone   │     │  Requires: aiarmada/cart ^2.0 │  │
 │  └───────────────────────────┘     └───────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────────────────┘
                                     │
@@ -327,14 +327,14 @@
 │                                                                          │
 │  Option 1: Cart Only                                                    │
 │  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │  composer require masyukai/cart                                   │  │
+│  │  composer require aiarmada/cart                                   │  │
 │  │  → Get core cart functionality                                    │  │
 │  └──────────────────────────────────────────────────────────────────┘  │
 │                                                                          │
 │  Option 2: Cart + Vouchers                                              │
 │  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │  composer require masyukai/cart-vouchers                          │  │
-│  │  → Automatically installs masyukai/cart as dependency             │  │
+│  │  composer require aiarmada/cart-vouchers                          │  │
+│  │  → Automatically installs aiarmada/cart as dependency             │  │
 │  │  → Get cart + voucher system + integration                        │  │
 │  └──────────────────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────────────────┘

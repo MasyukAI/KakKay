@@ -1,27 +1,18 @@
-=== .ai/chip rules ===
-
-# CHIP Integr1. **Configuration** lives in `config/chip.php`. Do not add new environment variables unless the official CHIP docs require them. Respect existing keys such as `collect.api_key`, `collect.brand_id`, `collect.environment`, `send.api_key`, `send.api_secret`, `webhooks.public_key`, etc. Note that CHIP Collect uses the same base URL (`https://gate.chip-in.asia/api/v1/`) for both sandbox and production – the API key determines the environment. CHIP Send uses different URLs for sandbox and production.
-2. **HTTP clients** already implement authentication, retry and logging. Reuse `ChipCollectClient` and `ChipSendClient`; do not create ad‑hoc Guzzle calls. Clients retry only on connection or 5xx errors – CHIP does not emit HTTP 429, so do not add logic for it.ion – Engineering Playbook
+# CHIP Integration – Engineering Playbook
 
 These instructions guide automated agents working with the `masyukai/chip` package. Follow them when adding or modifying code.
 
 ## Project layout
 
-- Package root: `packages/chip/`ion – Engineering Playbook
-
-These instructions guide automated agents working with the `masyukai/chip` package. Follow them when adding or modifying code.
-
-## Project layout
-
-- Package root: `packages/masyukai/chip/`
+- Package root: `packages/chip/`
 - Primary namespaces: `MasyukAI\Chip` (services, data objects, builders).
 - Facades: `MasyukAI\Chip\Facades\Chip` (Collect) and `MasyukAI\Chip\Facades\ChipSend` (Send).
 - Core services: `src/Services/ChipCollectService.php`, `src/Services/ChipSendService.php`, `src/Services/WebhookService.php`.
 
 ## Required conventions
 
-1. **Configuration** lives in `config/chip.php`. Do not add new environment variables unless the official CHIP docs require them. Respect existing keys such as `collect.api_key`, `collect.brand_id`, `collect.environment`, `send.api_key`, `send.api_secret`, `webhooks.public_key`, etc.
-2. **HTTP clients** already implement authentication, retry and logging. Reuse `ChipCollectClient` and `ChipSendClient`; do not create ad‑hoc Guzzle calls. Clients retry only on connection or 5xx errors – CHIP does not emit HTTP 429, so do not add logic for it.
+1. **Configuration** lives in `config/chip.php`. Do not add new environment variables unless the official CHIP docs require them. Respect existing keys such as `collect.api_key`, `collect.brand_id`, `collect.environment`, `send.api_key`, `send.api_secret`, `webhooks.public_key`, etc. Note that CHIP Collect uses the same base URL (`https://gate.chip-in.asia/api/v1/`) for both sandbox and production – the API key determines the environment. CHIP Send uses different URLs for sandbox and production.
+2. **HTTP clients** already implement authentication, retry and logging. Reuse `ChipCollectClient` and `ChipSendClient`; do not create ad‑hoc Guzzle calls. Clients retry only on connection or 5xx errors – CHIP does not emit HTTP 429, so do not add logic for it.
 3. **Purchases** must include either a full `client` payload (with `email`) or a `client_id`. Ensure `brand_id` is present (builder/service fills this automatically). Never send empty strings for optional fields; omit them instead.
 4. **CHIP Send** support is restricted to documented endpoints: accounts, bank accounts (+ resend webhook), send instructions (+ cancel/delete/resend webhook), groups, and webhooks. Do not reintroduce removed endpoints like `/send/send_limits`, `/send/balance`, or bank-account validation routes.
 5. **Webhooks** use RSA signatures. Always verify signatures using the raw request body and public key via `WebhookService::verifySignature`. Payloads should not be logged unless masked.
@@ -59,8 +50,8 @@ Consult `docs/CHIP_API_REFERENCE.md` for the complete reference. Supported endpo
 ## QA checklist
 
 - Add/adjust Pest coverage for every behavioural change.
-- Use Laravel’s HTTP fakes to simulate CHIP responses in tests.
+- Use Laravel's HTTP fakes to simulate CHIP responses in tests.
 - Run `vendor/bin/pest` and `vendor/bin/pint --dirty` before submitting changes.
 - Keep `docs/CHIP_API_REFERENCE.md` current when the API evolves.
 
-Following this playbook keeps the package aligned with CHIP’s official API and the project’s engineering standards.
+Following this playbook keeps the package aligned with CHIP's official API and the project's engineering standards.

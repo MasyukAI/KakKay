@@ -2,32 +2,32 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Traits;
+namespace AIArmada\Cart\Traits;
 
-use MasyukAI\Cart\Collections\CartConditionCollection;
-use MasyukAI\Cart\Conditions\CartCondition;
-use MasyukAI\Cart\Events\CartConditionAdded;
-use MasyukAI\Cart\Events\CartConditionRemoved;
-use MasyukAI\Cart\Events\ItemConditionAdded;
-use MasyukAI\Cart\Events\ItemConditionRemoved;
-use MasyukAI\Cart\Exceptions\InvalidCartConditionException;
+use AIArmada\Cart\Collections\CartConditionCollection;
+use AIArmada\Cart\Conditions\CartCondition;
+use AIArmada\Cart\Events\CartConditionAdded;
+use AIArmada\Cart\Events\CartConditionRemoved;
+use AIArmada\Cart\Events\ItemConditionAdded;
+use AIArmada\Cart\Events\ItemConditionRemoved;
+use AIArmada\Cart\Exceptions\InvalidCartConditionException;
 
 trait ManagesConditions
 {
     /**
      * Add condition to cart
      *
-     * @param  CartCondition|array<string, mixed>  $condition
+     * @param  CartCondition|\AIArmada\Vouchers\Conditions\VoucherCondition|array<string, mixed>  $condition
      *
      * @throws InvalidCartConditionException If attempting to add a dynamic condition (with rules)
      */
-    public function addCondition(CartCondition|array $condition): static
+    public function addCondition(CartCondition|\AIArmada\Vouchers\Conditions\VoucherCondition|array $condition): static
     {
         $conditions = is_array($condition) ? $condition : [$condition];
 
         foreach ($conditions as $cond) {
-            if (! $cond instanceof CartCondition) {
-                throw new InvalidCartConditionException('Condition must be an instance of CartCondition');
+            if (! $cond instanceof CartCondition && ! $cond instanceof \AIArmada\Vouchers\Conditions\VoucherCondition) {
+                throw new InvalidCartConditionException('Condition must be an instance of CartCondition or VoucherCondition');
             }
 
             // Guard against adding dynamic conditions as static
@@ -73,7 +73,7 @@ trait ManagesConditions
     /**
      * Get condition by name
      */
-    public function getCondition(string $name): ?CartCondition
+    public function getCondition(string $name): mixed
     {
         return $this->getConditions()->get($name);
     }

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Stock\Services;
+namespace AIArmada\Stock\Services;
 
+use AIArmada\Stock\Models\StockTransaction;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use MasyukAI\Stock\Models\StockTransaction;
 
 final class StockService
 {

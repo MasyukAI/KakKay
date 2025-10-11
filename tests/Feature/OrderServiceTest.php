@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use AIArmada\Cart\Facades\Cart;
 use App\Models\Address;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -9,7 +10,6 @@ use App\Models\Product;
 use App\Models\User;
 use App\Services\OrderService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use MasyukAI\Cart\Facades\Cart;
 
 uses(RefreshDatabase::class);
 

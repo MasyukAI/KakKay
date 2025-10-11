@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Models\Traits;
+namespace AIArmada\Cart\Models\Traits;
 
+use AIArmada\Cart\Collections\CartConditionCollection;
+use AIArmada\Cart\Conditions\CartCondition;
 use Illuminate\Support\Collection;
-use MasyukAI\Cart\Collections\CartConditionCollection;
-use MasyukAI\Cart\Conditions\CartCondition;
 
 trait ConditionTrait
 {

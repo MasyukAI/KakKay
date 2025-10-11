@@ -20,7 +20,7 @@ A Laravel package for managing stock/inventory with UUID support, built with PHP
 Install the package via Composer:
 
 ```bash
-composer require masyukai/stock
+composer require aiarmada/stock
 ```
 
 Publish and run the migrations:
@@ -44,7 +44,7 @@ Add the `HasStock` trait to any model:
 ```php
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use MasyukAI\Stock\Traits\HasStock;
+use AIArmada\Stock\Traits\HasStock;
 
 class Product extends Model
 {
@@ -62,12 +62,12 @@ $product = Product::find($id);
 $product->addStock(100, 'restock', 'Supplier delivery');
 
 // Using the facade
-use MasyukAI\Stock\Facades\Stock;
+use AIArmada\Stock\Facades\Stock;
 
 Stock::addStock($product, 100, 'restock', 'Supplier delivery');
 
 // Using the service
-use MasyukAI\Stock\Services\StockService;
+use AIArmada\Stock\Services\StockService;
 
 $stockService = app(StockService::class);
 $stockService->addStock($product, 100, 'restock', 'Supplier delivery');
@@ -238,4 +238,4 @@ The MIT License (MIT). Please see [License File](LICENSE) for more information.
 
 ## Credits
 
-- [MasyukAI](https://github.com/MasyukAI)
+- [AIArmada](https://github.com/AIArmada)

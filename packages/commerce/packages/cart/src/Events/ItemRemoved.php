@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Events;
+namespace AIArmada\Cart\Events;
 
+use AIArmada\Cart\Cart;
+use AIArmada\Cart\Models\CartItem;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use MasyukAI\Cart\Cart;
-use MasyukAI\Cart\Models\CartItem;
 
 /**
  * Event fired when an item is removed from the cart.

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Traits;
+namespace AIArmada\Cart\Traits;
 
+use AIArmada\Cart\Collections\CartConditionCollection;
+use AIArmada\Cart\Conditions\CartCondition;
+use AIArmada\Cart\Contracts\RulesFactoryInterface;
 use Closure;
 use Exception;
 use InvalidArgumentException;
-use MasyukAI\Cart\Collections\CartConditionCollection;
-use MasyukAI\Cart\Conditions\CartCondition;
-use MasyukAI\Cart\Contracts\RulesFactoryInterface;
 use Throwable;
 
 trait ManagesDynamicConditions

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Providers\Filament;
 
+use AIArmada\FilamentCart\FilamentCart;
+use AIArmada\FilamentChip\FilamentChip;
 use App\Filament\Pages\Auth\Login;
 use Asmit\ResizedColumn\ResizedColumnPlugin;
 use Filament\Http\Middleware\Authenticate;
@@ -21,8 +23,6 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use MasyukAI\FilamentCart\FilamentCart;
-use MasyukAI\FilamentChip\FilamentChip;
 
 final class AdminPanelProvider extends PanelProvider
 {

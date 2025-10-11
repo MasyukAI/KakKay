@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
+use AIArmada\Cart\Facades\Cart as CartFacade;
 use App\Livewire\Cart;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
-use MasyukAI\Cart\Facades\Cart as CartFacade;
 
 uses(RefreshDatabase::class);
 

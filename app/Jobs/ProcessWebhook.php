@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
+use AIArmada\Chip\DataObjects\Webhook;
 use App\Notifications\WebhookProcessingFailed;
 use App\Services\Chip\ChipDataRecorder;
 use App\Services\Chip\WebhookProcessor;
@@ -14,7 +15,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
-use MasyukAI\Chip\DataObjects\Webhook;
 use Throwable;
 
 final class ProcessWebhook implements ShouldQueue

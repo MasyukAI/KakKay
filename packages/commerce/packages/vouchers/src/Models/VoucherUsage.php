@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Vouchers\Models;
+namespace AIArmada\Vouchers\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Examples;
+namespace AIArmada\Cart\Examples;
 
+use AIArmada\Cart\Contracts\RulesFactoryInterface;
 use InvalidArgumentException;
-use MasyukAI\Cart\Contracts\RulesFactoryInterface;
 
 /**
  * Example implementation of RulesFactoryInterface.

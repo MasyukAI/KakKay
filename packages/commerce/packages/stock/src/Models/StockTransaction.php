@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Stock\Models;
+namespace AIArmada\Stock\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;

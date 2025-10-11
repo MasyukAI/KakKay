@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use AIArmada\Chip\DataObjects\ClientDetails;
+use AIArmada\Chip\DataObjects\Purchase;
+use AIArmada\Chip\DataObjects\PurchaseDetails;
+use AIArmada\Chip\Events\PurchasePaid;
 use App\Listeners\HandlePaymentSuccess;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -14,10 +18,6 @@ use App\Services\StockService;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use MasyukAI\Chip\DataObjects\ClientDetails;
-use MasyukAI\Chip\DataObjects\Purchase;
-use MasyukAI\Chip\DataObjects\PurchaseDetails;
-use MasyukAI\Chip\Events\PurchasePaid;
 
 final class TestPaymentSuccessCommand extends Command
 {
@@ -130,8 +130,8 @@ final class TestPaymentSuccessCommand extends Command
                     ]),
                     brand_id: 'test_brand',
                     payment: null,
-                    issuer_details: \Masyukai\Chip\DataObjects\IssuerDetails::fromArray(['legal_name' => '']),
-                    transaction_data: \Masyukai\Chip\DataObjects\TransactionData::fromArray([
+                    issuer_details: \AIArmada\Chip\DataObjects\IssuerDetails::fromArray(['legal_name' => '']),
+                    transaction_data: \AIArmada\Chip\DataObjects\TransactionData::fromArray([
                         'payment_method' => 'fpx',
                         'extra' => [],
                         'country' => 'MY',

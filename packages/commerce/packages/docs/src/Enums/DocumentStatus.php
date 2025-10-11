@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Docs\Enums;
+namespace AIArmada\Docs\Enums;
 
 enum DocumentStatus: string
 {

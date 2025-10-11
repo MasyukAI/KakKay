@@ -1,6 +1,6 @@
 {
-    "name": "masyukai/cart-vouchers",
-    "description": "Voucher and coupon system for MasyukAI Cart",
+    "name": "aiarmada/vouchers",
+    "description": "Voucher and coupon system for Laravel applications",
     "type": "library",
     "license": "MIT",
     "keywords": [
@@ -11,15 +11,19 @@
         "discounts",
         "cart",
         "e-commerce",
-        "masyukai"
+        "aiarmada"
     ],
     "authors": [
         {
-            "name": "MasyukAI",
-            "email": "info@masyukai.com"
+            "name": "AIArmada",
+            "email": "info@aiarmada.com"
         }
     ],
     "repositories": [
+        {
+            "type": "path",
+            "url": "../cart"
+        },
         {
             "type": "path",
             "url": "../../"
@@ -27,9 +31,11 @@
     ],
     "require": {
         "php": "^8.2",
-        "masyukai/cart": "^1.0",
         "illuminate/support": "^12.0",
         "illuminate/database": "^12.0"
+    },
+    "suggest": {
+        "aiarmada/cart": "Required for cart integration features (VoucherCondition, CartWithVouchers)"
     },
     "require-dev": {
         "orchestra/testbench": "^10.0",
@@ -40,21 +46,16 @@
     },
     "autoload": {
         "psr-4": {
-            "MasyukAI\\Cart\\Vouchers\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "MasyukAI\\Cart\\Vouchers\\Tests\\": "tests/"
+            "AIArmada\\Vouchers\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "MasyukAI\\Cart\\Vouchers\\VoucherServiceProvider"
+                "AIArmada\\Vouchers\\VoucherServiceProvider"
             ],
             "aliases": {
-                "Voucher": "MasyukAI\\Cart\\Vouchers\\Facades\\Voucher"
+                "Voucher": "AIArmada\\Vouchers\\Facades\\Voucher"
             }
         }
     },

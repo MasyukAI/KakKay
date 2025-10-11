@@ -1,6 +1,6 @@
-# MasyukAI Cart Core Package
+# AIArmada Cart Core Package
 
-This package contains the core implementation that powers **MasyukAI Cart**. It is published as `masyukai/cart` on Packagist and intended for Laravel 12 applications seeking a feature-rich shopping cart engine.
+This package contains the core implementation that powers **AIArmada Cart**. It is published as `aiarmada/cart` on Packagist and intended for Laravel 12 applications seeking a feature-rich shopping cart engine.
 
 ## Highlights
 
@@ -51,4 +51,4 @@ Please review the [Laravel Cart Coding Guidelines](../../.ai/guidelines/cart.bla
 
 ## License
 
-MasyukAI Cart is released under the [MIT license](../../LICENSE).
+AIArmada Cart is released under the [MIT license](../../LICENSE).

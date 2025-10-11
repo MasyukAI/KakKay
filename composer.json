@@ -15,15 +15,13 @@
         "laravel/framework": "^12.0",
         "laravel/octane": "^2.12",
         "laravel/tinker": "^2.10.1",
-    "masyukai/jnt": "@dev",
+    "aiarmada/jnt": "@dev",
         "livewire/flux": "^2.1.1",
         "livewire/volt": "^1.7",
-        "masyukai/cart": "@dev",
-        "masyukai/chip": "@dev",
-        "masyukai/filament-cart": "^1.0",
-        "masyukai/filament-chip": "@dev",
-        "masyukai/docs": "@dev",
-        "masyukai/stock": "@dev",
+        "aiarmada/commerce": "@dev",
+        "aiarmada/chip": "@dev",
+        "aiarmada/filament-cart": "^1.0",
+        "aiarmada/filament-chip": "@dev",
         "nnjeim/world": "^1.1",
         "propaganistas/laravel-phone": "^6.0",
         "ysfkaya/filament-phone-input": "^4.0"
@@ -49,19 +47,11 @@
         },
         {
             "type": "path",
-            "url": "./packages/chip"
+            "url": "./packages/commerce/packages/cart"
         },
         {
             "type": "path",
-            "url": "./packages/jnt"
-        },
-        {
-            "type": "path",
-            "url": "./packages/filament-cart"
-        },
-        {
-            "type": "path",
-            "url": "./packages/filament-chip"
+            "url": "./packages/commerce/packages/chip"
         },
         {
             "type": "path",
@@ -69,7 +59,23 @@
         },
         {
             "type": "path",
+            "url": "./packages/commerce/packages/filament-cart"
+        },
+        {
+            "type": "path",
+            "url": "./packages/commerce/packages/filament-chip"
+        },
+        {
+            "type": "path",
+            "url": "./packages/commerce/packages/jnt"
+        },
+        {
+            "type": "path",
             "url": "./packages/commerce/packages/stock"
+        },
+        {
+            "type": "path",
+            "url": "./packages/commerce/packages/vouchers"
         }
     ],
     "autoload": {
@@ -127,6 +133,6 @@
             "php-http/discovery": true
         }
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "prefer-stable": true
 }

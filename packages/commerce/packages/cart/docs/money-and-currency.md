@@ -2,7 +2,7 @@
 
 > **Precise financial calculations with zero rounding errors—powered by akaunting/laravel-money for production-grade e-commerce.**
 
-MasyukAI Cart uses the **akaunting/laravel-money** package to ensure accurate monetary calculations. All cart totals, subtotals, item prices, and condition amounts are represented as `Money` objects, eliminating floating-point precision issues.
+AIArmada Cart uses the **akaunting/laravel-money** package to ensure accurate monetary calculations. All cart totals, subtotals, item prices, and condition amounts are represented as `Money` objects, eliminating floating-point precision issues.
 
 ## 📋 Table of Contents
 
@@ -141,7 +141,7 @@ Cart::add('sku-10', 'Product', null,     1); // ❌ Exception
 ### Manual Sanitization
 
 ```php
-use MasyukAI\Cart\Cart;
+use AIArmada\Cart\Cart;
 
 // Sanitize price strings
 $money = Cart::sanitizePrice('99.99');        // Money::MYR(9999)

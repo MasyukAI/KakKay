@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Vouchers\Traits;
+namespace AIArmada\Vouchers\Traits;
 
-use MasyukAI\Cart\Vouchers\Conditions\VoucherCondition;
-use MasyukAI\Cart\Vouchers\Events\VoucherApplied;
-use MasyukAI\Cart\Vouchers\Events\VoucherRemoved;
-use MasyukAI\Cart\Vouchers\Exceptions\InvalidVoucherException;
-use MasyukAI\Cart\Vouchers\Facades\Voucher;
+use AIArmada\Vouchers\Conditions\VoucherCondition;
+use AIArmada\Vouchers\Events\VoucherApplied;
+use AIArmada\Vouchers\Events\VoucherRemoved;
+use AIArmada\Vouchers\Exceptions\InvalidVoucherException;
+use AIArmada\Vouchers\Facades\Voucher;
+use AIArmada\Vouchers\Support\CartWithVouchers;
 
 /**
  * HasVouchers trait adds voucher management capabilities to the Cart.
@@ -68,11 +69,13 @@ trait HasVouchers
 
         // Create and add the voucher condition
         $voucherCondition = new VoucherCondition($voucherData, $order);
-        $this->addCondition($voucherCondition);
+        $cart = $this instanceof CartWithVouchers ? $this->getCart() : $this;
+        $cart->addCondition($voucherCondition);
 
         // Dispatch event if events are enabled
-        if ($this->eventsEnabled && $this->events) {
-            $this->events->dispatch(new VoucherApplied($this, $voucherData));
+        if ($this instanceof CartWithVouchers) {
+            // For CartWithVouchers wrapper, dispatch through Laravel's event system
+            \Illuminate\Support\Facades\Event::dispatch(new VoucherApplied($this->getCart(), $voucherData));
         }
 
         return $this;
@@ -91,11 +94,15 @@ trait HasVouchers
         $voucherCondition = $this->getVoucherCondition($code);
 
         // Remove the condition
-        $this->removeCondition($conditionName);
+        $cart = $this instanceof CartWithVouchers ? $this->getCart() : $this;
+        $cart->removeCondition($conditionName);
 
         // Dispatch event if events are enabled
-        if ($voucherCondition && $this->eventsEnabled && $this->events) {
-            $this->events->dispatch(new VoucherRemoved($this, $voucherCondition->getVoucher()));
+        if ($voucherCondition) {
+            if ($this instanceof CartWithVouchers) {
+                // For CartWithVouchers wrapper, dispatch through Laravel's event system
+                \Illuminate\Support\Facades\Event::dispatch(new VoucherRemoved($this->getCart(), $voucherCondition->getVoucher()));
+            }
         }
 
         return $this;
@@ -127,8 +134,9 @@ trait HasVouchers
         }
 
         $conditionName = "voucher_{$code}";
+        $cart = $this instanceof CartWithVouchers ? $this->getCart() : $this;
 
-        return $this->hasCondition($conditionName);
+        return $cart->getCondition($conditionName) !== null;
     }
 
     /**
@@ -139,7 +147,8 @@ trait HasVouchers
     public function getVoucherCondition(string $code): ?VoucherCondition
     {
         $conditionName = "voucher_{$code}";
-        $condition = $this->getCondition($conditionName);
+        $cart = $this instanceof CartWithVouchers ? $this->getCart() : $this;
+        $condition = $cart->getCondition($conditionName);
 
         return $condition instanceof VoucherCondition ? $condition : null;
     }
@@ -151,10 +160,11 @@ trait HasVouchers
      */
     public function getAppliedVouchers(): array
     {
-        $conditions = $this->getConditions();
+        $cart = $this instanceof CartWithVouchers ? $this->getCart() : $this;
+        $conditions = $cart->getConditions();
 
         return array_filter(
-            $conditions,
+            $conditions->toArray(),
             fn ($condition) => $condition instanceof VoucherCondition
         );
     }
@@ -180,7 +190,8 @@ trait HasVouchers
     public function getVoucherDiscount(): float
     {
         $discount = 0.0;
-        $subtotal = $this->subtotal();
+        $cart = $this instanceof CartWithVouchers ? $this->getCart() : $this;
+        $subtotal = $cart->subtotal();
 
         foreach ($this->getAppliedVouchers() as $voucher) {
             $discountAmount = abs($voucher->getCalculatedValue($subtotal));

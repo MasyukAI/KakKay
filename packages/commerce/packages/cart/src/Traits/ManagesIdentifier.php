@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Traits;
+namespace AIArmada\Cart\Traits;
 
 trait ManagesIdentifier
 {

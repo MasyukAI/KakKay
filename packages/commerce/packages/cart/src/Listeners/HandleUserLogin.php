@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Listeners;
+namespace AIArmada\Cart\Listeners;
 
+use AIArmada\Cart\Services\CartMigrationService;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Cache;
-use MasyukAI\Cart\Services\CartMigrationService;
 
 final class HandleUserLogin
 {

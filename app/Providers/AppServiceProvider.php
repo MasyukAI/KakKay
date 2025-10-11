@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use AIArmada\Chip\Events\PurchasePaid;
 use App\Contracts\PaymentGatewayInterface;
 use App\Listeners\HandlePaymentSuccess;
 use App\Services\ChipPaymentGateway;
@@ -11,7 +12,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
-use MasyukAI\Chip\Events\PurchasePaid;
 
 final class AppServiceProvider extends ServiceProvider
 {

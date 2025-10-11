@@ -1,6 +1,6 @@
-# MasyukAI Cart Vouchers
+# AIArmada Cart Vouchers
 
-> Professional voucher and coupon system for MasyukAI Cart
+> Professional voucher and coupon system for AIArmada Cart
 
 Add powerful voucher functionality to your Laravel shopping cart with support for percentage discounts, fixed amounts, free shipping, usage limits, and advanced validation rules.
 
@@ -18,7 +18,7 @@ Add powerful voucher functionality to your Laravel shopping cart with support fo
 ## 📦 Installation
 
 ```bash
-composer require masyukai/cart-vouchers
+composer require aiarmada/cart-vouchers
 ```
 
 Publish the configuration and migrations:
@@ -39,8 +39,8 @@ php artisan migrate
 ### Create a Voucher
 
 ```php
-use MasyukAI\Cart\Vouchers\Facades\Voucher;
-use MasyukAI\Cart\Vouchers\Enums\VoucherType;
+use AIArmada\Cart\Vouchers\Facades\Voucher;
+use AIArmada\Cart\Vouchers\Enums\VoucherType;
 
 $voucher = Voucher::create([
     'code' => 'SUMMER2024',
@@ -59,7 +59,7 @@ $voucher = Voucher::create([
 ### Apply to Cart
 
 ```php
-use MasyukAI\Cart\Facades\Cart;
+use AIArmada\Cart\Facades\Cart;
 
 try {
     Cart::applyVoucher('SUMMER2024');
@@ -67,9 +67,9 @@ try {
     $total = Cart::getTotal();
     echo "Total with voucher: {$total->format()}";
     
-} catch (\MasyukAI\Cart\Vouchers\Exceptions\VoucherNotFoundException $e) {
+} catch (\AIArmada\Cart\Vouchers\Exceptions\VoucherNotFoundException $e) {
     // Voucher doesn't exist
-} catch (\MasyukAI\Cart\Vouchers\Exceptions\VoucherExpiredException $e) {
+} catch (\AIArmada\Cart\Vouchers\Exceptions\VoucherExpiredException $e) {
     // Voucher has expired
 }
 ```
@@ -93,7 +93,7 @@ composer test
 
 - PHP 8.2+
 - Laravel 12+
-- MasyukAI Cart 2.0+
+- AIArmada Cart 2.0+
 
 ## 📄 License
 
@@ -105,11 +105,11 @@ Contributions are welcome! Please see [CONTRIBUTING.md](../../CONTRIBUTING.md) f
 
 ## 🔗 Related Packages
 
-- [masyukai/cart](https://github.com/masyukai/cart) - Core shopping cart (required)
-- [masyukai/filament-cart](https://github.com/masyukai/filament-cart) - Filament admin panel for cart
+- [aiarmada/cart](https://github.com/aiarmada/cart) - Core shopping cart (required)
+- [aiarmada/filament-cart](https://github.com/aiarmada/filament-cart) - Filament admin panel for cart
 
 ## 💬 Support
 
-- [Documentation](https://github.com/masyukai/cart/tree/main/docs)
-- [Issues](https://github.com/masyukai/cart/issues)
-- [Discussions](https://github.com/masyukai/cart/discussions)
+- [Documentation](https://github.com/aiarmada/cart/tree/main/docs)
+- [Issues](https://github.com/aiarmada/cart/issues)
+- [Discussions](https://github.com/aiarmada/cart/discussions)

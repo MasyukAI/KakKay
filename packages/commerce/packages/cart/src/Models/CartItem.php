@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Models;
+namespace AIArmada\Cart\Models;
 
+use AIArmada\Cart\Collections\CartConditionCollection;
+use AIArmada\Cart\Conditions\CartCondition;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Support\Collection;
 use JsonSerializable;
-use MasyukAI\Cart\Collections\CartConditionCollection;
-use MasyukAI\Cart\Conditions\CartCondition;
 
 final readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
 {
@@ -60,7 +60,7 @@ final readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
     public function setQuantity(int $quantity): static
     {
         if ($quantity < 1) {
-            throw new \MasyukAI\Cart\Exceptions\InvalidCartItemException('Quantity must be at least 1');
+            throw new \AIArmada\Cart\Exceptions\InvalidCartItemException('Quantity must be at least 1');
         }
 
         return new self(

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Stock;
+namespace AIArmada\Stock;
 
-use MasyukAI\Stock\Services\StockService;
+use AIArmada\Stock\Services\StockService;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use MasyukAI\Cart\Facades\Cart;
+use AIArmada\Cart\Facades\Cart;
 
 final class CheckoutHelperService
 {

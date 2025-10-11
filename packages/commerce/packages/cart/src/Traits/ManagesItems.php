@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Traits;
+namespace AIArmada\Cart\Traits;
 
-use MasyukAI\Cart\Collections\CartCollection;
-use MasyukAI\Cart\Events\CartCreated;
-use MasyukAI\Cart\Events\ItemAdded;
-use MasyukAI\Cart\Events\ItemRemoved;
-use MasyukAI\Cart\Events\ItemUpdated;
-use MasyukAI\Cart\Exceptions\InvalidCartItemException;
-use MasyukAI\Cart\Exceptions\UnknownModelException;
-use MasyukAI\Cart\Models\CartItem;
+use AIArmada\Cart\Collections\CartCollection;
+use AIArmada\Cart\Events\CartCreated;
+use AIArmada\Cart\Events\ItemAdded;
+use AIArmada\Cart\Events\ItemRemoved;
+use AIArmada\Cart\Events\ItemUpdated;
+use AIArmada\Cart\Exceptions\InvalidCartItemException;
+use AIArmada\Cart\Exceptions\UnknownModelException;
+use AIArmada\Cart\Models\CartItem;
 
 trait ManagesItems
 {

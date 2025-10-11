@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Collections;
+namespace AIArmada\Cart\Collections;
 
+use AIArmada\Cart\Models\CartItem;
 use Illuminate\Support\Collection;
-use MasyukAI\Cart\Models\CartItem;
 
 final class CartCollection extends Collection
 {

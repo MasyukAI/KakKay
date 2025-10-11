@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Services;
+namespace AIArmada\Cart\Services;
 
+use AIArmada\Cart\Events\CartMerged;
+use AIArmada\Cart\Facades\Cart;
+use AIArmada\Cart\Storage\StorageInterface;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
-use MasyukAI\Cart\Events\CartMerged;
-use MasyukAI\Cart\Facades\Cart;
-use MasyukAI\Cart\Storage\StorageInterface;
 
 class CartMigrationService
 {

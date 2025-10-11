@@ -3,7 +3,7 @@
 use Livewire\Attributes\{Layout, Title};
 use Livewire\Volt\Component;
 use App\Models\Product;
-use MasyukAI\Cart\Facades\Cart;
+use AIArmada\Cart\Facades\Cart;
 use Filament\Notifications\Notification;
 
 new

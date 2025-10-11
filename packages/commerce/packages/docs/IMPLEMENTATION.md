@@ -188,7 +188,7 @@ The package has been registered in the main application's composer.json:
 ```json
 {
   "require": {
-    "masyukai/docs": "@dev"
+    "aiarmada/docs": "@dev"
   },
   "repositories": [
     {
@@ -249,7 +249,7 @@ Three tables created via migration:
 
 3. **Seed Default Template**
    ```bash
-   php artisan db:seed --class=MasyukAI\\Docs\\Database\\Seeders\\InvoiceTemplateSeeder
+   php artisan db:seed --class=AIArmada\\Docs\\Database\\Seeders\\InvoiceTemplateSeeder
    ```
 
 4. **Publish Configuration (Optional)**

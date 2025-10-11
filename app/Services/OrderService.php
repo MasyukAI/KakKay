@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use AIArmada\Cart\Facades\Cart;
 use App\Models\Address;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -12,7 +13,6 @@ use App\Models\User;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
-use MasyukAI\Cart\Facades\Cart;
 
 final class OrderService
 {

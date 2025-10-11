@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use AIArmada\Cart\Facades\Cart as CartFacade;
+use AIArmada\Chip\DataObjects\ClientDetails;
+use AIArmada\Chip\DataObjects\Product as ChipProduct;
+use AIArmada\Chip\Services\ChipCollectService;
 use App\Contracts\PaymentGatewayInterface;
 use App\Models\Product;
 use Exception;
 use Illuminate\Support\Facades\Log;
-use MasyukAI\Cart\Facades\Cart as CartFacade;
-use MasyukAI\Chip\DataObjects\ClientDetails;
-use MasyukAI\Chip\DataObjects\Product as ChipProduct;
-use MasyukAI\Chip\Services\ChipCollectService;
 
 final class ChipPaymentGateway implements PaymentGatewayInterface
 {

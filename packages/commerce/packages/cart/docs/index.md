@@ -1,6 +1,6 @@
-# MasyukAI Cart Documentation
+# AIArmada Cart Documentation
 
-Welcome to the complete documentation for MasyukAI Cart—a modern, production-grade shopping cart engine for Laravel 12. This documentation guides you from installation through advanced deployment scenarios.
+Welcome to the complete documentation for AIArmada Cart—a modern, production-grade shopping cart engine for Laravel 12. This documentation guides you from installation through advanced deployment scenarios.
 
 ## 📖 About This Documentation
 
@@ -13,7 +13,7 @@ This documentation is organized into four main sections:
 
 ## 🎯 Choose Your Path
 
-### New to MasyukAI Cart?
+### New to AIArmada Cart?
 Start here to get up and running quickly:
 1. [Installation & Setup](getting-started.md) – Install and configure the package
 2. [Cart Operations](cart-operations.md) – Learn the core API
@@ -159,9 +159,9 @@ All monetary values use [`Akaunting\Money`](https://github.com/akaunting/money) 
 ## 🆘 Need Help?
 
 - **Can't find what you're looking for?** Check the [Troubleshooting](troubleshooting.md) guide
-- **Found a bug?** Open an issue on [GitHub](https://github.com/masyukai/cart/issues)
-- **Have a question?** Start a [discussion](https://github.com/masyukai/cart/discussions)
-- **Security concern?** Email security@masyukai.dev
+- **Found a bug?** Open an issue on [GitHub](https://github.com/aiarmada/cart/issues)
+- **Have a question?** Start a [discussion](https://github.com/aiarmada/cart/discussions)
+- **Security concern?** Email security@aiarmada.dev
 
 ## 📝 Contributing to Documentation
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use MasyukAI\Cart\Tests\TestCase;
+use AIArmada\Commerce\Tests\TestCase;
 
 /*
 |--------------------------------------------------------------------------
@@ -10,17 +10,30 @@ use MasyukAI\Cart\Tests\TestCase;
 |--------------------------------------------------------------------------
 */
 
-pest()->extend(TestCase::class)->in('Feature', 'Unit', 'Browser');
+pest()->extend(TestCase::class)->in(
+    'src/Cart',
+    'src/Chip',
+    'src/Docs',
+    'src/FilamentCart',
+    'src/FilamentChip',
+    'src/Jnt',
+    'src/Stock',
+    'src/Vouchers',
+);
 
 /*
 |--------------------------------------------------------------------------
-| Groups
+| Expectations
 |--------------------------------------------------------------------------
 */
 
-pest()->group('integration')->in('Feature');
-pest()->group('unit')->in('Unit');
-pest()->group('browser')->in('Browser');
+expect()->extend('toBeCartable', function () {
+    return $this->toBeInstanceOf(AIArmada\Cart\Contracts\CartableInterface::class);
+});
+
+expect()->extend('toHaveValidCartStructure', function () {
+    return $this->toHaveKeys(['items', 'conditions', 'metadata']);
+});
 
 /*
 |--------------------------------------------------------------------------

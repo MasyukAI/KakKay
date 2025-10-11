@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Support;
 
+use AIArmada\Chip\DataObjects\Webhook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use MasyukAI\Chip\DataObjects\Webhook;
 
 final class ChipWebhookFactory
 {

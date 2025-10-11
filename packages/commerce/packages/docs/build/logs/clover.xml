@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <coverage generated="1760141850">
   <project timestamp="1760141850" name="Clover Coverage">
-    <package name="MasyukAI\Docs\DataObjects">
+    <package name="AIArmada\Docs\DataObjects">
       <file name="/Users/Saiffil/Herd/kakkay/packages/commerce/packages/docs/src/DataObjects/DocumentData.php">
-        <class name="MasyukAI\Docs\DataObjects\DocumentData" namespace="MasyukAI\Docs\DataObjects">
+        <class name="AIArmada\Docs\DataObjects\DocumentData" namespace="AIArmada\Docs\DataObjects">
           <metrics complexity="4" methods="2" coveredmethods="2" conditionals="0" coveredconditionals="0" statements="23" coveredstatements="23" elements="25" coveredelements="25"/>
         </class>
         <line num="18" type="method" name="__construct" visibility="public" complexity="1" crap="1" count="8"/>
@@ -34,9 +34,9 @@
         <metrics loc="70" ncloc="61" classes="1" methods="2" coveredmethods="2" conditionals="0" coveredconditionals="0" statements="23" coveredstatements="23" elements="25" coveredelements="25"/>
       </file>
     </package>
-    <package name="MasyukAI\Docs">
+    <package name="AIArmada\Docs">
       <file name="/Users/Saiffil/Herd/kakkay/packages/commerce/packages/docs/src/DocsServiceProvider.php">
-        <class name="MasyukAI\Docs\DocsServiceProvider" namespace="MasyukAI\Docs">
+        <class name="AIArmada\Docs\DocsServiceProvider" namespace="AIArmada\Docs">
           <metrics complexity="3" methods="3" coveredmethods="2" conditionals="0" coveredconditionals="0" statements="14" coveredstatements="8" elements="17" coveredelements="10"/>
         </class>
         <line num="14" type="method" name="configurePackage" visibility="public" complexity="1" crap="1" count="12"/>
@@ -59,9 +59,9 @@
         <metrics loc="48" ncloc="41" classes="1" methods="3" coveredmethods="2" conditionals="0" coveredconditionals="0" statements="14" coveredstatements="8" elements="17" coveredelements="10"/>
       </file>
     </package>
-    <package name="MasyukAI\Docs\Enums">
+    <package name="AIArmada\Docs\Enums">
       <file name="/Users/Saiffil/Herd/kakkay/packages/commerce/packages/docs/src/Enums/DocumentStatus.php">
-        <class name="MasyukAI\Docs\Enums\DocumentStatus" namespace="MasyukAI\Docs\Enums">
+        <class name="AIArmada\Docs\Enums\DocumentStatus" namespace="AIArmada\Docs\Enums">
           <metrics complexity="20" methods="4" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="22" coveredstatements="19" elements="26" coveredelements="20"/>
         </class>
         <line num="18" type="method" name="label" visibility="public" complexity="9" crap="9.08" count="1"/>
@@ -93,9 +93,9 @@
         <metrics loc="56" ncloc="56" classes="1" methods="4" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="22" coveredstatements="19" elements="26" coveredelements="20"/>
       </file>
     </package>
-    <package name="MasyukAI\Docs\Facades">
+    <package name="AIArmada\Docs\Facades">
       <file name="/Users/Saiffil/Herd/kakkay/packages/commerce/packages/docs/src/Facades/Document.php">
-        <class name="MasyukAI\Docs\Facades\Document" namespace="MasyukAI\Docs\Facades">
+        <class name="AIArmada\Docs\Facades\Document" namespace="AIArmada\Docs\Facades">
           <metrics complexity="1" methods="1" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="1" coveredstatements="0" elements="2" coveredelements="0"/>
         </class>
         <line num="23" type="method" name="getFacadeAccessor" visibility="protected" complexity="1" crap="2" count="0"/>
@@ -103,9 +103,9 @@
         <metrics loc="28" ncloc="18" classes="1" methods="1" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="1" coveredstatements="0" elements="2" coveredelements="0"/>
       </file>
     </package>
-    <package name="MasyukAI\Docs\Models">
+    <package name="AIArmada\Docs\Models">
       <file name="/Users/Saiffil/Herd/kakkay/packages/commerce/packages/docs/src/Models/Document.php">
-        <class name="MasyukAI\Docs\Models\Document" namespace="MasyukAI\Docs\Models">
+        <class name="AIArmada\Docs\Models\Document" namespace="AIArmada\Docs\Models">
           <metrics complexity="18" methods="10" coveredmethods="5" conditionals="0" coveredconditionals="0" statements="18" coveredstatements="10" elements="28" coveredelements="15"/>
         </class>
         <line num="84" type="method" name="documentable" visibility="public" complexity="1" crap="2" count="0"/>
@@ -139,7 +139,7 @@
         <metrics loc="150" ncloc="122" classes="1" methods="10" coveredmethods="5" conditionals="0" coveredconditionals="0" statements="18" coveredstatements="10" elements="28" coveredelements="15"/>
       </file>
       <file name="/Users/Saiffil/Herd/kakkay/packages/commerce/packages/docs/src/Models/DocumentStatusHistory.php">
-        <class name="MasyukAI\Docs\Models\DocumentStatusHistory" namespace="MasyukAI\Docs\Models">
+        <class name="AIArmada\Docs\Models\DocumentStatusHistory" namespace="AIArmada\Docs\Models">
           <metrics complexity="1" methods="1" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="1" coveredstatements="0" elements="2" coveredelements="0"/>
         </class>
         <line num="29" type="method" name="document" visibility="public" complexity="1" crap="2" count="0"/>
@@ -147,7 +147,7 @@
         <metrics loc="34" ncloc="34" classes="1" methods="1" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="1" coveredstatements="0" elements="2" coveredelements="0"/>
       </file>
       <file name="/Users/Saiffil/Herd/kakkay/packages/commerce/packages/docs/src/Models/DocumentTemplate.php">
-        <class name="MasyukAI\Docs\Models\DocumentTemplate" namespace="MasyukAI\Docs\Models">
+        <class name="AIArmada\Docs\Models\DocumentTemplate" namespace="AIArmada\Docs\Models">
           <metrics complexity="4" methods="3" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="9" coveredstatements="0" elements="12" coveredelements="0"/>
         </class>
         <line num="44" type="method" name="documents" visibility="public" complexity="1" crap="2" count="0"/>
@@ -165,9 +165,9 @@
         <metrics loc="80" ncloc="58" classes="1" methods="3" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="9" coveredstatements="0" elements="12" coveredelements="0"/>
       </file>
     </package>
-    <package name="MasyukAI\Docs\Services">
+    <package name="AIArmada\Docs\Services">
       <file name="/Users/Saiffil/Herd/kakkay/packages/commerce/packages/docs/src/Services/DocumentService.php">
-        <class name="MasyukAI\Docs\Services\DocumentService" namespace="MasyukAI\Docs\Services">
+        <class name="AIArmada\Docs\Services\DocumentService" namespace="AIArmada\Docs\Services">
           <metrics complexity="16" methods="8" coveredmethods="3" conditionals="0" coveredconditionals="0" statements="92" coveredstatements="57" elements="100" coveredelements="60"/>
         </class>
         <line num="17" type="method" name="generateDocumentNumber" visibility="public" complexity="1" crap="1" count="8"/>

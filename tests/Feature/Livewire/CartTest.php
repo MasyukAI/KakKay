@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
+use AIArmada\Cart\Facades\Cart as CartFacade;
 use App\Livewire\Cart;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
-use MasyukAI\Cart\Facades\Cart as CartFacade;
 
 uses(RefreshDatabase::class);
 
@@ -21,7 +21,7 @@ beforeEach(function () {
     app()->forgetInstance('cart.transformer');
 
     // Seed a global shipping condition for tests
-    MasyukAI\FilamentCart\Models\Condition::factory()
+    AIArmada\FilamentCart\Models\Condition::factory()
         ->shipping()
         ->active()
         ->state([

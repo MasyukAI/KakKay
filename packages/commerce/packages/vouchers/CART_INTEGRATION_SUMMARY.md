@@ -2,7 +2,7 @@
 
 ## ✅ Integration Complete!
 
-The voucher package has been successfully integrated with the MasyukAI Cart package using a hybrid architecture that provides both independence and seamless cart integration.
+The voucher package has been successfully integrated with the AIArmada Cart package using a hybrid architecture that provides both independence and seamless cart integration.
 
 ---
 
@@ -107,7 +107,7 @@ VoucherRemoved(Cart $cart, VoucherData $voucher)
 ### Basic Application
 
 ```php
-use MasyukAI\Cart\Facades\Cart;
+use AIArmada\Cart\Facades\Cart;
 
 Cart::add($product, quantity: 2); // $100 subtotal
 Cart::applyVoucher('SUMMER20'); // 20% off
@@ -119,7 +119,7 @@ $total = Cart::total(); // 80.00
 ### Error Handling
 
 ```php
-use MasyukAI\Cart\Vouchers\Exceptions\InvalidVoucherException;
+use AIArmada\Cart\Vouchers\Exceptions\InvalidVoucherException;
 
 try {
     Cart::applyVoucher($request->input('code'));
@@ -178,7 +178,7 @@ $discount = Cart::getVoucherDiscount(); // 14.50
 ### Run Tests
 
 ```bash
-cd packages/masyukai/cart
+cd packages/aiarmada/cart
 vendor/bin/pest tests/Integration/CartIntegrationTest.php
 ```
 
@@ -244,8 +244,8 @@ Voucher Package                    Cart Package
 ### ✅ Independent Publishing
 
 ```
-packagist.org/masyukai/cart          (Core cart functionality)
-packagist.org/masyukai/cart-vouchers (Voucher system + integration)
+packagist.org/aiarmada/cart          (Core cart functionality)
+packagist.org/aiarmada/cart-vouchers (Voucher system + integration)
 ```
 
 Users can:
@@ -303,7 +303,7 @@ packages/vouchers/tests/Feature/ApplyVoucherTest.php
 ### 2. Run Full Test Suite
 
 ```bash
-cd packages/masyukai/cart
+cd packages/aiarmada/cart
 vendor/bin/pest
 ```
 
@@ -311,7 +311,7 @@ vendor/bin/pest
 
 ```php
 // In your Laravel app
-use MasyukAI\Cart\Facades\Cart;
+use AIArmada\Cart\Facades\Cart;
 
 Cart::add($product);
 Cart::applyVoucher('WELCOME10');
@@ -322,7 +322,7 @@ Cart::applyVoucher('WELCOME10');
 ```php
 // app/Providers/EventServiceProvider.php
 
-use MasyukAI\Cart\Vouchers\Events\VoucherApplied;
+use AIArmada\Cart\Vouchers\Events\VoucherApplied;
 use App\Listeners\RecordVoucherUsage;
 
 protected $listen = [

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Models\Traits;
+namespace AIArmada\Cart\Models\Traits;
 
+use AIArmada\Cart\Exceptions\InvalidCartItemException;
+use AIArmada\Cart\Exceptions\UnknownModelException;
 use JsonException;
-use MasyukAI\Cart\Exceptions\InvalidCartItemException;
-use MasyukAI\Cart\Exceptions\UnknownModelException;
 
 trait ValidationTrait
 {

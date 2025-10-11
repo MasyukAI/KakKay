@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
+use AIArmada\Cart\Events\CartMerged;
+use AIArmada\Cart\Facades\Cart;
+use AIArmada\Cart\Listeners\HandleUserLogin;
+use AIArmada\FilamentCart\Models\Cart as CartSnapshot;
 use App\Models\User;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
-use MasyukAI\Cart\Events\CartMerged;
-use MasyukAI\Cart\Facades\Cart;
-use MasyukAI\Cart\Listeners\HandleUserLogin;
-use MasyukAI\FilamentCart\Models\Cart as CartSnapshot;
 
 uses(RefreshDatabase::class);
 
@@ -29,7 +29,7 @@ describe('Guest to User Cart Migration with Snapshot Cleanup', function () {
         Cart::add('product-2', 'Test Product 2', 50.00, 1);
 
         // Force snapshot creation using the current cart instance
-        $syncManager = app(MasyukAI\FilamentCart\Services\CartSyncManager::class);
+        $syncManager = app(AIArmada\FilamentCart\Services\CartSyncManager::class);
         $currentCart = Cart::getCartInstance('default', $guestSessionId);
         $syncManager->sync($currentCart);
 
@@ -49,7 +49,7 @@ describe('Guest to User Cart Migration with Snapshot Cleanup', function () {
         Event::fake([CartMerged::class]);
 
         $loginEvent = new Login('web', $this->user, false);
-        $migrationService = app(MasyukAI\Cart\Services\CartMigrationService::class);
+        $migrationService = app(AIArmada\Cart\Services\CartMigrationService::class);
         $listener = new HandleUserLogin($migrationService);
         $listener->handle($loginEvent);
 
@@ -61,7 +61,7 @@ describe('Guest to User Cart Migration with Snapshot Cleanup', function () {
         expect($dispatchedEvents)->toHaveCount(1);
 
         // Manually trigger the cleanup listener (since Event::fake prevents auto-execution)
-        $cleanupListener = new MasyukAI\FilamentCart\Listeners\CleanupSnapshotOnCartMerged;
+        $cleanupListener = new AIArmada\FilamentCart\Listeners\CleanupSnapshotOnCartMerged;
         $cleanupListener->handle($dispatchedEvents[0][0]);
 
         // Guest snapshot should be removed
@@ -83,7 +83,7 @@ describe('Guest to User Cart Migration with Snapshot Cleanup', function () {
         Cart::add('product-1', 'Product 1', 100.00, 1);
 
         // Create guest snapshot
-        $syncManager = app(MasyukAI\FilamentCart\Services\CartSyncManager::class);
+        $syncManager = app(AIArmada\FilamentCart\Services\CartSyncManager::class);
         $currentCart = Cart::getCartInstance('default', $guestSessionId);
         $syncManager->sync($currentCart);
 
@@ -108,7 +108,7 @@ describe('Guest to User Cart Migration with Snapshot Cleanup', function () {
 
         // User logs in
         $loginEvent = new Login('web', $this->user, false);
-        $migrationService = app(MasyukAI\Cart\Services\CartMigrationService::class);
+        $migrationService = app(AIArmada\Cart\Services\CartMigrationService::class);
         $listener = new HandleUserLogin($migrationService);
         $listener->handle($loginEvent);
 
@@ -124,7 +124,7 @@ describe('Guest to User Cart Migration with Snapshot Cleanup', function () {
             originalSourceIdentifier: $guestSessionId,
             originalTargetIdentifier: $userIdentifier
         );
-        $cleanupListener = new MasyukAI\FilamentCart\Listeners\CleanupSnapshotOnCartMerged;
+        $cleanupListener = new AIArmada\FilamentCart\Listeners\CleanupSnapshotOnCartMerged;
         $cleanupListener->handle($event);
 
         // After cleanup: should only have 1 snapshot (the user's)
@@ -161,7 +161,7 @@ describe('Guest to User Cart Migration with Snapshot Cleanup', function () {
         ]);
 
         // Create snapshots for both instances
-        $syncManager = app(MasyukAI\FilamentCart\Services\CartSyncManager::class);
+        $syncManager = app(AIArmada\FilamentCart\Services\CartSyncManager::class);
 
         $defaultCart = Cart::getCartInstance('default', $guestSessionId);
         $syncManager->sync($defaultCart);
@@ -176,7 +176,7 @@ describe('Guest to User Cart Migration with Snapshot Cleanup', function () {
         Cache::put("cart_migration_{$this->user->email}", $guestSessionId);
 
         $loginEvent = new Login('web', $this->user, false);
-        $migrationService = app(MasyukAI\Cart\Services\CartMigrationService::class);
+        $migrationService = app(AIArmada\Cart\Services\CartMigrationService::class);
         $listener = new HandleUserLogin($migrationService);
         $listener->handle($loginEvent);
 
@@ -192,7 +192,7 @@ describe('Guest to User Cart Migration with Snapshot Cleanup', function () {
             originalSourceIdentifier: $guestSessionId,
             originalTargetIdentifier: (string) $this->user->id
         );
-        $cleanupListener = new MasyukAI\FilamentCart\Listeners\CleanupSnapshotOnCartMerged;
+        $cleanupListener = new AIArmada\FilamentCart\Listeners\CleanupSnapshotOnCartMerged;
         $cleanupListener->handle($event);
 
         // Guest default snapshot should be removed
@@ -226,7 +226,7 @@ describe('Snapshot Consistency', function () {
         ]);
 
         // Create snapshot
-        $syncManager = app(MasyukAI\FilamentCart\Services\CartSyncManager::class);
+        $syncManager = app(AIArmada\FilamentCart\Services\CartSyncManager::class);
         $cart = Cart::getCartInstance('default', $userIdentifier);
         $syncManager->sync($cart);
 
@@ -267,7 +267,7 @@ describe('Snapshot Consistency', function () {
             originalSourceIdentifier: $guestSessionId,
             originalTargetIdentifier: '999'
         );
-        $cleanupListener = new MasyukAI\FilamentCart\Listeners\CleanupSnapshotOnCartMerged;
+        $cleanupListener = new AIArmada\FilamentCart\Listeners\CleanupSnapshotOnCartMerged;
         $cleanupListener->handle($event);
 
         // Orphaned guest snapshot should be cleaned up

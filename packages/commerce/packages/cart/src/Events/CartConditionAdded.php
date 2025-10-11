@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Events;
+namespace AIArmada\Cart\Events;
 
+use AIArmada\Cart\Cart;
+use AIArmada\Cart\Conditions\CartCondition;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use MasyukAI\Cart\Cart;
-use MasyukAI\Cart\Conditions\CartCondition;
 
 /**
  * Event dispatched when a condition is added to the cart level

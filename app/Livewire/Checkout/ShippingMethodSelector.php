@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Livewire\Checkout;
 
+use AIArmada\Cart\Facades\Cart;
 use App\Services\ShippingService;
 use Livewire\Component;
-use MasyukAI\Cart\Facades\Cart;
 
 final class ShippingMethodSelector extends Component
 {

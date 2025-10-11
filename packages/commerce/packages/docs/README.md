@@ -29,7 +29,7 @@ The package is designed to easily support additional document types such as quot
 Install the package via Composer:
 
 ```bash
-composer require masyukai/docs
+composer require aiarmada/docs
 ```
 
 Publish the configuration file:
@@ -60,9 +60,9 @@ The package configuration is located in `config/docs.php`. You can customize:
 ### Creating Documents
 
 ```php
-use MasyukAI\Docs\Facades\Document;
-use MasyukAI\Docs\DataObjects\DocumentData;
-use MasyukAI\Docs\Enums\DocumentStatus;
+use AIArmada\Docs\Facades\Document;
+use AIArmada\Docs\DataObjects\DocumentData;
+use AIArmada\Docs\Enums\DocumentStatus;
 
 // Create an invoice
 $document = Document::createDocument(DocumentData::from([
@@ -114,7 +114,7 @@ $pdfUrl = Document::downloadPdf($document);
 ### Update Document Status
 
 ```php
-use MasyukAI\Docs\Enums\DocumentStatus;
+use AIArmada\Docs\Enums\DocumentStatus;
 
 Document::updateDocumentStatus($document, DocumentStatus::PAID, 'Payment received via bank transfer');
 ```
@@ -175,7 +175,7 @@ $order = $document->documentable;
 2. Create a template record in the database:
 
 ```php
-use MasyukAI\Docs\Models\DocumentTemplate;
+use AIArmada\Docs\Models\DocumentTemplate;
 
 DocumentTemplate::create([
     'name' => 'Modern Template',

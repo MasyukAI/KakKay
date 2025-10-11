@@ -4,22 +4,25 @@ includes:
 parameters:
     paths:
         - packages/cart/src
-    
+        - packages/docs/src
+        - packages/stock/src
+        - packages/vouchers/src
+
     level: 6
-    
+
     reportUnmatchedIgnoredErrors: false
 
-    parallel: { maximumNumberOfProcesses: 4 }
-    
+    parallel:
+        maximumNumberOfProcesses: 4
+
     # Ignore specific errors
     ignoreErrors:
         - identifier: 'missingType.generics'
         - identifier: 'larastan.noEnvCallsOutsideOfConfig'
-          paths:
-            - */config/cart.php
-    #    - identifier: 'new.static'
+        - message: '#Trait AIArmada\\Stock\\Traits\\HasStock is used zero times and is not analysed\.#'
+          identifier: 'trait.unused'
 
     # Exclude patterns
     excludePaths:
         - vendor
-        - packages/cart/src/Testing
+        - '*/Testing/*'

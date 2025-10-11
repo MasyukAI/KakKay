@@ -34,7 +34,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
-use MasyukAI\Stock\Traits\HasStock;  // Add this import
+use AIArmada\Stock\Traits\HasStock;  // Add this import
 
 final class Product extends Model implements HasMedia
 {
@@ -85,7 +85,7 @@ Keep your existing `StockService` for app-specific logic and use the package for
 
 ```php
 // In your app/Services/StockService.php
-use MasyukAI\Stock\Facades\Stock;
+use AIArmada\Stock\Facades\Stock;
 
 class StockService
 {
@@ -138,7 +138,7 @@ The new table uses polymorphic relationships, so it can work with Products, Vari
    
    ```php
    use App\Models\StockTransaction as OldStockTransaction;
-   use MasyukAI\Stock\Models\StockTransaction as NewStockTransaction;
+   use AIArmada\Stock\Models\StockTransaction as NewStockTransaction;
    
    OldStockTransaction::chunk(100, function ($transactions) {
        foreach ($transactions as $old) {
@@ -227,7 +227,7 @@ $stockService->addStock($product, 100, 'restock', 'Initial stock');
 $product->addStock(100, 'restock', 'Initial stock');
 
 // Or keep using the service pattern
-use MasyukAI\Stock\Facades\Stock;
+use AIArmada\Stock\Facades\Stock;
 Stock::addStock($product, 100, 'restock', 'Initial stock');
 ```
 

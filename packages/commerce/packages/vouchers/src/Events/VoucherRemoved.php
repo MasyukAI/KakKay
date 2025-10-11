@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Vouchers\Events;
+namespace AIArmada\Vouchers\Events;
 
+use AIArmada\Cart\Cart;
+use AIArmada\Vouchers\Data\VoucherData;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use MasyukAI\Cart\Cart;
-use MasyukAI\Cart\Vouchers\Data\VoucherData;
 
 /**
  * Fired when a voucher is removed from a cart.

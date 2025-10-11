@@ -1,6 +1,6 @@
 # Cart-Vouchers Integration Guide
 
-This document explains how the voucher package integrates with the MasyukAI Cart package.
+This document explains how the voucher package integrates with the AIArmada Cart package.
 
 ## Architecture Overview
 
@@ -22,8 +22,8 @@ This approach provides:
 The `VoucherCondition` class extends `CartCondition` to bridge voucher data with the cart's pricing engine:
 
 ```php
-use MasyukAI\Cart\Vouchers\Conditions\VoucherCondition;
-use MasyukAI\Cart\Vouchers\Data\VoucherData;
+use AIArmada\Cart\Vouchers\Conditions\VoucherCondition;
+use AIArmada\Cart\Vouchers\Data\VoucherData;
 
 $voucherData = Voucher::find('SUMMER20');
 $condition = new VoucherCondition($voucherData);
@@ -66,8 +66,8 @@ $removedCodes = Cart::validateAppliedVouchers();
 When vouchers are applied or removed, events are dispatched:
 
 ```php
-use MasyukAI\Cart\Vouchers\Events\VoucherApplied;
-use MasyukAI\Cart\Vouchers\Events\VoucherRemoved;
+use AIArmada\Cart\Vouchers\Events\VoucherApplied;
+use AIArmada\Cart\Vouchers\Events\VoucherRemoved;
 
 // Listen for voucher events
 Event::listen(VoucherApplied::class, function (VoucherApplied $event) {
@@ -87,9 +87,9 @@ The `Cart` class uses the `HasVouchers` trait:
 
 ```php
 // packages/core/src/Cart.php
-namespace MasyukAI\Cart;
+namespace AIArmada\Cart;
 
-use MasyukAI\Cart\Vouchers\Traits\HasVouchers;
+use AIArmada\Cart\Vouchers\Traits\HasVouchers;
 
 final class Cart
 {
@@ -154,8 +154,8 @@ Cart::applyVoucher('PRIORITY10', order: 10); // Applied before other conditions
 ### Basic Usage
 
 ```php
-use MasyukAI\Cart\Facades\Cart;
-use MasyukAI\Cart\Vouchers\Facades\Voucher;
+use AIArmada\Cart\Facades\Cart;
+use AIArmada\Cart\Vouchers\Facades\Voucher;
 
 // Create a voucher
 Voucher::create([
@@ -308,9 +308,9 @@ return [
 Example test for voucher integration:
 
 ```php
-use MasyukAI\Cart\Facades\Cart;
-use MasyukAI\Cart\Vouchers\Facades\Voucher;
-use MasyukAI\Cart\Vouchers\Enums\VoucherType;
+use AIArmada\Cart\Facades\Cart;
+use AIArmada\Cart\Vouchers\Facades\Voucher;
+use AIArmada\Cart\Vouchers\Enums\VoucherType;
 
 test('can apply percentage voucher to cart', function () {
     // Create voucher
@@ -449,7 +449,7 @@ Create custom validators by extending `VoucherValidator`:
 ```php
 namespace App\Services;
 
-use MasyukAI\Cart\Vouchers\Services\VoucherValidator as BaseValidator;
+use AIArmada\Cart\Vouchers\Services\VoucherValidator as BaseValidator;
 
 class CustomVoucherValidator extends BaseValidator
 {

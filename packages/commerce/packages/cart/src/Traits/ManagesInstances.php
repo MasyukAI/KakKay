@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Traits;
+namespace AIArmada\Cart\Traits;
 
-use MasyukAI\Cart\Events\CartCleared;
-use MasyukAI\Cart\Storage\StorageInterface;
+use AIArmada\Cart\Events\CartCleared;
+use AIArmada\Cart\Storage\StorageInterface;
 
 trait ManagesInstances
 {

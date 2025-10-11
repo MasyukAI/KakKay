@@ -49,7 +49,7 @@ php artisan config:clear
 
 ```bash
 # Publish config, migrations, and translations
-php artisan vendor:publish --provider="MasyukAI\Cart\CartServiceProvider"
+php artisan vendor:publish --provider="AIArmada\Cart\CartServiceProvider"
 ```
 
 ### Publish Individual Components
@@ -988,4 +988,4 @@ CART_EVENTS_ENABLED=true
 
 ---
 
-**Need help?** Check the [Troubleshooting Guide](troubleshooting.md) or [open an issue](https://github.com/masyukai/cart/issues).
+**Need help?** Check the [Troubleshooting Guide](troubleshooting.md) or [open an issue](https://github.com/aiarmada/cart/issues).

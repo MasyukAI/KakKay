@@ -1,6 +1,6 @@
 # MasyukAI Cart Coding Guidelines
 
-These rules support AI-assisted development inside the `masyukai/cart` monorepo. Follow them before editing source, tests, or docs.
+These rules support AI-assisted development inside the `MasyukAI\Cart` package within the `commerce` monorepo. Follow them before editing source, tests, or docs.
 
 ## Technology Baseline
 - PHP 8.4, Laravel 12, Livewire v3, Filament v4, Octane v2, Pest v4, PHPUnit 12, Tailwind 4.
@@ -31,8 +31,8 @@ These rules support AI-assisted development inside the `masyukai/cart` monorepo.
 - Handle conflicts explicitly at the application level with try/catch blocks.
 
 ## Testing
-- All tests use Pest. Place feature specs under `tests/Feature`, unit specs under `tests/Unit`.
-- Reuse Testbench config (`tests/TestCase.php`). Clear carts between tests and flush cache when relevant.
+- All tests use Pest. Place feature specs under `packages/commerce/tests/Feature`, unit specs under `packages/commerce/tests/Unit`.
+- Reuse Testbench config (`packages/commerce/tests/TestCase.php`). Clear carts between tests and flush cache when relevant.
 - Add or update tests for every behavioural change and run the targeted suite.
 
 ## Tooling
@@ -41,7 +41,7 @@ These rules support AI-assisted development inside the `masyukai/cart` monorepo.
 - Avoid adding new dependencies without approval.
 
 ## Documentation
-- Docs live under `docs/`. Keep them aligned with the rewritten structure (see `docs/index.md`). Update docs when behaviours change.
+- Docs live under `packages/commerce/packages/cart/docs/`. Keep them aligned with the rewritten structure (see `docs/index.md`). Update docs when behaviours change.
 - Troubleshooting and configuration sections must remain accurate for storage drivers and migration flows.
 
 ## Pull Request Ready Checklist

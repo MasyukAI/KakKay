@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Events;
+namespace AIArmada\Cart\Events;
 
+use AIArmada\Cart\Cart;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use MasyukAI\Cart\Cart;
 
 /**
  * Event fired when two carts are merged together.

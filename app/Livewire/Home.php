@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
+use AIArmada\Cart\Facades\Cart as CartFacade;
 use App\Models\Product;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
-use MasyukAI\Cart\Facades\Cart as CartFacade;
 
 #[Layout('components.layouts.home')]
 final class Home extends Component

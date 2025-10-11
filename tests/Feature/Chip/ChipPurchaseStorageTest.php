@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
+use AIArmada\Chip\DataObjects\Purchase;
 use App\Services\Chip\ChipDataRecorder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use MasyukAI\Chip\DataObjects\Purchase;
 
 beforeEach(function () {
     // Ensure chip_purchases table exists

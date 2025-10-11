@@ -39,7 +39,7 @@ $equipment->addStock(5);
 Get all transactions for a specific stockable:
 
 ```php
-use MasyukAI\Stock\Models\StockTransaction;
+use AIArmada\Stock\Models\StockTransaction;
 
 // All transactions for a product
 $transactions = StockTransaction::query()
@@ -89,7 +89,7 @@ foreach ($products as $product) {
 Process multiple products at once:
 
 ```php
-use MasyukAI\Stock\Facades\Stock;
+use AIArmada\Stock\Facades\Stock;
 
 $productsToRestock = [
     ['product' => $product1, 'quantity' => 100],
@@ -154,7 +154,7 @@ Generate stock reports:
 
 ```php
 use App\Models\Product;
-use MasyukAI\Stock\Models\StockTransaction;
+use AIArmada\Stock\Models\StockTransaction;
 
 class StockReportService
 {
@@ -193,7 +193,7 @@ Create observers for stock transactions:
 ```php
 // app/Observers/StockTransactionObserver.php
 
-use MasyukAI\Stock\Models\StockTransaction;
+use AIArmada\Stock\Models\StockTransaction;
 
 class StockTransactionObserver
 {

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Testing;
+namespace AIArmada\Cart\Testing;
 
-use MasyukAI\Cart\Storage\StorageInterface;
+use AIArmada\Cart\Storage\StorageInterface;
 
 /**
  * Simple in-memory storage implementation for testing purposes.

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Contracts;
+namespace AIArmada\Cart\Contracts;
 
 use InvalidArgumentException;
 

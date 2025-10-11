@@ -2,11 +2,11 @@
 
 ## ✅ Package Created Successfully
 
-The `masyukai/stock` package has been created with all requested features:
+The `aiarmada/stock` package has been created with all requested features:
 
 ### ✅ Requirements Met
 
-1. **Package Name**: `masyukai/stock` ✓
+1. **Package Name**: `aiarmada/stock` ✓
 2. **UUID Support**: All IDs use UUIDs ✓
 3. **HasStock Trait**: Makes any model stackable ✓
 4. **Rector for Laravel**: Configured and ready ✓
@@ -29,7 +29,7 @@ The `masyukai/stock` package has been created with all requested features:
 ### 1. Add HasStock to Your Model
 
 ```php
-use MasyukAI\Stock\Traits\HasStock;
+use AIArmada\Stock\Traits\HasStock;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class Product extends Model
@@ -59,7 +59,7 @@ $history = $product->getStockHistory();
 ### 3. Or Use the Facade
 
 ```php
-use MasyukAI\Stock\Facades\Stock;
+use AIArmada\Stock\Facades\Stock;
 
 Stock::addStock($product, 100, 'restock');
 Stock::removeStock($product, 20, 'sale');
@@ -118,7 +118,7 @@ composer format
 
 3. Start using the package:
    ```php
-   use MasyukAI\Stock\Traits\HasStock;
+   use AIArmada\Stock\Traits\HasStock;
    ```
 
 Enjoy your new stock management system! 🎉

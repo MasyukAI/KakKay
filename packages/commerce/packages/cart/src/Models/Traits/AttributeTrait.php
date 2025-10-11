@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Models\Traits;
+namespace AIArmada\Cart\Models\Traits;
 
 trait AttributeTrait
 {
@@ -69,7 +69,7 @@ trait AttributeTrait
     {
         $name = mb_trim($name);
         if (empty($name)) {
-            throw new \MasyukAI\Cart\Exceptions\InvalidCartItemException('Cart item name cannot be empty');
+            throw new \AIArmada\Cart\Exceptions\InvalidCartItemException('Cart item name cannot be empty');
         }
 
         return new static(
@@ -91,7 +91,7 @@ trait AttributeTrait
         $normalizedPrice = is_string($price) ? $this->sanitizeStringPrice($price) : $price;
 
         if ($normalizedPrice < 0) {
-            throw new \MasyukAI\Cart\Exceptions\InvalidCartItemException('Price cannot be negative');
+            throw new \AIArmada\Cart\Exceptions\InvalidCartItemException('Price cannot be negative');
         }
 
         return new static(

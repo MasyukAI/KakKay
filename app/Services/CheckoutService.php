@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use AIArmada\Cart\Cart;
+use AIArmada\Cart\Facades\Cart as CartFacade;
+use AIArmada\FilamentCart\Services\CartConditionValidator;
 use App\Events\OrderPaid;
 use App\Models\Address;
 use App\Models\Order;
@@ -13,9 +16,6 @@ use App\Services\Chip\ChipDataRecorder;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use MasyukAI\Cart\Cart;
-use MasyukAI\Cart\Facades\Cart as CartFacade;
-use MasyukAI\FilamentCart\Services\CartConditionValidator;
 use Throwable;
 
 final class CheckoutService
@@ -764,7 +764,7 @@ final class CheckoutService
         ]);
 
         // Get CartManager and reconstruct Cart instance from database
-        $cartManager = app(\MasyukAI\Cart\CartManager::class);
+        $cartManager = app(\AIArmada\Cart\CartManager::class);
 
         return $cartManager->getCartInstance(
             $cartData->instance,

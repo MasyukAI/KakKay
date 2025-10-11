@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
+use AIArmada\Cart\Facades\Cart as CartFacade;
 use Akaunting\Money\Money;
 use App\Data\StateData;
 use App\Services\CheckoutService;
@@ -18,7 +19,6 @@ use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
-use MasyukAI\Cart\Facades\Cart as CartFacade;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
 final class Checkout extends Component implements HasSchemas

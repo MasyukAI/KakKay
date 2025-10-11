@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Traits;
+namespace AIArmada\Cart\Traits;
 
-use MasyukAI\Cart\Collections\CartCollection;
-use MasyukAI\Cart\Models\CartItem;
+use AIArmada\Cart\Collections\CartCollection;
+use AIArmada\Cart\Models\CartItem;
 
 trait ManagesStorage
 {

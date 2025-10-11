@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Collections;
+namespace AIArmada\Cart\Collections;
 
+use AIArmada\Cart\Conditions\CartCondition;
 use Akaunting\Money\Money;
 use Illuminate\Support\Collection;
-use MasyukAI\Cart\Conditions\CartCondition;
 
 final class CartConditionCollection extends Collection
 {

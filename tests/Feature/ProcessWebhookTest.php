@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
+use AIArmada\Chip\DataObjects\Webhook;
 use App\Jobs\ProcessWebhook;
 use App\Notifications\WebhookProcessingFailed;
 use App\Services\Chip\ChipDataRecorder;
 use App\Services\Chip\WebhookProcessor;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
-use MasyukAI\Chip\DataObjects\Webhook;
 
 test('successfully processes webhook and marks as processed', function () {
     Notification::fake();

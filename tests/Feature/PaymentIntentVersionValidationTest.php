@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
+use AIArmada\Cart\Facades\Cart as CartFacade;
 use App\Services\PaymentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-use MasyukAI\Cart\Facades\Cart as CartFacade;
 
 uses(RefreshDatabase::class);
 
@@ -24,17 +24,17 @@ beforeEach(function () {
     // Register unified cart sync event listener (mimic FilamentCartServiceProvider)
     Illuminate\Support\Facades\Event::listen(
         [
-            MasyukAI\Cart\Events\CartCreated::class,
-            MasyukAI\Cart\Events\CartCleared::class,
-            MasyukAI\Cart\Events\ItemAdded::class,
-            MasyukAI\Cart\Events\ItemUpdated::class,
-            MasyukAI\Cart\Events\ItemRemoved::class,
-            MasyukAI\Cart\Events\CartConditionAdded::class,
-            MasyukAI\Cart\Events\CartConditionRemoved::class,
-            MasyukAI\Cart\Events\ItemConditionAdded::class,
-            MasyukAI\Cart\Events\ItemConditionRemoved::class,
+            AIArmada\Cart\Events\CartCreated::class,
+            AIArmada\Cart\Events\CartCleared::class,
+            AIArmada\Cart\Events\ItemAdded::class,
+            AIArmada\Cart\Events\ItemUpdated::class,
+            AIArmada\Cart\Events\ItemRemoved::class,
+            AIArmada\Cart\Events\CartConditionAdded::class,
+            AIArmada\Cart\Events\CartConditionRemoved::class,
+            AIArmada\Cart\Events\ItemConditionAdded::class,
+            AIArmada\Cart\Events\ItemConditionRemoved::class,
         ],
-        MasyukAI\FilamentCart\Listeners\SyncCartOnEvent::class
+        AIArmada\FilamentCart\Listeners\SyncCartOnEvent::class
     );
 });
 

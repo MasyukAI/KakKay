@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
+use AIArmada\Chip\Services\WebhookService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use MasyukAI\Chip\Services\WebhookService;
 
 afterEach(function (): void {
     Mockery::close();

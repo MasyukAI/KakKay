@@ -6,9 +6,9 @@
 
 @php
     $quantity = $cartQuantity;
-    if ($quantity === null && class_exists('MasyukAI\\Cart\\Facades\\Cart')) {
+    if ($quantity === null && class_exists('AIArmada\\Cart\\Facades\\Cart')) {
         try {
-            $quantity = MasyukAI\Cart\Facades\Cart::getTotalQuantity();
+            $quantity = AIArmada\Cart\Facades\Cart::getTotalQuantity();
         } catch (\Throwable $e) {
             $quantity = 0;
         }

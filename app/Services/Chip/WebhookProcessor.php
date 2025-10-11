@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Services\Chip;
 
+use AIArmada\Chip\DataObjects\Webhook;
 use App\Notifications\OrderCreationFailed;
 use App\Notifications\WebhookProcessingFailed;
 use App\Services\CheckoutService;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
-use MasyukAI\Chip\DataObjects\Webhook;
 use Throwable;
 
 final class WebhookProcessor

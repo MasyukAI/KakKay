@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Services\Chip;
 
+use AIArmada\Chip\DataObjects\Payment as ChipPayment;
+use AIArmada\Chip\DataObjects\Purchase;
+use AIArmada\Chip\DataObjects\PurchaseDetails;
+use AIArmada\Chip\DataObjects\Webhook;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
-use MasyukAI\Chip\DataObjects\Payment as ChipPayment;
-use MasyukAI\Chip\DataObjects\Purchase;
-use MasyukAI\Chip\DataObjects\PurchaseDetails;
-use MasyukAI\Chip\DataObjects\Webhook;
 use Throwable;
 
 final class ChipDataRecorder

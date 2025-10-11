@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Vouchers\Services;
+namespace AIArmada\Vouchers\Services;
 
+use AIArmada\Vouchers\Data\VoucherData;
+use AIArmada\Vouchers\Data\VoucherValidationResult;
+use AIArmada\Vouchers\Enums\VoucherStatus;
+use AIArmada\Vouchers\Exceptions\VoucherNotFoundException;
+use AIArmada\Vouchers\Models\Voucher as VoucherModel;
+use AIArmada\Vouchers\Models\VoucherUsage;
 use Akaunting\Money\Money;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use MasyukAI\Cart\Vouchers\Data\VoucherData;
-use MasyukAI\Cart\Vouchers\Data\VoucherValidationResult;
-use MasyukAI\Cart\Vouchers\Enums\VoucherStatus;
-use MasyukAI\Cart\Vouchers\Exceptions\VoucherNotFoundException;
-use MasyukAI\Cart\Vouchers\Models\Voucher as VoucherModel;
-use MasyukAI\Cart\Vouchers\Models\VoucherUsage;
 
 class VoucherService
 {
@@ -38,6 +38,9 @@ class VoucherService
         return $voucher;
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     public function create(array $data): VoucherData
     {
         $data['code'] = $this->normalizeCode($data['code']);
@@ -48,6 +51,9 @@ class VoucherService
         return VoucherData::fromModel($voucher);
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     public function update(string $code, array $data): VoucherData
     {
         $voucher = VoucherModel::where('code', $this->normalizeCode($code))->firstOrFail();
@@ -113,6 +119,9 @@ class VoucherService
         return $voucher->getRemainingUses() ?? PHP_INT_MAX;
     }
 
+    /**
+     * @param  ?array<string, mixed>  $cartSnapshot
+     */
     public function recordUsage(
         string $code,
         string $userIdentifier,
@@ -137,6 +146,9 @@ class VoucherService
         });
     }
 
+    /**
+     * @return Collection<int, \Illuminate\Database\Eloquent\Model>
+     */
     public function getUsageHistory(string $code): Collection
     {
         $voucher = VoucherModel::where('code', $this->normalizeCode($code))->first();
@@ -145,7 +157,7 @@ class VoucherService
             return collect();
         }
 
-        return $voucher->usages()->latest('used_at')->get();
+        return collect($voucher->usages()->latest('used_at')->get());
     }
 
     protected function normalizeCode(string $code): string

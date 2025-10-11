@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Livewire\Checkout;
 
+use AIArmada\Cart\Facades\Cart;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
-use MasyukAI\Cart\Facades\Cart;
 
 final class CartStep extends Component
 {

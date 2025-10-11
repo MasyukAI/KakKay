@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Docs\Facades;
+namespace AIArmada\Docs\Facades;
 
+use AIArmada\Docs\DataObjects\DocumentData;
+use AIArmada\Docs\Enums\DocumentStatus;
 use Illuminate\Support\Facades\Facade;
-use MasyukAI\Docs\DataObjects\DocumentData;
-use MasyukAI\Docs\Enums\DocumentStatus;
 
 /**
  * @method static string generateDocumentNumber(string $documentType = 'invoice')
- * @method static \MasyukAI\Docs\Models\Document createDocument(DocumentData $data)
- * @method static string generatePdf(\MasyukAI\Docs\Models\Document $document, bool $save = true)
- * @method static string downloadPdf(\MasyukAI\Docs\Models\Document $document)
- * @method static void emailDocument(\MasyukAI\Docs\Models\Document $document, string $email)
- * @method static void updateDocumentStatus(\MasyukAI\Docs\Models\Document $document, DocumentStatus $status, ?string $notes = null)
+ * @method static \AIArmada\Docs\Models\Document createDocument(DocumentData $data)
+ * @method static string generatePdf(\AIArmada\Docs\Models\Document $document, bool $save = true)
+ * @method static string downloadPdf(\AIArmada\Docs\Models\Document $document)
+ * @method static void emailDocument(\AIArmada\Docs\Models\Document $document, string $email)
+ * @method static void updateDocumentStatus(\AIArmada\Docs\Models\Document $document, DocumentStatus $status, ?string $notes = null)
  *
- * @see \MasyukAI\Docs\Services\DocumentService
+ * @see \AIArmada\Docs\Services\DocumentService
  */
 class Document extends Facade
 {

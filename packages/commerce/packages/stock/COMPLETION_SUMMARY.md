@@ -3,7 +3,7 @@
 ## 🎯 Issue Requirements - All Met ✅
 
 The issue requested:
-1. ✅ **Create a new package called masyukai/stock** - Done
+1. ✅ **Create a new package called aiarmada/stock** - Done
 2. ✅ **Stock management system** - Fully implemented
 3. ✅ **HasStock trait to make models stackable** - Implemented with 7 methods
 4. ✅ **Use UUID** - All IDs use UUIDs
@@ -255,14 +255,14 @@ $service->addStock($product, 100, 'restock');
 ## 📝 Files Changed in Root
 
 ```
-composer.json - Added masyukai/stock package dependency and repository
+composer.json - Added aiarmada/stock package dependency and repository
 ```
 
 ## 🎉 Ready to Use
 
 The package is **production-ready** and can be used immediately:
 
-1. **Install**: `composer require masyukai/stock`
+1. **Install**: `composer require aiarmada/stock`
 2. **Migrate**: `php artisan migrate`
 3. **Use**: Add `use HasStock;` to any model
 4. **Enjoy**: Full stock management with 3 lines of code!
@@ -321,7 +321,7 @@ packages/commerce/packages/stock/
 
 | Requirement | Status | Evidence |
 |------------|--------|----------|
-| Package name: masyukai/stock | ✅ | composer.json |
+| Package name: aiarmada/stock | ✅ | composer.json |
 | Stock management system | ✅ | Full implementation |
 | HasStock trait | ✅ | src/Traits/HasStock.php |
 | UUID support | ✅ | All models use HasUuids |
@@ -342,4 +342,4 @@ packages/commerce/packages/stock/
 - Production-ready
 - All requirements met
 
-The `masyukai/stock` package is complete and ready to use! 🚀
+The `aiarmada/stock` package is complete and ready to use! 🚀

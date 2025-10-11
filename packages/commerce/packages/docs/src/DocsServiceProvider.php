@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Docs;
+namespace AIArmada\Docs;
 
-use MasyukAI\Docs\Services\DocumentService;
-use MasyukAI\Docs\Services\ReceiptService;
+use AIArmada\Docs\Services\DocumentService;
+use AIArmada\Docs\Services\ReceiptService;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 

@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
+use AIArmada\Cart\Facades\Cart;
 use App\Models\Product;
-use MasyukAI\Cart\Facades\Cart;
 
 beforeEach(function () {
     Cart::clear();

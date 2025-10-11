@@ -54,9 +54,9 @@ Cart::evaluateDynamicConditions();
 
 ```php
 // Multiple packages try to extend Cart:
-masyukai/cart-vouchers      → HasVouchers trait
-masyukai/cart-loyalty       → HasLoyaltyPoints trait
-masyukai/cart-gift-cards    → HasGiftCards trait
+aiarmada/cart-vouchers      → HasVouchers trait
+aiarmada/cart-loyalty       → HasLoyaltyPoints trait
+aiarmada/cart-gift-cards    → HasGiftCards trait
 
 // ❌ Can't all bind to Cart::class individually!
 ```
@@ -71,10 +71,10 @@ masyukai/cart-gift-cards    → HasGiftCards trait
 
 namespace App\Support\Cart;
 
-use MasyukAI\Cart\Cart;
-use MasyukAI\Cart\Vouchers\Traits\HasVouchers;
-use MasyukAI\Cart\Loyalty\Traits\HasLoyaltyPoints;
-use MasyukAI\Cart\GiftCards\Traits\HasGiftCards;
+use AIArmada\Cart\Cart;
+use AIArmada\Cart\Vouchers\Traits\HasVouchers;
+use AIArmada\Cart\Loyalty\Traits\HasLoyaltyPoints;
+use AIArmada\Cart\GiftCards\Traits\HasGiftCards;
 
 class ExtendedCart extends Cart
 {
@@ -91,7 +91,7 @@ class ExtendedCart extends Cart
 public function register(): void
 {
     $this->app->bind(
-        \MasyukAI\Cart\Cart::class, 
+        \AIArmada\Cart\Cart::class, 
         \App\Support\Cart\ExtendedCart::class
     );
 }
@@ -99,7 +99,7 @@ public function register(): void
 
 ```php
 // Step 3: Use all extensions!
-use MasyukAI\Cart\Facades\Cart;
+use AIArmada\Cart\Facades\Cart;
 
 Cart::applyVoucher('SUMMER20');
 Cart::addLoyaltyPoints(100);
@@ -121,7 +121,7 @@ Cart::applyGiftCard('GIFT-123');
 
 ```bash
 # 1. Install
-composer require masyukai/cart-vouchers
+composer require aiarmada/cart-vouchers
 
 # 2. Option A: Use directly (no trait)
 $condition = new VoucherCondition($voucherData);
@@ -130,8 +130,8 @@ Cart::registerDynamicCondition($condition);
 # 2. Option B: Bind CartWithVouchers
 // In AppServiceProvider::register()
 $this->app->bind(
-    \MasyukAI\Cart\Cart::class,
-    \MasyukAI\Cart\Vouchers\Support\CartWithVouchers::class
+    \AIArmada\Cart\Cart::class,
+    \AIArmada\Cart\Vouchers\Support\CartWithVouchers::class
 );
 
 // Use
@@ -142,9 +142,9 @@ Cart::applyVoucher('CODE');
 
 ```bash
 # 1. Install packages
-composer require masyukai/cart-vouchers
-composer require masyukai/cart-loyalty
-composer require masyukai/cart-gift-cards
+composer require aiarmada/cart-vouchers
+composer require aiarmada/cart-loyalty
+composer require aiarmada/cart-gift-cards
 
 # 2. Create ExtendedCart
 php artisan make:class Support/Cart/ExtendedCart

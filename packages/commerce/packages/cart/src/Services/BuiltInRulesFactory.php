@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Services;
+namespace AIArmada\Cart\Services;
 
+use AIArmada\Cart\Cart;
+use AIArmada\Cart\Contracts\RulesFactoryInterface;
+use AIArmada\Cart\Models\CartItem;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonInterface;
 use InvalidArgumentException;
-use MasyukAI\Cart\Cart;
-use MasyukAI\Cart\Contracts\RulesFactoryInterface;
-use MasyukAI\Cart\Models\CartItem;
 use Throwable;
 
 final class BuiltInRulesFactory implements RulesFactoryInterface

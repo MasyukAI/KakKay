@@ -1,6 +1,6 @@
 # Conditions & Pricing
 
-Conditions are the pricing engine of MasyukAI Cart. They enable discounts, taxes, fees, shipping costs, and dynamic rules that respond to cart state. This guide covers everything from basic discounts to advanced dynamic conditions.
+Conditions are the pricing engine of AIArmada Cart. They enable discounts, taxes, fees, shipping costs, and dynamic rules that respond to cart state. This guide covers everything from basic discounts to advanced dynamic conditions.
 
 ## 🎯 Understanding Conditions
 
@@ -25,7 +25,7 @@ Each condition has:
 ## 📦 The CartCondition Object
 
 ```php
-use MasyukAI\Cart\Conditions\CartCondition;
+use AIArmada\Cart\Conditions\CartCondition;
 
 $condition = new CartCondition(
     name: 'summer-sale',
@@ -214,7 +214,7 @@ Cart::addCondition(new CartCondition(
 Apply conditions to specific items:
 
 ```php
-use MasyukAI\Cart\Conditions\CartCondition;
+use AIArmada\Cart\Conditions\CartCondition;
 
 // Create item condition
 $bulkDiscount = new CartCondition(
@@ -634,7 +634,7 @@ if ($taxRate > 0) {
 ```php
 namespace App\Cart\Conditions;
 
-use MasyukAI\Cart\Conditions\CartCondition;
+use AIArmada\Cart\Conditions\CartCondition;
 
 class VipDiscount extends CartCondition
 {
@@ -660,7 +660,7 @@ Cart::addCondition(new VipDiscount(25));
 ### Condition Validation
 
 ```php
-use MasyukAI\Cart\Exceptions\InvalidCartConditionException;
+use AIArmada\Cart\Exceptions\InvalidCartConditionException;
 
 try {
     $condition = new CartCondition(
@@ -696,7 +696,7 @@ Cart::removeCondition('preview');
 
 ---
 
-**Need help?** Check [Troubleshooting](troubleshooting.md) or [open a discussion](https://github.com/masyukai/cart/discussions).
+**Need help?** Check [Troubleshooting](troubleshooting.md) or [open a discussion](https://github.com/aiarmada/cart/discussions).
 
 2. Subtotal-targeted conditions apply next (respecting ascending `order`).
 3. Total-targeted conditions apply last.

@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart;
+namespace AIArmada\Cart;
 
+use AIArmada\Cart\Listeners\HandleUserLogin;
+use AIArmada\Cart\Listeners\HandleUserLoginAttempt;
+use AIArmada\Cart\Services\CartMigrationService;
+use AIArmada\Cart\Storage\CacheStorage;
+use AIArmada\Cart\Storage\DatabaseStorage;
+use AIArmada\Cart\Storage\SessionStorage;
+use AIArmada\Cart\Storage\StorageInterface;
 use Illuminate\Auth\Events\Attempting;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Contracts\Events\Dispatcher;
-use MasyukAI\Cart\Listeners\HandleUserLogin;
-use MasyukAI\Cart\Listeners\HandleUserLoginAttempt;
-use MasyukAI\Cart\Services\CartMigrationService;
-use MasyukAI\Cart\Storage\CacheStorage;
-use MasyukAI\Cart\Storage\DatabaseStorage;
-use MasyukAI\Cart\Storage\SessionStorage;
-use MasyukAI\Cart\Storage\StorageInterface;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 

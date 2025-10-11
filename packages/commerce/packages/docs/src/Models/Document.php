@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Docs\Models;
+namespace AIArmada\Docs\Models;
 
+use AIArmada\Docs\Enums\DocumentStatus;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-use MasyukAI\Docs\Enums\DocumentStatus;
 
 /**
  * @property string $document_number

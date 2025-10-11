@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Vouchers;
+namespace AIArmada\Vouchers;
 
+use AIArmada\Vouchers\Services\VoucherService;
+use AIArmada\Vouchers\Services\VoucherValidator;
 use Illuminate\Support\ServiceProvider;
-use MasyukAI\Cart\Vouchers\Services\VoucherService;
-use MasyukAI\Cart\Vouchers\Services\VoucherValidator;
 
 class VoucherServiceProvider extends ServiceProvider
 {

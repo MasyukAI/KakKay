@@ -22,7 +22,7 @@ Common cart issues and their solutions. Each issue includes symptoms, causes, an
 
 **Symptoms:**
 ```
-Package masyukai/cart could not be found
+Package aiarmada/cart could not be found
 ```
 
 **Solutions:**
@@ -31,14 +31,14 @@ Package masyukai/cart could not be found
 ```json
 {
     "require": {
-        "masyukai/cart": "^1.0"
+        "aiarmada/cart": "^1.0"
     }
 }
 ```
 
 2. **Update Composer:**
 ```bash
-composer update masyukai/cart
+composer update aiarmada/cart
 ```
 
 3. **Check repository access** (if private package):
@@ -65,11 +65,11 @@ php artisan config:clear
 ```php
 // config/app.php
 'providers' => [
-    MasyukAI\Cart\CartServiceProvider::class,
+    AIArmada\Cart\CartServiceProvider::class,
 ],
 
 'aliases' => [
-    'Cart' => MasyukAI\Cart\Facades\Cart::class,
+    'Cart' => AIArmada\Cart\Facades\Cart::class,
 ],
 ```
 
@@ -208,7 +208,7 @@ Cart::update('product-123', 5);
 ```php
 try {
     Cart::update('product-123', 5);
-} catch (\MasyukAI\Cart\Exceptions\CartConflictException $e) {
+} catch (\AIArmada\Cart\Exceptions\CartConflictException $e) {
     retry(3, fn() => Cart::update('product-123', 5), 100);
 }
 ```
@@ -632,7 +632,7 @@ php artisan event:cache
 ```php
 // app/Providers/EventServiceProvider.php
 protected $listen = [
-    \MasyukAI\Cart\Events\CartItemAdded::class => [
+    \AIArmada\Cart\Events\CartItemAdded::class => [
         \App\Listeners\NotifyCartUpdate::class,
     ],
 ];
@@ -642,7 +642,7 @@ protected $listen = [
 ```php
 Event::fake();
 Cart::add('A', 'Product A', Money::MYR(1000), 1);
-Event::assertDispatched(\MasyukAI\Cart\Events\CartItemAdded::class);
+Event::assertDispatched(\AIArmada\Cart\Events\CartItemAdded::class);
 ```
 
 ### Issue 22: Queued Listeners Not Processing
@@ -808,7 +808,7 @@ Before asking for help, gather this information:
 
 - [ ] Laravel version: `php artisan --version`
 - [ ] PHP version: `php -v`
-- [ ] Cart package version: `composer show masyukai/cart`
+- [ ] Cart package version: `composer show aiarmada/cart`
 - [ ] Storage driver: `config('cart.storage.driver')`
 - [ ] Error message (full stack trace)
 - [ ] Steps to reproduce
@@ -834,7 +834,7 @@ php artisan cart:diagnostics > cart-diagnostics.txt
 
 ### Community Resources
 
-- **GitHub Issues:** [github.com/masyukai/cart/issues](https://github.com/masyukai/cart/issues)
+- **GitHub Issues:** [github.com/aiarmada/cart/issues](https://github.com/aiarmada/cart/issues)
 - **Documentation:** Full guides in `docs/` directory
 - **Stack Overflow:** Tag with `laravel` and `shopping-cart`
 
@@ -859,8 +859,8 @@ Cart::update('A', 2);
 
 3. **Full error:**
 ```
-MasyukAI\Cart\Exceptions\CartConflictException: Version mismatch
-at vendor/masyukai/cart/src/Services/CartService.php:123
+AIArmada\Cart\Exceptions\CartConflictException: Version mismatch
+at vendor/aiarmada/cart/src/Services/CartService.php:123
 ```
 
 ---
@@ -903,4 +903,4 @@ php artisan view:clear
 
 ---
 
-**Still stuck?** [Open an issue](https://github.com/masyukai/cart/issues/new) with diagnostic information.
+**Still stuck?** [Open an issue](https://github.com/aiarmada/cart/issues/new) with diagnostic information.

@@ -2,7 +2,7 @@
 
 > **Choose the right storage backend for your cart architecture: session, cache, or database—each optimized for different scaling patterns.**
 
-MasyukAI Cart supports three built-in storage drivers that balance simplicity, performance, and durability. Understanding their trade-offs helps you architect resilient cart systems.
+AIArmada Cart supports three built-in storage drivers that balance simplicity, performance, and durability. Understanding their trade-offs helps you architect resilient cart systems.
 
 ## 📋 Table of Contents
 
@@ -382,7 +382,7 @@ The database driver uses the `version` column to detect concurrent modifications
 // 4. User B tries to update → CartConflictException ❌
 
 // Handling conflicts
-use MasyukAI\Cart\Exceptions\CartConflictException;
+use AIArmada\Cart\Exceptions\CartConflictException;
 
 try {
     Cart::update('item-123', ['quantity' => 5]);
@@ -516,7 +516,7 @@ try {
 ### Migration Strategy
 
 ```php
-use MasyukAI\Cart\Services\CartMigrationService;
+use AIArmada\Cart\Services\CartMigrationService;
 
 // Step 1: Update config/cart.php
 // FROM: 'storage' => 'session',
@@ -642,7 +642,7 @@ Implement `StorageInterface` to integrate external backends (DynamoDB, MongoDB, 
 ### Interface Requirements
 
 ```php
-namespace MasyukAI\Cart\Storage;
+namespace AIArmada\Cart\Storage;
 
 interface StorageInterface
 {
@@ -681,7 +681,7 @@ interface StorageInterface
 namespace App\Cart\Storage;
 
 use Aws\DynamoDb\DynamoDbClient;
-use MasyukAI\Cart\Storage\StorageInterface;
+use AIArmada\Cart\Storage\StorageInterface;
 
 class DynamoDBStorage implements StorageInterface
 {
@@ -749,7 +749,7 @@ class DynamoDBStorage implements StorageInterface
 ```php
 // app/Providers/AppServiceProvider.php
 use App\Cart\Storage\DynamoDBStorage;
-use MasyukAI\Cart\CartManager;
+use AIArmada\Cart\CartManager;
 
 public function register(): void
 {

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Stock\Traits;
+namespace AIArmada\Stock\Traits;
 
+use AIArmada\Stock\Models\StockTransaction;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use MasyukAI\Stock\Models\StockTransaction;
 
 trait HasStock
 {

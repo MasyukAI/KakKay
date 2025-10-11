@@ -2,26 +2,26 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Facades;
+namespace AIArmada\Cart\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
 /**
  * Facade for the Cart system.
  *
- * @method static \MasyukAI\Cart\CartManager setInstance(string $name)
+ * @method static \AIArmada\Cart\CartManager setInstance(string $name)
  * @method static string instance()
- * @method static \MasyukAI\Cart\Storage\StorageInterface storage()
- * @method static \MasyukAI\Cart\Cart getCurrentCart()
- * @method static \MasyukAI\Cart\Storage\StorageInterface session(?string $sessionKey = null)
+ * @method static \AIArmada\Cart\Storage\StorageInterface storage()
+ * @method static \AIArmada\Cart\Cart getCurrentCart()
+ * @method static \AIArmada\Cart\Storage\StorageInterface session(?string $sessionKey = null)
  * @method static self formatted()
  * @method static self raw()
  * @method static self currency(?string $currency = null)
- * @method static \MasyukAI\Cart\Models\CartItem|\MasyukAI\Cart\Collections\CartCollection add(string|array<string, mixed> $id, ?string $name = null, float|string|null $price = null, int $quantity = 1, array<string, mixed> $attributes = [], array<string, mixed>|\MasyukAI\Cart\Conditions\CartCondition|null $conditions = null, string|object|null $associatedModel = null)
- * @method static \MasyukAI\Cart\Models\CartItem|null update(string $id, array<string, mixed> $data)
- * @method static \MasyukAI\Cart\Models\CartItem|null remove(string $id)
- * @method static \MasyukAI\Cart\Models\CartItem|null get(string $id)
- * @method static \MasyukAI\Cart\Collections\CartCollection getItems()
+ * @method static \AIArmada\Cart\Models\CartItem|\AIArmada\Cart\Collections\CartCollection add(string|array<string, mixed> $id, ?string $name = null, float|string|null $price = null, int $quantity = 1, array<string, mixed> $attributes = [], array<string, mixed>|\AIArmada\Cart\Conditions\CartCondition|null $conditions = null, string|object|null $associatedModel = null)
+ * @method static \AIArmada\Cart\Models\CartItem|null update(string $id, array<string, mixed> $data)
+ * @method static \AIArmada\Cart\Models\CartItem|null remove(string $id)
+ * @method static \AIArmada\Cart\Models\CartItem|null get(string $id)
+ * @method static \AIArmada\Cart\Collections\CartCollection getItems()
  * @method static array<string, mixed> getContent()
  * @method static bool isEmpty()
  * @method static int getTotalQuantity()
@@ -34,14 +34,14 @@ use Illuminate\Support\Facades\Facade;
  * @method static float getRawTotal()
  * @method static float getRawSubtotalWithoutConditions()
  * @method static bool clear()
- * @method static \MasyukAI\Cart\Cart addCondition(\MasyukAI\Cart\Conditions\CartCondition|array<string, mixed> $condition)
- * @method static \MasyukAI\Cart\Collections\CartConditionCollection getConditions()
- * @method static \MasyukAI\Cart\Conditions\CartCondition|null getCondition(string $name)
+ * @method static \AIArmada\Cart\Cart addCondition(\AIArmada\Cart\Conditions\CartCondition|array<string, mixed> $condition)
+ * @method static \AIArmada\Cart\Collections\CartConditionCollection getConditions()
+ * @method static \AIArmada\Cart\Conditions\CartCondition|null getCondition(string $name)
  * @method static bool removeCondition(string $name)
  * @method static bool clearConditions()
- * @method static \MasyukAI\Cart\Collections\CartConditionCollection getConditionsByType(string $type)
+ * @method static \AIArmada\Cart\Collections\CartConditionCollection getConditionsByType(string $type)
  * @method static bool removeConditionsByType(string $type)
- * @method static bool addItemCondition(string $itemId, \MasyukAI\Cart\Conditions\CartCondition $condition)
+ * @method static bool addItemCondition(string $itemId, \AIArmada\Cart\Conditions\CartCondition $condition)
  * @method static bool removeItemCondition(string $itemId, string $conditionName)
  * @method static bool clearItemConditions(string $itemId)
  * @method static self addDiscount(string $name, string $value, string $target = 'subtotal')
@@ -49,7 +49,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static self addFee(string $name, string $value, string $target = 'total')
  * @method static self addShipping(string $name, string|float $value, string $method = 'standard', array<string, mixed> $attributes = [])
  * @method static void removeShipping()
- * @method static \MasyukAI\Cart\Conditions\CartCondition|null getShipping()
+ * @method static \AIArmada\Cart\Conditions\CartCondition|null getShipping()
  * @method static string|null getShippingMethod()
  * @method static float|null getShippingValue()
  * @method static int count()
@@ -64,7 +64,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static int|null getVersion()
  * @method static string|null getId()
  *
- * @see \MasyukAI\Cart\CartManager
+ * @see \AIArmada\Cart\CartManager
  */
 final class Cart extends Facade
 {

@@ -6,9 +6,9 @@ Initially, we made the Cart class directly use the HasVouchers trait:
 
 ```php
 // ❌ WRONG - Creates backward dependency!
-namespace MasyukAI\Cart;
+namespace AIArmada\Cart;
 
-use MasyukAI\Cart\Vouchers\Traits\HasVouchers;
+use AIArmada\Cart\Vouchers\Traits\HasVouchers;
 
 final class Cart
 {
@@ -25,9 +25,9 @@ final class Cart
 The cart package already has a **ManagesDynamicConditions** trait that handles automatic condition application/removal based on rules. VoucherCondition already extends CartCondition and has dynamic validation built-in.
 
 ```php
-use MasyukAI\Cart\Facades\Cart;
-use MasyukAI\Cart\Vouchers\Conditions\VoucherCondition;
-use MasyukAI\Cart\Vouchers\Facades\Voucher;
+use AIArmada\Cart\Facades\Cart;
+use AIArmada\Cart\Vouchers\Conditions\VoucherCondition;
+use AIArmada\Cart\Vouchers\Facades\Voucher;
 
 // Find voucher
 $voucherData = Voucher::find('SUMMER20');
@@ -56,8 +56,8 @@ For a more convenient API, applications can **extend** the Cart class in their o
 // app/Support/Cart/CartWithVouchers.php
 namespace App\Support\Cart;
 
-use MasyukAI\Cart\Cart as BaseCart;
-use MasyukAI\Cart\Vouchers\Traits\HasVouchers;
+use AIArmada\Cart\Cart as BaseCart;
+use AIArmada\Cart\Vouchers\Traits\HasVouchers;
 
 class CartWithVouchers extends BaseCart
 {
@@ -70,7 +70,7 @@ Then bind it in your service provider:
 ```php
 // app/Providers/AppServiceProvider.php
 use App\Support\Cart\CartWithVouchers;
-use MasyukAI\Cart\Cart;
+use AIArmada\Cart\Cart;
 
 public function register()
 {
@@ -98,9 +98,9 @@ This is the cleanest approach that maintains package independence:
 
 ```php
 // In your controller or service
-use MasyukAI\Cart\Facades\Cart;
-use MasyukAI\Cart\Vouchers\Services\VoucherService;
-use MasyukAI\Cart\Vouchers\Conditions\VoucherCondition;
+use AIArmada\Cart\Facades\Cart;
+use AIArmada\Cart\Vouchers\Services\VoucherService;
+use AIArmada\Cart\Vouchers\Conditions\VoucherCondition;
 
 class ApplyVoucherAction
 {
@@ -140,10 +140,10 @@ Create a helper service in your application:
 // app/Services/CartVoucherService.php
 namespace App\Services;
 
-use MasyukAI\Cart\Facades\Cart;
-use MasyukAI\Cart\Vouchers\Conditions\VoucherCondition;
-use MasyukAI\Cart\Vouchers\Exceptions\InvalidVoucherException;
-use MasyukAI\Cart\Vouchers\Facades\Voucher;
+use AIArmada\Cart\Facades\Cart;
+use AIArmada\Cart\Vouchers\Conditions\VoucherCondition;
+use AIArmada\Cart\Vouchers\Exceptions\InvalidVoucherException;
+use AIArmada\Cart\Vouchers\Facades\Voucher;
 
 class CartVoucherService
 {
@@ -206,11 +206,11 @@ CartVoucher::hasVoucher('SUMMER20');
 
 ```
 ┌─────────────────────────────────────────┐
-│     masyukai/cart (Core Package)        │
+│     aiarmada/cart (Core Package)        │
 │                                         │
 │  Cart class uses HasVouchers trait     │
 │         ↓                               │
-│  Depends on masyukai/cart-vouchers     │ ← PROBLEM!
+│  Depends on aiarmada/cart-vouchers     │ ← PROBLEM!
 └─────────────────────────────────────────┘
 ```
 
@@ -218,7 +218,7 @@ CartVoucher::hasVoucher('SUMMER20');
 
 ```
 ┌─────────────────────────────────────────┐
-│     masyukai/cart (Core Package)        │
+│     aiarmada/cart (Core Package)        │
 │                                         │
 │  Cart has ManagesDynamicConditions     │
 │  (generic condition system)            │
@@ -227,7 +227,7 @@ CartVoucher::hasVoucher('SUMMER20');
              │ extends CartCondition
              │
 ┌─────────────────────────────────────────┐
-│   masyukai/cart-vouchers (Package)     │
+│   aiarmada/cart-vouchers (Package)     │
 │                                         │
 │  VoucherCondition extends CartCondition│
 │  Voucher logic + integration           │
@@ -247,7 +247,7 @@ CartVoucher::hasVoucher('SUMMER20');
 
 ```
 ┌─────────────────────────────────────────┐
-│     masyukai/cart (Core Package)        │
+│     aiarmada/cart (Core Package)        │
 │                                         │
 │  Cart class (no voucher knowledge)     │
 └─────────────────────────────────────────┘
@@ -255,7 +255,7 @@ CartVoucher::hasVoucher('SUMMER20');
              │ extends            │ provides trait
              │                    │
 ┌────────────┴────────┐  ┌────────┴─────────────────┐
-│  Your Application   │  │  masyukai/cart-vouchers  │
+│  Your Application   │  │  aiarmada/cart-vouchers  │
 │                     │  │                          │
 │  CartWithVouchers   │  │  HasVouchers trait       │
 │  extends Cart       │  │                          │
@@ -319,9 +319,9 @@ trait HasVouchers
 **Option 1: Direct Usage (No Helper Trait)**
 
 ```php
-use MasyukAI\Cart\Facades\Cart;
-use MasyukAI\Cart\Vouchers\Conditions\VoucherCondition;
-use MasyukAI\Cart\Vouchers\Facades\Voucher;
+use AIArmada\Cart\Facades\Cart;
+use AIArmada\Cart\Vouchers\Conditions\VoucherCondition;
+use AIArmada\Cart\Vouchers\Facades\Voucher;
 
 $voucherData = Voucher::find('SUMMER20');
 $condition = new VoucherCondition($voucherData);
@@ -334,13 +334,13 @@ Cart::evaluateDynamicConditions();
 
 ```php
 // 1. Extend Cart in your application
-class CartWithVouchers extends \MasyukAI\Cart\Cart
+class CartWithVouchers extends \AIArmada\Cart\Cart
 {
-    use \MasyukAI\Cart\Vouchers\Traits\HasVouchers;
+    use \AIArmada\Cart\Vouchers\Traits\HasVouchers;
 }
 
 // 2. Bind in service provider
-$this->app->bind(\MasyukAI\Cart\Cart::class, CartWithVouchers::class);
+$this->app->bind(\AIArmada\Cart\Cart::class, CartWithVouchers::class);
 
 // 3. Use convenient API
 Cart::applyVoucher('SUMMER20');

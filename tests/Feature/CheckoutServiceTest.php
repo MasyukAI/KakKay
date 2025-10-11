@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
+use AIArmada\Cart\Events\CartCleared;
+use AIArmada\Cart\Events\CartCreated;
+use AIArmada\Cart\Events\ItemAdded;
+use AIArmada\Cart\Events\ItemRemoved;
+use AIArmada\Cart\Events\ItemUpdated;
+use AIArmada\Cart\Facades\Cart as CartFacade;
+use AIArmada\FilamentCart\Listeners\SyncCartOnEvent;
 use App\Contracts\PaymentGatewayInterface;
 use App\Models\Product;
 use App\Services\CheckoutService;
 use App\Services\PaymentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
-use MasyukAI\Cart\Events\CartCleared;
-use MasyukAI\Cart\Events\CartCreated;
-use MasyukAI\Cart\Events\ItemAdded;
-use MasyukAI\Cart\Events\ItemRemoved;
-use MasyukAI\Cart\Events\ItemUpdated;
-use MasyukAI\Cart\Facades\Cart as CartFacade;
-use MasyukAI\FilamentCart\Listeners\SyncCartOnEvent;
 
 uses(RefreshDatabase::class);
 

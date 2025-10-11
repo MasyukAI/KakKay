@@ -1,6 +1,6 @@
 # Getting Started
 
-Get MasyukAI Cart running in your Laravel 12 application in under 5 minutes. This guide covers installation, configuration, and your first cart operations.
+Get AIArmada Cart running in your Laravel 12 application in under 5 minutes. This guide covers installation, configuration, and your first cart operations.
 
 ## 📋 Requirements
 
@@ -17,7 +17,7 @@ No additional PHP extensions required beyond Laravel's defaults.
 ### Step 1: Install via Composer
 
 ```bash
-composer require masyukai/cart
+composer require aiarmada/cart
 ```
 
 Laravel automatically discovers the service provider—no manual registration needed.
@@ -53,7 +53,7 @@ The migration creates a `carts` table with:
 Let's verify everything works:
 
 ```php
-use MasyukAI\Cart\Facades\Cart;
+use AIArmada\Cart\Facades\Cart;
 
 // Add an item
 Cart::add(
@@ -278,7 +278,7 @@ Each instance maintains independent state. See [Cart Operations](cart-operations
 Run this test in `artisan tinker` or a feature test:
 
 ```php
-use MasyukAI\Cart\Facades\Cart;
+use AIArmada\Cart\Facades\Cart;
 
 // Clear any existing data
 Cart::clear();

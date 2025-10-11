@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Models\Traits;
+namespace AIArmada\Cart\Models\Traits;
 
 use Akaunting\Money\Money;
 

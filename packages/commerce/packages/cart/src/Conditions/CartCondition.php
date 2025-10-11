@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Conditions;
+namespace AIArmada\Cart\Conditions;
 
+use AIArmada\Cart\Exceptions\InvalidCartConditionException;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 use JsonException;
 use JsonSerializable;
-use MasyukAI\Cart\Exceptions\InvalidCartConditionException;
 
 final class CartCondition implements Arrayable, Jsonable, JsonSerializable
 {
@@ -222,7 +222,7 @@ final class CartCondition implements Arrayable, Jsonable, JsonSerializable
     /**
      * Evaluate if the condition should apply based on its rules
      */
-    public function shouldApply(\MasyukAI\Cart\Cart $cart, ?\MasyukAI\Cart\Models\CartItem $item = null): bool
+    public function shouldApply(\AIArmada\Cart\Cart $cart, ?\AIArmada\Cart\Models\CartItem $item = null): bool
     {
         if (! $this->isDynamic()) {
             return true; // Static conditions always apply

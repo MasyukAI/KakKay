@@ -2,7 +2,7 @@
 
 use App\Models\Product;
 use Livewire\Volt\Component;
-use MasyukAI\Cart\Facades\Cart;
+use AIArmada\Cart\Facades\Cart;
 
 new class extends Component {
     

@@ -40,7 +40,7 @@ use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use MasyukAI\Cart\Facades\Cart;
+use AIArmada\Cart\Facades\Cart;
 
 class CheckoutController extends Controller
 {
@@ -118,8 +118,8 @@ Migrate guest cart when user logs in.
 namespace App\Listeners;
 
 use Illuminate\Auth\Events\Login;
-use MasyukAI\Cart\Facades\Cart;
-use MasyukAI\Cart\Services\MigrationService;
+use AIArmada\Cart\Facades\Cart;
+use AIArmada\Cart\Services\MigrationService;
 
 class MigrateGuestCart
 {
@@ -183,7 +183,7 @@ namespace App\Services;
 
 use Akaunting\Money\Money;
 use Illuminate\Support\Facades\Cache;
-use MasyukAI\Cart\Facades\Cart;
+use AIArmada\Cart\Facades\Cart;
 
 class CurrencyService
 {
@@ -276,7 +276,7 @@ Handle recurring subscription items.
 namespace App\Http\Controllers;
 
 use App\Models\SubscriptionPlan;
-use MasyukAI\Cart\Facades\Cart;
+use AIArmada\Cart\Facades\Cart;
 use Akaunting\Money\Money;
 
 class SubscriptionController extends Controller
@@ -344,8 +344,8 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use MasyukAI\Cart\Data\CartCondition;
-use MasyukAI\Cart\Facades\Cart;
+use AIArmada\Cart\Data\CartCondition;
+use AIArmada\Cart\Facades\Cart;
 
 class ApplyBundleDiscounts
 {
@@ -447,8 +447,8 @@ Time-limited discounts with countdown.
 namespace App\Services;
 
 use Carbon\Carbon;
-use MasyukAI\Cart\Data\CartCondition;
-use MasyukAI\Cart\Facades\Cart;
+use AIArmada\Cart\Data\CartCondition;
+use AIArmada\Cart\Facades\Cart;
 
 class FlashSaleService
 {
@@ -664,7 +664,7 @@ Move items from wishlist to cart.
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use MasyukAI\Cart\Facades\Cart;
+use AIArmada\Cart\Facades\Cart;
 
 class WishlistController extends Controller
 {
@@ -733,7 +733,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
-use MasyukAI\Cart\Facades\Cart;
+use AIArmada\Cart\Facades\Cart;
 
 class ComparisonController extends Controller
 {
@@ -805,8 +805,8 @@ namespace App\Services;
 
 use App\Models\PromoCode;
 use Akaunting\Money\Money;
-use MasyukAI\Cart\Data\CartCondition;
-use MasyukAI\Cart\Facades\Cart;
+use AIArmada\Cart\Data\CartCondition;
+use AIArmada\Cart\Facades\Cart;
 
 class PromoCodeService
 {
@@ -920,8 +920,8 @@ Earn and redeem loyalty points.
 namespace App\Services;
 
 use Akaunting\Money\Money;
-use MasyukAI\Cart\Data\CartCondition;
-use MasyukAI\Cart\Facades\Cart;
+use AIArmada\Cart\Data\CartCondition;
+use AIArmada\Cart\Facades\Cart;
 
 class LoyaltyPointsService
 {
@@ -994,8 +994,8 @@ Calculate shipping by region.
 namespace App\Services;
 
 use Akaunting\Money\Money;
-use MasyukAI\Cart\Data\CartCondition;
-use MasyukAI\Cart\Facades\Cart;
+use AIArmada\Cart\Data\CartCondition;
+use AIArmada\Cart\Facades\Cart;
 
 class ShippingService
 {
@@ -1090,8 +1090,8 @@ Regional tax rates.
 ```php
 namespace App\Services;
 
-use MasyukAI\Cart\Data\CartCondition;
-use MasyukAI\Cart\Facades\Cart;
+use AIArmada\Cart\Data\CartCondition;
+use AIArmada\Cart\Facades\Cart;
 
 class TaxService
 {
@@ -1204,8 +1204,8 @@ namespace App\Services;
 use App\Models\InventoryReservation;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
-use MasyukAI\Cart\Exceptions\CartConflictException;
-use MasyukAI\Cart\Facades\Cart;
+use AIArmada\Cart\Exceptions\CartConflictException;
+use AIArmada\Cart\Facades\Cart;
 
 class InventoryService
 {
@@ -1296,7 +1296,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use MasyukAI\Cart\Facades\Cart;
+use AIArmada\Cart\Facades\Cart;
 use Akaunting\Money\Money;
 
 class ApplyB2BPricing

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
+use AIArmada\Cart\Facades\Cart as CartFacade;
 use App\Models\Cart;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use MasyukAI\Cart\Facades\Cart as CartFacade;
 
 uses(RefreshDatabase::class);
 

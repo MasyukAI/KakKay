@@ -9,9 +9,9 @@
 **How it works:** Use cart's existing dynamic condition system
 
 ```php
-use MasyukAI\Cart\Facades\Cart;
-use MasyukAI\Cart\Vouchers\Conditions\VoucherCondition;
-use MasyukAI\Cart\Vouchers\Facades\Voucher;
+use AIArmada\Cart\Facades\Cart;
+use AIArmada\Cart\Vouchers\Conditions\VoucherCondition;
+use AIArmada\Cart\Vouchers\Facades\Voucher;
 
 // Validate voucher
 $validationResult = Voucher::validate('SUMMER20', Cart::instance());
@@ -55,8 +55,8 @@ Cart::evaluateDynamicConditions();
 // app/Support/Cart/CartWithVouchers.php
 namespace App\Support\Cart;
 
-use MasyukAI\Cart\Cart as BaseCart;
-use MasyukAI\Cart\Vouchers\Traits\HasVouchers;
+use AIArmada\Cart\Cart as BaseCart;
+use AIArmada\Cart\Vouchers\Traits\HasVouchers;
 
 class CartWithVouchers extends BaseCart
 {
@@ -69,7 +69,7 @@ Bind in service provider:
 ```php
 // app/Providers/AppServiceProvider.php
 use App\Support\Cart\CartWithVouchers;
-use MasyukAI\Cart\Cart;
+use AIArmada\Cart\Cart;
 
 public function register(): void
 {
@@ -80,7 +80,7 @@ public function register(): void
 Now use the convenient API:
 
 ```php
-use MasyukAI\Cart\Facades\Cart;
+use AIArmada\Cart\Facades\Cart;
 
 Cart::applyVoucher('SUMMER20');
 Cart::removeVoucher('SUMMER20');
@@ -110,10 +110,10 @@ Cart::getVoucherDiscount(); // 20.00
 // app/Services/CartVoucherService.php
 namespace App\Services;
 
-use MasyukAI\Cart\Facades\Cart;
-use MasyukAI\Cart\Vouchers\Conditions\VoucherCondition;
-use MasyukAI\Cart\Vouchers\Exceptions\InvalidVoucherException;
-use MasyukAI\Cart\Vouchers\Facades\Voucher;
+use AIArmada\Cart\Facades\Cart;
+use AIArmada\Cart\Vouchers\Conditions\VoucherCondition;
+use AIArmada\Cart\Vouchers\Exceptions\InvalidVoucherException;
+use AIArmada\Cart\Vouchers\Facades\Voucher;
 
 class CartVoucherService
 {

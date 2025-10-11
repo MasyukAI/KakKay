@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Traits;
+namespace AIArmada\Cart\Traits;
 
-use MasyukAI\Cart\Events\MetadataAdded;
-use MasyukAI\Cart\Events\MetadataRemoved;
+use AIArmada\Cart\Events\MetadataAdded;
+use AIArmada\Cart\Events\MetadataRemoved;
 
 trait ManagesMetadata
 {

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
+use AIArmada\Cart\Facades\Cart;
 use App\Models\Order;
 use App\Models\Product;
 use App\Notifications\OrderCreationFailed;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
-use MasyukAI\Cart\Facades\Cart;
 
 use function Pest\Laravel\postJson;
 

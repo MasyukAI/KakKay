@@ -41,7 +41,7 @@ Create a separate Tailwind config file for invoice templates:
 // tailwind.invoice.config.js
 module.exports = {
   content: [
-    './packages/masyukai/invoice/resources/views/**/*.blade.php',
+    './packages/aiarmada/invoice/resources/views/**/*.blade.php',
     './resources/views/vendor/docs/**/*.blade.php',
   ],
   theme: {

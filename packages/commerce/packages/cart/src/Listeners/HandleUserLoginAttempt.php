@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Listeners;
+namespace AIArmada\Cart\Listeners;
 
 use Illuminate\Auth\Events\Attempting;
 use Illuminate\Support\Facades\Auth;

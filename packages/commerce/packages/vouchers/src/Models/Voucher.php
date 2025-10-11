@@ -2,17 +2,57 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Vouchers\Models;
+namespace AIArmada\Vouchers\Models;
 
+use AIArmada\Vouchers\Enums\VoucherStatus;
+use AIArmada\Vouchers\Enums\VoucherType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use MasyukAI\Cart\Vouchers\Enums\VoucherStatus;
-use MasyukAI\Cart\Vouchers\Enums\VoucherType;
 
 class Voucher extends Model
 {
     use SoftDeletes;
+
+    public string $code;
+
+    public string $name;
+
+    public ?string $description;
+
+    public VoucherType $type;
+
+    public string $value;
+
+    public string $currency;
+
+    public ?string $min_cart_value;
+
+    public ?string $max_discount;
+
+    public ?int $usage_limit;
+
+    public ?int $usage_limit_per_user;
+
+    public int $times_used;
+
+    public ?\Illuminate\Support\Carbon $starts_at;
+
+    public ?\Illuminate\Support\Carbon $expires_at;
+
+    public VoucherStatus $status;
+
+    /** @var ?array<int|string, mixed> */
+    public ?array $applicable_products;
+
+    /** @var ?array<int|string, mixed> */
+    public ?array $excluded_products;
+
+    /** @var ?array<int|string, mixed> */
+    public ?array $applicable_categories;
+
+    /** @var ?array<string, mixed> */
+    public ?array $metadata;
 
     protected $fillable = [
         'code',

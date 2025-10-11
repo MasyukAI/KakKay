@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Docs\Services;
+namespace AIArmada\Docs\Services;
 
+use AIArmada\Docs\DataObjects\DocumentData;
+use AIArmada\Docs\Enums\DocumentStatus;
+use AIArmada\Docs\Models\Document;
+use AIArmada\Docs\Models\DocumentTemplate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use MasyukAI\Docs\DataObjects\DocumentData;
-use MasyukAI\Docs\Enums\DocumentStatus;
-use MasyukAI\Docs\Models\Document;
-use MasyukAI\Docs\Models\DocumentTemplate;
 use Spatie\LaravelPdf\Facades\Pdf;
 
 class DocumentService

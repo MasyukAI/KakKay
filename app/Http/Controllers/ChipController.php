@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use AIArmada\Chip\Services\WebhookService;
 use App\Jobs\ProcessWebhook;
 use App\Services\Chip\ChipDataRecorder;
 use App\Support\ChipWebhookFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
-use MasyukAI\Chip\Services\WebhookService;
 
 final class ChipController extends Controller
 {

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
+use AIArmada\Cart\Facades\Cart;
+use AIArmada\FilamentCart\Models\Condition;
 use App\Models\Product;
 use App\Models\User;
 use Livewire\Livewire;
-use MasyukAI\Cart\Facades\Cart;
-use MasyukAI\FilamentCart\Models\Condition;
 
 uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
 
@@ -137,7 +137,7 @@ describe('Filament Resource Integration', function () {
     it('can access condition template list page', function () {
         $conditions = Condition::factory()->count(3)->create();
 
-        Livewire::test(MasyukAI\FilamentCart\Resources\ConditionResource\Pages\ListConditions::class)
+        Livewire::test(AIArmada\FilamentCart\Resources\ConditionResource\Pages\ListConditions::class)
             ->assertOk()
             ->assertCanSeeTableRecords($conditions);
     });
@@ -150,7 +150,7 @@ describe('Filament Resource Integration', function () {
             'target' => 'subtotal',
         ]);
 
-        Livewire::test(MasyukAI\FilamentCart\Resources\ConditionResource\Pages\CreateCondition::class)
+        Livewire::test(AIArmada\FilamentCart\Resources\ConditionResource\Pages\CreateCondition::class)
             ->fillForm([
                 'name' => $conditionData->name,
                 'display_name' => $conditionData->display_name,
@@ -168,7 +168,7 @@ describe('Filament Resource Integration', function () {
     it('can edit condition template through Filament', function () {
         $condition = Condition::factory()->create(['name' => 'Original Name']);
 
-        Livewire::test(MasyukAI\FilamentCart\Resources\ConditionResource\Pages\EditCondition::class, [
+        Livewire::test(AIArmada\FilamentCart\Resources\ConditionResource\Pages\EditCondition::class, [
             'record' => $condition->id,
         ])
             ->assertOk()
@@ -180,7 +180,7 @@ describe('Filament Resource Integration', function () {
     });
 
     it('validates condition template form data', function () {
-        Livewire::test(MasyukAI\FilamentCart\Resources\ConditionResource\Pages\CreateCondition::class)
+        Livewire::test(AIArmada\FilamentCart\Resources\ConditionResource\Pages\CreateCondition::class)
             ->fillForm([
                 'name' => null, // Required field
                 'type' => 'discount',

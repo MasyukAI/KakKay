@@ -1,5 +1,5 @@
 {
-    "name": "masyukai/cart-core",
+    "name": "aiarmada/cart",
     "require": {
         "php": "^8.2",
         "spatie/laravel-package-tools": "^1.92"
@@ -7,16 +7,16 @@
     "extra": {
         "laravel": {
             "aliases": {
-                "Cart": "MasyukAI\\Cart\\Facades\\Cart"
+                "Cart": "AIArmada\\Cart\\Facades\\Cart"
             },
             "providers": [
-                "MasyukAI\\Cart\\CartServiceProvider"
+                "AIArmada\\Cart\\CartServiceProvider"
             ]
         }
     },
     "autoload": {
         "psr-4": {
-            "MasyukAI\\Cart\\": "src"
+            "AIArmada\\Cart\\": "src"
         }
     }
 }

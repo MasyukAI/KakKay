@@ -248,7 +248,7 @@ This copies the migration to your `database/migrations` folder where you can mod
 Publish all package files at once:
 
 ```bash
-php artisan vendor:publish --provider="MasyukAI\Stock\StockServiceProvider"
+php artisan vendor:publish --provider="AIArmada\Stock\StockServiceProvider"
 ```
 
 This publishes:

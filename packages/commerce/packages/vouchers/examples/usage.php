@@ -8,9 +8,9 @@ declare(strict_types=1);
  * This file demonstrates common voucher usage patterns with the cart.
  */
 
-use MasyukAI\Cart\Facades\Cart;
-use MasyukAI\Cart\Vouchers\Enums\VoucherType;
-use MasyukAI\Cart\Vouchers\Facades\Voucher;
+use AIArmada\Cart\Facades\Cart;
+use AIArmada\Cart\Vouchers\Enums\VoucherType;
+use AIArmada\Cart\Vouchers\Facades\Voucher;
 
 // ============================================================================
 // Example 1: Basic Percentage Voucher
@@ -191,7 +191,7 @@ if (count($removed) > 0) {
 // Example 10: Error Handling
 // ============================================================================
 
-use MasyukAI\Cart\Vouchers\Exceptions\InvalidVoucherException;
+use AIArmada\Cart\Vouchers\Exceptions\InvalidVoucherException;
 
 try {
     Cart::applyVoucher($userInput);
@@ -262,8 +262,8 @@ if (Cart::canAddVoucher()) {
 <?php
 
 use Livewire\Component;
-use MasyukAI\Cart\Facades\Cart;
-use MasyukAI\Cart\Vouchers\Exceptions\InvalidVoucherException;
+use AIArmada\Cart\Facades\Cart;
+use AIArmada\Cart\Vouchers\Exceptions\InvalidVoucherException;
 
 class CartVouchers extends Component
 {
@@ -309,8 +309,8 @@ class CartVouchers extends Component
 /*
 // app/Listeners/RecordVoucherUsage.php
 
-use MasyukAI\Cart\Vouchers\Events\VoucherApplied;
-use MasyukAI\Cart\Vouchers\Facades\Voucher;
+use AIArmada\Cart\Vouchers\Events\VoucherApplied;
+use AIArmada\Cart\Vouchers\Facades\Voucher;
 
 class RecordVoucherUsage
 {

@@ -31,7 +31,7 @@ Complete reference for all public methods, classes, and interfaces in the Cart p
 The `Cart` facade provides the primary interface for cart operations.
 
 ```php
-use MasyukAI\Cart\Facades\Cart;
+use AIArmada\Cart\Facades\Cart;
 ```
 
 ### Adding Items
@@ -948,7 +948,7 @@ Log::info("Cart ID: {$identifier}");
 Represents an item in the cart.
 
 ```php
-namespace MasyukAI\Cart\Data;
+namespace AIArmada\Cart\Data;
 
 class CartItem
 ```
@@ -1062,7 +1062,7 @@ $data = $item->toArray();
 Represents a condition (discount, tax, fee, etc.).
 
 ```php
-namespace MasyukAI\Cart\Data;
+namespace AIArmada\Cart\Data;
 
 class CartCondition
 ```
@@ -1127,7 +1127,7 @@ $tax = $condition->calculate(Money::USD(10000)); // $2000 (20%)
 Collection of CartItem objects with additional methods.
 
 ```php
-namespace MasyukAI\Cart\Data;
+namespace AIArmada\Cart\Data;
 
 class CartCollection extends Collection
 ```
@@ -1189,7 +1189,7 @@ public function totalQuantity(): int
 Implement custom storage drivers.
 
 ```php
-namespace MasyukAI\Cart\Contracts;
+namespace AIArmada\Cart\Contracts;
 
 interface StorageInterface
 {
@@ -1203,7 +1203,7 @@ interface StorageInterface
 **Example Implementation:**
 
 ```php
-use MasyukAI\Cart\Contracts\StorageInterface;
+use AIArmada\Cart\Contracts\StorageInterface;
 
 class DynamoDbStorage implements StorageInterface
 {
@@ -1258,7 +1258,7 @@ class DynamoDbStorage implements StorageInterface
 Main service class handling cart logic.
 
 ```php
-namespace MasyukAI\Cart\Services;
+namespace AIArmada\Cart\Services;
 
 class CartService
 {
@@ -1282,7 +1282,7 @@ class CartService
 Handles guest-to-user cart migration.
 
 ```php
-namespace MasyukAI\Cart\Services;
+namespace AIArmada\Cart\Services;
 
 class MigrationService
 {
@@ -1304,7 +1304,7 @@ class MigrationService
 **Example:**
 
 ```php
-use MasyukAI\Cart\Services\MigrationService;
+use AIArmada\Cart\Services\MigrationService;
 
 $migration = app(MigrationService::class);
 
@@ -1325,7 +1325,7 @@ $migration->migrate(
 Thrown when cart item validation fails.
 
 ```php
-namespace MasyukAI\Cart\Exceptions;
+namespace AIArmada\Cart\Exceptions;
 
 class InvalidCartItemException extends \Exception
 ```
@@ -1353,7 +1353,7 @@ try {
 Thrown when condition validation fails.
 
 ```php
-namespace MasyukAI\Cart\Exceptions;
+namespace AIArmada\Cart\Exceptions;
 
 class InvalidCartConditionException extends \Exception
 ```
@@ -1371,7 +1371,7 @@ class InvalidCartConditionException extends \Exception
 Thrown on optimistic locking conflicts.
 
 ```php
-namespace MasyukAI\Cart\Exceptions;
+namespace AIArmada\Cart\Exceptions;
 
 class CartConflictException extends \Exception
 ```
@@ -1383,7 +1383,7 @@ class CartConflictException extends \Exception
 **Example:**
 
 ```php
-use MasyukAI\Cart\Exceptions\CartConflictException;
+use AIArmada\Cart\Exceptions\CartConflictException;
 
 try {
     Cart::add(1, 'Product', 1000);
@@ -1576,4 +1576,4 @@ None currently. All methods are stable in v1.x.
 
 ---
 
-**Need help?** Check the [Troubleshooting Guide](troubleshooting.md) or [open an issue](https://github.com/masyukai/cart/issues).
+**Need help?** Check the [Troubleshooting Guide](troubleshooting.md) or [open an issue](https://github.com/aiarmada/cart/issues).

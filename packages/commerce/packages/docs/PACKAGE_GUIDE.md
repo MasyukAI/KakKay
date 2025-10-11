@@ -2,26 +2,26 @@
 
 ## Overview
 
-The package is named `masyukai/docs` to support multiple document types beyond just invoices.
+The package is named `aiarmada/docs` to support multiple document types beyond just invoices.
 
 ## Changes Made
 
 ### 1. Package Structure
-- **Directory renamed**: `packages/masyukai/invoice` → `packages/commerce/packages/docs`
-- **Namespace changed**: `MasyukAI\Invoice` → `MasyukAI\Docs`
-- **Package name**: `masyukai/invoice` → `masyukai/docs`
+- **Directory renamed**: `packages/aiarmada/invoice` → `packages/commerce/packages/docs`
+- **Namespace changed**: `AIArmada\Invoice` → `AIArmada\Docs`
+- **Package name**: `aiarmada/invoice` → `aiarmada/docs`
 
 ### 2. Core Files Updated
 
 #### Composer Configuration
 - Updated `composer.json` with new package name and description
-- Changed autoload namespaces from `MasyukAI\Invoice` to `MasyukAI\Docs`
+- Changed autoload namespaces from `AIArmada\Invoice` to `AIArmada\Docs`
 - Added "receipt" and "document" to keywords
 - Updated service provider class name reference
 
 #### Service Provider
 - Renamed `InvoiceServiceProvider.php` → `DocsServiceProvider.php`
-- Updated namespace to `MasyukAI\Docs`
+- Updated namespace to `AIArmada\Docs`
 - Changed package name from 'invoice' to 'docs'
 - Added placeholder for future `ReceiptService`
 
@@ -58,7 +58,7 @@ The package is named `masyukai/docs` to support multiple document types beyond j
 - Ready for additional templates: `receipt-default.blade.php`, etc.
 
 ### 4. All PHP Files Updated
-- All source files: namespace changed to `MasyukAI\Docs`
+- All source files: namespace changed to `AIArmada\Docs`
 - All models: `Invoice`, `InvoiceTemplate`, `InvoiceStatusHistory`
 - All services: `InvoiceService` (receipt service placeholder added)
 - All facades: `Invoice` (receipt facade available in config)
@@ -75,7 +75,7 @@ The package is named `masyukai/docs` to support multiple document types beyond j
 
 ### 6. Main Application Integration
 - Updated root `composer.json`:
-  - Changed require from `masyukai/invoice` to `masyukai/docs`
+  - Changed require from `aiarmada/invoice` to `aiarmada/docs`
   - Updated repository path
 - Examples file updated with new namespaces
 
@@ -102,14 +102,14 @@ The package uses a type-based configuration structure:
 
 ## Usage
 ```php
-use MasyukAI\Docs\Facades\Invoice;
-use MasyukAI\Docs\DataObjects\InvoiceData;
+use AIArmada\Docs\Facades\Invoice;
+use AIArmada\Docs\DataObjects\InvoiceData;
 
 ## Usage
 
 ```php
-use MasyukAI\Docs\Facades\Invoice;
-use MasyukAI\Docs\DataObjects\InvoiceData;
+use AIArmada\Docs\Facades\Invoice;
+use AIArmada\Docs\DataObjects\InvoiceData;
 
 $invoice = Invoice::createInvoice(InvoiceData::from([...]));
 ```
@@ -141,7 +141,7 @@ config('docs.company.name')
 2. Create `Receipt` model, status enum, etc.
 3. Create `receipt-default.blade.php` template
 4. Uncomment receipt service registration in `DocsServiceProvider`
-5. Use: `use MasyukAI\Docs\Facades\Receipt;`
+5. Use: `use AIArmada\Docs\Facades\Receipt;`
 
 ### Adding Other Document Types
 Follow the same pattern for quotations, purchase orders, delivery notes, etc.

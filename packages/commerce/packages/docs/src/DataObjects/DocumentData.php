@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Docs\DataObjects;
+namespace AIArmada\Docs\DataObjects;
 
+use AIArmada\Docs\Enums\DocumentStatus;
 use DateTimeInterface;
-use MasyukAI\Docs\Enums\DocumentStatus;
 
 class DocumentData
 {

@@ -1,11 +1,11 @@
-# MasyukAI Cart Vouchers - Setup Complete! 🎉
+# AIArmada Cart Vouchers - Setup Complete! 🎉
 
 ## ✅ What's Been Created
 
 ### 📦 Package Structure
 
 ```
-packages/masyukai/cart/packages/vouchers/
+packages/aiarmada/cart/packages/vouchers/
 ├── composer.json                    ✅ Package definition
 ├── README.md                        ✅ Documentation
 ├── config/
@@ -100,9 +100,9 @@ php artisan migrate
 ### Basic Usage
 
 ```php
-use MasyukAI\Cart\Vouchers\Facades\Voucher;
-use MasyukAI\Cart\Vouchers\Enums\VoucherType;
-use MasyukAI\Cart\Vouchers\Enums\VoucherStatus;
+use AIArmada\Cart\Vouchers\Facades\Voucher;
+use AIArmada\Cart\Vouchers\Enums\VoucherType;
+use AIArmada\Cart\Vouchers\Enums\VoucherStatus;
 
 // Create a voucher
 $voucher = Voucher::create([
@@ -169,7 +169,7 @@ $history = Voucher::getUsageHistory('SUMMER2024');
 Add monorepo-builder for easy management:
 
 ```bash
-cd packages/masyukai/cart
+cd packages/aiarmada/cart
 composer require symplify/monorepo-builder --dev
 ```
 
@@ -207,10 +207,10 @@ jobs:
         package:
           - name: cart
             path: packages/core
-            target: masyukai/cart
+            target: aiarmada/cart
           - name: cart-vouchers
             path: packages/vouchers
-            target: masyukai/cart-vouchers
+            target: aiarmada/cart-vouchers
 
     steps:
       - uses: actions/checkout@v3
@@ -219,7 +219,7 @@ jobs:
         uses: symplify/github-action-monorepo-split@master
         with:
           package-directory: ${{ matrix.package.path }}
-          repository-organization: masyukai
+          repository-organization: aiarmada
           repository-name: ${{ matrix.package.target }}
           user-name: "github-actions[bot]"
           user-email: "github-actions[bot]@users.noreply.github.com"
@@ -228,7 +228,7 @@ jobs:
 
 ### Step 4: Register on Packagist
 
-1. Create GitHub repo: `masyukai/cart-vouchers` (will be auto-populated)
+1. Create GitHub repo: `aiarmada/cart-vouchers` (will be auto-populated)
 2. Register on Packagist: https://packagist.org/packages/submit
 3. Add webhook for auto-updates
 
@@ -236,10 +236,10 @@ jobs:
 
 ```bash
 # Cart only
-composer require masyukai/cart
+composer require aiarmada/cart
 
 # Cart + Vouchers (independent package!)
-composer require masyukai/cart masyukai/cart-vouchers
+composer require aiarmada/cart aiarmada/cart-vouchers
 ```
 
 ---
@@ -249,7 +249,7 @@ composer require masyukai/cart masyukai/cart-vouchers
 ### Run Package Tests
 
 ```bash
-cd packages/masyukai/cart
+cd packages/aiarmada/cart
 vendor/bin/pest tests/Vouchers
 ```
 
@@ -269,9 +269,9 @@ To complete the integration, you'll need to add to `packages/core/`:
 
 ```php
 // packages/core/src/Conditions/VoucherCondition.php
-namespace MasyukAI\Cart\Conditions;
+namespace AIArmada\Cart\Conditions;
 
-use MasyukAI\Cart\Vouchers\Data\VoucherData;
+use AIArmada\Cart\Vouchers\Data\VoucherData;
 
 class VoucherCondition extends CartCondition
 {
@@ -292,7 +292,7 @@ class VoucherCondition extends CartCondition
 
 ```php
 // packages/core/src/Traits/HasVouchers.php
-namespace MasyukAI\Cart\Traits;
+namespace AIArmada\Cart\Traits;
 
 trait HasVouchers
 {
@@ -320,7 +320,7 @@ trait HasVouchers
 
 ## ✨ What Makes This Special
 
-1. **Independent Package**: Published as `masyukai/cart-vouchers` on Packagist
+1. **Independent Package**: Published as `aiarmada/cart-vouchers` on Packagist
 2. **Optional Dependency**: Cart works without vouchers
 3. **Monorepo Benefits**: Developed together, shared tests & CI
 4. **Type-Safe**: PHP 8.2+ with enums and readonly classes

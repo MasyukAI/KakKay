@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Vouchers\Data;
+namespace AIArmada\Vouchers\Data;
 
 readonly class VoucherValidationResult
 {
     public function __construct(
         public bool $isValid,
         public ?string $reason = null,
+        /** @var ?array<string, mixed> */
         public ?array $details = null,
     ) {}
 
@@ -17,6 +18,9 @@ readonly class VoucherValidationResult
         return new self(isValid: true);
     }
 
+    /**
+     * @param  array<string, mixed>  $details
+     */
     public static function invalid(string $reason, array $details = []): self
     {
         return new self(

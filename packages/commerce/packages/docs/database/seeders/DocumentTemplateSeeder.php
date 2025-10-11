@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Docs\Database\Seeders;
+namespace AIArmada\Docs\Database\Seeders;
 
+use AIArmada\Docs\Models\DocumentTemplate;
 use Illuminate\Database\Seeder;
-use MasyukAI\Docs\Models\DocumentTemplate;
 
 class DocumentTemplateSeeder extends Seeder
 {

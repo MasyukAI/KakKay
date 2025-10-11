@@ -9,7 +9,7 @@ Complete guide to the `Cart` facade and its daily operations. This document cove
 Add items one at a time or in batches:
 
 ```php
-use MasyukAI\Cart\Facades\Cart;
+use AIArmada\Cart\Facades\Cart;
 
 // Add single item
 Cart::add(
@@ -521,8 +521,8 @@ The cart validates all operations and throws exceptions for invalid data.
 ### Handling Exceptions
 
 ```php
-use MasyukAI\Cart\Exceptions\InvalidCartItemException;
-use MasyukAI\Cart\Exceptions\CartConflictException;
+use AIArmada\Cart\Exceptions\InvalidCartItemException;
+use AIArmada\Cart\Exceptions\CartConflictException;
 
 try {
     Cart::add('', 'Product', 10.00); // Empty ID
@@ -604,7 +604,7 @@ $basePrice = $item->attributes->get('base_price');
 
 ---
 
-**Need help?** Check [Troubleshooting](troubleshooting.md) or [open a discussion](https://github.com/masyukai/cart/discussions).
+**Need help?** Check [Troubleshooting](troubleshooting.md) or [open a discussion](https://github.com/aiarmada/cart/discussions).
 
 
 Metadata pairs contextual state with a cart instance (e.g., selected shipping method).
@@ -647,7 +647,7 @@ Cart::getItems()
     ->groupByAttribute('vendor');
 ```
 
-Search callbacks receive `MasyukAI\Cart\Models\CartItem` objects, enabling access to conditions and attributes.
+Search callbacks receive `AIArmada\Cart\Models\CartItem` objects, enabling access to conditions and attributes.
 
 ## Associating Domain Models
 

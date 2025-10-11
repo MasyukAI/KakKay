@@ -2,23 +2,43 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Vouchers\Conditions;
+namespace AIArmada\Vouchers\Conditions;
 
-use MasyukAI\Cart\Cart;
-use MasyukAI\Cart\Conditions\CartCondition;
-use MasyukAI\Cart\Models\CartItem;
-use MasyukAI\Cart\Vouchers\Data\VoucherData;
-use MasyukAI\Cart\Vouchers\Enums\VoucherType;
-use MasyukAI\Cart\Vouchers\Facades\Voucher;
+use AIArmada\Cart\Cart;
+use AIArmada\Cart\Conditions\CartCondition;
+use AIArmada\Cart\Models\CartItem;
+use AIArmada\Vouchers\Data\VoucherData;
+use AIArmada\Vouchers\Enums\VoucherType;
+use AIArmada\Vouchers\Facades\Voucher;
+use Illuminate\Contracts\Support\Arrayable;
+use JsonException;
 
 /**
  * VoucherCondition bridges the voucher system with cart's condition system.
  *
- * This class extends CartCondition to provide voucher-specific behavior
+ * This class implements the same interfaces as CartCondition to provide voucher-specific behavior
  * while maintaining compatibility with the cart's pricing engine.
+ *
+ * @implements \Illuminate\Contracts\Support\Arrayable<string, mixed>
  */
-class VoucherCondition extends CartCondition
+class VoucherCondition implements Arrayable
 {
+    private string $name;
+
+    private string $type;
+
+    private string $target;
+
+    private string $value;
+
+    /** @var array<string, mixed> */
+    private array $attributes;
+
+    private int $order;
+
+    /** @var ?array<callable> */
+    private ?array $rules;
+
     private VoucherData $voucher;
 
     /**
@@ -36,21 +56,19 @@ class VoucherCondition extends CartCondition
         $value = $this->formatVoucherValue($voucher);
         $target = $this->determineTarget($voucher);
 
-        parent::__construct(
-            name: "voucher_{$voucher->code}",
-            type: 'voucher',
-            target: $target,
-            value: $value,
-            attributes: [
-                'voucher_id' => $voucher->id,
-                'voucher_code' => $voucher->code,
-                'voucher_type' => $voucher->type->value,
-                'description' => $voucher->description,
-                'original_value' => $voucher->value,
-            ],
-            order: $order,
-            rules: $dynamic ? [$this, 'validateVoucher'] : null
-        );
+        $this->name = "voucher_{$voucher->code}";
+        $this->type = 'voucher';
+        $this->target = $target;
+        $this->value = $value;
+        $this->attributes = [
+            'voucher_id' => $voucher->id,
+            'voucher_code' => $voucher->code,
+            'voucher_type' => $voucher->type->value,
+            'description' => $voucher->description,
+            'original_value' => $voucher->value,
+        ];
+        $this->order = $order;
+        $this->rules = $dynamic ? [[$this, 'validateVoucher']] : null;
     }
 
     /**
@@ -120,11 +138,11 @@ class VoucherCondition extends CartCondition
         }
 
         // Apply max discount cap if set
-        $result = parent::apply($value);
+        $result = $this->applyCondition($value);
 
-        if ($this->voucher->maxDiscountAmount !== null) {
+        if ($this->voucher->maxDiscount !== null) {
             $discount = $value - $result;
-            $maxDiscount = $this->voucher->maxDiscountAmount;
+            $maxDiscount = $this->voucher->maxDiscount;
 
             if ($discount > $maxDiscount) {
                 $result = $value - $maxDiscount;
@@ -135,13 +153,141 @@ class VoucherCondition extends CartCondition
     }
 
     /**
+     * Get calculated value for display
+     */
+    public function getCalculatedValue(float $baseValue): float
+    {
+        return $this->apply($baseValue) - $baseValue;
+    }
+
+    /**
+     * Check if condition is a discount
+     */
+    public function isDiscount(): bool
+    {
+        $operator = $this->getOperator();
+        $value = $this->parseValue();
+
+        return ($operator === '-') || ($operator === '%' && $value < 0);
+    }
+
+    /**
+     * Check if condition is a charge/fee
+     */
+    public function isCharge(): bool
+    {
+        $operator = $this->getOperator();
+        $value = $this->parseValue();
+
+        return ($operator === '+') || ($operator === '%' && $value > 0);
+    }
+
+    /**
+     * Check if condition is percentage-based
+     */
+    public function isPercentage(): bool
+    {
+        return $this->getOperator() === '%';
+    }
+
+    /**
+     * Check if this is a dynamic condition
+     */
+    public function isDynamic(): bool
+    {
+        return $this->rules !== null && ! empty($this->rules);
+    }
+
+    /**
+     * Get the validation rules for this condition
+     *
+     * @return ?array<callable(): mixed>
+     */
+    public function getRules(): ?array
+    {
+        return $this->rules;
+    }
+
+    /**
+     * Get the condition name.
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * Get the condition type.
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * Get the condition target.
+     */
+    public function getTarget(): string
+    {
+        return $this->target;
+    }
+
+    /**
+     * Get the condition value.
+     */
+    public function getValue(): string|float
+    {
+        return $this->value;
+    }
+
+    /**
+     * Get the condition attributes.
+     *
+     * @return array<string, mixed>
+     */
+    public function getAttributes(): array
+    {
+        return $this->attributes;
+    }
+
+    /**
+     * Get a specific attribute.
+     */
+    public function getAttribute(string $key, mixed $default = null): mixed
+    {
+        return $this->attributes[$key] ?? $default;
+    }
+
+    /**
+     * Get the condition order.
+     */
+    public function getOrder(): int
+    {
+        return $this->order;
+    }
+
+    /**
      * Convert to array with voucher-specific data.
      *
      * @return array<string, mixed>
      */
     public function toArray(): array
     {
-        $array = parent::toArray();
+        $array = [
+            'name' => $this->name,
+            'type' => $this->type,
+            'target' => $this->target,
+            'value' => $this->value,
+            'attributes' => $this->attributes,
+            'order' => $this->order,
+            'rules' => $this->rules,
+            'operator' => $this->getOperator(),
+            'parsed_value' => $this->parseValue(),
+            'is_discount' => $this->isDiscount(),
+            'is_charge' => $this->isCharge(),
+            'is_percentage' => $this->isPercentage(),
+            'is_dynamic' => $this->isDynamic(),
+        ];
 
         $array['voucher'] = [
             'id' => $this->voucher->id,
@@ -149,11 +295,114 @@ class VoucherCondition extends CartCondition
             'type' => $this->voucher->type->value,
             'value' => $this->voucher->value,
             'description' => $this->voucher->description,
-            'max_discount_amount' => $this->voucher->maxDiscountAmount,
+            'max_discount_amount' => $this->voucher->maxDiscount,
             'is_free_shipping' => $this->isFreeShipping(),
         ];
 
         return $array;
+    }
+
+    /**
+     * Convert to JSON
+     */
+    public function toJson(int $options = 0): string
+    {
+        $json = json_encode($this->jsonSerialize(), $options);
+
+        if ($json === false) {
+            throw new JsonException('Failed to encode condition to JSON');
+        }
+
+        return $json;
+    }
+
+    /**
+     * Serialize for JSON
+     *
+     * @return array<string, mixed>
+     */
+    public function jsonSerialize(): array
+    {
+        return $this->toArray();
+    }
+
+    /**
+     * Apply the condition logic (similar to CartCondition::apply)
+     */
+    private function applyCondition(float $value): float
+    {
+        $conditionValue = $this->parseValue();
+
+        $result = match ($this->getOperator()) {
+            '+' => $value + $conditionValue,
+            '-' => $value - $conditionValue,
+            '*' => $value * abs($conditionValue),
+            '/' => abs($conditionValue) > 0 ? $value / abs($conditionValue) : $value,
+            '%' => $this->applyPercentage($value, $conditionValue),
+            default => $value,
+        };
+
+        return max(0, $result); // Ensure result is not negative
+    }
+
+    /**
+     * Apply percentage calculation
+     */
+    private function applyPercentage(float $value, float $percentage): float
+    {
+        return $value + ($value * $percentage);
+    }
+
+    /**
+     * Get the operator from value
+     */
+    private function getOperator(): string
+    {
+        $value = (string) $this->value;
+
+        if (str_ends_with($value, '%')) {
+            return '%';
+        }
+
+        return match ($value[0] ?? '') {
+            '+' => '+',
+            '-' => '-',
+            '*' => '*',
+            '/' => '/',
+            default => '+', // Default to addition if no operator
+        };
+    }
+
+    /**
+     * Parse the numeric value from the condition value
+     */
+    private function parseValue(): float
+    {
+        $value = (string) $this->value;
+
+        // Handle percentage
+        if (str_ends_with($value, '%')) {
+            return $this->parsePercentValue($value);
+        }
+
+        // Handle operators
+        if (in_array($value[0] ?? '', ['+', '-', '*', '/'])) {
+            $numericValue = (float) mb_substr($value, 1);
+        } else {
+            $numericValue = (float) $value;
+        }
+
+        return $numericValue;
+    }
+
+    /**
+     * Parse a percentage value string (e.g., '10%')
+     */
+    private function parsePercentValue(string $value): float
+    {
+        $numericValue = (float) mb_substr($value, 0, -1);
+
+        return $numericValue / 100;
     }
 
     /**

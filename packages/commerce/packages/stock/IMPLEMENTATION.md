@@ -205,7 +205,7 @@ Comprehensive test suite with 16 tests:
 ```php
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use MasyukAI\Stock\Traits\HasStock;
+use AIArmada\Stock\Traits\HasStock;
 
 class Product extends Model
 {
@@ -232,7 +232,7 @@ $history = $product->getStockHistory(50);
 ### Using the Facade
 
 ```php
-use MasyukAI\Stock\Facades\Stock;
+use AIArmada\Stock\Facades\Stock;
 
 $product = Product::find($id);
 
@@ -244,7 +244,7 @@ $currentStock = Stock::getCurrentStock($product);
 ### Using the Service
 
 ```php
-use MasyukAI\Stock\Services\StockService;
+use AIArmada\Stock\Services\StockService;
 
 $stockService = app(StockService::class);
 
@@ -264,14 +264,14 @@ $stockService->adjustStock($product, 100, 95); // Adjust down by 5
            }
        ],
        "require": {
-           "masyukai/stock": "@dev"
+           "aiarmada/stock": "@dev"
        }
    }
    ```
 
 2. **Install package**
    ```bash
-   composer require masyukai/stock
+   composer require aiarmada/stock
    ```
 
 3. **Run migrations**
@@ -349,6 +349,6 @@ The stock management package is **production-ready** with:
 
 Ready to use with:
 ```php
-use MasyukAI\Stock\Traits\HasStock;
-use MasyukAI\Stock\Facades\Stock;
+use AIArmada\Stock\Traits\HasStock;
+use AIArmada\Stock\Facades\Stock;
 ```

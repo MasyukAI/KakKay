@@ -1,13 +1,19 @@
 {
-    "name": "masyukai/stock",
+    "name": "aiarmada/stock",
     "description": "Laravel stock management system with UUID support",
-    "keywords": ["laravel", "stock", "inventory", "management", "uuid"],
     "license": "MIT",
-    "type": "library",
+    "keywords": [
+        "laravel",
+        "stock",
+        "inventory",
+        "management",
+        "uuid",
+        "aiarmada"
+    ],
     "authors": [
         {
-            "name": "Masyukai",
-            "email": "hello@masyuk.ai"
+            "name": "AIArmada",
+            "email": "info@aiarmada.com"
         }
     ],
     "require": {
@@ -17,48 +23,6 @@
         "illuminate/database": "^12.0",
         "illuminate/support": "^12.0",
         "spatie/laravel-package-tools": "^1.92"
-    },
-    "require-dev": {
-        "driftingly/rector-laravel": "^2.0",
-        "larastan/larastan": "^3.0",
-        "laravel/framework": "^12.0",
-        "laravel/pint": "^1.0",
-        "mockery/mockery": "^1.6",
-        "orchestra/testbench": "^10.0",
-        "pestphp/pest": "^4.0",
-        "pestphp/pest-plugin-laravel": "^4.0"
-    },
-    "autoload": {
-        "psr-4": {
-            "MasyukAI\\Stock\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "MasyukAI\\Stock\\Tests\\": "tests/"
-        }
-    },
-    "scripts": {
-        "test": "vendor/bin/pest",
-        "test-coverage": "vendor/bin/pest --coverage",
-        "format": "vendor/bin/pint",
-        "analyse": "vendor/bin/phpstan analyse --memory-limit=2G"
-    },
-    "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "pestphp/pest-plugin": true
-        }
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "MasyukAI\\Stock\\StockServiceProvider"
-            ],
-            "aliases": {
-                "Stock": "MasyukAI\\Stock\\Facades\\Stock"
-            }
-        }
     },
     "minimum-stability": "stable",
     "prefer-stable": true

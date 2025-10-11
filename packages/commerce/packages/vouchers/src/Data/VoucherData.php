@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart\Vouchers\Data;
+namespace AIArmada\Vouchers\Data;
 
+use AIArmada\Vouchers\Enums\VoucherStatus;
+use AIArmada\Vouchers\Enums\VoucherType;
 use DateTimeInterface;
-use MasyukAI\Cart\Vouchers\Enums\VoucherStatus;
-use MasyukAI\Cart\Vouchers\Enums\VoucherType;
 
 readonly class VoucherData
 {
@@ -26,13 +26,17 @@ readonly class VoucherData
         public ?DateTimeInterface $startsAt,
         public ?DateTimeInterface $expiresAt,
         public VoucherStatus $status,
+        /** @var ?array<int|string, mixed> */
         public ?array $applicableProducts,
+        /** @var ?array<int|string, mixed> */
         public ?array $excludedProducts,
+        /** @var ?array<int|string, mixed> */
         public ?array $applicableCategories,
+        /** @var ?array<string, mixed> */
         public ?array $metadata,
     ) {}
 
-    public static function fromModel($voucher): self
+    public static function fromModel(mixed $voucher): self
     {
         return new self(
             id: $voucher->id,
@@ -57,6 +61,9 @@ readonly class VoucherData
         );
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(): array
     {
         return [

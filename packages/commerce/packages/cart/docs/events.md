@@ -37,7 +37,7 @@ The cart package dispatches Laravel events for every significant cart action, al
 ### All Events Namespace
 
 ```php
-MasyukAI\Cart\Events\{EventName}
+AIArmada\Cart\Events\{EventName}
 ```
 
 ---
@@ -79,7 +79,7 @@ Create dedicated listener classes for clean, testable code.
 // app/Listeners/Cart/LogCartActivity.php
 namespace App\Listeners\Cart;
 
-use MasyukAI\Cart\Events\CartItemAdded;
+use AIArmada\Cart\Events\CartItemAdded;
 use Illuminate\Support\Facades\Log;
 
 class LogCartActivity
@@ -101,7 +101,7 @@ Register in `app/Providers/AppServiceProvider.php` or `EventServiceProvider.php`
 
 ```php
 use Illuminate\Support\Facades\Event;
-use MasyukAI\Cart\Events\CartItemAdded;
+use AIArmada\Cart\Events\CartItemAdded;
 use App\Listeners\Cart\LogCartActivity;
 
 public function boot(): void
@@ -118,7 +118,7 @@ public function boot(): void
 ```php
 // app/Providers/AppServiceProvider.php
 use Illuminate\Support\Facades\Event;
-use MasyukAI\Cart\Events\CartItemAdded;
+use AIArmada\Cart\Events\CartItemAdded;
 
 public function boot(): void
 {
@@ -138,7 +138,7 @@ public function boot(): void
 ### CartItemAdded
 
 ```php
-namespace MasyukAI\Cart\Events;
+namespace AIArmada\Cart\Events;
 
 class CartItemAdded
 {
@@ -229,7 +229,7 @@ class MetadataRemoved
 ```php
 namespace App\Listeners\Cart;
 
-use MasyukAI\Cart\Events\CartItemAdded;
+use AIArmada\Cart\Events\CartItemAdded;
 
 class TrackAnalytics
 {
@@ -252,7 +252,7 @@ class TrackAnalytics
 ```php
 namespace App\Listeners\Cart;
 
-use MasyukAI\Cart\Events\CartItemAdded;
+use AIArmada\Cart\Events\CartItemAdded;
 use App\Models\Product;
 
 class ReserveInventory
@@ -273,7 +273,7 @@ class ReserveInventory
 ```php
 namespace App\Listeners\Cart;
 
-use MasyukAI\Cart\Events\CartItemAdded;
+use AIArmada\Cart\Events\CartItemAdded;
 use App\Notifications\ItemAddedNotification;
 use Illuminate\Support\Facades\Auth;
 
@@ -293,7 +293,7 @@ class NotifyUser
 ```php
 namespace App\Listeners\Cart;
 
-use MasyukAI\Cart\Events\CartItemAdded;
+use AIArmada\Cart\Events\CartItemAdded;
 use App\Models\AbandonedCart;
 use Illuminate\Support\Facades\Auth;
 
@@ -320,7 +320,7 @@ class TrackAbandonedCart
 ```php
 namespace App\Listeners\Cart;
 
-use MasyukAI\Cart\Events\CartItemUpdated;
+use AIArmada\Cart\Events\CartItemUpdated;
 use App\Models\PriceAlert;
 
 class CheckPriceAlerts
@@ -348,7 +348,7 @@ class CheckPriceAlerts
 ### Test Event Dispatching
 
 ```php
-use MasyukAI\Cart\Events\CartItemAdded;
+use AIArmada\Cart\Events\CartItemAdded;
 use Illuminate\Support\Facades\Event;
 
 it('dispatches event when item added', function () {
@@ -376,7 +376,7 @@ it('does not dispatch events when disabled', function () {
 
 ```php
 use App\Listeners\Cart\LogCartActivity;
-use MasyukAI\Cart\Events\CartItemAdded;
+use AIArmada\Cart\Events\CartItemAdded;
 use Illuminate\Support\Facades\Log;
 
 it('logs cart activity', function () {
@@ -402,7 +402,7 @@ it('logs cart activity', function () {
 ### Test Event Flow
 
 ```php
-use MasyukAI\Cart\Events\{CartItemAdded, CartItemUpdated, CartItemRemoved, CartCleared};
+use AIArmada\Cart\Events\{CartItemAdded, CartItemUpdated, CartItemRemoved, CartCleared};
 
 it('tracks complete cart workflow', function () {
     Event::fake();

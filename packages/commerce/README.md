@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/masyukai/cart/main/art/banner.png" alt="MasyukAI Cart" width="720" />
+  <img src="https://raw.githubusercontent.com/aiarmada/cart/main/art/banner.png" alt="AIArmada Cart" width="720" />
 </p>
 
 <p align="center">
@@ -9,11 +9,11 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-4c1?style=flat-square" alt="MIT"></a>
 </p>
 
-# MasyukAI Cart
+# AIArmada Cart
 
 > A production-grade, multi-instance shopping cart engine for Laravel 12, crafted for modern commerce applications.
 
-MasyukAI Cart delivers developer ergonomics paired with enterprise durability: optimistic locking for concurrency safety, dynamic pricing rules, powerful event hooks, and comprehensive documentation. Whether you're building an online storefront, a B2B quoting system, or a headless checkout API, this package provides the foundation you need—without vendor lock-in.
+AIArmada Cart delivers developer ergonomics paired with enterprise durability: optimistic locking for concurrency safety, dynamic pricing rules, powerful event hooks, and comprehensive documentation. Whether you're building an online storefront, a B2B quoting system, or a headless checkout API, this package provides the foundation you need—without vendor lock-in.
 
 ## ✨ Key Features
 
@@ -27,11 +27,11 @@ MasyukAI Cart delivers developer ergonomics paired with enterprise durability: o
 - ⚡ **Octane ready** – Works seamlessly with long-lived worker processes
 - ✅ **Battle-tested** – Comprehensive Pest test suite with 100+ tests
 
-# MasyukAI Cart
+# AIArmada Cart
 
 > A production-grade, multi-instance shopping cart engine for Laravel 12, crafted for modern commerce teams.
 
-MasyukAI Cart pairs developer ergonomics with enterprise durability: optimistic locking, dynamic pricing rules, powerful analytics hooks, and batteries included documentation. Whether you’re building a classic storefront, a B2B quoting flow, or a headless checkout, this package gives you the building blocks you need—without vendor lock-in.
+AIArmada Cart pairs developer ergonomics with enterprise durability: optimistic locking, dynamic pricing rules, powerful analytics hooks, and batteries included documentation. Whether you’re building a classic storefront, a B2B quoting flow, or a headless checkout, this package gives you the building blocks you need—without vendor lock-in.
 
 - 🚀 **Ready in minutes** – Composer install, auto-discovery, intuitive API.
 - 🧮 **Accurate totals** – Akaunting\Money under the hood, stackable conditions, dynamic rules.
@@ -79,7 +79,7 @@ Comprehensive documentation to get you from zero to production:
 ### Installation
 
 ```bash
-composer require masyukai/cart
+composer require aiarmada/cart
 ```
 
 Laravel will auto-discover the service provider. No manual registration needed.
@@ -87,7 +87,7 @@ Laravel will auto-discover the service provider. No manual registration needed.
 ### Basic Usage
 
 ```php
-use MasyukAI\Cart\Facades\Cart;
+use AIArmada\Cart\Facades\Cart;
 
 // Add items to cart
 Cart::add('sku-001', 'Premium Hoodie', 79.90, 2, [
@@ -207,7 +207,7 @@ We welcome contributions! Please:
 ### Development Setup
 
 ```bash
-git clone https://github.com/masyukai/cart.git
+git clone https://github.com/aiarmada/cart.git
 cd cart
 composer install
 vendor/bin/pest
@@ -215,18 +215,18 @@ vendor/bin/pest
 
 ## 📄 License
 
-MasyukAI Cart is open-sourced software licensed under the [MIT license](LICENSE).
+AIArmada Cart is open-sourced software licensed under the [MIT license](LICENSE).
 
 ## 🔒 Security
 
-If you discover a security vulnerability, please email **security@masyukai.dev** instead of using the issue tracker. All security vulnerabilities will be promptly addressed.
+If you discover a security vulnerability, please email **security@aiarmada.dev** instead of using the issue tracker. All security vulnerabilities will be promptly addressed.
 
 ## 💬 Support
 
 - 📖 **Documentation**: [docs/index.md](docs/index.md)
-- 🐛 **Issues**: [GitHub Issues](https://github.com/masyukai/cart/issues)
-- 💡 **Discussions**: [GitHub Discussions](https://github.com/masyukai/cart/discussions)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/aiarmada/cart/issues)
+- 💡 **Discussions**: [GitHub Discussions](https://github.com/aiarmada/cart/discussions)
 
 ---
 
-<p align="center">Made with ❤️ by <a href="https://masyukai.com">MasyukAI</a></p>
+<p align="center">Made with ❤️ by <a href="https://aiarmada.com">AIArmada</a></p>

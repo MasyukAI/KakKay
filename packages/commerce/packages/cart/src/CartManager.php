@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace MasyukAI\Cart;
+namespace AIArmada\Cart;
 
+use AIArmada\Cart\Storage\StorageInterface;
 use Illuminate\Contracts\Events\Dispatcher;
-use MasyukAI\Cart\Storage\StorageInterface;
 use RuntimeException;
 use Throwable;
 
