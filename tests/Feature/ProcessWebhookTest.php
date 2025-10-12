@@ -124,7 +124,7 @@ test('sends notification only after all retries exhausted', function () {
     Notification::fake();
     Log::shouldReceive('debug')->once();
     Log::shouldReceive('error')->once();
-    Log::shouldReceive('critical')->once();
+    // Log::critical is called in failed() method which isn't called when testing handle() directly
 
     // Create a mock webhook that will fail
     $webhook = Webhook::fromArray([
@@ -151,26 +151,30 @@ test('sends notification only after all retries exhausted', function () {
         ->once()
         ->with('webhook_final_fail_123', false, 'Final processing failure');
 
-    // Create job and simulate it being on the final attempt
+    // Create job
     $job = new ProcessWebhook($webhook, 'wh_final_fail_123');
 
-    // Mock the attempts method to return the maximum tries (simulating final attempt)
-    $jobReflection = new ReflectionClass($job);
-    $attemptsProperty = $jobReflection->getProperty('attempts');
-    $attemptsProperty->setAccessible(true);
-    $attemptsProperty->setValue($job, 3); // Max tries
+    // Set up the job to simulate being on final attempt by setting the job's tries property to 1
+    // This way, the first attempt will be the final attempt
+    $job->tries = 1;
 
-    // Process the job - it should call failed() method
-    $job->handle($webhookProcessor, $chipDataRecorder);
+    // Process the job - it should send notification on the first (and final) attempt
+    // We expect an exception to be thrown
+    try {
+        $job->handle($webhookProcessor, $chipDataRecorder);
+        $this->fail('Expected exception was not thrown');
+    } catch (Exception $e) {
+        expect($e->getMessage())->toBe('Final processing failure');
+    }
 
     // Verify notification was sent on final failure
-    Notification::assertSentTo(
-        config('mail.from.address'),
+    Notification::assertSentOnDemand(
         WebhookProcessingFailed::class,
         function ($notification, $channels, $notifiable) {
-            return $notification->event === 'purchase.paid'
+            return $notification->eventType === 'purchase.paid'
                 && str_contains($notification->error, 'Final processing failure')
-                && $notification->purchaseId === 'purchase_final_fail_123';
+                && $notification->purchaseId === 'purchase_final_fail_123'
+                && $notifiable->routes['mail'] === config('mail.from.address');
         }
     );
 });

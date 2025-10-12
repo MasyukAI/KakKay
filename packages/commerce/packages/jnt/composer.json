@@ -1,67 +1,65 @@
 {
-    "name": "aiarmada/jnt",
-    "description": "J&T Express Malaysia API Integration Package",
-    "type": "library",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "AIArmada",
-            "email": "hello@masyuk.ai"
-        }
-    ],
-    "require": {
-        "php": "^8.4",
-        "illuminate/support": "^12.0",
-        "guzzlehttp/guzzle": "^7.0",
-        "spatie/laravel-package-tools": "^1.92"
-    },
-    "require-dev": {
-        "orchestra/testbench": "^10.0",
-        "pestphp/pest": "^4.0",
-        "pestphp/pest-plugin-laravel": "^4.0",
-        "larastan/larastan": "^3.7",
-        "laravel/pint": "^1.18",
-        "rector/rector": "^2.2"
-    },
-    "autoload": {
-        "psr-4": {
-            "AIArmada\\Jnt\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "AIArmada\\Jnt\\Tests\\": "tests/"
-        }
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "AIArmada\\Jnt\\JntServiceProvider"
-            ],
-            "aliases": {
-                "JntExpress": "AIArmada\\Jnt\\Facades\\JntExpress"
-            }
-        }
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
-    "config": {
-        "allow-plugins": {
-            "pestphp/pest-plugin": true
-        }
-    },
-    "scripts": {
-        "test": "vendor/bin/pest",
-        "test:coverage": "vendor/bin/pest --coverage",
-        "test:parallel": "vendor/bin/pest --parallel",
-        "analyse": "vendor/bin/phpstan analyse",
-        "refactor": "vendor/bin/rector process",
-        "refactor:dry": "vendor/bin/rector process --dry-run",
-        "format": "vendor/bin/pint",
-        "check": [
-            "@format",
-            "@analyse",
-            "@test"
-        ]
+  "name": "aiarmada/jnt",
+  "description": "J&T Express Malaysia API Integration Package",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "AIArmada",
+      "email": "hello@masyuk.ai"
     }
+  ],
+  "require": {
+    "aiarmada/commerce-support": "self.version",
+    "guzzlehttp/guzzle": "^7.0"
+  },
+  "require-dev": {
+    "orchestra/testbench": "^10.0",
+    "pestphp/pest": "^4.0",
+    "pestphp/pest-plugin-laravel": "^4.0",
+    "larastan/larastan": "^3.0",
+    "laravel/pint": "^1.18",
+    "rector/rector": "^2.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "AIArmada\\Jnt\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "AIArmada\\Jnt\\Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "AIArmada\\Jnt\\JntServiceProvider"
+      ],
+      "aliases": {
+        "JntExpress": "AIArmada\\Jnt\\Facades\\JntExpress"
+      }
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  },
+  "scripts": {
+    "test": "vendor/bin/pest",
+    "test:coverage": "vendor/bin/pest --coverage",
+    "test:parallel": "vendor/bin/pest --parallel",
+    "analyse": "vendor/bin/phpstan analyse",
+    "refactor": "vendor/bin/rector process",
+    "refactor:dry": "vendor/bin/rector process --dry-run",
+    "format": "vendor/bin/pint",
+    "check": [
+      "@format",
+      "@analyse",
+      "@test"
+    ]
+  }
 }

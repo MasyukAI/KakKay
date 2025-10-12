@@ -1,7 +1,19 @@
 {
     "name": "aiarmada/commerce",
+    "replace": {
+        "aiarmada/commerce-support": "self.version",
+        "aiarmada/cart": "self.version",
+        "aiarmada/chip": "self.version",
+        "aiarmada/docs": "self.version",
+        "aiarmada/filament-cart": "self.version",
+        "aiarmada/filament-chip": "self.version",
+        "aiarmada/jnt": "self.version",
+        "aiarmada/stock": "self.version",
+        "aiarmada/vouchers": "self.version"
+    },
     "description": "A modern, feature-rich shopping cart package for Laravel 12",
     "license": "MIT",
+    "version": "1.0.0",
     "keywords": [
         "laravel",
         "laravel12",
@@ -16,81 +28,26 @@
             "email": "info@aiarmada.com"
         }
     ],
-    "repositories": [
-        {
-            "type": "path",
-            "url": "./packages/cart",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "./packages/docs",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "./packages/stock",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "./packages/vouchers",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "./packages/chip",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "./packages/jnt",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "./packages/filament-cart",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "./packages/filament-chip",
-            "options": {
-                "symlink": true
-            }
-        }
-    ],
     "require": {
-        "php": "^8.2",
-        "akaunting/laravel-money": "^6.0",
-        "spatie/laravel-package-tools": "^1.92",
+        "php": "^8.4",
+        "aiarmada/commerce-support": "@dev",
         "aiarmada/cart": "@dev",
-        "aiarmada/docs": "@dev",
-        "aiarmada/stock": "@dev",
-        "aiarmada/vouchers": "@dev",
         "aiarmada/chip": "@dev",
-        "aiarmada/jnt": "@dev",
+        "aiarmada/docs": "@dev",
         "aiarmada/filament-cart": "@dev",
-        "aiarmada/filament-chip": "@dev"
+        "aiarmada/filament-chip": "@dev",
+        "aiarmada/jnt": "@dev",
+        "aiarmada/stock": "@dev",
+        "aiarmada/vouchers": "@dev"
     },
     "require-dev": {
+        "akaunting/laravel-money": "^6.0",
         "driftingly/rector-laravel": "^2.0",
+        "filament/filament": "^4.0",
         "larastan/larastan": "^3.0",
+        "laravel/framework": "^12.0",
         "laravel/pint": "^1.18",
+        "livewire/livewire": "^3.0",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
         "orchestra/testbench": "^10.0",
@@ -98,39 +55,130 @@
         "pestphp/pest-plugin-browser": "^4.0",
         "pestphp/pest-plugin-laravel": "^4.0",
         "pestphp/pest-plugin-type-coverage": "^4.0",
-        "phpunit/phpunit": "^12.3"
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^12.3",
+        "rector/rector": "^2.2",
+        "symplify/monorepo-builder": "^11.0"
     },
+    "repositories": [
+        {
+            "options": {
+                "symlink": true
+            },
+            "type": "path",
+            "url": "./packages/support"
+        },
+        {
+            "options": {
+                "symlink": true
+            },
+            "type": "path",
+            "url": "./packages/cart"
+        },
+        {
+            "options": {
+                "symlink": true
+            },
+            "type": "path",
+            "url": "./packages/chip"
+        },
+        {
+            "options": {
+                "symlink": true
+            },
+            "type": "path",
+            "url": "./packages/docs"
+        },
+        {
+            "options": {
+                "symlink": true
+            },
+            "type": "path",
+            "url": "./packages/filament-cart"
+        },
+        {
+            "options": {
+                "symlink": true
+            },
+            "type": "path",
+            "url": "./packages/filament-chip"
+        },
+        {
+            "options": {
+                "symlink": true
+            },
+            "type": "path",
+            "url": "./packages/jnt"
+        },
+        {
+            "options": {
+                "symlink": true
+            },
+            "type": "path",
+            "url": "./packages/stock"
+        },
+        {
+            "options": {
+                "symlink": true
+            },
+            "type": "path",
+            "url": "./packages/vouchers"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "autoload": {
         "psr-4": {
+            "AIArmada\\CommerceSupport\\": "packages/support/src",
             "AIArmada\\Cart\\": "packages/cart/src",
             "AIArmada\\Chip\\": "packages/chip/src",
             "AIArmada\\Docs\\": "packages/docs/src",
             "AIArmada\\FilamentCart\\": "packages/filament-cart/src",
+            "AIArmada\\FilamentCart\\Database\\Factories\\": "packages/filament-cart/database/factories/",
+            "AIArmada\\FilamentCart\\Database\\Seeders\\": "packages/filament-cart/database/seeders/",
             "AIArmada\\FilamentChip\\": "packages/filament-chip/src",
             "AIArmada\\Jnt\\": "packages/jnt/src",
             "AIArmada\\Stock\\": "packages/stock/src",
             "AIArmada\\Vouchers\\": "packages/vouchers/src"
         }
     },
-    "extra": {
-        "laravel": {
-            "aliases": {
-                "Cart": "AIArmada\\Cart\\Facades\\Cart"
-            },
-            "providers": [
-                "AIArmada\\Cart\\CartServiceProvider"
-            ]
-        }
-    },
     "autoload-dev": {
         "psr-4": {
-            "AIArmada\\Commerce\\Tests\\": "tests/src"
+            "AIArmada\\Chip\\Tests\\": "packages/chip/tests/",
+            "AIArmada\\Commerce\\Tests\\": "tests/src",
+            "AIArmada\\FilamentCart\\Tests\\": "packages/filament-cart/tests/",
+            "AIArmada\\FilamentChip\\Tests\\": "packages/filament-chip/tests/",
+            "AIArmada\\Jnt\\Tests\\": "packages/jnt/tests/",
+            "Tests\\": "tests/"
         }
     },
     "config": {
         "sort-packages": true,
         "allow-plugins": {
-            "pestphp/pest-plugin": true
+            "pestphp/pest-plugin": true,
+            "phpstan/extension-installer": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "aliases": {
+                "Cart": "AIArmada\\Cart\\Facades\\Cart",
+                "Chip": "AIArmada\\Chip\\Facades\\Chip",
+                "JntExpress": "AIArmada\\Jnt\\Facades\\JntExpress",
+                "Stock": "AIArmada\\Stock\\Facades\\Stock",
+                "Voucher": "AIArmada\\Vouchers\\Facades\\Voucher"
+            },
+            "providers": [
+                "AIArmada\\CommerceSupport\\SupportServiceProvider",
+                "AIArmada\\Cart\\CartServiceProvider",
+                "AIArmada\\Chip\\ChipServiceProvider",
+                "AIArmada\\FilamentCart\\FilamentCartServiceProvider",
+                "AIArmada\\FilamentChip\\FilamentChipServiceProvider",
+                "AIArmada\\Jnt\\JntServiceProvider",
+                "AIArmada\\Stock\\StockServiceProvider",
+                "AIArmada\\Vouchers\\VoucherServiceProvider"
+            ]
         }
     },
     "scripts": {
@@ -145,9 +193,33 @@
         ],
         "format-test": [
             "vendor/bin/pint --test"
+        ],
+        "phpstan": [
+            "vendor/bin/phpstan analyse --memory-limit=1G"
+        ],
+        "rector": [
+            "vendor/bin/rector"
+        ],
+        "rector-dry": [
+            "vendor/bin/rector --dry-run"
+        ],
+        "ci": [
+            "@phpstan",
+            "@rector-dry",
+            "@format-test",
+            "@test"
+        ],
+        "monorepo:merge": [
+            "vendor/bin/monorepo-builder merge"
+        ],
+        "monorepo:validate": [
+            "vendor/bin/monorepo-builder validate"
+        ],
+        "monorepo:bump-interdependency": [
+            "vendor/bin/monorepo-builder bump-interdependency"
+        ],
+        "monorepo:release": [
+            "vendor/bin/monorepo-builder release"
         ]
-    },
-    "version": "1.0.0",
-    "minimum-stability": "stable",
-    "prefer-stable": true
+    }
 }

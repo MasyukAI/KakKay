@@ -7,7 +7,7 @@ use RectorLaravel\Set\LaravelSetProvider;
 
 return RectorConfig::configure()
     ->withPaths([
-        __DIR__.'/packages/cart/src',
+        __DIR__.'/packages',
         __DIR__.'/tests',
     ])
     ->withSetProviders(LaravelSetProvider::class)

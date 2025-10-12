@@ -1,0 +1,56 @@
+{
+    "name": "aiarmada/commerce-support",
+    "description": "Core helper methods and foundation code for all AIArmada Commerce packages.",
+    "license": "MIT",
+    "keywords": [
+        "laravel",
+        "commerce",
+        "support",
+        "aiarmada"
+    ],
+    "authors": [
+        {
+            "name": "AIArmada",
+            "email": "info@aiarmada.com"
+        }
+    ],
+    "require": {
+        "php": "^8.4",
+        "illuminate/contracts": "^12.0",
+        "illuminate/support": "^12.0",
+        "spatie/laravel-package-tools": "^1.92"
+    },
+    "suggest": {
+        "guzzlehttp/guzzle": "Required for HTTP client utilities (chip/jnt packages)",
+        "akaunting/laravel-money": "Required for money utilities (cart/vouchers packages)"
+    },
+    "require-dev": {
+        "larastan/larastan": "^3.0",
+        "laravel/pint": "^1.18"
+    },
+    "autoload": {
+        "files": [
+            "src/helpers.php"
+        ],
+        "psr-4": {
+            "AIArmada\\CommerceSupport\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "AIArmada\\CommerceSupport\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "AIArmada\\CommerceSupport\\SupportServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

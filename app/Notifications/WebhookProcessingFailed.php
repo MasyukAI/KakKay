@@ -14,10 +14,10 @@ final class WebhookProcessingFailed extends Notification implements ShouldQueue
     use Queueable;
 
     public function __construct(
-        private string $eventType,
-        private string $error,
-        private ?string $purchaseId = null,
-        private ?array $webhookData = null
+        public readonly string $eventType,
+        public readonly string $error,
+        public readonly ?string $purchaseId = null,
+        public readonly ?array $webhookData = null
     ) {}
 
     /**

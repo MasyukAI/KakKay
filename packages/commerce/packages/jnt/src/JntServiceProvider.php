@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace AIArmada\Jnt;
 
+use AIArmada\CommerceSupport\Traits\ValidatesConfiguration;
 use AIArmada\Jnt\Console\Commands\ConfigCheckCommand;
+use AIArmada\Jnt\Console\Commands\HealthCheckCommand;
 use AIArmada\Jnt\Console\Commands\OrderCancelCommand;
 use AIArmada\Jnt\Console\Commands\OrderCreateCommand;
 use AIArmada\Jnt\Console\Commands\OrderPrintCommand;
@@ -15,7 +17,6 @@ use AIArmada\Jnt\Services\JntExpressService;
 use AIArmada\Jnt\Services\WebhookService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Routing\Router;
-use Illuminate\Support\Facades\Log;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -28,6 +29,8 @@ use Spatie\LaravelPackageTools\PackageServiceProvider;
  */
 class JntServiceProvider extends PackageServiceProvider
 {
+    use ValidatesConfiguration;
+
     /**
      * Configure the package.
      */
@@ -39,6 +42,7 @@ class JntServiceProvider extends PackageServiceProvider
             ->hasRoute('webhooks')
             ->hasCommands([
                 ConfigCheckCommand::class,
+                HealthCheckCommand::class,
                 OrderCreateCommand::class,
                 OrderTrackCommand::class,
                 OrderCancelCommand::class,
@@ -60,7 +64,12 @@ class JntServiceProvider extends PackageServiceProvider
      */
     public function bootingPackage(): void
     {
-        $this->validateConfiguration();
+        $this->validateConfiguration('jnt', [
+            'customer_code',
+            'password',
+            'private_key',
+        ]);
+
         $this->registerMiddleware();
     }
 
@@ -70,7 +79,7 @@ class JntServiceProvider extends PackageServiceProvider
     protected function registerServices(): void
     {
         // Register main J&T Express service
-        $this->app->singleton(JntExpressService::class, function (Application $app): JntExpressService {
+        $this->app->singleton(function (Application $app): JntExpressService {
             $config = $app['config']['jnt'];
 
             return new JntExpressService(
@@ -97,66 +106,5 @@ class JntServiceProvider extends PackageServiceProvider
         /** @var Router $router */
         $router = $this->app->make(Router::class);
         $router->aliasMiddleware('jnt.verify.signature', VerifyWebhookSignature::class);
-    }
-
-    /**
-     * Validate critical configuration values.
-     *
-     * This method performs non-blocking validation and logs warnings
-     * for invalid configuration rather than throwing exceptions.
-     * Use the jnt:config:check command for detailed validation.
-     */
-    protected function validateConfiguration(): void
-    {
-        $this->validateRequiredKeys();
-        $this->validateEnvironment();
-        $this->validateBaseUrl();
-    }
-
-    /**
-     * Validate required configuration keys.
-     */
-    protected function validateRequiredKeys(): void
-    {
-        $required = ['customer_code', 'password', 'private_key'];
-
-        foreach ($required as $key) {
-            $value = config('jnt.'.$key);
-
-            if (empty($value)) {
-                Log::warning('J&T Express: Missing required configuration key: jnt.'.$key);
-            }
-        }
-    }
-
-    /**
-     * Validate environment configuration.
-     */
-    protected function validateEnvironment(): void
-    {
-        $environment = config('jnt.environment', 'production');
-        $validEnvironments = ['sandbox', 'production'];
-
-        if (! in_array($environment, $validEnvironments, true)) {
-            Log::warning(
-                sprintf("J&T Express: Invalid environment: %s. Must be 'sandbox' or 'production'.", $environment)
-            );
-        }
-    }
-
-    /**
-     * Validate base URL format.
-     */
-    protected function validateBaseUrl(): void
-    {
-        $baseUrl = config('jnt.base_url');
-
-        if (empty($baseUrl)) {
-            return;
-        }
-
-        if (! filter_var($baseUrl, FILTER_VALIDATE_URL)) {
-            Log::warning('J&T Express: Invalid base URL format: '.$baseUrl);
-        }
     }
 }

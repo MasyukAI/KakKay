@@ -11,6 +11,7 @@ use AIArmada\Cart\Storage\CacheStorage;
 use AIArmada\Cart\Storage\DatabaseStorage;
 use AIArmada\Cart\Storage\SessionStorage;
 use AIArmada\Cart\Storage\StorageInterface;
+use AIArmada\CommerceSupport\Traits\ValidatesConfiguration;
 use Illuminate\Auth\Events\Attempting;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Contracts\Events\Dispatcher;
@@ -19,6 +20,8 @@ use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 final class CartServiceProvider extends PackageServiceProvider
 {
+    use ValidatesConfiguration;
+
     public function configurePackage(Package $package): void
     {
         $package
@@ -28,6 +31,7 @@ final class CartServiceProvider extends PackageServiceProvider
             ->runsMigrations()
             ->hasCommands([
                 Console\Commands\ClearAbandonedCartsCommand::class,
+                Console\Commands\InstallCommerceCommand::class,
             ]);
     }
 
@@ -40,6 +44,11 @@ final class CartServiceProvider extends PackageServiceProvider
 
     public function bootingPackage(): void
     {
+        $this->validateConfiguration('cart', [
+            'storage',
+            'money.default_currency',
+        ]);
+
         $this->registerEventListeners();
     }
 
@@ -88,6 +97,13 @@ final class CartServiceProvider extends PackageServiceProvider
                 $connection,
                 config('cart.database.table', 'carts')
             );
+        });
+
+        // Bind StorageInterface to the configured storage driver
+        $this->app->bind(function (\Illuminate\Contracts\Foundation\Application $app): StorageInterface {
+            $driver = config('cart.storage', 'session');
+
+            return $app->make("cart.storage.{$driver}");
         });
     }
 

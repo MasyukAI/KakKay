@@ -3,7 +3,8 @@
 declare(strict_types=1);
 
 use AIArmada\Cart\Events\CartCreated;
-use AIArmada\FilamentCart\Models\Cart;
+use AIArmada\Cart\Facades\Cart;
+use AIArmada\FilamentCart\Models\Cart as CartModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 
@@ -14,7 +15,7 @@ test('empty cart does not create database record on homepage visit', function ()
     $this->get('/');
 
     // Cart should not exist in database because no items were added
-    expect(Cart::query()->count())->toBe(0);
+    expect(CartModel::query()->count())->toBe(0);
 });
 
 test('cart is created in database when item is added', function () {
@@ -22,9 +23,9 @@ test('cart is created in database when item is added', function () {
     Cart::add('test-product', 'Test Product', 99.99, 1);
 
     // Cart should now exist in database
-    expect(Cart::query()->count())->toBe(1);
+    expect(CartModel::query()->count())->toBe(1);
 
-    $cart = Cart::query()->first();
+    $cart = CartModel::query()->first();
     expect($cart)->not->toBeNull();
     expect($cart->items)->toHaveCount(1);
 });
@@ -34,7 +35,7 @@ test('homepage visit does not update cart updated_at timestamp', function () {
     Cart::add('test-product', 'Test Product', 99.99, 1);
 
     // Get the initial updated_at timestamp
-    $cart = Cart::query()->first();
+    $cart = CartModel::query()->first();
     $initialUpdatedAt = $cart->updated_at;
 
     // Wait a moment to ensure timestamp would change if updated

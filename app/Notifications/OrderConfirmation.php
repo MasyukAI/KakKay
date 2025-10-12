@@ -40,7 +40,7 @@ final class OrderConfirmation extends Notification implements ShouldQueue
     {
         $customerName = $this->order->user->name ?? 'Valued Customer';
         $orderNumber = $this->order->order_number;
-        $orderTotal = $this->order->total->format();
+        $orderTotal = 'RM '.number_format($this->order->total / 100, 2);
         $paymentMethod = $this->payment->gateway_name ?? 'CHIP';
 
         return (new MailMessage)

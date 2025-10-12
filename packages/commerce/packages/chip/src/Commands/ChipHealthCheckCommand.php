@@ -30,7 +30,6 @@ final class ChipHealthCheckCommand extends Command
     public function handle(): int
     {
         $this->info('🔍 CHIP API Health Check');
-        $this->newLine();
 
         $checkCollect = ! $this->option('send') || $this->option('collect');
         $checkSend = ! $this->option('collect') || $this->option('send');

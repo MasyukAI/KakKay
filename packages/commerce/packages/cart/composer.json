@@ -1,22 +1,22 @@
 {
-    "name": "aiarmada/cart",
-    "require": {
-        "php": "^8.2",
-        "spatie/laravel-package-tools": "^1.92"
-    },
-    "extra": {
-        "laravel": {
-            "aliases": {
-                "Cart": "AIArmada\\Cart\\Facades\\Cart"
-            },
-            "providers": [
-                "AIArmada\\Cart\\CartServiceProvider"
-            ]
-        }
-    },
-    "autoload": {
-        "psr-4": {
-            "AIArmada\\Cart\\": "src"
-        }
+  "name": "aiarmada/cart",
+  "require": {
+    "aiarmada/commerce-support": "self.version",
+    "akaunting/laravel-money": "^6.0"
+  },
+  "extra": {
+    "laravel": {
+      "aliases": {
+        "Cart": "AIArmada\\Cart\\Facades\\Cart"
+      },
+      "providers": [
+        "AIArmada\\Cart\\CartServiceProvider"
+      ]
     }
+  },
+  "autoload": {
+    "psr-4": {
+      "AIArmada\\Cart\\": "src"
+    }
+  }
 }

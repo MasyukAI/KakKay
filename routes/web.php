@@ -28,6 +28,11 @@ Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
+// Order routes
+Route::get('/orders/{order}', function () {
+    return view('orders.show');
+})->name('orders.show');
+
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 

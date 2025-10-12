@@ -10,6 +10,12 @@ use AIArmada\Jnt\Services\JntExpressService;
 use Exception;
 use Illuminate\Console\Command;
 
+use function Laravel\Prompts\confirm;
+use function Laravel\Prompts\error;
+use function Laravel\Prompts\info;
+use function Laravel\Prompts\select;
+use function Laravel\Prompts\spin;
+
 class OrderCancelCommand extends Command
 {
     protected $signature = 'jnt:order:cancel {order-id : Order ID to cancel} {--reason= : Cancellation reason}';
@@ -27,35 +33,33 @@ class OrderCancelCommand extends Command
                 ->mapWithKeys(fn ($reason): array => [$reason->value => $reason->value])
                 ->toArray();
 
-            $reasonInput = $this->choice('Select cancellation reason', $reasons);
+            $reasonInput = select('Select cancellation reason', $reasons);
         }
 
         // Try to match to enum, otherwise use as string
         $reason = CancellationReason::tryFrom($reasonInput) ?? $reasonInput;
 
-        if (! $this->confirm(sprintf('Cancel order %s?', $orderId), true)) {
-            $this->info('Cancellation aborted.');
+        if (! confirm(sprintf('Cancel order %s?', $orderId), default: true)) {
+            info('Cancellation aborted.');
 
             return self::SUCCESS;
         }
 
-        $this->info('Cancelling order...');
-
         try {
-            $result = $jnt->cancelOrder($orderId, $reason);
+            spin(
+                fn () => $jnt->cancelOrder($orderId, $reason),
+                'Cancelling order...'
+            );
 
-            $this->newLine();
-            $this->info('✓ Order cancelled successfully!');
+            info('✓ Order cancelled successfully!');
 
             return self::SUCCESS;
         } catch (JntApiException $e) {
-            $this->newLine();
-            $this->error('API Error: '.$e->getMessage());
+            error('API Error: '.$e->getMessage());
 
             return self::FAILURE;
         } catch (Exception $e) {
-            $this->newLine();
-            $this->error('Error: '.$e->getMessage());
+            error('Error: '.$e->getMessage());
 
             return self::FAILURE;
         }

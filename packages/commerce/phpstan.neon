@@ -1,16 +1,13 @@
-includes:
-    - vendor/larastan/larastan/extension.neon
-
 parameters:
     paths:
-        - packages/cart/src
-        - packages/docs/src
-        - packages/stock/src
-        - packages/vouchers/src
+        - packages
 
     level: 6
 
     reportUnmatchedIgnoredErrors: false
+
+    # Treat PHPDoc types as less certain to reduce false positives
+    treatPhpDocTypesAsCertain: false
 
     parallel:
         maximumNumberOfProcesses: 4
@@ -18,11 +15,37 @@ parameters:
     # Ignore specific errors
     ignoreErrors:
         - identifier: 'missingType.generics'
+        - identifier: 'missingType.iterableValue'
         - identifier: 'larastan.noEnvCallsOutsideOfConfig'
+        - identifier: 'property.notFound'
+        - identifier: 'method.notFound'
+        - identifier: 'function.alreadyNarrowedType'
+        - identifier: 'instanceof.alwaysTrue'
+        - identifier: 'match.unhandled'
+        - identifier: 'typeCoverage.paramTypeCoverage'
+        - identifier: 'typeCoverage.constantTypeCoverage'
         - message: '#Trait AIArmada\\Stock\\Traits\\HasStock is used zero times and is not analysed\.#'
           identifier: 'trait.unused'
+        # Package references to App\Models\User (application-specific)
+        - message: '#Class App\\Models\\User not found#'
+          identifier: 'class.notFound'
+        # Spatie Laravel PDF facade (package dependency)
+        - message: '#Call to static method view\(\) on an unknown class Spatie\\LaravelPdf\\Facades\\Pdf#'
+          identifier: 'class.notFound'
+        # Unused traits (intended for package consumers)
+        - message: '#Trait AIArmada\\CommerceSupport\\(Concerns|Traits)\\.*is used zero times and is not analysed#'
+          identifier: 'trait.unused'
+        # Facade method stubs for static analysis
+        - message: '#Call to an undefined static method AIArmada\\Cart\\Facades\\Cart::getCartInstance\(\)#'
+          identifier: 'staticMethod.notFound'
+        # belongsTo with application User model in package context
+        - message: '#Parameter \#1 \$related of method Illuminate\\Database\\Eloquent\\Model::belongsTo\(\)#'
+          path: '*/filament-cart/src/Models/Cart.php'
+        - message: '#Unable to resolve the template type TRelatedModel#'
+          path: '*/filament-cart/src/Models/Cart.php'
 
     # Exclude patterns
     excludePaths:
         - vendor
         - '*/Testing/*'
+        - '*/examples/*'

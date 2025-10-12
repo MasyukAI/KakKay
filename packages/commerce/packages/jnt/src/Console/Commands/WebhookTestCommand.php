@@ -9,6 +9,10 @@ use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 
+use function Laravel\Prompts\error;
+use function Laravel\Prompts\info;
+use function Laravel\Prompts\spin;
+
 class WebhookTestCommand extends Command
 {
     protected $signature = 'jnt:webhook:test {--url= : Webhook URL to test}';
@@ -19,8 +23,7 @@ class WebhookTestCommand extends Command
     {
         $url = $this->option('url') ?: config('jnt.webhook.url', route('jnt.webhook'));
 
-        $this->info('Testing webhook endpoint: '.$url);
-        $this->newLine();
+        info('Testing webhook endpoint: '.$url);
 
         // Generate sample webhook payload
         $samplePayload = [
@@ -42,19 +45,18 @@ class WebhookTestCommand extends Command
         $signature = $webhookService->generateSignature($samplePayload['bizContent']);
         $samplePayload['digest'] = $signature;
 
-        $this->info('Sending test webhook...');
-
         try {
-            $response = Http::post($url, $samplePayload);
-
-            $this->newLine();
+            $response = spin(
+                fn () => Http::post($url, $samplePayload),
+                'Sending test webhook...'
+            );
 
             if ($response->successful()) {
-                $this->info('✓ Webhook test successful!');
+                info('✓ Webhook test successful!');
                 $this->line('Status: '.$response->status());
                 $this->line('Response: '.$response->body());
             } else {
-                $this->error('✗ Webhook test failed!');
+                error('✗ Webhook test failed!');
                 $this->line('Status: '.$response->status());
                 $this->line('Response: '.$response->body());
 
@@ -63,8 +65,7 @@ class WebhookTestCommand extends Command
 
             return self::SUCCESS;
         } catch (Exception $exception) {
-            $this->newLine();
-            $this->error('Error: '.$exception->getMessage());
+            error('Error: '.$exception->getMessage());
 
             return self::FAILURE;
         }

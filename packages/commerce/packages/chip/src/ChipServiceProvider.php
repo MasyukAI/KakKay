@@ -10,13 +10,15 @@ use AIArmada\Chip\Commands\ChipHealthCheckCommand;
 use AIArmada\Chip\Services\ChipCollectService;
 use AIArmada\Chip\Services\ChipSendService;
 use AIArmada\Chip\Services\WebhookService;
+use AIArmada\CommerceSupport\Traits\ValidatesConfiguration;
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
-use RuntimeException;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 final class ChipServiceProvider extends PackageServiceProvider
 {
+    use ValidatesConfiguration;
+
     public function configurePackage(Package $package): void
     {
         $package
@@ -31,6 +33,16 @@ final class ChipServiceProvider extends PackageServiceProvider
     {
         $this->registerServices();
         $this->registerClients();
+    }
+
+    public function packageBooted(): void
+    {
+        $this->validateConfiguration('chip', [
+            'collect.api_key',
+            'collect.brand_id',
+            'send.api_key',
+            'send.api_secret',
+        ]);
     }
 
     /**
@@ -79,12 +91,6 @@ final class ChipServiceProvider extends PackageServiceProvider
             $apiKey = config('chip.collect.api_key');
             $brandId = config('chip.collect.brand_id');
 
-            if (! $apiKey || ! $brandId) {
-                throw new RuntimeException(
-                    'CHIP Collect API credentials not configured. Please set CHIP_COLLECT_API_KEY and CHIP_COLLECT_BRAND_ID environment variables.'
-                );
-            }
-
             $baseUrlConfig = config('chip.collect.base_url', 'https://gate.chip-in.asia/api/v1/');
             $environment = config('chip.environment', 'sandbox');
 
@@ -109,12 +115,6 @@ final class ChipServiceProvider extends PackageServiceProvider
         $this->app->singleton(function (): ChipSendClient {
             $apiKey = config('chip.send.api_key');
             $apiSecret = config('chip.send.api_secret');
-
-            if (! $apiKey || ! $apiSecret) {
-                throw new RuntimeException(
-                    'CHIP Send API credentials not configured. Please set CHIP_SEND_API_KEY and CHIP_SEND_API_SECRET environment variables.'
-                );
-            }
 
             $environment = config('chip.environment', 'sandbox');
 

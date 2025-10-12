@@ -17,6 +17,8 @@ uses(RefreshDatabase::class);
 beforeEach(function (): void {
     $this->withoutExceptionHandling();
     Notification::fake();
+    config(['queue.default' => 'sync']);
+    config(['cart.storage' => 'database']);
     config(['chip.webhooks.verify_signature' => false]);
     config(['chip.webhooks.company_public_key' => 'test-public-key']);
 });
@@ -65,7 +67,7 @@ it('persists purchases and creates order on purchase.paid webhook', function ():
     ]);
 
     $payload = [
-        'event' => 'purchase.paid',
+        'event_type' => 'purchase.paid',
         'data' => [
             'id' => $purchaseId,
             'status' => 'paid',

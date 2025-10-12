@@ -29,8 +29,8 @@ describe('CartServiceProvider', function () {
     it('registers storage drivers correctly', function () {
         $app = mock(Application::class);
 
-        // Mock all bind calls for storage drivers
-        $app->shouldReceive('bind')->withAnyArgs()->times(3);
+        // Mock all bind calls for storage drivers + StorageInterface binding
+        $app->shouldReceive('bind')->withAnyArgs()->times(4);
 
         $provider = new CartServiceProvider($app);
 
@@ -45,7 +45,7 @@ describe('CartServiceProvider', function () {
     it('tests database storage scenarios without complex mocking', function () {
         // This test just covers that the methods exist and can be called without error
         $app = mock(Application::class);
-        $app->shouldReceive('bind')->withAnyArgs()->times(3);
+        $app->shouldReceive('bind')->withAnyArgs()->times(4);
 
         $provider = new CartServiceProvider($app);
 
@@ -193,7 +193,7 @@ it('integration: publishes config, migrations, and views', function () {
     $provider->configurePackage($package);
 
     expect($package->name)->toBe('cart');
-    expect($package->commands)->toHaveCount(1);  // ClearAbandonedCartsCommand
+    expect($package->commands)->toHaveCount(2);  // ClearAbandonedCartsCommand + InstallCommerceCommand
     expect(true)->toBeTrue(); // Package was configured successfully
 });
 

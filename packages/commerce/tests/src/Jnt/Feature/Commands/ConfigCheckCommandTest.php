@@ -10,10 +10,12 @@ describe('ConfigCheckCommand', function (): void {
     beforeEach(function (): void {
         // Set valid config by default
         Config::set('jnt.api_account', 'test_account');
-        Config::set('jnt.private_key', "-----BEGIN RSA PRIVATE KEY-----\ntest\n-----END RSA PRIVATE KEY-----");
-        Config::set('jnt.public_key', "-----BEGIN PUBLIC KEY-----\ntest\n-----END PUBLIC KEY-----");
-        Config::set('jnt.environment', 'sandbox');
-        Config::set('jnt.base_url', 'https://api.jnt.com');
+        Config::set('jnt.private_key', '8e88c8477d4e4939859c560192fcafbc'); // Valid hex string like default
+        Config::set('jnt.environment', 'testing');
+        Config::set('jnt.base_urls', [
+            'testing' => 'https://demoopenapi.jtexpress.my/webopenplatformapi',
+            'production' => 'https://ylopenapi.jtexpress.my/webopenplatformapi',
+        ]);
     });
 
     it('passes all checks with valid configuration', function (): void {
@@ -50,22 +52,6 @@ describe('ConfigCheckCommand', function (): void {
             ->assertExitCode(1);
     });
 
-    it('fails when public key is missing', function (): void {
-        Config::set('jnt.public_key', null);
-
-        $this->artisan(ConfigCheckCommand::class)
-            ->expectsOutput('Configuration validation failed. Please fix the errors above.')
-            ->assertExitCode(1);
-    });
-
-    it('fails when public key has invalid format', function (): void {
-        Config::set('jnt.public_key', 'invalid-key-format');
-
-        $this->artisan(ConfigCheckCommand::class)
-            ->expectsOutput('Configuration validation failed. Please fix the errors above.')
-            ->assertExitCode(1);
-    });
-
     it('fails when environment is invalid', function (): void {
         Config::set('jnt.environment', 'invalid');
 
@@ -74,16 +60,19 @@ describe('ConfigCheckCommand', function (): void {
             ->assertExitCode(1);
     });
 
-    it('fails when base URL is missing', function (): void {
-        Config::set('jnt.base_url', null);
+    it('fails when base URLs are missing', function (): void {
+        Config::set('jnt.base_urls', null);
 
         $this->artisan(ConfigCheckCommand::class)
             ->expectsOutput('Configuration validation failed. Please fix the errors above.')
             ->assertExitCode(1);
     });
 
-    it('fails when base URL is invalid', function (): void {
-        Config::set('jnt.base_url', 'not-a-valid-url');
+    it('fails when base URLs are invalid', function (): void {
+        Config::set('jnt.base_urls', [
+            'testing' => 'not-a-valid-url',
+            'production' => 'https://valid.url',
+        ]);
 
         $this->artisan(ConfigCheckCommand::class)
             ->expectsOutput('Configuration validation failed. Please fix the errors above.')

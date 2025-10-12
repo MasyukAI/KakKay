@@ -17,11 +17,9 @@ class ConfigCheckCommand extends Command
 
     public function handle(JntExpressService $jnt): int
     {
-        $this->info('J&T Express Configuration Check');
-        $this->newLine();
+        $this->line('J&T Express Configuration Check');
 
         $checks = [];
-        $hasErrors = false;
 
         // Check API Account
         $checks[] = $this->checkConfig('API Account', 'jnt.api_account');
@@ -29,14 +27,11 @@ class ConfigCheckCommand extends Command
         // Check Private Key
         $checks[] = $this->checkPrivateKey();
 
-        // Check Public Key
-        $checks[] = $this->checkPublicKey();
-
         // Check Environment
         $checks[] = $this->checkEnvironment();
 
-        // Check Base URL
-        $checks[] = $this->checkBaseUrl();
+        // Check Base URLs
+        $checks[] = $this->checkBaseUrls();
 
         // Display results table
         $this->table(
@@ -48,8 +43,6 @@ class ConfigCheckCommand extends Command
             ])->toArray()
         );
 
-        $this->newLine();
-
         // Check for any errors
         $hasErrors = collect($checks)->contains('valid', false);
 
@@ -60,7 +53,7 @@ class ConfigCheckCommand extends Command
         }
 
         // Test API connectivity
-        $this->info('Testing API connectivity...');
+        $this->line('Testing API connectivity...');
         $connectivityCheck = $this->testConnectivity();
 
         if (! $connectivityCheck['success']) {
@@ -111,50 +104,23 @@ class ConfigCheckCommand extends Command
             ];
         }
 
-        // Validate RSA private key format
-        if (! str_contains((string) $privateKey, 'BEGIN RSA PRIVATE KEY') && ! str_contains((string) $privateKey, 'BEGIN PRIVATE KEY')) {
+        // Check if it's either RSA format or a hex string (for J&T testing)
+        $isRsaKey = str_contains((string) $privateKey, 'BEGIN RSA PRIVATE KEY') ||
+                   str_contains((string) $privateKey, 'BEGIN PRIVATE KEY');
+        $isHexString = ctype_xdigit((string) $privateKey) && mb_strlen((string) $privateKey) >= 16;
+
+        if (! $isRsaKey && ! $isHexString) {
             return [
                 'name' => 'Private Key',
                 'valid' => false,
-                'message' => 'Invalid format - Must be valid RSA private key',
+                'message' => 'Invalid format - Must be valid RSA private key or hex string',
             ];
         }
 
         return [
             'name' => 'Private Key',
             'valid' => true,
-            'message' => 'Valid RSA private key',
-        ];
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function checkPublicKey(): array
-    {
-        $publicKey = config('jnt.public_key');
-
-        if (empty($publicKey)) {
-            return [
-                'name' => 'Public Key',
-                'valid' => false,
-                'message' => 'Missing - Required for webhook verification',
-            ];
-        }
-
-        // Validate RSA public key format
-        if (! str_contains((string) $publicKey, 'BEGIN PUBLIC KEY')) {
-            return [
-                'name' => 'Public Key',
-                'valid' => false,
-                'message' => 'Invalid format - Must be valid RSA public key',
-            ];
-        }
-
-        return [
-            'name' => 'Public Key',
-            'valid' => true,
-            'message' => 'Valid RSA public key',
+            'message' => $isRsaKey ? 'Valid RSA private key' : 'Valid hex string key',
         ];
     }
 
@@ -165,11 +131,11 @@ class ConfigCheckCommand extends Command
     {
         $environment = config('jnt.environment', 'production');
 
-        if (! in_array($environment, ['production', 'sandbox'])) {
+        if (! in_array($environment, ['production', 'testing', 'local', 'development'])) {
             return [
                 'name' => 'Environment',
                 'valid' => false,
-                'message' => "Invalid - Must be 'production' or 'sandbox'",
+                'message' => "Invalid - Must be 'production', 'testing', 'local', or 'development'",
             ];
         }
 
@@ -183,30 +149,41 @@ class ConfigCheckCommand extends Command
     /**
      * @return array<string, mixed>
      */
-    private function checkBaseUrl(): array
+    private function checkBaseUrls(): array
     {
-        $baseUrl = config('jnt.base_url');
+        $baseUrls = config('jnt.base_urls');
 
-        if (empty($baseUrl)) {
+        if (empty($baseUrls)) {
             return [
-                'name' => 'Base URL',
+                'name' => 'Base URLs',
                 'valid' => false,
                 'message' => 'Missing - Required for API calls',
             ];
         }
 
-        if (! filter_var($baseUrl, FILTER_VALIDATE_URL)) {
+        if (! is_array($baseUrls) || ! isset($baseUrls['testing']) || ! isset($baseUrls['production'])) {
             return [
-                'name' => 'Base URL',
+                'name' => 'Base URLs',
                 'valid' => false,
-                'message' => 'Invalid URL format',
+                'message' => 'Invalid format - Must contain testing and production URLs',
+            ];
+        }
+
+        $environment = config('jnt.environment');
+        $currentUrl = $environment === 'production' ? $baseUrls['production'] : $baseUrls['testing'];
+
+        if (! filter_var($currentUrl, FILTER_VALIDATE_URL)) {
+            return [
+                'name' => 'Base URLs',
+                'valid' => false,
+                'message' => "Invalid URL format for {$environment} environment",
             ];
         }
 
         return [
-            'name' => 'Base URL',
+            'name' => 'Base URLs',
             'valid' => true,
-            'message' => $baseUrl,
+            'message' => "Configured for {$environment}: {$currentUrl}",
         ];
     }
 
@@ -216,7 +193,9 @@ class ConfigCheckCommand extends Command
     private function testConnectivity(): array
     {
         try {
-            $baseUrl = config('jnt.base_url');
+            $baseUrls = config('jnt.base_urls');
+            $environment = config('jnt.environment');
+            $baseUrl = $environment === 'production' ? $baseUrls['production'] : $baseUrls['testing'];
 
             // Simple connectivity test - check if we can reach the API
             $response = Http::timeout(5)->get($baseUrl);

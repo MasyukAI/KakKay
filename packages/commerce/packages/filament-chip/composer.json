@@ -1,79 +1,78 @@
 {
-    "name": "aiarmada/filament-chip",
-    "description": "A Filament admin plugin to explore CHIP data ingested by the aiarmada/chip package.",
-    "type": "library",
-    "license": "MIT",
-    "keywords": [
-        "laravel",
-        "filament",
-        "plugin",
-        "chip",
-        "payments",
-        "admin",
-        "aiarmada"
+  "name": "aiarmada/filament-chip",
+  "description": "A Filament admin plugin to explore CHIP data ingested by the aiarmada/chip package.",
+  "type": "library",
+  "license": "MIT",
+  "keywords": [
+    "laravel",
+    "filament",
+    "plugin",
+    "chip",
+    "payments",
+    "admin",
+    "aiarmada"
+  ],
+  "authors": [
+    {
+      "name": "AIArmada",
+      "email": "info@aiarmada.com"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../chip"
+    }
+  ],
+  "require": {
+    "aiarmada/commerce-support": "self.version",
+    "aiarmada/chip": "self.version",
+    "filament/filament": "^4.0",
+    "laravel/framework": "^12.0",
+    "livewire/livewire": "^3.0"
+  },
+  "require-dev": {
+    "driftingly/rector-laravel": "^2.0",
+    "larastan/larastan": "^3.0",
+    "orchestra/testbench": "^10.0",
+    "pestphp/pest": "^4.0",
+    "pestphp/pest-plugin-browser": "^4.0",
+    "pestphp/pest-plugin-laravel": "^4.0",
+    "pestphp/pest-plugin-type-coverage": "^4.0",
+    "laravel/pint": "^1.18",
+    "rector/rector": "^2.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "AIArmada\\FilamentChip\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "AIArmada\\FilamentChip\\Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "AIArmada\\FilamentChip\\FilamentChipServiceProvider"
+      ]
+    }
+  },
+  "scripts": {
+    "test": [
+      "vendor/bin/pest"
     ],
-    "authors": [
-        {
-            "name": "AIArmada",
-            "email": "info@aiarmada.com"
-        }
-    ],
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../chip"
-        }
-    ],
-    "require": {
-        "php": "^8.3",
-        "filament/filament": "^4.0",
-        "laravel/framework": "^12.0",
-        "livewire/livewire": "^3.0",
-        "aiarmada/chip": "@dev",
-        "spatie/laravel-package-tools": "^1.92"
-    },
-    "require-dev": {
-        "driftingly/rector-laravel": "^2.0",
-        "larastan/larastan": "^3.0",
-        "orchestra/testbench": "^10.0",
-        "pestphp/pest": "^4.0",
-        "pestphp/pest-plugin-browser": "^4.0",
-        "pestphp/pest-plugin-laravel": "^4.0",
-        "pestphp/pest-plugin-type-coverage": "^4.0",
-        "laravel/pint": "^1.18",
-        "rector/rector": "^2.2"
-    },
-    "autoload": {
-        "psr-4": {
-            "AIArmada\\FilamentChip\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "AIArmada\\FilamentChip\\Tests\\": "tests/"
-        }
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "AIArmada\\FilamentChip\\FilamentChipServiceProvider"
-            ]
-        }
-    },
-    "scripts": {
-        "test": [
-            "vendor/bin/pest"
-        ],
-        "format": [
-            "vendor/bin/pint"
-        ]
-    },
-    "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "pestphp/pest-plugin": true
-        }
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    "format": [
+      "vendor/bin/pint"
+    ]
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }

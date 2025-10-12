@@ -1,112 +1,111 @@
 {
-    "name": "aiarmada/filament-cart",
-    "description": "A comprehensive Filament admin interface for managing shopping carts created by the AIArmada Cart package",
-    "license": "MIT",
-    "keywords": [
-        "laravel",
-        "filament",
-        "plugin",
-        "shopping-cart",
-        "cart",
-        "admin",
-        "e-commerce",
-        "aiarmada"
+  "name": "aiarmada/filament-cart",
+  "description": "A comprehensive Filament admin interface for managing shopping carts created by the AIArmada Cart package",
+  "license": "MIT",
+  "keywords": [
+    "laravel",
+    "filament",
+    "plugin",
+    "shopping-cart",
+    "cart",
+    "admin",
+    "e-commerce",
+    "aiarmada"
+  ],
+  "authors": [
+    {
+      "name": "AIArmada",
+      "email": "info@aiarmada.com"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../../",
+      "options": {
+        "symlink": true
+      }
+    },
+    {
+      "type": "path",
+      "url": "../cart",
+      "options": {
+        "symlink": true
+      }
+    },
+    {
+      "type": "path",
+      "url": "../docs",
+      "options": {
+        "symlink": true
+      }
+    },
+    {
+      "type": "path",
+      "url": "../stock",
+      "options": {
+        "symlink": true
+      }
+    },
+    {
+      "type": "path",
+      "url": "../vouchers",
+      "options": {
+        "symlink": true
+      }
+    }
+  ],
+  "require": {
+    "aiarmada/commerce-support": "self.version",
+    "aiarmada/commerce": "self.version",
+    "filament/filament": "^4.0"
+  },
+  "require-dev": {
+    "driftingly/rector-laravel": "^2.0",
+    "larastan/larastan": "^3.0",
+    "laravel/framework": "^12.0",
+    "livewire/livewire": "^3.0",
+    "orchestra/testbench": "^10.0",
+    "pestphp/pest": "^4.0",
+    "pestphp/pest-plugin-browser": "^4.0",
+    "pestphp/pest-plugin-laravel": "^4.0",
+    "pestphp/pest-plugin-type-coverage": "^4.0",
+    "laravel/pint": "^1.18"
+  },
+  "autoload": {
+    "psr-4": {
+      "AIArmada\\FilamentCart\\": "src/",
+      "AIArmada\\FilamentCart\\Database\\Factories\\": "database/factories/",
+      "AIArmada\\FilamentCart\\Database\\Seeders\\": "database/seeders/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "AIArmada\\FilamentCart\\Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "AIArmada\\FilamentCart\\FilamentCartServiceProvider"
+      ]
+    }
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  },
+  "scripts": {
+    "test": [
+      "vendor/bin/pest"
     ],
-    "authors": [
-        {
-            "name": "AIArmada",
-            "email": "info@aiarmada.com"
-        }
-    ],
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../../",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "../cart",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "../docs",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "../stock",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "../vouchers",
-            "options": {
-                "symlink": true
-            }
-        }
-    ],
-    "require": {
-        "php": "^8.2",
-        "filament/filament": "^4.0",
-        "aiarmada/commerce": "@dev",
-        "spatie/laravel-package-tools": "^1.92"
-    },
-    "require-dev": {
-        "driftingly/rector-laravel": "^2.0",
-        "larastan/larastan": "^3.0",
-        "laravel/framework": "^12.0",
-        "livewire/livewire": "^3.0",
-        "orchestra/testbench": "^10.0",
-        "pestphp/pest": "^4.0",
-        "pestphp/pest-plugin-browser": "^4.0",
-        "pestphp/pest-plugin-laravel": "^4.0",
-        "pestphp/pest-plugin-type-coverage": "^4.0",
-        "laravel/pint": "^1.18"
-    },
-    "autoload": {
-        "psr-4": {
-            "AIArmada\\FilamentCart\\": "src/",
-            "AIArmada\\FilamentCart\\Database\\Factories\\": "database/factories/",
-            "AIArmada\\FilamentCart\\Database\\Seeders\\": "database/seeders/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "AIArmada\\FilamentCart\\Tests\\": "tests/"
-        }
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "AIArmada\\FilamentCart\\FilamentCartServiceProvider"
-            ]
-        }
-    },
-    "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "pestphp/pest-plugin": true
-        }
-    },
-    "scripts": {
-        "test": [
-            "vendor/bin/pest"
-        ],
-        "format": [
-            "vendor/bin/pint"
-        ]
-    },
-    "version": "1.0.0",
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    "format": [
+      "vendor/bin/pint"
+    ]
+  },
+  "version": "1.0.0",
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }

@@ -130,8 +130,10 @@ final class OrderService
             OrderItem::create([
                 'order_id' => $order->id,
                 'product_id' => $product->id,
+                'name' => $product->name,
                 'quantity' => $item['quantity'],
                 'unit_price' => $item['price'], // Price at time of purchase
+                'total' => $item['price'] * $item['quantity'],
             ]);
         }
     }

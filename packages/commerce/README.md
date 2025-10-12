@@ -9,6 +9,14 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-4c1?style=flat-square" alt="MIT"></a>
 </p>
 
+<p align="center">
+  <a href="https://github.com/masyukai/kakkay/actions/workflows/tests.yml"><img src="https://github.com/masyukai/kakkay/actions/workflows/tests.yml/badge.svg" alt="Tests"></a>
+  <a href="https://github.com/masyukai/kakkay/actions/workflows/phpstan.yml"><img src="https://github.com/masyukai/kakkay/actions/workflows/phpstan.yml/badge.svg" alt="PHPStan"></a>
+  <a href="https://github.com/masyukai/kakkay/actions/workflows/fix-code-style.yml"><img src="https://github.com/masyukai/kakkay/actions/workflows/fix-code-style.yml/badge.svg" alt="Code Style"></a>
+  <a href="https://github.com/masyukai/kakkay/actions/workflows/rector.yml"><img src="https://github.com/masyukai/kakkay/actions/workflows/rector.yml/badge.svg" alt="Rector"></a>
+  <a href="https://github.com/masyukai/kakkay/actions/workflows/test-coverage.yml"><img src="https://github.com/masyukai/kakkay/actions/workflows/test-coverage.yml/badge.svg" alt="Coverage"></a>
+</p>
+
 # AIArmada Cart
 
 > A production-grade, multi-instance shopping cart engine for Laravel 12, crafted for modern commerce applications.
@@ -204,6 +212,8 @@ We welcome contributions! Please:
 5. Update documentation for public API changes
 6. Submit a pull request with a clear description
 
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed contribution guidelines.
+
 ### Development Setup
 
 ```bash
@@ -212,6 +222,55 @@ cd cart
 composer install
 vendor/bin/pest
 ```
+
+## 📦 Monorepo Structure
+
+This repository uses a monorepo structure powered by [Symplify MonorepoBuilder](https://github.com/symplify/monorepo-builder). All packages are developed here and automatically split to separate repositories on release.
+
+### Packages
+
+| Package | Description | Repository |
+|---------|-------------|------------|
+| **cart** | Core shopping cart engine | [aiarmada/cart](https://github.com/aiarmada/cart) |
+| **chip** | CHIP payment gateway integration | [aiarmada/chip](https://github.com/aiarmada/chip) |
+| **docs** | Document generation (invoices, receipts) | [aiarmada/docs](https://github.com/aiarmada/docs) |
+| **jnt** | J&T Express Malaysia API | [aiarmada/jnt](https://github.com/aiarmada/jnt) |
+| **stock** | Stock management system | [aiarmada/stock](https://github.com/aiarmada/stock) |
+| **vouchers** | Voucher and coupon system | [aiarmada/vouchers](https://github.com/aiarmada/vouchers) |
+| **filament-cart** | Filament admin for cart | [aiarmada/filament-cart](https://github.com/aiarmada/filament-cart) |
+| **filament-chip** | Filament admin for CHIP | [aiarmada/filament-chip](https://github.com/aiarmada/filament-chip) |
+
+### Monorepo Commands
+
+```bash
+# Merge composer.json from all packages
+composer monorepo:merge
+
+# Validate package dependencies
+composer monorepo:validate
+
+# Bump interdependencies to specific version
+composer monorepo:bump-interdependency "^2.0"
+
+# Release a new version (updates all packages)
+composer monorepo:release 2.1.0
+```
+
+### Release Process
+
+Releases are automated via GitHub Actions:
+
+1. Go to **Actions** → **Create Release**
+2. Enter version (e.g., `1.2.0`) and select release type
+3. Workflow will:
+   - Update CHANGELOG.md
+   - Bump all package versions
+   - Create and push git tag
+   - Split packages to separate repositories
+   - Create GitHub release with notes
+
+All packages are automatically versioned together and split to their respective repositories on tag push.
+
 
 ## 📄 License
 

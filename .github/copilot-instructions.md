@@ -705,7 +705,7 @@ These guidelines ensure packages are reliable and modern, with no backward compa
 
 # MasyukAI Cart Coding Guidelines
 
-These rules support AI-assisted development inside the `masyukai/cart` monorepo. Follow them before editing source, tests, or docs.
+These rules support AI-assisted development inside the `MasyukAI\Cart` package within the `commerce` monorepo. Follow them before editing source, tests, or docs.
 
 ## Technology Baseline
 - PHP 8.4, Laravel 12, Livewire v3, Filament v4, Octane v2, Pest v4, PHPUnit 12, Tailwind 4.
@@ -736,8 +736,8 @@ These rules support AI-assisted development inside the `masyukai/cart` monorepo.
 - Handle conflicts explicitly at the application level with try/catch blocks.
 
 ## Testing
-- All tests use Pest. Place feature specs under `tests/Feature`, unit specs under `tests/Unit`.
-- Reuse Testbench config (`tests/TestCase.php`). Clear carts between tests and flush cache when relevant.
+- All tests use Pest. Place feature specs under `packages/commerce/tests/Feature`, unit specs under `packages/commerce/tests/Unit`.
+- Reuse Testbench config (`packages/commerce/tests/TestCase.php`). Clear carts between tests and flush cache when relevant.
 - Add or update tests for every behavioural change and run the targeted suite.
 
 ## Tooling
@@ -746,7 +746,7 @@ These rules support AI-assisted development inside the `masyukai/cart` monorepo.
 - Avoid adding new dependencies without approval.
 
 ## Documentation
-- Docs live under `docs/`. Keep them aligned with the rewritten structure (see `docs/index.md`). Update docs when behaviours change.
+- Docs live under `packages/commerce/packages/cart/docs/`. Keep them aligned with the rewritten structure (see `docs/index.md`). Update docs when behaviours change.
 - Troubleshooting and configuration sections must remain accurate for storage drivers and migration flows.
 
 ## Pull Request Ready Checklist
@@ -1004,30 +1004,21 @@ cat ~/.cloudflared/config.yml
 
 === .ai/chip rules ===
 
-=== .ai/chip rules ===
-
-# CHIP Integr1. **Configuration** lives in `config/chip.php`. Do not add new environment variables unless the official CHIP docs require them. Respect existing keys such as `collect.api_key`, `collect.brand_id`, `collect.environment`, `send.api_key`, `send.api_secret`, `webhooks.public_key`, etc. Note that CHIP Collect uses the same base URL (`https://gate.chip-in.asia/api/v1/`) for both sandbox and production – the API key determines the environment. CHIP Send uses different URLs for sandbox and production.
-2. **HTTP clients** already implement authentication, retry and logging. Reuse `ChipCollectClient` and `ChipSendClient`; do not create ad‑hoc Guzzle calls. Clients retry only on connection or 5xx errors – CHIP does not emit HTTP 429, so do not add logic for it.ion – Engineering Playbook
+# CHIP Integration – Engineering Playbook
 
 These instructions guide automated agents working with the `masyukai/chip` package. Follow them when adding or modifying code.
 
 ## Project layout
 
-- Package root: `packages/chip/`ion – Engineering Playbook
-
-These instructions guide automated agents working with the `masyukai/chip` package. Follow them when adding or modifying code.
-
-## Project layout
-
-- Package root: `packages/masyukai/chip/`
+- Package root: `packages/chip/`
 - Primary namespaces: `MasyukAI\Chip` (services, data objects, builders).
 - Facades: `MasyukAI\Chip\Facades\Chip` (Collect) and `MasyukAI\Chip\Facades\ChipSend` (Send).
 - Core services: `src/Services/ChipCollectService.php`, `src/Services/ChipSendService.php`, `src/Services/WebhookService.php`.
 
 ## Required conventions
 
-1. **Configuration** lives in `config/chip.php`. Do not add new environment variables unless the official CHIP docs require them. Respect existing keys such as `collect.api_key`, `collect.brand_id`, `collect.environment`, `send.api_key`, `send.api_secret`, `webhooks.public_key`, etc.
-2. **HTTP clients** already implement authentication, retry and logging. Reuse `ChipCollectClient` and `ChipSendClient`; do not create ad‑hoc Guzzle calls. Clients retry only on connection or 5xx errors – CHIP does not emit HTTP 429, so do not add logic for it.
+1. **Configuration** lives in `config/chip.php`. Do not add new environment variables unless the official CHIP docs require them. Respect existing keys such as `collect.api_key`, `collect.brand_id`, `collect.environment`, `send.api_key`, `send.api_secret`, `webhooks.public_key`, etc. Note that CHIP Collect uses the same base URL (`https://gate.chip-in.asia/api/v1/`) for both sandbox and production – the API key determines the environment. CHIP Send uses different URLs for sandbox and production.
+2. **HTTP clients** already implement authentication, retry and logging. Reuse `ChipCollectClient` and `ChipSendClient`; do not create ad‑hoc Guzzle calls. Clients retry only on connection or 5xx errors – CHIP does not emit HTTP 429, so do not add logic for it.
 3. **Purchases** must include either a full `client` payload (with `email`) or a `client_id`. Ensure `brand_id` is present (builder/service fills this automatically). Never send empty strings for optional fields; omit them instead.
 4. **CHIP Send** support is restricted to documented endpoints: accounts, bank accounts (+ resend webhook), send instructions (+ cancel/delete/resend webhook), groups, and webhooks. Do not reintroduce removed endpoints like `/send/send_limits`, `/send/balance`, or bank-account validation routes.
 5. **Webhooks** use RSA signatures. Always verify signatures using the raw request body and public key via `WebhookService::verifySignature`. Payloads should not be logged unless masked.
@@ -1065,9 +1056,9 @@ Consult `docs/CHIP_API_REFERENCE.md` for the complete reference. Supported endpo
 ## QA checklist
 
 - Add/adjust Pest coverage for every behavioural change.
-- Use Laravel’s HTTP fakes to simulate CHIP responses in tests.
+- Use Laravel's HTTP fakes to simulate CHIP responses in tests.
 - Run `vendor/bin/pest` and `vendor/bin/pint --dirty` before submitting changes.
 - Keep `docs/CHIP_API_REFERENCE.md` current when the API evolves.
 
-Following this playbook keeps the package aligned with CHIP’s official API and the project’s engineering standards.
+Following this playbook keeps the package aligned with CHIP's official API and the project's engineering standards.
 </laravel-boost-guidelines>

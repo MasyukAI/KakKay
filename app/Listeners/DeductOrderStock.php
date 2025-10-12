@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Listeners;
 
+use AIArmada\Stock\Services\StockService;
 use App\Events\OrderPaid;
 use App\Models\OrderItem;
-use App\Services\StockService;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
@@ -86,24 +86,23 @@ final class DeductOrderStock implements ShouldQueue
                 return;
             }
 
-            // Check if stock transaction already exists for this order item (idempotency)
-            $existingTransaction = \App\Models\StockTransaction::where('order_item_id', $orderItem->id)
-                ->where('type', 'out')
-                ->first();
-
-            if ($existingTransaction) {
-                Log::info('Stock already deducted for order item', [
+            // Check if we have sufficient stock
+            if (! $this->stockService->hasStock($product, $orderItem->quantity)) {
+                Log::warning('Insufficient stock for order item', [
                     'order_item_id' => $orderItem->id,
-                    'transaction_id' => $existingTransaction->id,
+                    'product_id' => $product->id,
+                    'requested_quantity' => $orderItem->quantity,
+                    'available_stock' => $this->stockService->getCurrentStock($product),
                 ]);
 
                 return;
             }
 
             // Record the sale and deduct stock
-            $stockTransaction = $this->stockService->recordSale(
-                product: $product,
-                orderItem: $orderItem,
+            $stockTransaction = $this->stockService->removeStock(
+                model: $product,
+                quantity: $orderItem->quantity,
+                reason: 'sale',
                 note: "Stock deducted for Order #{$orderItem->order->order_number}"
             );
 

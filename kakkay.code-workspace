@@ -1,0 +1,15 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../filament"
+		}
+	],
+	"settings": {
+		"github.copilot.chat.codesearch.enabled": true,
+		"github.copilot.chat.agent.thinkingTool": true,
+		"chatgpt.openOnStartup": true
+	}
+}

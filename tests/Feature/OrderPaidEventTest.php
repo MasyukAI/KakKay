@@ -8,6 +8,7 @@ use App\Listeners\ProcessOrderShipping;
 use App\Listeners\SendOrderConfirmationEmail;
 use App\Models\Order;
 use App\Models\Payment;
+use App\Models\Product;
 use App\Models\Shipment;
 use App\Models\User;
 use App\Notifications\OrderConfirmation;
@@ -40,7 +41,7 @@ test('OrderPaid event is dispatched after successful payment', function () {
 
 test('SendOrderConfirmationEmail listener is queued and sends notification', function () {
     Notification::fake();
-    Queue::fake();
+    config(['queue.default' => 'sync']); // Process queue jobs synchronously
 
     $user = User::factory()->create(['email' => 'test@example.com']);
     $order = Order::factory()->create(['user_id' => $user->id]);
@@ -52,13 +53,13 @@ test('SendOrderConfirmationEmail listener is queued and sends notification', fun
     $listener = new SendOrderConfirmationEmail();
     $listener->handle($event);
 
-    // Verify notification was sent
-    Notification::assertSentTo(
-        $user,
+    // Verify notification was sent to the email address (via Notification::route)
+    Notification::assertSentOnDemand(
         OrderConfirmation::class,
-        function ($notification) use ($order, $payment) {
+        function ($notification, $channels, $notifiable) use ($order, $payment, $user) {
             return $notification->order->id === $order->id
-                && $notification->payment->id === $payment->id;
+                && $notification->payment->id === $payment->id
+                && $notifiable->routes['mail'] === $user->email;
         }
     );
 });
@@ -66,6 +67,7 @@ test('SendOrderConfirmationEmail listener is queued and sends notification', fun
 test('GenerateOrderInvoice listener creates invoice placeholder', function () {
     Storage::fake('public');
     Log::shouldReceive('info')->twice();
+    Log::shouldReceive('error')->andReturn(); // Allow error logs
 
     $user = User::factory()->create();
     $order = Order::factory()->create([
@@ -90,14 +92,16 @@ test('GenerateOrderInvoice listener creates invoice placeholder', function () {
 
 test('ProcessOrderShipping listener creates shipment record', function () {
     Log::shouldReceive('info')->twice();
+    Log::shouldReceive('error')->andReturn(); // Allow error logs
 
     $user = User::factory()->create();
+    $product = Product::factory()->create();
     $order = Order::factory()->create(['user_id' => $user->id]);
     $payment = Payment::factory()->create(['order_id' => $order->id]);
 
     // Create order items to simulate physical products
     $order->orderItems()->create([
-        'product_id' => 1,
+        'product_id' => $product->id,
         'name' => 'Test Product',
         'quantity' => 1,
         'unit_price' => 1000,

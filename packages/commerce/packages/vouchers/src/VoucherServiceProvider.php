@@ -6,40 +6,39 @@ namespace AIArmada\Vouchers;
 
 use AIArmada\Vouchers\Services\VoucherService;
 use AIArmada\Vouchers\Services\VoucherValidator;
-use Illuminate\Support\ServiceProvider;
+use Spatie\LaravelPackageTools\Package;
+use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class VoucherServiceProvider extends ServiceProvider
+final class VoucherServiceProvider extends PackageServiceProvider
 {
-    public function register(): void
+    public function configurePackage(Package $package): void
     {
-        $this->mergeConfigFrom(
-            __DIR__.'/../config/vouchers.php',
-            'vouchers'
-        );
+        $package
+            ->name('vouchers')
+            ->hasConfigFile()
+            ->discoversMigrations()
+            ->runsMigrations();
+    }
 
+    public function packageRegistered(): void
+    {
         // Register services as singletons
         $this->app->singleton(VoucherService::class);
         $this->app->singleton(VoucherValidator::class);
 
         // Bind facade accessor
-        $this->app->bind('voucher', VoucherService::class);
+        $this->app->alias(VoucherService::class, 'voucher');
     }
 
-    public function boot(): void
+    /**
+     * @return array<string>
+     */
+    public function provides(): array
     {
-        if ($this->app->runningInConsole()) {
-            // Publish configuration
-            $this->publishes([
-                __DIR__.'/../config/vouchers.php' => config_path('vouchers.php'),
-            ], 'vouchers-config');
-
-            // Publish migrations
-            $this->publishes([
-                __DIR__.'/../database/migrations' => database_path('migrations'),
-            ], 'vouchers-migrations');
-        }
-
-        // Load migrations automatically
-        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        return [
+            VoucherService::class,
+            VoucherValidator::class,
+            'voucher',
+        ];
     }
 }
