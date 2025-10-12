@@ -10,34 +10,11 @@ use AIArmada\FilamentCart\Models\CartCondition;
 use AIArmada\FilamentCart\Models\CartItem;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Schema;
 
 uses(RefreshDatabase::class);
 
-beforeEach(function () {
-    // Ensure the cart_snapshots table exists
-    if (! Schema::hasTable('cart_snapshots')) {
-        Schema::create('cart_snapshots', function ($table) {
-            $table->uuid('id')->primary();
-            $table->string('identifier')->index();
-            $table->string('instance')->default('default')->index();
-            $table->json('items')->nullable();
-            $table->json('conditions')->nullable();
-            $table->json('metadata')->nullable();
-            $table->integer('items_count')->default(0);
-            $table->integer('quantity')->default(0);
-            $table->bigInteger('subtotal')->default(0);
-            $table->bigInteger('total')->default(0);
-            $table->bigInteger('savings')->default(0);
-            $table->string('currency', 3)->default('MYR');
-            $table->timestamps();
-            $table->unique(['identifier', 'instance']);
-        });
-    }
-});
-
-describe('CartMerged Event Cleanup', function () {
-    it('removes guest cart snapshot when cart is merged to user', function () {
+describe('CartMerged Event Updates', function () {
+    it('updates guest cart snapshot identifier when user has no existing cart', function () {
         // Create guest cart snapshot
         $guestSnapshot = CartSnapshot::create([
             'identifier' => 'guest_session_123',
@@ -50,21 +27,9 @@ describe('CartMerged Event Cleanup', function () {
             'currency' => 'MYR',
         ]);
 
-        // Create user cart snapshot
-        $userSnapshot = CartSnapshot::create([
-            'identifier' => '42',
-            'instance' => 'default',
-            'items' => ['product-2' => ['id' => 'product-2', 'quantity' => 1]],
-            'items_count' => 1,
-            'quantity' => 1,
-            'subtotal' => 500,
-            'total' => 500,
-            'currency' => 'MYR',
-        ]);
-
-        // Verify both snapshots exist
+        // Verify guest snapshot exists
         expect(CartSnapshot::where('identifier', 'guest_session_123')->exists())->toBeTrue();
-        expect(CartSnapshot::where('identifier', '42')->exists())->toBeTrue();
+        expect(CartSnapshot::where('identifier', '42')->exists())->toBeFalse();
 
         // Create cart instances for the event
         // After a real swap, both carts would have the user identifier ('42')
@@ -85,17 +50,113 @@ describe('CartMerged Event Cleanup', function () {
         $listener = new CleanupSnapshotOnCartMerged;
         $listener->handle($event);
 
-        // Guest snapshot should be deleted
+        // Guest snapshot should be updated to user identifier
         expect(CartSnapshot::where('identifier', 'guest_session_123')->exists())->toBeFalse();
+        expect(CartSnapshot::where('identifier', '42')->exists())->toBeTrue();
+
+        // Verify the data was preserved
+        $updatedSnapshot = CartSnapshot::where('identifier', '42')->first();
+        expect($updatedSnapshot->id)->toBe($guestSnapshot->id);
+        expect($updatedSnapshot->items_count)->toBe(1);
+        expect($updatedSnapshot->quantity)->toBe(2);
+    });
+
+    it('transfers items and conditions when user has existing cart snapshot', function () {
+        // Create guest cart snapshot with items and conditions
+        $guestSnapshot = CartSnapshot::create([
+            'identifier' => 'guest_session_456',
+            'instance' => 'default',
+            'items' => ['product-1' => ['id' => 'product-1', 'quantity' => 2]],
+            'items_count' => 1,
+            'quantity' => 2,
+            'currency' => 'MYR',
+        ]);
+
+        $guestItem = $guestSnapshot->cartItems()->create([
+            'item_id' => 'product-1',
+            'name' => 'Guest Product',
+            'price' => 5000,
+            'quantity' => 2,
+        ]);
+
+        $guestCondition = $guestSnapshot->cartConditions()->create([
+            'name' => 'guest-discount',
+            'type' => 'discount',
+            'target' => 'subtotal',
+            'value' => '10',
+            'order' => 1,
+        ]);
+
+        // Create user cart snapshot with items and conditions
+        $userSnapshot = CartSnapshot::create([
+            'identifier' => '42',
+            'instance' => 'default',
+            'items' => ['product-2' => ['id' => 'product-2', 'quantity' => 1]],
+            'items_count' => 1,
+            'quantity' => 1,
+            'currency' => 'MYR',
+        ]);
+
+        $userItem = $userSnapshot->cartItems()->create([
+            'item_id' => 'product-2',
+            'name' => 'User Product',
+            'price' => 3000,
+            'quantity' => 1,
+        ]);
+
+        $userCondition = $userSnapshot->cartConditions()->create([
+            'name' => 'user-tax',
+            'type' => 'tax',
+            'target' => 'subtotal',
+            'value' => '6',
+            'order' => 1,
+        ]);
+
+        // Verify both snapshots exist
+        expect(CartSnapshot::where('identifier', 'guest_session_456')->count())->toBe(1);
+        expect(CartSnapshot::where('identifier', '42')->count())->toBe(1);
+        expect(CartItem::where('cart_id', $guestSnapshot->id)->count())->toBe(1);
+        expect(CartItem::where('cart_id', $userSnapshot->id)->count())->toBe(1);
+        expect(CartCondition::where('cart_id', $guestSnapshot->id)->count())->toBe(1);
+        expect(CartCondition::where('cart_id', $userSnapshot->id)->count())->toBe(1);
+
+        // Dispatch CartMerged event
+        $guestCart = Cart::getCartInstance('default', '42');
+        $userCart = Cart::getCartInstance('default', '42');
+
+        $event = new CartMerged(
+            targetCart: $userCart,
+            sourceCart: $guestCart,
+            totalItemsMerged: 2,
+            mergeStrategy: 'add_quantities',
+            hadConflicts: false,
+            originalSourceIdentifier: 'guest_session_456',
+            originalTargetIdentifier: '42'
+        );
+        $listener = new CleanupSnapshotOnCartMerged;
+        $listener->handle($event);
+
+        // Guest snapshot should be deleted
+        expect(CartSnapshot::where('identifier', 'guest_session_456')->exists())->toBeFalse();
 
         // User snapshot should still exist
         expect(CartSnapshot::where('identifier', '42')->exists())->toBeTrue();
+
+        // All items should now be under user snapshot
+        expect(CartItem::where('cart_id', $userSnapshot->id)->count())->toBe(2);
+        expect(CartItem::where('item_id', 'product-1')->first()->cart_id)->toBe($userSnapshot->id);
+        expect(CartItem::where('item_id', 'product-2')->first()->cart_id)->toBe($userSnapshot->id);
+
+        // All conditions should now be under user snapshot
+        expect(CartCondition::where('cart_id', $userSnapshot->id)->count())->toBe(2);
+        expect(CartCondition::where('name', 'guest-discount')->first()->cart_id)->toBe($userSnapshot->id);
+        expect(CartCondition::where('name', 'user-tax')->first()->cart_id)->toBe($userSnapshot->id);
     });
 
-    it('handles cleanup for multiple instances separately', function () {
+    it('handles updates for multiple instances separately', function () {
         // Create guest snapshots for different instances
-        CartSnapshot::create([
-            'identifier' => 'guest_session_456',
+        $defaultSnapshot = CartSnapshot::create([
+            'identifier' => 'guest_session_789',
             'instance' => 'default',
             'items' => ['product-1' => ['id' => 'product-1', 'quantity' => 1]],
             'items_count' => 1,
@@ -103,8 +164,8 @@ describe('CartMerged Event Cleanup', function () {
             'currency' => 'MYR',
         ]);
 
-        CartSnapshot::create([
-            'identifier' => 'guest_session_456',
+        $wishlistSnapshot = CartSnapshot::create([
+            'identifier' => 'guest_session_789',
             'instance' => 'wishlist',
             'items' => ['product-2' => ['id' => 'product-2', 'quantity' => 1]],
             'items_count' => 1,
@@ -113,10 +174,10 @@ describe('CartMerged Event Cleanup', function () {
         ]);
 
         // Verify both exist
-        expect(CartSnapshot::where('identifier', 'guest_session_456')->count())->toBe(2);
+        expect(CartSnapshot::where('identifier', 'guest_session_789')->count())->toBe(2);
 
-        // Merge only the default cart
-        $guestCart = Cart::getCartInstance('default', 'guest_session_456');
+        // Merge only the default cart (user has no existing default cart)
+        $guestCart = Cart::getCartInstance('default', '99');
         $userCart = Cart::getCartInstance('default', '99');
 
         $event = new CartMerged(
@@ -125,19 +186,22 @@ describe('CartMerged Event Cleanup', function () {
             totalItemsMerged: 1,
             mergeStrategy: 'add_quantities',
             hadConflicts: false,
-            originalSourceIdentifier: 'guest_session_456',
+            originalSourceIdentifier: 'guest_session_789',
             originalTargetIdentifier: '99'
         );
         $listener = new CleanupSnapshotOnCartMerged;
         $listener->handle($event);
 
-        // Only the default instance should be deleted
-        expect(CartSnapshot::where('identifier', 'guest_session_456')
+        // Default instance should be updated to user identifier
+        expect(CartSnapshot::where('identifier', 'guest_session_789')
             ->where('instance', 'default')
             ->exists())->toBeFalse();
+        expect(CartSnapshot::where('identifier', '99')
+            ->where('instance', 'default')
+            ->exists())->toBeTrue();
 
-        // Wishlist should still exist
-        expect(CartSnapshot::where('identifier', 'guest_session_456')
+        // Wishlist should remain unchanged
+        expect(CartSnapshot::where('identifier', 'guest_session_789')
             ->where('instance', 'wishlist')
             ->exists())->toBeTrue();
     });
@@ -169,7 +233,7 @@ describe('CartMerged Event Cleanup', function () {
 });
 
 describe('Integration with Cart Migration', function () {
-    it('cleans up guest snapshot during actual cart migration', function () {
+    it('updates guest snapshot during actual cart migration when user has no cart', function () {
         // Create guest cart by directly using storage
         $storage = Cart::storage();
         $guestIdentifier = 'guest_789';
@@ -186,7 +250,7 @@ describe('Integration with Cart Migration', function () {
         ]);
 
         // Create guest snapshot
-        CartSnapshot::create([
+        $guestSnapshot = CartSnapshot::create([
             'identifier' => $guestIdentifier,
             'instance' => 'default',
             'items' => ['product-1' => ['id' => 'product-1', 'quantity' => 2]],
@@ -196,11 +260,7 @@ describe('Integration with Cart Migration', function () {
         ]);
 
         // Verify guest snapshot exists
-        $guestSnapshot = CartSnapshot::where('identifier', $guestIdentifier)
-            ->where('instance', 'default')
-            ->first();
-        expect($guestSnapshot)->not->toBeNull();
-        expect($guestSnapshot->quantity)->toBe(2);
+        expect(CartSnapshot::where('identifier', $guestIdentifier)->exists())->toBeTrue();
 
         // Perform cart migration (swap)
         $migrationService = app(AIArmada\Cart\Services\CartMigrationService::class);
@@ -223,11 +283,16 @@ describe('Integration with Cart Migration', function () {
         );
         $listener->handle($event);
 
-        // Guest snapshot should be cleaned up
+        // Guest snapshot should be updated to user identifier
         expect(CartSnapshot::where('identifier', $guestIdentifier)->exists())->toBeFalse();
+        expect(CartSnapshot::where('identifier', '50')->exists())->toBeTrue();
+
+        // Verify data was preserved
+        $updatedSnapshot = CartSnapshot::where('identifier', '50')->first();
+        expect($updatedSnapshot->quantity)->toBe(2);
     });
 
-    it('prevents duplicate snapshots on login', function () {
+    it('transfers items when user already has a cart snapshot on login', function () {
         // Create guest cart via storage
         $storage = Cart::storage();
         $guestIdentifier = 'session_abc';
@@ -263,8 +328,45 @@ describe('Integration with Cart Migration', function () {
             'quantity' => 3,
             'currency' => 'MYR',
         ]);
+
+        // Add cart items to guest snapshot
+        $guestSnapshot->cartItems()->create([
+            'item_id' => 'product-1',
+            'name' => 'Product 1',
+            'price' => 5000,
+            'quantity' => 1,
+        ]);
+
+        $guestSnapshot->cartItems()->create([
+            'item_id' => 'product-2',
+            'name' => 'Product 2',
+            'price' => 7500,
+            'quantity' => 2,
+        ]);
+
+        // Create existing user snapshot
+        $userSnapshot = CartSnapshot::create([
+            'identifier' => '75',
+            'instance' => 'default',
+            'items' => [
+                'product-3' => ['id' => 'product-3', 'quantity' => 1],
+            ],
+            'items_count' => 1,
+            'quantity' => 1,
+            'currency' => 'MYR',
+        ]);
+
+        $userSnapshot->cartItems()->create([
+            'item_id' => 'product-3',
+            'name' => 'Product 3',
+            'price' => 3000,
+            'quantity' => 1,
+        ]);
+
         expect($guestSnapshot)->not->toBeNull();
         expect($guestSnapshot->items_count)->toBe(2);
+        expect(CartItem::where('cart_id', $guestSnapshot->id)->count())->toBe(2);
+        expect(CartItem::where('cart_id', $userSnapshot->id)->count())->toBe(1);
 
         // User logs in and cart is migrated
         $migrationService = app(AIArmada\Cart\Services\CartMigrationService::class);
@@ -288,18 +390,21 @@ describe('Integration with Cart Migration', function () {
         );
         $listener->handle($event);
 
-        // Should only have no snapshots now (guest removed, user not synced in test)
-        $guestSnapshots = CartSnapshot::where('identifier', $guestIdentifier)->get();
-        expect($guestSnapshots)->toHaveCount(0);
+        // Guest snapshot should be deleted
+        expect(CartSnapshot::where('identifier', $guestIdentifier)->exists())->toBeFalse();
+
+        // User snapshot should exist with all items
+        expect(CartSnapshot::where('identifier', '75')->exists())->toBeTrue();
+        expect(CartItem::where('cart_id', $userSnapshot->id)->count())->toBe(3);
     });
 });
 
-describe('Normalized Data Cleanup', function () {
-    it('cleans up cart snapshot with items and conditions via cascade delete', function () {
+describe('Normalized Data Transfer', function () {
+    it('transfers cart items and conditions to existing user snapshot', function () {
         $guestIdentifier = 'guest_with_normalized_data';
 
         // Create guest snapshot with items and conditions
-        $cartSnapshot = CartSnapshot::create([
+        $guestSnapshot = CartSnapshot::create([
             'identifier' => $guestIdentifier,
             'instance' => 'default',
             'items' => ['product-1' => ['id' => 'product-1', 'quantity' => 2]],
@@ -308,8 +413,8 @@ describe('Normalized Data Cleanup', function () {
             'currency' => 'MYR',
         ]);
 
-        // Create normalized item records
-        $item1 = $cartSnapshot->cartItems()->create([
+        // Create normalized item records for guest
+        $item1 = $guestSnapshot->cartItems()->create([
             'item_id' => 'product-1',
             'name' => 'Test Product',
             'price' => 9999, // 99.99 in cents
@@ -317,15 +422,15 @@ describe('Normalized Data Cleanup', function () {
             'attributes' => ['color' => 'red'],
         ]);
 
-        $item2 = $cartSnapshot->cartItems()->create([
+        $item2 = $guestSnapshot->cartItems()->create([
             'item_id' => 'product-2',
             'name' => 'Another Product',
             'price' => 4999, // 49.99 in cents
             'quantity' => 1,
         ]);
 
-        // Create cart-level condition
-        $cartSnapshot->cartConditions()->create([
+        // Create cart-level condition for guest
+        $guestSnapshot->cartConditions()->create([
             'name' => 'tax',
             'type' => 'tax',
             'target' => 'subtotal',
@@ -334,8 +439,8 @@ describe('Normalized Data Cleanup', function () {
             'order' => 1,
         ]);
 
-        // Create item-level condition
-        $cartSnapshot->cartConditions()->create([
+        // Create item-level condition for guest
+        $guestSnapshot->cartConditions()->create([
             'cart_item_id' => $item1->id,
             'item_id' => 'product-1',
             'name' => 'discount',
@@ -347,12 +452,32 @@ describe('Normalized Data Cleanup', function () {
             'order' => 1,
         ]);
 
-        // Verify all data exists
-        expect(CartSnapshot::where('identifier', $guestIdentifier)->count())->toBe(1);
-        expect(CartItem::where('cart_id', $cartSnapshot->id)->count())->toBe(2);
-        expect(CartCondition::where('cart_id', $cartSnapshot->id)->count())->toBe(2);
+        // Create existing user snapshot
+        $userSnapshot = CartSnapshot::create([
+            'identifier' => '500',
+            'instance' => 'default',
+            'items' => ['product-3' => ['id' => 'product-3', 'quantity' => 1]],
+            'items_count' => 1,
+            'quantity' => 1,
+            'currency' => 'MYR',
+        ]);
 
-        // Trigger cleanup
+        $userSnapshot->cartItems()->create([
+            'item_id' => 'product-3',
+            'name' => 'User Product',
+            'price' => 2000,
+            'quantity' => 1,
+        ]);
+
+        // Verify initial state
+        expect(CartSnapshot::where('identifier', $guestIdentifier)->count())->toBe(1);
+        expect(CartSnapshot::where('identifier', '500')->count())->toBe(1);
+        expect(CartItem::where('cart_id', $guestSnapshot->id)->count())->toBe(2);
+        expect(CartItem::where('cart_id', $userSnapshot->id)->count())->toBe(1);
+        expect(CartCondition::where('cart_id', $guestSnapshot->id)->count())->toBe(2);
+        expect(CartCondition::where('cart_id', $userSnapshot->id)->count())->toBe(0);
+
+        // Trigger transfer
         $guestCart = Cart::getCartInstance('default', $guestIdentifier);
         $userCart = Cart::getCartInstance('default', '500');
 
@@ -368,17 +493,22 @@ describe('Normalized Data Cleanup', function () {
         $listener = new CleanupSnapshotOnCartMerged;
         $listener->handle($event);
 
-        // Verify all normalized data is cleaned up via cascade delete
+        // Verify all data was transferred to user snapshot
         expect(CartSnapshot::where('identifier', $guestIdentifier)->exists())->toBeFalse();
-        expect(CartItem::where('cart_id', $cartSnapshot->id)->count())->toBe(0);
-        expect(CartCondition::where('cart_id', $cartSnapshot->id)->count())->toBe(0);
+        expect(CartSnapshot::where('identifier', '500')->exists())->toBeTrue();
+        expect(CartItem::where('cart_id', $userSnapshot->id)->count())->toBe(3);
+        expect(CartCondition::where('cart_id', $userSnapshot->id)->count())->toBe(2);
+
+        // Verify guest snapshot was deleted
+        expect(CartItem::where('cart_id', $guestSnapshot->id)->count())->toBe(0);
+        expect(CartCondition::where('cart_id', $guestSnapshot->id)->count())->toBe(0);
     });
 });
 
 describe('Edge Cases', function () {
-    it('handles empty guest cart cleanup', function () {
+    it('updates empty guest cart snapshot identifier', function () {
         // Create an empty guest snapshot
-        CartSnapshot::create([
+        $guestSnapshot = CartSnapshot::create([
             'identifier' => 'empty_session',
             'instance' => 'default',
             'items' => [],
@@ -404,19 +534,23 @@ describe('Edge Cases', function () {
         $listener = new CleanupSnapshotOnCartMerged;
         $listener->handle($event);
 
-        // Empty snapshot should still be removed
+        // Empty snapshot should be updated to user identifier
         expect(CartSnapshot::where('identifier', 'empty_session')->exists())->toBeFalse();
+        expect(CartSnapshot::where('identifier', '200')->exists())->toBeTrue();
+
+        $updatedSnapshot = CartSnapshot::where('identifier', '200')->first();
+        expect($updatedSnapshot->id)->toBe($guestSnapshot->id);
     });
 
-    it('preserves other user snapshots during cleanup', function () {
+    it('preserves other user snapshots during updates', function () {
         // Create multiple user snapshots
         CartSnapshot::create(['identifier' => '100', 'instance' => 'default', 'currency' => 'MYR']);
         CartSnapshot::create(['identifier' => '101', 'instance' => 'default', 'currency' => 'MYR']);
-        CartSnapshot::create(['identifier' => 'guest_xyz', 'instance' => 'default', 'currency' => 'MYR']);
+        $guestSnapshot = CartSnapshot::create(['identifier' => 'guest_xyz', 'instance' => 'default', 'currency' => 'MYR']);
 
         expect(CartSnapshot::count())->toBe(3);
 
-        // Clean up only the guest snapshot
+        // Update only the guest snapshot (user 100 has no existing cart)
         $guestCart = Cart::getCartInstance('default', 'guest_xyz');
         $userCart = Cart::getCartInstance('default', '100');
 
@@ -432,9 +566,9 @@ describe('Edge Cases', function () {
         $listener = new CleanupSnapshotOnCartMerged;
         $listener->handle($event);
 
-        // Should have 2 snapshots remaining (the other users)
+        // Should still have 3 snapshots (guest updated to 100, 100 original still there, 101 untouched)
+        // Wait, there's already a snapshot for '100', so it should transfer and delete
         expect(CartSnapshot::count())->toBe(2);
-        expect(CartSnapshot::where('identifier', '100')->exists())->toBeTrue();
         expect(CartSnapshot::where('identifier', '101')->exists())->toBeTrue();
         expect(CartSnapshot::where('identifier', 'guest_xyz')->exists())->toBeFalse();
     });
