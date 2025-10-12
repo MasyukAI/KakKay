@@ -78,15 +78,11 @@ class CartMigrationService
         $guestIdentifier = $sessionId;
         $userIdentifier = (string) $userId;
 
-        // ...existing code...
-
         // Get the storage directly to work with specific identifiers
         $storage = Cart::storage();
 
         // Get guest cart items for the specified instance
         $guestItems = $storage->getItems($guestIdentifier, $instance);
-
-        // ...existing code...
 
         // If guest cart is empty, nothing to migrate
         if (empty($guestItems)) {
@@ -96,11 +92,8 @@ class CartMigrationService
         // Get existing user cart items for the same instance
         $userItems = $storage->getItems($userIdentifier, $instance);
 
-        // ...existing code...
-
         // If user cart is empty, forget it and swap guest cart to user
         if (empty($userItems)) {
-            // $storage->forget($userIdentifier, $instance);
             // Swap guest cart to user cart (ownership transfer)
             $this->swap($guestIdentifier, $userIdentifier, $instance);
 
@@ -125,25 +118,20 @@ class CartMigrationService
         }
 
         // Merge the cart data using arrays directly
-
-        // ...existing code...
         $mergedItems = $this->mergeItemsArray($guestItems, $userItems);
-
-        // ...existing code...
 
         // Save merged items to user cart
         $storage->putItems($userIdentifier, $instance, $mergedItems);
 
         // Also migrate conditions if any
         $guestConditions = $storage->getConditions($guestIdentifier, $instance);
-        // ...existing code...
         if (! empty($guestConditions)) {
             $userConditions = $storage->getConditions($userIdentifier, $instance);
             $mergedConditions = $this->mergeConditionsData($guestConditions, $userConditions);
             $storage->putConditions($userIdentifier, $instance, $mergedConditions);
         }
 
-        // ...existing code...
+        // Forget guest cart
         $storage->forget($guestIdentifier, $instance);
 
         // Dispatch event if events are enabled
@@ -152,7 +140,6 @@ class CartMigrationService
             $cartManager = Cart::getFacadeRoot();
             $targetCartInstance = $cartManager->getCartInstance($instance);
 
-            // ...existing code...
             event(new CartMerged(
                 targetCart: $targetCartInstance,
                 sourceCart: $targetCartInstance, // Limited by design
