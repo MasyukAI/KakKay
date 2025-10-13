@@ -13,6 +13,7 @@ export default defineConfig({
                 'resources/css/policy.css',
                 'resources/css/home.css',
                 'resources/css/pages.css',
+                'resources/css/filament/admin/theme.css',
                 'resources/js/app.js'
             ],
             refresh: true,

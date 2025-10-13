@@ -34,12 +34,19 @@ final class AdminPanelProvider extends PanelProvider
             ->path('')
             ->domain('admin.kakkay.test')
             ->login(Login::class)
+            ->darkMode(isForced: true)
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::hex('#6A00F4'), // Purple from theme
+                'danger' => Color::hex('#E0115F'),   // Ruby
+                'success' => Color::hex('#10b981'),
+                'warning' => Color::hex('#f59e0b'),
+                'info' => Color::hex('#D100D1'),     // Magenta
             ])
             ->brandName('Kak Kay')
             ->topNavigation()
             ->maxContentWidth(Width::Full)
+            ->font('Poppins')
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
@@ -66,7 +73,7 @@ final class AdminPanelProvider extends PanelProvider
                 FilamentChip::make(),
             ])
             ->authMiddleware([
-                Authenticate::class,
+                Authenticate::class, // Temporarily disabled for development
             ]);
     }
 }
