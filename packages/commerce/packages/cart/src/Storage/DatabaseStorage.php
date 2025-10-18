@@ -187,6 +187,18 @@ final readonly class DatabaseStorage implements StorageInterface
     }
 
     /**
+     * Clear all metadata for a cart
+     */
+    public function clearMetadata(string $identifier, string $instance): void
+    {
+        $this->database->transaction(function () use ($identifier, $instance) {
+            $this->performCasUpdate($identifier, $instance, [
+                'metadata' => null,
+            ], 'metadata clear');
+        });
+    }
+
+    /**
      * Get cart version for change tracking
      */
     public function getVersion(string $identifier, string $instance): ?int

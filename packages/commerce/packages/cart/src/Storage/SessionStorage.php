@@ -184,6 +184,21 @@ final readonly class SessionStorage implements StorageInterface
     }
 
     /**
+     * Clear all metadata for a cart
+     */
+    public function clearMetadata(string $identifier, string $instance): void
+    {
+        $metadataPrefix = "{$this->keyPrefix}.{$identifier}.{$instance}.metadata.";
+        $allKeys = $this->session->all();
+
+        foreach (array_keys($allKeys) as $key) {
+            if (str_starts_with((string) $key, $metadataPrefix)) {
+                $this->session->forget($key);
+            }
+        }
+    }
+
+    /**
      * Swap cart identifier by transferring cart data from old identifier to new identifier.
      * This changes cart ownership to ensure the new identifier has an active cart.
      */

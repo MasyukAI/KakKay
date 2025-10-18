@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 final class Order extends Model
 {
@@ -78,6 +79,22 @@ final class Order extends Model
     public function shipments(): HasMany
     {
         return $this->hasMany(Shipment::class);
+    }
+
+    /**
+     * Get invoices/documents for this order
+     */
+    public function documents(): MorphMany
+    {
+        return $this->morphMany(\AIArmada\Docs\Models\Document::class, 'documentable');
+    }
+
+    /**
+     * Get invoices for this order
+     */
+    public function invoices(): MorphMany
+    {
+        return $this->documents()->where('document_type', 'invoice');
     }
 
     /**

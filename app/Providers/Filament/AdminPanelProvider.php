@@ -60,7 +60,7 @@ final class AdminPanelProvider extends PanelProvider
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
                 StartSession::class,
-                AuthenticateSession::class,
+                // AuthenticateSession::class,
                 ShareErrorsFromSession::class,
                 VerifyCsrfToken::class,
                 SubstituteBindings::class,
@@ -72,8 +72,9 @@ final class AdminPanelProvider extends PanelProvider
                 FilamentCart::make(),
                 FilamentChip::make(),
             ])
+            ->spa(hasPrefetching: true)
             ->authMiddleware([
-                Authenticate::class, // Temporarily disabled for development
+                Authenticate::class,
             ]);
     }
 }

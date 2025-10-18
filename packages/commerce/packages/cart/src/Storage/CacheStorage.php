@@ -163,6 +163,14 @@ final readonly class CacheStorage implements StorageInterface
         } else {
             $this->cache->put($metadataKey, $value, $this->ttl);
         }
+
+        // Track metadata key in registry for clearMetadata support
+        $keysRegistryKey = "{$this->keyPrefix}.{$identifier}.{$instance}.metadata._keys";
+        $metadataKeys = $this->cache->get($keysRegistryKey, []);
+        if (! in_array($key, $metadataKeys, true)) {
+            $metadataKeys[] = $key;
+            $this->cache->put($keysRegistryKey, $metadataKeys, $this->ttl);
+        }
     }
 
     /**
@@ -173,6 +181,22 @@ final readonly class CacheStorage implements StorageInterface
         $metadataKey = $this->getMetadataKey($identifier, $instance, $key);
 
         return $this->cache->get($metadataKey);
+    }
+
+    /**
+     * Clear all metadata for a cart
+     */
+    public function clearMetadata(string $identifier, string $instance): void
+    {
+        $keysRegistryKey = "{$this->keyPrefix}.{$identifier}.{$instance}.metadata._keys";
+        $metadataKeys = $this->cache->get($keysRegistryKey, []);
+
+        foreach ($metadataKeys as $key) {
+            $metadataKey = $this->getMetadataKey($identifier, $instance, $key);
+            $this->cache->forget($metadataKey);
+        }
+
+        $this->cache->forget($keysRegistryKey);
     }
 
     /**

@@ -109,6 +109,14 @@ interface StorageInterface
     public function getMetadata(string $identifier, string $instance, string $key): mixed;
 
     /**
+     * Clear all metadata for a cart
+     *
+     * @param  string  $identifier  User/session identifier
+     * @param  string  $instance  Cart instance name
+     */
+    public function clearMetadata(string $identifier, string $instance): void;
+
+    /**
      * Get cart version for change tracking
      * Returns the version number used for optimistic locking and change detection
      *

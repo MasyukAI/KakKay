@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AIArmada\Cart\Traits;
 
 use AIArmada\Cart\Events\MetadataAdded;
+use AIArmada\Cart\Events\MetadataCleared;
 use AIArmada\Cart\Events\MetadataRemoved;
 
 trait ManagesMetadata
@@ -62,6 +63,20 @@ trait ManagesMetadata
     {
         foreach ($metadata as $key => $value) {
             $this->setMetadata($key, $value);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Clear all metadata from the cart
+     */
+    public function clearMetadata(): static
+    {
+        $this->storage->clearMetadata($this->getIdentifier(), $this->instance());
+
+        if ($this->eventsEnabled && $this->events) {
+            $this->events->dispatch(new MetadataCleared($this));
         }
 
         return $this;
