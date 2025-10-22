@@ -31,8 +31,24 @@ trait ManagesItems
         array|object|null $conditions = null,
         string|object|null $associatedModel = null
     ): CartItem|CartCollection {
-        // Handle array input for multiple items
+        // Handle array input - distinguish between single item and multiple items
         if (is_array($id)) {
+            // If array has 'id' key, it's a single item array
+            // Otherwise, it's an array of items
+            if (isset($id['id'])) {
+                // Single item array: ['id' => '...', 'name' => '...', ...]
+                return $this->add(
+                    $id['id'],
+                    $id['name'] ?? null,
+                    $id['price'] ?? null,
+                    $id['quantity'] ?? 1,
+                    $id['attributes'] ?? [],
+                    $id['conditions'] ?? null,
+                    $id['associated_model'] ?? null
+                );
+            }
+
+            // Multiple items: [['id' => '...'], ['id' => '...']]
             return $this->addMultiple($id);
         }
 

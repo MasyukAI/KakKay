@@ -103,6 +103,52 @@ describe('Cart Operations', function () {
     it('returns null when getting non-existent items', function () {
         expect(Cart::get('non-existent'))->toBeNull();
     });
+
+    it('can add single item as array', function () {
+        $item = Cart::add([
+            'id' => 'item-1',
+            'name' => 'Single Item',
+            'price' => 100.00,
+            'quantity' => 2,
+            'attributes' => ['color' => 'blue'],
+        ]);
+
+        expect($item)->toBeInstanceOf(AIArmada\Cart\Models\CartItem::class);
+        expect(Cart::getItems())->toHaveCount(1);
+        expect(Cart::get('item-1')->name)->toBe('Single Item');
+        expect(Cart::get('item-1')->price)->toBe(100.00);
+        expect(Cart::get('item-1')->quantity)->toBe(2);
+        expect(Cart::get('item-1')->attributes->get('color'))->toBe('blue');
+    });
+
+    it('can add multiple items as array', function () {
+        $items = Cart::add([
+            [
+                'id' => 'item-1',
+                'name' => 'Item 1',
+                'price' => 10.00,
+                'quantity' => 1,
+            ],
+            [
+                'id' => 'item-2',
+                'name' => 'Item 2',
+                'price' => 20.00,
+                'quantity' => 2,
+            ],
+            [
+                'id' => 'item-3',
+                'name' => 'Item 3',
+                'price' => 30.00,
+                'quantity' => 3,
+            ],
+        ]);
+
+        expect($items)->toBeInstanceOf(AIArmada\Cart\Collections\CartCollection::class);
+        expect($items)->toHaveCount(3);
+        expect(Cart::getItems())->toHaveCount(3);
+        expect(Cart::getTotalQuantity())->toBe(6);
+        expect(Cart::subtotal()->getAmount())->toBe(140.00); // 10 + 40 + 90
+    });
 });
 
 describe('Cart Conditions', function () {

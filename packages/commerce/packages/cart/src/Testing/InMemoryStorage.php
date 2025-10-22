@@ -119,6 +119,14 @@ class InMemoryStorage implements StorageInterface
         return $this->metadata[$identifier][$instance][$key] ?? null;
     }
 
+    public function clearMetadata(string $identifier, string $instance): void
+    {
+        if (isset($this->metadata[$identifier][$instance])) {
+            unset($this->metadata[$identifier][$instance]);
+        }
+        $this->incrementVersion($identifier, $instance);
+    }
+
     public function getVersion(string $identifier, string $instance): ?int
     {
         return $this->versions[$identifier][$instance] ?? null;
