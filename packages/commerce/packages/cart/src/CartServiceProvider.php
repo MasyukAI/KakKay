@@ -6,6 +6,7 @@ namespace AIArmada\Cart;
 
 use AIArmada\Cart\Listeners\HandleUserLogin;
 use AIArmada\Cart\Listeners\HandleUserLoginAttempt;
+use AIArmada\Cart\Services\CartConditionResolver;
 use AIArmada\Cart\Services\CartMigrationService;
 use AIArmada\Cart\Storage\CacheStorage;
 use AIArmada\Cart\Storage\DatabaseStorage;
@@ -37,6 +38,9 @@ final class CartServiceProvider extends PackageServiceProvider
 
     public function registeringPackage(): void
     {
+        $this->app->singleton(CartConditionResolver::class);
+        $this->app->alias(CartConditionResolver::class, 'cart.condition_resolver');
+
         $this->registerStorageDrivers();
         $this->registerCartManager();
         $this->registerMigrationService();
@@ -64,6 +68,8 @@ final class CartServiceProvider extends PackageServiceProvider
             Cart::class,
             StorageInterface::class,
             CartMigrationService::class,
+            CartConditionResolver::class,
+            'cart.condition_resolver',
             'cart.storage.session',
             'cart.storage.cache',
             'cart.storage.database',
@@ -119,7 +125,8 @@ final class CartServiceProvider extends PackageServiceProvider
             return new CartManager(
                 storage: $storage,
                 events: $app->make(Dispatcher::class),
-                eventsEnabled: config('cart.events', true)
+                eventsEnabled: config('cart.events', true),
+                conditionResolver: $app->make(CartConditionResolver::class)
             );
         });
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AIArmada\Cart;
 
+use AIArmada\Cart\Services\CartConditionResolver;
 use AIArmada\Cart\Storage\StorageInterface;
 use Illuminate\Contracts\Events\Dispatcher;
 use RuntimeException;
@@ -21,14 +22,18 @@ class CartManager
     public function __construct(
         private StorageInterface $storage,
         private ?Dispatcher $events = null,
-        private bool $eventsEnabled = true
+        private bool $eventsEnabled = true,
+        private ?CartConditionResolver $conditionResolver = null
     ) {
+        $this->conditionResolver ??= app(CartConditionResolver::class);
+
         $this->currentCart = new Cart(
             storage: $this->storage,
             identifier: $this->resolveIdentifier(),
             events: $this->events,
             instanceName: $this->currentInstance,
-            eventsEnabled: $this->eventsEnabled
+            eventsEnabled: $this->eventsEnabled,
+            conditionResolver: $this->conditionResolver
         );
     }
 
@@ -60,7 +65,8 @@ class CartManager
             identifier: $this->resolveIdentifier($identifier),
             events: $this->events,
             instanceName: $name,
-            eventsEnabled: $this->eventsEnabled
+            eventsEnabled: $this->eventsEnabled,
+            conditionResolver: $this->conditionResolver
         );
     }
 
@@ -85,7 +91,8 @@ class CartManager
                 identifier: $currentIdentifier,
                 events: $this->events,
                 instanceName: $name,
-                eventsEnabled: $this->eventsEnabled
+                eventsEnabled: $this->eventsEnabled,
+                conditionResolver: $this->conditionResolver
             );
         }
 

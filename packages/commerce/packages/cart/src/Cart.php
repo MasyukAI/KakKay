@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AIArmada\Cart;
 
 use AIArmada\Cart\Contracts\RulesFactoryInterface;
+use AIArmada\Cart\Services\CartConditionResolver;
 use AIArmada\Cart\Storage\StorageInterface;
 use AIArmada\Cart\Traits\CalculatesTotals;
 use AIArmada\Cart\Traits\ManagesConditions;
@@ -27,14 +28,24 @@ final class Cart
     use ManagesMetadata;
     use ManagesStorage;
 
+    private CartConditionResolver $conditionResolver;
+
     public function __construct(
         private StorageInterface $storage,
         private string $identifier,
         private ?Dispatcher $events = null,
         private string $instanceName = 'default',
-        private bool $eventsEnabled = true
+        private bool $eventsEnabled = true,
+        ?CartConditionResolver $conditionResolver = null
     ) {
         // Cart is now created when first item is added, not during instantiation
+        $this->conditionResolver = $conditionResolver
+            ?? (function_exists('app') ? app(CartConditionResolver::class) : new CartConditionResolver());
+    }
+
+    public function getConditionResolver(): CartConditionResolver
+    {
+        return $this->conditionResolver;
     }
 
     /**

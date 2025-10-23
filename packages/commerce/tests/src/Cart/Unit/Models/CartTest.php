@@ -1026,8 +1026,7 @@ describe('Price normalization', function () {
             'decimal_test',
             app('events'),
             'decimal_test',
-            true,
-            ['decimals' => 3]
+            true
         );
 
         $item = $cart->add('item-1', 'Item 1', 10.12345, 1);

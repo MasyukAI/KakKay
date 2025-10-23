@@ -74,6 +74,11 @@ function createTestCart(string $instance = 'test'): Cart
                 return $this->data[$identifier][$instance]['metadata'][$key] ?? null;
             }
 
+            public function clearMetadata(string $identifier, string $instance): void
+            {
+                $this->data[$identifier][$instance]['metadata'] = [];
+            }
+
             public function swapIdentifier(string $oldIdentifier, string $newIdentifier, string $instance): bool
             {
                 if (isset($this->data[$oldIdentifier][$instance])) {

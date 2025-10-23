@@ -6,42 +6,38 @@ namespace AIArmada\Cart\Traits;
 
 use AIArmada\Cart\Collections\CartConditionCollection;
 use AIArmada\Cart\Conditions\CartCondition;
+use AIArmada\Cart\Contracts\CartConditionConvertible;
 use AIArmada\Cart\Events\CartConditionAdded;
 use AIArmada\Cart\Events\CartConditionRemoved;
 use AIArmada\Cart\Events\ItemConditionAdded;
 use AIArmada\Cart\Events\ItemConditionRemoved;
 use AIArmada\Cart\Exceptions\InvalidCartConditionException;
+use Traversable;
 
 trait ManagesConditions
 {
     /**
      * Add condition to cart
      *
-     * @param  CartCondition|\AIArmada\Vouchers\Conditions\VoucherCondition|array<string, mixed>  $condition
+     * @param  mixed  $condition  Condition instance, array definition, or iterable list of conditions
      *
-     * @throws InvalidCartConditionException If attempting to add a dynamic condition (with rules)
+     * @throws InvalidCartConditionException If attempting to add a dynamic condition (with rules) or conversion fails
      */
-    public function addCondition(CartCondition|\AIArmada\Vouchers\Conditions\VoucherCondition|array $condition): static
+    public function addCondition(mixed $condition): static
     {
-        $conditions = is_array($condition) ? $condition : [$condition];
+        foreach ($this->normalizeConditionInput($condition) as $entry) {
+            $cartCondition = $this->resolveToCartCondition($entry);
 
-        foreach ($conditions as $cond) {
-            if (! $cond instanceof CartCondition && ! $cond instanceof \AIArmada\Vouchers\Conditions\VoucherCondition) {
-                throw new InvalidCartConditionException('Condition must be an instance of CartCondition or VoucherCondition');
-            }
-
-            // Guard against adding dynamic conditions as static
-            // Dynamic conditions must be registered via registerDynamicCondition()
-            if ($cond->isDynamic()) {
+            if ($cartCondition->isDynamic()) {
                 throw new InvalidCartConditionException(
                     sprintf(
                         'Cannot add dynamic condition "%s" using addCondition(). Dynamic conditions (with validation rules) must be registered using registerDynamicCondition() instead. Alternatively, create a static copy using withoutRules() if you want to bypass validation.',
-                        $cond->getName()
+                        $cartCondition->getName()
                     )
                 );
             }
 
-            $this->addCartCondition($cond);
+            $this->addCartCondition($cartCondition);
         }
 
         return $this;
@@ -387,5 +383,50 @@ trait ManagesConditions
         if ($this->eventsEnabled && $this->events) {
             $this->events->dispatch(new CartConditionAdded($condition, $this));
         }
+    }
+
+    /**
+     * Normalize the incoming condition payload into a flat list of entries.
+     *
+     * @return array<int, mixed>
+     */
+    private function normalizeConditionInput(mixed $condition): array
+    {
+        if ($condition instanceof CartCondition || $condition instanceof CartConditionConvertible) {
+            return [$condition];
+        }
+
+        if ($condition instanceof Traversable) {
+            return iterator_to_array($condition);
+        }
+
+        if (is_array($condition)) {
+            return array_is_list($condition) ? $condition : [$condition];
+        }
+
+        return [$condition];
+    }
+
+    private function resolveToCartCondition(mixed $condition): CartCondition
+    {
+        if ($condition instanceof CartCondition) {
+            return $condition;
+        }
+
+        if ($condition instanceof CartConditionConvertible) {
+            $resolved = $condition->toCartCondition();
+        } elseif (is_array($condition) && ! array_is_list($condition)) {
+            $resolved = CartCondition::fromArray($condition);
+        } else {
+            $resolved = $this->getConditionResolver()->resolve($condition);
+        }
+
+        if (! $resolved instanceof CartCondition) {
+            $type = is_object($condition) ? $condition::class : gettype($condition);
+
+            throw new InvalidCartConditionException("Condition of type {$type} cannot be converted to CartCondition");
+        }
+
+        return $resolved;
     }
 }

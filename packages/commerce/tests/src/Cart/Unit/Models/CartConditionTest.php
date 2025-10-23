@@ -570,6 +570,8 @@ it('shouldApply returns true for static and evaluates rules for dynamic', functi
                 return null;
             }
 
+            public function clearMetadata(string $identifier, string $instance): void {}
+
             public function swapIdentifier(string $oldIdentifier, string $newIdentifier, string $instance): bool
             {
                 return false;
