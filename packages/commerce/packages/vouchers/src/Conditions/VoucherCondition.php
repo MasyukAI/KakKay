@@ -6,6 +6,7 @@ namespace AIArmada\Vouchers\Conditions;
 
 use AIArmada\Cart\Cart;
 use AIArmada\Cart\Conditions\CartCondition;
+use AIArmada\Cart\Contracts\CartConditionConvertible;
 use AIArmada\Cart\Models\CartItem;
 use AIArmada\Vouchers\Data\VoucherData;
 use AIArmada\Vouchers\Enums\VoucherType;
@@ -21,8 +22,10 @@ use JsonException;
  *
  * @implements \Illuminate\Contracts\Support\Arrayable<string, mixed>
  */
-class VoucherCondition implements Arrayable
+class VoucherCondition implements Arrayable, CartConditionConvertible
 {
+    public const RULE_FACTORY_KEY = 'voucher';
+
     private string $name;
 
     private string $type;
@@ -40,6 +43,8 @@ class VoucherCondition implements Arrayable
     private ?array $rules;
 
     private VoucherData $voucher;
+
+    private ?CartCondition $cartCondition = null;
 
     /**
      * Create a new voucher condition.
@@ -66,9 +71,55 @@ class VoucherCondition implements Arrayable
             'voucher_type' => $voucher->type->value,
             'description' => $voucher->description,
             'original_value' => $voucher->value,
+            'voucher_data' => $voucher->toArray(),
         ];
         $this->order = $order;
         $this->rules = $dynamic ? [[$this, 'validateVoucher']] : null;
+    }
+
+    public static function fromCartCondition(CartCondition $condition): ?self
+    {
+        if ($condition->getType() !== 'voucher') {
+            return null;
+        }
+
+        $attributes = $condition->getAttributes();
+        $voucherData = $attributes['voucher_data'] ?? null;
+
+        if (! is_array($voucherData)) {
+            return null;
+        }
+
+        $data = VoucherData::fromArray($voucherData);
+
+        $instance = new self(
+            voucher: $data,
+            order: $condition->getOrder(),
+            dynamic: $condition->isDynamic()
+        );
+
+        $instance->cartCondition = $condition;
+
+        return $instance;
+    }
+
+    public function toCartCondition(): CartCondition
+    {
+        if ($this->cartCondition instanceof CartCondition) {
+            return $this->cartCondition;
+        }
+
+        $this->cartCondition = new CartCondition(
+            name: $this->name,
+            type: $this->type,
+            target: $this->target,
+            value: $this->value,
+            attributes: $this->attributes,
+            order: $this->order,
+            rules: $this->isDynamic() ? $this->rules : null
+        );
+
+        return $this->cartCondition;
     }
 
     /**
@@ -110,6 +161,22 @@ class VoucherCondition implements Arrayable
     public function getVoucherId(): int
     {
         return $this->voucher->id;
+    }
+
+    public function getRuleFactoryKey(): string
+    {
+        return self::RULE_FACTORY_KEY;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function getRuleFactoryContext(): array
+    {
+        return [
+            'voucher_code' => $this->voucher->code,
+            'voucher_id' => $this->voucher->id,
+        ];
     }
 
     /**

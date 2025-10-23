@@ -109,7 +109,7 @@ final class CartServiceProvider extends PackageServiceProvider
         $this->app->bind(function (\Illuminate\Contracts\Foundation\Application $app): StorageInterface {
             $driver = config('cart.storage', 'session');
 
-            return $app->make("cart.storage.{$driver}");
+            return $app->make(sprintf('cart.storage.%s', $driver));
         });
     }
 
@@ -120,7 +120,7 @@ final class CartServiceProvider extends PackageServiceProvider
     {
         $this->app->singleton('cart', function (\Illuminate\Contracts\Foundation\Application $app) {
             $driver = config('cart.storage', 'session');
-            $storage = $app->make("cart.storage.{$driver}");
+            $storage = $app->make(sprintf('cart.storage.%s', $driver));
 
             return new CartManager(
                 storage: $storage,

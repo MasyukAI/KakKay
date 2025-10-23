@@ -48,6 +48,23 @@ return [
                 'currency' => env('DOCS_CURRENCY', 'MYR'),
             ],
         ],
+        'ticket' => [
+            'default_template' => 'document-default',
+            'number_format' => [
+                'prefix' => 'TKT',
+                'year_format' => 'y',
+                'separator' => '-',
+                'suffix_length' => 6,
+            ],
+            'storage' => [
+                'disk' => env('DOCS_STORAGE_DISK', 'local'),
+                'path' => env('DOCS_STORAGE_PATH', 'documents/tickets'),
+            ],
+            'defaults' => [
+                'currency' => env('DOCS_CURRENCY', 'MYR'),
+                'due_days' => 0,
+            ],
+        ],
     ],
 
     /*

@@ -28,6 +28,7 @@ class CartWithVouchers
     public function __construct(Cart $cart)
     {
         $this->cart = $cart;
+        $this->ensureVoucherRulesFactory($this->cart);
     }
 
     /**

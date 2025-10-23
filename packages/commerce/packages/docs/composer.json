@@ -23,6 +23,26 @@
     "illuminate/database": "^12.0",
     "spatie/laravel-pdf": "^1.5"
   },
+  "autoload": {
+    "psr-4": {
+      "AIArmada\\Docs\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "AIArmada\\Docs\\Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "AIArmada\\Docs\\DocsServiceProvider"
+      ],
+      "aliases": {
+        "Document": "AIArmada\\Docs\\Facades\\Document"
+      }
+    }
+  },
   "minimum-stability": "stable",
   "prefer-stable": true
 }

@@ -37,14 +37,21 @@ trait ManagesItems
             // Otherwise, it's an array of items
             if (isset($id['id'])) {
                 // Single item array: ['id' => '...', 'name' => '...', ...]
+                /** @var string|null $name */
+                $name = isset($id['name']) && is_string($id['name']) ? $id['name'] : null;
+                /** @var float|int|string|null $price */
+                $price = $id['price'] ?? null;
+                /** @var object|string|null $associatedModel */
+                $associatedModel = $id['associated_model'] ?? null;
+
                 return $this->add(
                     $id['id'],
-                    $id['name'] ?? null,
-                    $id['price'] ?? null,
+                    $name,
+                    $price,
                     $id['quantity'] ?? 1,
                     $id['attributes'] ?? [],
                     $id['conditions'] ?? null,
-                    $id['associated_model'] ?? null
+                    $associatedModel
                 );
             }
 

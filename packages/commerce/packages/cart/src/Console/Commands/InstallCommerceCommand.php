@@ -22,12 +22,14 @@ class InstallCommerceCommand extends Command
 
     protected $description = 'Install and configure the Commerce package suite';
 
+    /** @var array<string, string> */
     protected array $requiredPackages = [
         'cart' => 'Cart Management',
         'stock' => 'Stock Management',
         'vouchers' => 'Voucher System',
     ];
 
+    /** @var array<string, string> */
     protected array $optionalPackages = [
         'chip' => 'CHIP Payment Gateway',
         'jnt' => 'J&T Express Shipping',
@@ -70,6 +72,9 @@ class InstallCommerceCommand extends Command
         $this->newLine();
     }
 
+    /**
+     * @return array<string, string>
+     */
     protected function determinePackagesToInstall(): array
     {
         // Required packages are always included
@@ -180,6 +185,9 @@ class InstallCommerceCommand extends Command
         // This is just a placeholder for any specific setup needed
     }
 
+    /**
+     * @param  array<string, string>  $variables
+     */
     protected function ensureEnvVariables(array $variables): void
     {
         $envPath = base_path('.env');
@@ -207,6 +215,9 @@ class InstallCommerceCommand extends Command
         }
     }
 
+    /**
+     * @param  array<string, string>  $installedPackages
+     */
     protected function displayCompletion(array $installedPackages): void
     {
         $this->newLine(2);

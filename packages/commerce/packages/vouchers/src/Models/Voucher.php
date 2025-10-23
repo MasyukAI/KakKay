@@ -10,49 +10,33 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property int $id
+ * @property string $code
+ * @property string $name
+ * @property string|null $description
+ * @property VoucherType $type
+ * @property float $value
+ * @property string $currency
+ * @property float|null $min_cart_value
+ * @property float|null $max_discount
+ * @property int|null $usage_limit
+ * @property int|null $usage_limit_per_user
+ * @property int $times_used
+ * @property \Illuminate\Support\Carbon|null $starts_at
+ * @property \Illuminate\Support\Carbon|null $expires_at
+ * @property VoucherStatus $status
+ * @property array<mixed>|null $applicable_products
+ * @property array<mixed>|null $excluded_products
+ * @property array<mixed>|null $applicable_categories
+ * @property array<mixed>|null $metadata
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ */
 class Voucher extends Model
 {
     use SoftDeletes;
-
-    public string $code;
-
-    public string $name;
-
-    public ?string $description;
-
-    public VoucherType $type;
-
-    public string $value;
-
-    public string $currency;
-
-    public ?string $min_cart_value;
-
-    public ?string $max_discount;
-
-    public ?int $usage_limit;
-
-    public ?int $usage_limit_per_user;
-
-    public int $times_used;
-
-    public ?\Illuminate\Support\Carbon $starts_at;
-
-    public ?\Illuminate\Support\Carbon $expires_at;
-
-    public VoucherStatus $status;
-
-    /** @var ?array<int|string, mixed> */
-    public ?array $applicable_products;
-
-    /** @var ?array<int|string, mixed> */
-    public ?array $excluded_products;
-
-    /** @var ?array<int|string, mixed> */
-    public ?array $applicable_categories;
-
-    /** @var ?array<string, mixed> */
-    public ?array $metadata;
 
     protected $fillable = [
         'code',
@@ -87,35 +71,48 @@ class Voucher extends Model
 
     public function isActive(): bool
     {
-        return $this->status === VoucherStatus::Active;
+        /** @var VoucherStatus|null $status */
+        $status = $this->getAttribute('status');
+
+        return $status === VoucherStatus::Active;
     }
 
     public function isExpired(): bool
     {
-        return $this->expires_at && $this->expires_at->isPast();
+        /** @var \Illuminate\Support\Carbon|null $expiresAt */
+        $expiresAt = $this->getAttribute('expires_at');
+
+        return $expiresAt !== null && $expiresAt->isPast();
     }
 
     public function hasStarted(): bool
     {
-        return ! $this->starts_at || $this->starts_at->isPast();
+        /** @var \Illuminate\Support\Carbon|null $startsAt */
+        $startsAt = $this->getAttribute('starts_at');
+
+        return $startsAt === null || $startsAt->isPast();
     }
 
     public function hasUsageLimitRemaining(): bool
     {
-        if (! $this->usage_limit) {
+        $usageLimit = $this->getAttribute('usage_limit');
+
+        if (! $usageLimit) {
             return true;
         }
 
-        return $this->times_used < $this->usage_limit;
+        return $this->getAttribute('times_used') < $usageLimit;
     }
 
     public function getRemainingUses(): ?int
     {
-        if (! $this->usage_limit) {
+        $usageLimit = $this->getAttribute('usage_limit');
+
+        if (! $usageLimit) {
             return null;
         }
 
-        return max(0, $this->usage_limit - $this->times_used);
+        return max(0, $usageLimit - $this->getAttribute('times_used'));
     }
 
     public function incrementUsage(): void
@@ -123,7 +120,9 @@ class Voucher extends Model
         $this->increment('times_used');
 
         // Auto-update status if depleted
-        if ($this->usage_limit && $this->times_used >= $this->usage_limit) {
+        $usageLimit = $this->getAttribute('usage_limit');
+
+        if ($usageLimit && $this->getAttribute('times_used') >= $usageLimit) {
             $this->update(['status' => VoucherStatus::Depleted]);
         }
     }

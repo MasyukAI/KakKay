@@ -2,345 +2,456 @@
 
 declare(strict_types=1);
 
-use AIArmada\Cart\Cart;
+use AIArmada\Cart\CartManager;
+use AIArmada\Cart\Facades\Cart;
+use AIArmada\Vouchers\Conditions\VoucherCondition;
 use AIArmada\Vouchers\Enums\VoucherStatus;
 use AIArmada\Vouchers\Enums\VoucherType;
 use AIArmada\Vouchers\Events\VoucherApplied;
 use AIArmada\Vouchers\Events\VoucherRemoved;
 use AIArmada\Vouchers\Exceptions\InvalidVoucherException;
-use AIArmada\Vouchers\Facades\Voucher;
 use AIArmada\Vouchers\Models\Voucher as VoucherModel;
+use AIArmada\Vouchers\Support\CartManagerWithVouchers;
 use Illuminate\Support\Facades\Event;
 
-// NOTE: These integration tests require the Cart class to use the HasVouchers trait.
-// They are currently skipped until the cart-vouchers integration is properly implemented.
-$skipReason = 'Cart class needs HasVouchers trait for voucher integration';
+beforeEach(function (): void {
+    $manager = app(CartManager::class);
 
-beforeEach(function () use ($skipReason) {
-    if ($skipReason) {
-        $this->markTestSkipped($skipReason);
+    if (! $manager instanceof CartManagerWithVouchers) {
+        $proxy = CartManagerWithVouchers::fromCartManager($manager);
+
+        Cart::swap($proxy);
+        app()->instance('cart', $proxy);
+        app()->instance(CartManager::class, $proxy);
     }
 
-    // Clear cart before each test
-    $this->cart = app(Cart::class);
-    $this->cart->clear();
+    Cart::clear();
+    Cart::clearConditions();
+    Cart::clearMetadata();
+    Cart::clearVouchers();
+
+    VoucherModel::query()->forceDelete();
+
+    config([
+        'vouchers.cart.max_vouchers_per_cart' => 1,
+        'vouchers.validation.check_user_limit' => false,
+        'vouchers.validation.check_global_limit' => true,
+        'vouchers.validation.check_min_cart_value' => true,
+        'vouchers.code.case_sensitive' => true,
+    ]);
 });
 
-test('can apply percentage voucher to cart', function () {
-    // Create voucher
-    $voucher = VoucherModel::create([
-        'name' => 'Test Voucher',
+test('can apply percentage voucher to cart', function (): void {
+    VoucherModel::create([
         'name' => 'Test Voucher 10%',
-        'name' => 'Test Voucher',
         'code' => 'TEST10',
         'type' => VoucherType::Percentage,
-        'status' => VoucherStatus::Active,
         'value' => 10,
+        'currency' => 'MYR',
         'description' => '10% off',
-        'starts_at' => now(),
+        'status' => VoucherStatus::Active,
+        'starts_at' => now()->subDay(),
         'expires_at' => now()->addMonth(),
     ]);
 
-    // Add item to cart (simulated with metadata)
-    $this->cart->set('subtotal', 100.0);
+    Cart::add('sku-test-10', 'Test Product', 100);
 
-    // Apply voucher
-    $this->cart->applyVoucher('TEST10');
+    Cart::applyVoucher('TEST10');
 
-    expect($this->cart->hasVoucher('TEST10'))->toBeTrue()
-        ->and($this->cart->hasVoucher())->toBeTrue();
-})->skip($skipReason);
+    expect(Cart::hasVoucher('TEST10'))->toBeTrue()
+        ->and(Cart::hasVoucher())->toBeTrue();
+});
 
-test('can apply fixed amount voucher to cart', function () {
-    $voucher = VoucherModel::create([
-        'name' => 'Test Voucher',
-        'name' => 'Test Voucher',
+test('applying a voucher registers dynamic condition metadata', function (): void {
+    VoucherModel::create([
+        'name' => 'Metadata Voucher',
+        'code' => 'META10',
+        'type' => VoucherType::Percentage,
+        'value' => 10,
+        'currency' => 'MYR',
+        'description' => '10% off',
+        'status' => VoucherStatus::Active,
+        'starts_at' => now()->subDay(),
+        'expires_at' => now()->addMonth(),
+    ]);
+
+    Cart::add('sku-meta', 'Test Product', 100);
+
+    Cart::applyVoucher('META10');
+
+    $cart = Cart::getCurrentCart();
+
+    expect($cart->getDynamicConditions()->has('voucher_META10'))->toBeTrue();
+
+    $metadata = $cart->getDynamicConditionMetadata();
+
+    expect($metadata)->toHaveKey('voucher_META10')
+        ->and($metadata['voucher_META10']['rule_factory_key'])->toBe(VoucherCondition::RULE_FACTORY_KEY)
+        ->and($metadata['voucher_META10']['attributes']['voucher_code'])->toBe('META10');
+});
+
+test('voucher dynamic condition restores on new cart instance', function (): void {
+    VoucherModel::create([
+        'name' => 'Restore Voucher',
+        'code' => 'RESTORE10',
+        'type' => VoucherType::Percentage,
+        'value' => 10,
+        'currency' => 'MYR',
+        'description' => '10% off',
+        'status' => VoucherStatus::Active,
+        'starts_at' => now()->subDay(),
+        'expires_at' => now()->addMonth(),
+    ]);
+
+    Cart::add('sku-restore', 'Test Product', 120);
+    Cart::applyVoucher('RESTORE10');
+
+    /** @var CartManager $manager */
+    $manager = app(CartManager::class);
+    $newCart = $manager->getCartInstance('default');
+
+    expect($newCart->getDynamicConditions()->has('voucher_RESTORE10'))->toBeTrue();
+});
+
+test('removing a voucher clears dynamic metadata', function (): void {
+    VoucherModel::create([
+        'name' => 'Removable Voucher',
+        'code' => 'CLEANUP10',
+        'type' => VoucherType::Percentage,
+        'value' => 10,
+        'currency' => 'MYR',
+        'description' => '10% off',
+        'status' => VoucherStatus::Active,
+        'starts_at' => now()->subDay(),
+        'expires_at' => now()->addMonth(),
+    ]);
+
+    Cart::add('sku-cleanup', 'Test Product', 150);
+    Cart::applyVoucher('CLEANUP10');
+
+    Cart::removeVoucher('CLEANUP10');
+
+    $cart = Cart::getCurrentCart();
+
+    expect($cart->getDynamicConditions()->has('voucher_CLEANUP10'))->toBeFalse()
+        ->and($cart->getDynamicConditionMetadata())->not->toHaveKey('voucher_CLEANUP10');
+});
+
+test('can apply fixed amount voucher to cart', function (): void {
+    VoucherModel::create([
+        'name' => 'Test Voucher 20 Off',
         'code' => 'SAVE20',
         'type' => VoucherType::Fixed,
-        'status' => VoucherStatus::Active,
         'value' => 20,
+        'currency' => 'MYR',
         'description' => '$20 off',
-        'starts_at' => now(),
+        'status' => VoucherStatus::Active,
+        'starts_at' => now()->subDay(),
         'expires_at' => now()->addMonth(),
     ]);
 
-    $this->cart->applyVoucher('SAVE20');
+    Cart::add('sku-save-20', 'Test Product', 50);
 
-    expect($this->cart->hasVoucher('SAVE20'))->toBeTrue();
-})->skip($skipReason);
+    Cart::applyVoucher('SAVE20');
 
-test('throws exception when applying invalid voucher', function () {
-    $this->cart->applyVoucher('INVALID');
-})->throws(InvalidVoucherException::class)->skip($skipReason);
+    expect(Cart::hasVoucher('SAVE20'))->toBeTrue();
+});
 
-test('throws exception when applying expired voucher', function () {
+test('throws exception when applying invalid voucher', function (): void {
+    Cart::add('sku-invalid', 'Test Product', 25.00, 1);
+
+    Cart::applyVoucher('INVALID');
+})->throws(InvalidVoucherException::class);
+
+test('throws exception when applying expired voucher', function (): void {
     VoucherModel::create([
-        'name' => 'Test Voucher',
-        'name' => 'Test Voucher',
+        'name' => 'Expired Voucher',
         'code' => 'EXPIRED',
         'type' => VoucherType::Percentage,
         'status' => VoucherStatus::Active,
         'value' => 10,
+        'currency' => 'MYR',
         'starts_at' => now()->subMonth(),
         'expires_at' => now()->subDay(),
     ]);
 
-    $this->cart->applyVoucher('EXPIRED');
-})->throws(InvalidVoucherException::class)->skip($skipReason);
+    Cart::add('sku-expired', 'Test Product', 120.00, 1);
 
-test('throws exception when applying voucher below minimum cart value', function () {
+    Cart::applyVoucher('EXPIRED');
+})->throws(InvalidVoucherException::class);
+
+test('throws exception when applying voucher below minimum cart value', function (): void {
     VoucherModel::create([
-        'name' => 'Test Voucher',
-        'name' => 'Test Voucher',
+        'name' => 'Min Cart Voucher',
         'code' => 'MIN100',
         'type' => VoucherType::Fixed,
         'status' => VoucherStatus::Active,
         'value' => 20,
+        'currency' => 'MYR',
         'min_cart_value' => 100,
-        'starts_at' => now(),
+        'starts_at' => now()->subDay(),
         'expires_at' => now()->addMonth(),
     ]);
 
-    // Cart is empty or below minimum
-    $this->cart->set('subtotal', 50.0);
+    Cart::add('sku-min-100', 'Test Product', 50.00, 1);
 
-    $this->cart->applyVoucher('MIN100');
-})->throws(InvalidVoucherException::class)->skip($skipReason);
+    Cart::applyVoucher('MIN100');
+})->throws(InvalidVoucherException::class);
 
-test('can remove voucher from cart', function () {
+test('can remove voucher from cart', function (): void {
     VoucherModel::create([
-        'name' => 'Test Voucher',
-        'name' => 'Test Voucher',
+        'name' => 'Removable Voucher',
         'code' => 'REMOVE',
         'type' => VoucherType::Percentage,
         'status' => VoucherStatus::Active,
         'value' => 10,
-        'starts_at' => now(),
+        'currency' => 'MYR',
+        'starts_at' => now()->subDay(),
         'expires_at' => now()->addMonth(),
     ]);
 
-    $this->cart->applyVoucher('REMOVE');
-    expect($this->cart->hasVoucher('REMOVE'))->toBeTrue();
+    Cart::add('sku-remove', 'Test Product', 150.00, 1);
 
-    $this->cart->removeVoucher('REMOVE');
-    expect($this->cart->hasVoucher('REMOVE'))->toBeFalse();
-})->skip($skipReason);
+    Cart::applyVoucher('REMOVE');
+    expect(Cart::hasVoucher('REMOVE'))->toBeTrue();
 
-test('can clear all vouchers from cart', function () {
+    Cart::removeVoucher('REMOVE');
+    expect(Cart::hasVoucher('REMOVE'))->toBeFalse();
+});
+
+test('can clear all vouchers from cart', function (): void {
     VoucherModel::create([
-        'name' => 'Test Voucher',
-        'name' => 'Test Voucher',
+        'name' => 'First Voucher',
         'code' => 'FIRST',
         'type' => VoucherType::Percentage,
         'status' => VoucherStatus::Active,
         'value' => 10,
-        'starts_at' => now(),
+        'currency' => 'MYR',
+        'starts_at' => now()->subDay(),
         'expires_at' => now()->addMonth(),
     ]);
 
     VoucherModel::create([
-        'name' => 'Test Voucher',
-        'name' => 'Test Voucher',
+        'name' => 'Second Voucher',
         'code' => 'SECOND',
         'type' => VoucherType::Percentage,
         'status' => VoucherStatus::Active,
         'value' => 5,
-        'starts_at' => now(),
+        'currency' => 'MYR',
+        'starts_at' => now()->subDay(),
         'expires_at' => now()->addMonth(),
     ]);
 
     config(['vouchers.cart.max_vouchers_per_cart' => 2]);
 
-    $this->cart->applyVoucher('FIRST');
-    $this->cart->applyVoucher('SECOND');
+    Cart::add('sku-multi', 'Test Product', 250.00, 1);
 
-    expect($this->cart->hasVoucher())->toBeTrue()
-        ->and(count($this->cart->getAppliedVouchers()))->toBe(2);
+    Cart::applyVoucher('FIRST');
+    Cart::applyVoucher('SECOND');
 
-    $this->cart->clearVouchers();
+    expect(Cart::hasVoucher())->toBeTrue()
+        ->and(count(Cart::getAppliedVouchers()))->toBe(2);
 
-    expect($this->cart->hasVoucher())->toBeFalse()
-        ->and(count($this->cart->getAppliedVouchers()))->toBe(0);
-})->skip($skipReason);
+    Cart::clearVouchers();
 
-test('can get applied voucher codes', function () {
+    expect(Cart::hasVoucher())->toBeFalse()
+        ->and(count(Cart::getAppliedVouchers()))->toBe(0);
+});
+
+test('can get applied voucher codes', function (): void {
     VoucherModel::create([
-        'name' => 'Test Voucher',
-        'name' => 'Test Voucher',
+        'name' => 'Codes Voucher',
         'code' => 'CODE1',
         'type' => VoucherType::Percentage,
         'status' => VoucherStatus::Active,
         'value' => 10,
-        'starts_at' => now(),
+        'currency' => 'MYR',
+        'starts_at' => now()->subDay(),
         'expires_at' => now()->addMonth(),
     ]);
 
-    $this->cart->applyVoucher('CODE1');
+    Cart::add('sku-code', 'Test Product', 80.00, 1);
 
-    $codes = $this->cart->getAppliedVoucherCodes();
+    Cart::applyVoucher('CODE1');
+
+    $codes = Cart::getAppliedVoucherCodes();
 
     expect($codes)->toBeArray()
         ->and($codes)->toContain('CODE1');
-})->skip($skipReason);
+});
 
-test('respects maximum vouchers per cart', function () {
+test('respects maximum vouchers per cart', function (): void {
     config(['vouchers.cart.max_vouchers_per_cart' => 1]);
 
     VoucherModel::create([
-        'name' => 'Test Voucher',
-        'name' => 'Test Voucher',
+        'name' => 'First Voucher',
         'code' => 'FIRST',
         'type' => VoucherType::Percentage,
         'status' => VoucherStatus::Active,
         'value' => 10,
-        'starts_at' => now(),
+        'currency' => 'MYR',
+        'starts_at' => now()->subDay(),
         'expires_at' => now()->addMonth(),
     ]);
 
     VoucherModel::create([
-        'name' => 'Test Voucher',
-        'name' => 'Test Voucher',
+        'name' => 'Second Voucher',
         'code' => 'SECOND',
         'type' => VoucherType::Percentage,
         'status' => VoucherStatus::Active,
         'value' => 5,
-        'starts_at' => now(),
+        'currency' => 'MYR',
+        'starts_at' => now()->subDay(),
         'expires_at' => now()->addMonth(),
     ]);
 
-    $this->cart->applyVoucher('FIRST');
+    Cart::add('sku-max', 'Test Product', 200.00, 1);
+
+    Cart::applyVoucher('FIRST');
 
     // Should throw exception because max is 1
-    $this->cart->applyVoucher('SECOND');
-})->throws(InvalidVoucherException::class, 'Cart already has the maximum number of vouchers')->skip($skipReason);
+    Cart::applyVoucher('SECOND');
+})->throws(InvalidVoucherException::class, 'Cart already has the maximum number of vouchers');
 
-test('throws exception when applying same voucher twice', function () {
+test('throws exception when applying same voucher twice', function (): void {
     VoucherModel::create([
-        'name' => 'Test Voucher',
-        'name' => 'Test Voucher',
+        'name' => 'Duplicate Voucher',
         'code' => 'DUPLICATE',
         'type' => VoucherType::Percentage,
         'status' => VoucherStatus::Active,
         'value' => 10,
-        'starts_at' => now(),
+        'currency' => 'MYR',
+        'starts_at' => now()->subDay(),
         'expires_at' => now()->addMonth(),
     ]);
 
-    $this->cart->applyVoucher('DUPLICATE');
-    $this->cart->applyVoucher('DUPLICATE'); // Should throw
-})->throws(InvalidVoucherException::class, 'already applied')->skip($skipReason);
+    Cart::add('sku-duplicate', 'Test Product', 90.00, 1);
 
-test('can check if cart can add more vouchers', function () {
+    Cart::applyVoucher('DUPLICATE');
+    Cart::applyVoucher('DUPLICATE'); // Should throw
+})->throws(InvalidVoucherException::class, 'already applied');
+
+test('can check if cart can add more vouchers', function (): void {
     config(['vouchers.cart.max_vouchers_per_cart' => 2]);
 
     VoucherModel::create([
-        'name' => 'Test Voucher',
-        'name' => 'Test Voucher',
+        'name' => 'Check Voucher',
         'code' => 'CHECK',
         'type' => VoucherType::Percentage,
         'status' => VoucherStatus::Active,
         'value' => 10,
-        'starts_at' => now(),
+        'currency' => 'MYR',
+        'starts_at' => now()->subDay(),
         'expires_at' => now()->addMonth(),
     ]);
 
-    expect($this->cart->canAddVoucher())->toBeTrue();
+    Cart::add('sku-check', 'Test Product', 250.00, 1);
 
-    $this->cart->applyVoucher('CHECK');
+    expect(Cart::canAddVoucher())->toBeTrue();
 
-    expect($this->cart->canAddVoucher())->toBeTrue();
+    Cart::applyVoucher('CHECK');
 
     VoucherModel::create([
-        'name' => 'Test Voucher',
-        'name' => 'Test Voucher',
+        'name' => 'Second Check Voucher',
         'code' => 'CHECK2',
         'type' => VoucherType::Percentage,
         'status' => VoucherStatus::Active,
         'value' => 5,
-        'starts_at' => now(),
+        'currency' => 'MYR',
+        'starts_at' => now()->subDay(),
         'expires_at' => now()->addMonth(),
     ]);
 
-    $this->cart->applyVoucher('CHECK2');
+    expect(Cart::canAddVoucher())->toBeTrue();
 
-    expect($this->cart->canAddVoucher())->toBeFalse();
-})->skip($skipReason);
+    Cart::applyVoucher('CHECK2');
 
-test('dispatches voucher applied event', function () {
+    expect(Cart::canAddVoucher())->toBeFalse();
+});
+
+test('dispatches voucher applied event', function (): void {
     Event::fake([VoucherApplied::class]);
 
     VoucherModel::create([
-        'name' => 'Test Voucher',
-        'name' => 'Test Voucher',
+        'name' => 'Event Voucher',
         'code' => 'EVENT',
         'type' => VoucherType::Percentage,
         'status' => VoucherStatus::Active,
         'value' => 10,
-        'starts_at' => now(),
+        'currency' => 'MYR',
+        'starts_at' => now()->subDay(),
         'expires_at' => now()->addMonth(),
     ]);
 
-    $this->cart->applyVoucher('EVENT');
+    Cart::add('sku-event', 'Test Product', 140.00, 1);
+
+    Cart::applyVoucher('EVENT');
 
     Event::assertDispatched(VoucherApplied::class);
-})->skip($skipReason);
+});
 
-test('dispatches voucher removed event', function () {
+test('dispatches voucher removed event', function (): void {
     Event::fake([VoucherRemoved::class]);
 
     VoucherModel::create([
-        'name' => 'Test Voucher',
-        'name' => 'Test Voucher',
+        'name' => 'Remove Event Voucher',
         'code' => 'REMOVE_EVENT',
         'type' => VoucherType::Percentage,
         'status' => VoucherStatus::Active,
         'value' => 10,
-        'starts_at' => now(),
+        'currency' => 'MYR',
+        'starts_at' => now()->subDay(),
         'expires_at' => now()->addMonth(),
     ]);
 
-    $this->cart->applyVoucher('REMOVE_EVENT');
-    $this->cart->removeVoucher('REMOVE_EVENT');
+    Cart::add('sku-remove-event', 'Test Product', 160.00, 1);
+
+    Cart::applyVoucher('REMOVE_EVENT');
+    Cart::removeVoucher('REMOVE_EVENT');
 
     Event::assertDispatched(VoucherRemoved::class);
-})->skip($skipReason);
+});
 
-test('voucher with case insensitive code works', function () {
+test('voucher with case insensitive code works', function (): void {
     config(['vouchers.code.case_sensitive' => false]);
 
     VoucherModel::create([
-        'name' => 'Test Voucher',
-        'name' => 'Test Voucher',
-        'code' => 'lowercase',
+        'name' => 'Lowercase Voucher',
+        'code' => 'LOWERCASE',
         'type' => VoucherType::Percentage,
         'status' => VoucherStatus::Active,
         'value' => 10,
-        'starts_at' => now(),
+        'currency' => 'MYR',
+        'starts_at' => now()->subDay(),
         'expires_at' => now()->addMonth(),
     ]);
 
-    $this->cart->applyVoucher('LOWERCASE');
+    Cart::add('sku-lowercase', 'Test Product', 110.00, 1);
 
-    expect($this->cart->hasVoucher('lowercase'))->toBeTrue()
-        ->or($this->cart->hasVoucher('LOWERCASE'))->toBeTrue();
-})->skip($skipReason);
+    Cart::applyVoucher('lowercase');
 
-test('free shipping voucher is identified correctly', function () {
+    expect(Cart::hasVoucher('LOWERCASE'))->toBeTrue()
+        ->and(Cart::hasVoucher())->toBeTrue();
+});
+
+test('free shipping voucher is identified correctly', function (): void {
     VoucherModel::create([
-        'name' => 'Test Voucher',
-        'name' => 'Test Voucher',
+        'name' => 'Free Shipping Voucher',
         'code' => 'FREESHIP',
         'type' => VoucherType::FreeShipping,
         'status' => VoucherStatus::Active,
         'value' => 0,
-        'starts_at' => now(),
+        'currency' => 'MYR',
+        'starts_at' => now()->subDay(),
         'expires_at' => now()->addMonth(),
     ]);
 
-    $this->cart->applyVoucher('FREESHIP');
+    Cart::add('sku-free-shipping', 'Test Product', 130.00, 1);
 
-    $voucher = $this->cart->getVoucherCondition('FREESHIP');
+    Cart::applyVoucher('FREESHIP');
+
+    $voucher = Cart::getVoucherCondition('FREESHIP');
 
     expect($voucher)->not->toBeNull()
         ->and($voucher->isFreeShipping())->toBeTrue();
-})->skip($skipReason);
+});

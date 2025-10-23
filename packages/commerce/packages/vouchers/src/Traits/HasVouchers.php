@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace AIArmada\Vouchers\Traits;
 
+use AIArmada\Cart\Cart;
+use AIArmada\Cart\Conditions\CartCondition;
 use AIArmada\Vouchers\Conditions\VoucherCondition;
 use AIArmada\Vouchers\Events\VoucherApplied;
 use AIArmada\Vouchers\Events\VoucherRemoved;
 use AIArmada\Vouchers\Exceptions\InvalidVoucherException;
 use AIArmada\Vouchers\Facades\Voucher;
 use AIArmada\Vouchers\Support\CartWithVouchers;
+use AIArmada\Vouchers\Support\VoucherRulesFactory;
+use Illuminate\Support\Facades\Event;
+use Throwable;
 
 /**
  * HasVouchers trait adds voucher management capabilities to the Cart.
@@ -32,8 +37,9 @@ trait HasVouchers
      */
     public function applyVoucher(string $code, int $order = 100): self
     {
-        // Validate the voucher against current cart state
-        $validationResult = Voucher::validate($code, $this);
+        $cart = $this->getUnderlyingCart();
+
+        $validationResult = Voucher::validate($code, $cart);
 
         if (! $validationResult->isValid) {
             throw new InvalidVoucherException(
@@ -41,7 +47,12 @@ trait HasVouchers
             );
         }
 
-        // Check if cart already has maximum allowed vouchers
+        if ($this->hasVoucher($code)) {
+            throw new InvalidVoucherException(
+                "Voucher '{$code}' is already applied to this cart"
+            );
+        }
+
         $maxVouchers = config('vouchers.cart.max_vouchers_per_cart', 1);
         $currentVoucherCount = count($this->getAppliedVouchers());
 
@@ -51,14 +62,6 @@ trait HasVouchers
             );
         }
 
-        // Check if this specific voucher is already applied
-        if ($this->hasVoucher($code)) {
-            throw new InvalidVoucherException(
-                "Voucher '{$code}' is already applied to this cart"
-            );
-        }
-
-        // Find the voucher
         $voucherData = Voucher::find($code);
 
         if ($voucherData === null) {
@@ -67,15 +70,26 @@ trait HasVouchers
             );
         }
 
-        // Create and add the voucher condition
-        $voucherCondition = new VoucherCondition($voucherData, $order);
-        $cart = $this instanceof CartWithVouchers ? $this->getCart() : $this;
-        $cart->addCondition($voucherCondition);
+        $this->ensureVoucherRulesFactory($cart);
 
-        // Dispatch event if events are enabled
+        $voucherCondition = new VoucherCondition($voucherData, $order);
+
+        try {
+            $cart->registerDynamicCondition(
+                $voucherCondition->toCartCondition(),
+                null,
+                $voucherCondition->getRuleFactoryKey(),
+                $voucherCondition->getRuleFactoryContext()
+            );
+        } catch (Throwable $exception) {
+            throw new InvalidVoucherException(
+                "Voucher '{$code}' cannot be applied: {$exception->getMessage()}",
+                previous: $exception
+            );
+        }
+
         if ($this instanceof CartWithVouchers) {
-            // For CartWithVouchers wrapper, dispatch through Laravel's event system
-            \Illuminate\Support\Facades\Event::dispatch(new VoucherApplied($this->getCart(), $voucherData));
+            Event::dispatch(new VoucherApplied($cart, $voucherData));
         }
 
         return $this;
@@ -88,21 +102,23 @@ trait HasVouchers
      */
     public function removeVoucher(string $code): self
     {
-        $conditionName = "voucher_{$code}";
-
-        // Get the voucher before removing to dispatch event
         $voucherCondition = $this->getVoucherCondition($code);
 
-        // Remove the condition
-        $cart = $this instanceof CartWithVouchers ? $this->getCart() : $this;
-        $cart->removeCondition($conditionName);
+        if ($voucherCondition === null) {
+            return $this;
+        }
 
-        // Dispatch event if events are enabled
-        if ($voucherCondition) {
-            if ($this instanceof CartWithVouchers) {
-                // For CartWithVouchers wrapper, dispatch through Laravel's event system
-                \Illuminate\Support\Facades\Event::dispatch(new VoucherRemoved($this->getCart(), $voucherCondition->getVoucher()));
-            }
+        $cart = $this->getUnderlyingCart();
+        $conditionName = $voucherCondition->getName();
+
+        if ($cart->getDynamicConditions()->has($conditionName)) {
+            $cart->removeDynamicCondition($conditionName);
+        } else {
+            $cart->removeCondition($conditionName);
+        }
+
+        if ($this instanceof CartWithVouchers) {
+            Event::dispatch(new VoucherRemoved($cart, $voucherCondition->getVoucher()));
         }
 
         return $this;
@@ -113,9 +129,7 @@ trait HasVouchers
      */
     public function clearVouchers(): self
     {
-        $vouchers = $this->getAppliedVouchers();
-
-        foreach ($vouchers as $voucher) {
+        foreach ($this->getAppliedVouchers() as $voucher) {
             $this->removeVoucher($voucher->getVoucherCode());
         }
 
@@ -133,10 +147,15 @@ trait HasVouchers
             return count($this->getAppliedVouchers()) > 0;
         }
 
-        $conditionName = "voucher_{$code}";
-        $cart = $this instanceof CartWithVouchers ? $this->getCart() : $this;
+        $normalized = $this->normalizeVoucherCode($code);
 
-        return $cart->getCondition($conditionName) !== null;
+        foreach ($this->getAppliedVouchers() as $voucher) {
+            if ($this->normalizeVoucherCode($voucher->getVoucherCode()) === $normalized) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -146,11 +165,10 @@ trait HasVouchers
      */
     public function getVoucherCondition(string $code): ?VoucherCondition
     {
-        $conditionName = "voucher_{$code}";
-        $cart = $this instanceof CartWithVouchers ? $this->getCart() : $this;
-        $condition = $cart->getCondition($conditionName);
+        $normalized = $this->normalizeVoucherCode($code);
+        $conditions = $this->collectVoucherConditions();
 
-        return $condition instanceof VoucherCondition ? $condition : null;
+        return $conditions[$normalized] ?? null;
     }
 
     /**
@@ -160,13 +178,7 @@ trait HasVouchers
      */
     public function getAppliedVouchers(): array
     {
-        $cart = $this instanceof CartWithVouchers ? $this->getCart() : $this;
-        $conditions = $cart->getConditions();
-
-        return array_filter(
-            $conditions->toArray(),
-            fn ($condition) => $condition instanceof VoucherCondition
-        );
+        return array_values($this->collectVoucherConditions());
     }
 
     /**
@@ -190,16 +202,17 @@ trait HasVouchers
     public function getVoucherDiscount(): float
     {
         $discount = 0.0;
-        $cart = $this instanceof CartWithVouchers ? $this->getCart() : $this;
-        $subtotal = $cart->subtotal();
+        $cart = $this->getUnderlyingCart();
+        $subtotalMoney = $cart->subtotal();
+        $baseValue = (float) $subtotalMoney->getValue();
 
         foreach ($this->getAppliedVouchers() as $voucher) {
-            $discountAmount = abs($voucher->getCalculatedValue($subtotal));
+            $discountAmount = abs($voucher->getCalculatedValue($baseValue));
             $discount += $discountAmount;
 
             // Update subtotal for next voucher calculation if stacking
             if (config('vouchers.cart.allow_stacking', false)) {
-                $subtotal -= $discountAmount;
+                $baseValue -= $discountAmount;
             }
         }
 
@@ -236,7 +249,7 @@ trait HasVouchers
 
         foreach ($this->getAppliedVouchers() as $voucherCondition) {
             $code = $voucherCondition->getVoucherCode();
-            $validationResult = Voucher::validate($code, $this);
+            $validationResult = Voucher::validate($code, $this->getUnderlyingCart());
 
             if (! $validationResult->isValid) {
                 $this->removeVoucher($code);
@@ -245,5 +258,77 @@ trait HasVouchers
         }
 
         return $removedVouchers;
+    }
+
+    private function getUnderlyingCart(): Cart
+    {
+        if ($this instanceof CartWithVouchers) {
+            return $this->getCart();
+        }
+
+        return $this;
+    }
+
+    private function ensureVoucherRulesFactory(Cart $cart): void
+    {
+        $currentFactory = $cart->getRulesFactory();
+
+        if ($currentFactory instanceof VoucherRulesFactory) {
+            return;
+        }
+
+        if ($currentFactory === null) {
+            $cart->withRulesFactory(app(VoucherRulesFactory::class));
+
+            return;
+        }
+
+        $cart->withRulesFactory(new VoucherRulesFactory($currentFactory));
+    }
+
+    private function normalizeVoucherCode(string $code): string
+    {
+        $normalized = mb_trim($code);
+
+        if (config('vouchers.code.auto_uppercase', true)) {
+            $normalized = mb_strtoupper($normalized);
+        }
+
+        return $normalized;
+    }
+
+    /**
+     * @return array<string, VoucherCondition>
+     */
+    private function collectVoucherConditions(): array
+    {
+        $cart = $this->getUnderlyingCart();
+
+        $collections = [
+            $cart->getDynamicConditions(),
+            $cart->getConditions(),
+        ];
+
+        $conditions = [];
+
+        foreach ($collections as $collection) {
+            foreach ($collection as $condition) {
+                if ($condition instanceof VoucherCondition) {
+                    $voucherCondition = $condition;
+                } elseif ($condition instanceof CartCondition && $condition->getType() === 'voucher') {
+                    $voucherCondition = VoucherCondition::fromCartCondition($condition);
+
+                    if ($voucherCondition === null) {
+                        continue;
+                    }
+                } else {
+                    continue;
+                }
+
+                $conditions[$this->normalizeVoucherCode($voucherCondition->getVoucherCode())] = $voucherCondition;
+            }
+        }
+
+        return $conditions;
     }
 }
