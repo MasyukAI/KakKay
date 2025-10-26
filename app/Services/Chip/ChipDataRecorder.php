@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Throwable;
 
-final class ChipDataRecorder
+class ChipDataRecorder
 {
     private readonly string $connection;
 

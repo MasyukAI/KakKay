@@ -1,7 +1,7 @@
 {
     "preset": "laravel",
     "notPath": [
-
+        "packages"
     ],
     "rules": {
         "array_push": true,

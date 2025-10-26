@@ -1347,6 +1347,182 @@ class ApplyB2BPricing
 }
 ```
 
+---
+
+## Payment Gateway Integration
+
+### Storing Cart UUID with Payment
+
+```php
+namespace App\Services;
+
+use AIArmada\Cart\Facades\Cart;
+use App\Models\Payment;
+use Illuminate\Support\Str;
+
+class PaymentService
+{
+    public function createPayment(array $paymentData): Payment
+    {
+        // Get cart UUID before creating payment
+        $cartUuid = Cart::getId();
+        
+        if (!$cartUuid) {
+            throw new \Exception('Cart must be persisted before creating payment');
+        }
+        
+        // Create payment record
+        $payment = Payment::create([
+            'reference' => Str::uuid(),
+            'cart_id' => $cartUuid,  // Store cart UUID
+            'amount' => Cart::total()->getAmount(),
+            'currency' => Cart::currency(),
+            'status' => 'pending',
+            'gateway' => $paymentData['gateway'],
+            'metadata' => [
+                'items_count' => Cart::count(),
+                'cart_identifier' => Cart::getIdentifier(),
+            ],
+        ]);
+        
+        return $payment;
+    }
+}
+```
+
+### Processing Webhook with Cart UUID
+
+```php
+namespace App\Http\Controllers\Webhooks;
+
+use AIArmada\Cart\Facades\Cart;
+use App\Models\Payment;
+use App\Models\Order;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+class PaymentWebhookController extends Controller
+{
+    public function handle(Request $request)
+    {
+        // Verify webhook signature here...
+        
+        $paymentId = $request->input('payment_id');
+        $status = $request->input('status');
+        
+        $payment = Payment::where('reference', $paymentId)->firstOrFail();
+        
+        if ($status === 'paid') {
+            return $this->handleSuccessfulPayment($payment);
+        }
+        
+        return response()->json(['status' => 'received']);
+    }
+    
+    protected function handleSuccessfulPayment(Payment $payment)
+    {
+        return DB::transaction(function () use ($payment) {
+            // Load cart by UUID
+            $cart = Cart::getById($payment->cart_id);
+            
+            if (!$cart) {
+                throw new \Exception("Cart not found: {$payment->cart_id}");
+            }
+            
+            // Create order from cart
+            $order = Order::create([
+                'user_id' => $cart->getIdentifier(),
+                'payment_id' => $payment->id,
+                'cart_id' => $payment->cart_id,
+                'subtotal' => $cart->subtotal()->getAmount(),
+                'total' => $cart->total()->getAmount(),
+                'currency' => $cart->currency(),
+                'status' => 'confirmed',
+            ]);
+            
+            // Create order items from cart
+            foreach ($cart->getItems() as $item) {
+                $order->items()->create([
+                    'product_id' => $item->id,
+                    'name' => $item->name,
+                    'price' => $item->price->getAmount(),
+                    'quantity' => $item->quantity,
+                    'attributes' => $item->attributes->toArray(),
+                ]);
+            }
+            
+            // Update payment
+            $payment->update([
+                'status' => 'completed',
+                'order_id' => $order->id,
+            ]);
+            
+            // Clear the cart
+            $cart->clear();
+            
+            return response()->json([
+                'status' => 'success',
+                'order_id' => $order->id,
+            ]);
+        });
+    }
+}
+```
+
+### Abandoned Cart Recovery with UUID
+
+```php
+namespace App\Console\Commands;
+
+use AIArmada\Cart\Facades\Cart;
+use App\Mail\AbandonedCartEmail;
+use App\Models\User;
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+
+class SendAbandonedCartEmails extends Command
+{
+    protected $signature = 'cart:send-abandoned-emails';
+    
+    protected $description = 'Send emails for abandoned carts';
+    
+    public function handle()
+    {
+        // Find carts abandoned for 24+ hours
+        $abandonedCarts = DB::table('carts')
+            ->where('updated_at', '<', now()->subHours(24))
+            ->whereNotNull('identifier')
+            ->get();
+        
+        foreach ($abandonedCarts as $snapshot) {
+            // Load cart by UUID
+            $cart = Cart::getById($snapshot->id);
+            
+            if (!$cart || $cart->isEmpty()) {
+                continue;
+            }
+            
+            // Try to find user by identifier
+            $userId = str_replace(['user:', 'guest:'], '', $snapshot->identifier);
+            $user = User::find($userId);
+            
+            if (!$user || !$user->email) {
+                continue;
+            }
+            
+            // Send email with cart details
+            Mail::to($user->email)->send(
+                new AbandonedCartEmail($cart, $user)
+            );
+            
+            $this->info("Sent abandoned cart email to {$user->email}");
+        }
+        
+        return Command::SUCCESS;
+    }
+}
+```
 
 ---
 

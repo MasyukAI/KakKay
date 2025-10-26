@@ -870,6 +870,28 @@ Cart::instance('compare')->add(3, 'Comparison', 3000);
 
 ---
 
+#### `setInstance()`
+
+Set the cart instance (chainable).
+
+```php
+Cart::setInstance(string $name): CartManager
+```
+
+**Parameters:**
+- `$name` (string): Instance name
+
+**Returns:**
+- `CartManager`: Manager instance for chaining
+
+**Example:**
+
+```php
+Cart::setInstance('wishlist')->add(1, 'Product', 1000);
+```
+
+---
+
 #### `currentInstance()`
 
 Get current instance name.
@@ -889,7 +911,278 @@ $current = Cart::currentInstance(); // 'default'
 
 ---
 
+#### `getCartInstance()`
+
+Get a cart instance with a specific name and identifier.
+
+```php
+Cart::getCartInstance(string $name, ?string $identifier = null): Cart
+```
+
+**Parameters:**
+- `$name` (string): Instance name (e.g., 'default', 'wishlist')
+- `$identifier` (string|null): Optional custom identifier (defaults to current identifier)
+
+**Returns:**
+- `Cart`: Cart instance
+
+**Example:**
+
+```php
+// Get another user's cart
+$userCart = Cart::getCartInstance('default', 'user-123');
+
+// Get current user's wishlist
+$wishlist = Cart::getCartInstance('wishlist');
+```
+
+---
+
+### Identifier Management
+
+#### `getIdentifier()`
+
+Get the current cart identifier.
+
+```php
+Cart::getIdentifier(): string
+```
+
+**Returns:**
+- `string`: Current identifier (user ID or session ID)
+
+**Example:**
+
+```php
+$identifier = Cart::getIdentifier();
+// For authenticated user: returns user ID
+// For guest: returns session ID
+```
+
+---
+
+#### `setIdentifier()`
+
+Set a custom cart identifier.
+
+```php
+Cart::setIdentifier(string $identifier): CartManager
+```
+
+**Parameters:**
+- `$identifier` (string): Custom identifier
+
+**Returns:**
+- `CartManager`: Manager instance for chaining
+
+**Example:**
+
+```php
+// Switch to a specific user's cart
+Cart::setIdentifier('user-456')->add(1, 'Product', 1000);
+```
+
+---
+
+#### `forgetIdentifier()`
+
+Reset identifier to default (current user/session).
+
+```php
+Cart::forgetIdentifier(): CartManager
+```
+
+**Returns:**
+- `CartManager`: Manager instance for chaining
+
+**Example:**
+
+```php
+// Temporarily check another cart, then return
+Cart::setIdentifier('user-789');
+$items = Cart::count();
+
+// Return to current user's cart
+Cart::forgetIdentifier();
+```
+
+---
+
+#### `getById()`
+
+Load a cart by its UUID (database primary key).
+
+```php
+Cart::getById(string $uuid): ?Cart
+```
+
+**Parameters:**
+- `$uuid` (string): Cart UUID from database
+
+**Returns:**
+- `Cart|null`: Cart instance or null if not found
+
+**Example:**
+
+```php
+// Load cart from payment system
+$cartUuid = $payment->cart_id;
+$cart = Cart::getById($cartUuid);
+
+if ($cart) {
+    $total = $cart->total();
+    $items = $cart->getItems();
+}
+```
+
+---
+
 ### Storage Operations
+
+#### `exists()`
+
+Check if a cart exists in storage.
+
+```php
+Cart::exists(?string $identifier = null, ?string $instance = null): bool
+```
+
+**Parameters:**
+- `$identifier` (string|null): Identifier to check (defaults to current)
+- `$instance` (string|null): Instance name (defaults to current)
+
+**Returns:**
+- `bool`: True if cart exists in storage
+
+**Example:**
+
+```php
+if (Cart::exists()) {
+    // Cart has been persisted
+}
+
+// Check another user's cart
+if (Cart::exists('user-123', 'default')) {
+    // User 123 has a cart
+}
+```
+
+---
+
+#### `destroy()`
+
+Destroy a cart from storage.
+
+```php
+Cart::destroy(?string $identifier = null, ?string $instance = null): void
+```
+
+**Parameters:**
+- `$identifier` (string|null): Identifier to destroy (defaults to current)
+- `$instance` (string|null): Instance name (defaults to current)
+
+**Example:**
+
+```php
+// Destroy current cart
+Cart::destroy();
+
+// Destroy specific cart
+Cart::destroy('user-123', 'wishlist');
+```
+
+---
+
+#### `instances()`
+
+Get all instance names for an identifier.
+
+```php
+Cart::instances(?string $identifier = null): array
+```
+
+**Parameters:**
+- `$identifier` (string|null): Identifier to check (defaults to current)
+
+**Returns:**
+- `array`: Array of instance names
+
+**Example:**
+
+```php
+$instances = Cart::instances();
+// ['default', 'wishlist', 'compare']
+```
+
+---
+
+#### `getId()`
+
+Get cart UUID (database primary key).
+
+```php
+Cart::getId(): ?string
+```
+
+**Returns:**
+- `string|null`: Cart UUID or null if not persisted
+
+**Example:**
+
+```php
+$uuid = Cart::getId();
+
+// Save to payment record
+$payment->cart_id = $uuid;
+$payment->save();
+```
+
+---
+
+#### `getVersion()`
+
+Get cart version number (for optimistic locking).
+
+```php
+Cart::getVersion(): ?int
+```
+
+**Returns:**
+- `int|null`: Version number or null if not using database storage
+
+**Example:**
+
+```php
+$version = Cart::getVersion();
+// Used internally for concurrency control
+```
+
+---
+
+#### `swap()`
+
+Transfer cart ownership from one identifier to another.
+
+```php
+Cart::swap(string $oldIdentifier, string $newIdentifier, string $instance = 'default'): bool
+```
+
+**Parameters:**
+- `$oldIdentifier` (string): Old identifier (e.g., session ID)
+- `$newIdentifier` (string): New identifier (e.g., user ID)
+- `$instance` (string): Instance name (default: 'default')
+
+**Returns:**
+- `bool`: True if swap was successful
+
+**Example:**
+
+```php
+// Transfer guest cart to authenticated user after login
+Cart::swap(session()->getId(), auth()->id());
+```
+
+---
 
 #### `store()`
 

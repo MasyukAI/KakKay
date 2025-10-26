@@ -10,6 +10,13 @@ use Illuminate\Support\Facades\Facade;
  * Facade for the Cart system.
  *
  * @method static \AIArmada\Cart\CartManager setInstance(string $name)
+ * @method static \AIArmada\Cart\CartManager setIdentifier(string $identifier)
+ * @method static \AIArmada\Cart\CartManager forgetIdentifier()
+ * @method static string getIdentifier()
+ * @method static \AIArmada\Cart\Cart|null getById(string $uuid)
+ * @method static bool exists(?string $identifier = null, ?string $instance = null)
+ * @method static void destroy(?string $identifier = null, ?string $instance = null)
+ * @method static array<string> instances(?string $identifier = null)
  * @method static string instance()
  * @method static \AIArmada\Cart\Storage\StorageInterface storage()
  * @method static \AIArmada\Cart\Cart getCurrentCart()

@@ -100,6 +100,49 @@ class CartManager
     }
 
     /**
+     * Set the current cart identifier globally
+     */
+    public function setIdentifier(string $identifier): static
+    {
+        if ($this->currentCart->getIdentifier() !== $identifier) {
+            $this->currentCart = new Cart(
+                storage: $this->storage,
+                identifier: $identifier,
+                events: $this->events,
+                instanceName: $this->currentInstance,
+                eventsEnabled: $this->eventsEnabled,
+                conditionResolver: $this->conditionResolver
+            );
+        }
+
+        return $this;
+    }
+
+    /**
+     * Reset cart identifier to default (session/user ID)
+     *
+     * Useful for reverting to automatic identifier resolution after
+     * setting a custom identifier during runtime.
+     */
+    public function forgetIdentifier(): static
+    {
+        $defaultIdentifier = $this->resolveIdentifier();
+
+        if ($this->currentCart->getIdentifier() !== $defaultIdentifier) {
+            $this->currentCart = new Cart(
+                storage: $this->storage,
+                identifier: $defaultIdentifier,
+                events: $this->events,
+                instanceName: $this->currentInstance,
+                eventsEnabled: $this->eventsEnabled,
+                conditionResolver: $this->conditionResolver
+            );
+        }
+
+        return $this;
+    }
+
+    /**
      * Get session storage access for session-specific operations
      */
     public function session(?string $sessionKey = null): StorageInterface
@@ -112,6 +155,30 @@ class CartManager
         $session = app(\Illuminate\Session\SessionManager::class)->driver();
 
         return new Storage\SessionStorage($session, $sessionKey ?? config('cart.session.key', 'cart'));
+    }
+
+    /**
+     * Get a cart instance by its UUID
+     *
+     * This loads a cart object using its database primary key (UUID).
+     * Useful for retrieving carts from payment systems, orders, or webhooks.
+     *
+     * @param  string  $uuid  The cart UUID (primary key from carts table)
+     * @return Cart|null Cart instance or null if not found
+     */
+    public function getById(string $uuid): ?Cart
+    {
+        $tableName = config('cart.storage.database.table', 'carts');
+
+        $snapshot = app('db')->table($tableName)
+            ->where('id', $uuid)
+            ->first();
+
+        if (! $snapshot) {
+            return null;
+        }
+
+        return $this->getCartInstance($snapshot->instance, $snapshot->identifier);
     }
 
     /**

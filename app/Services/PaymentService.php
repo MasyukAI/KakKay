@@ -12,7 +12,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 use Psr\Log\LoggerInterface;
 
-final class PaymentService
+class PaymentService
 {
     private PaymentGatewayInterface $gateway;
 

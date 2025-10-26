@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Throwable;
 
-final class WebhookProcessor
+class WebhookProcessor
 {
     public function __construct(
         private readonly CheckoutService $checkoutService,

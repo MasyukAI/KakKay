@@ -397,9 +397,38 @@ $wishlistCount = Cart::instance('wishlist')->count();
 // Clear specific instance
 Cart::instance('wishlist')->clear();
 
-// Get instance without switching
+// Get instance without switching globally
 $quoteCart = Cart::getCartInstance('quote');
 $quoteTotal = $quoteCart->total()->format();
+
+// Get another user's cart instance
+$userCart = Cart::getCartInstance('default', 'user-123');
+$userItems = $userCart->getItems();
+```
+
+### Loading Carts by Identifier
+
+When you need to work with specific user carts or load carts from external systems:
+
+```php
+// Switch to a specific user's cart
+Cart::setIdentifier('user-456');
+Cart::add('item-1', 'Product', 10.00);
+
+// Return to current user's cart
+Cart::forgetIdentifier();
+
+// Get current identifier
+$currentId = Cart::getIdentifier();
+
+// Load cart by UUID (from payment/order system)
+$cartUuid = $payment->cart_id;
+$cart = Cart::getById($cartUuid);
+
+if ($cart) {
+    $total = $cart->total();
+    $items = $cart->getItems();
+}
 ```
 
 ### Instance Independence

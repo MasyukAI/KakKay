@@ -107,3 +107,180 @@ describe('Instance Isolation', function () {
         expect(Cart::setInstance('cart3')->getTotalQuantity())->toBe(3);
     });
 });
+
+describe('Cart Identifier Management', function () {
+    beforeEach(function () {
+        Cart::setInstance('default')->clear();
+    });
+
+    it('can set custom identifier for current cart', function () {
+        // Add item with default identifier
+        Cart::add('item-1', 'Item 1', 10.00, 1);
+        $originalIdentifier = Cart::getIdentifier();
+
+        // Set custom identifier
+        Cart::setIdentifier('custom-cart-id');
+
+        // Verify identifier changed
+        expect(Cart::getIdentifier())->toBe('custom-cart-id');
+        expect(Cart::getIdentifier())->not()->toBe($originalIdentifier);
+
+        // Verify cart is now empty (different identifier = different storage)
+        expect(Cart::isEmpty())->toBeTrue();
+    });
+
+    it('maintains instance name when changing identifier', function () {
+        Cart::setInstance('wishlist');
+        Cart::setIdentifier('custom-id');
+
+        expect(Cart::instance())->toBe('wishlist');
+        expect(Cart::getIdentifier())->toBe('custom-id');
+    });
+
+    it('handles chaining with identifier setting', function () {
+        $result = Cart::setIdentifier('test-id')->add('item-1', 'Test Item', 15.00, 1);
+
+        expect(Cart::getIdentifier())->toBe('test-id');
+        expect(Cart::count())->toBe(1);
+        expect($result)->toBeInstanceOf(AIArmada\Cart\Models\CartItem::class);
+    });
+
+    it('can get current identifier', function () {
+        $identifier = Cart::getIdentifier();
+
+        expect($identifier)->toBeString();
+        expect($identifier)->not()->toBeEmpty();
+    });
+
+    it('can reset identifier to default with forgetIdentifier', function () {
+        $originalIdentifier = Cart::getIdentifier();
+
+        // Set custom identifier
+        Cart::setIdentifier('custom-cart-id');
+        expect(Cart::getIdentifier())->toBe('custom-cart-id');
+
+        // Reset to default
+        Cart::forgetIdentifier();
+        expect(Cart::getIdentifier())->toBe($originalIdentifier);
+        expect(Cart::getIdentifier())->not()->toBe('custom-cart-id');
+    });
+
+    it('forgetIdentifier restores session/user identifier', function () {
+        $defaultIdentifier = Cart::getIdentifier();
+
+        // Add item to default cart
+        Cart::add('item-1', 'Item 1', 10.00, 1);
+        expect(Cart::count())->toBe(1);
+
+        // Switch to custom identifier (empty cart)
+        Cart::setIdentifier('temporary-cart');
+        expect(Cart::isEmpty())->toBeTrue();
+
+        // Reset back to default - should see the original item
+        Cart::forgetIdentifier();
+        expect(Cart::getIdentifier())->toBe($defaultIdentifier);
+        expect(Cart::count())->toBe(1);
+        expect(Cart::get('item-1'))->not()->toBeNull();
+    });
+
+    it('forgetIdentifier supports method chaining', function () {
+        Cart::setIdentifier('custom-id');
+        $result = Cart::forgetIdentifier()->add('item-1', 'Item 1', 10.00, 1);
+
+        expect($result)->toBeInstanceOf(AIArmada\Cart\Models\CartItem::class);
+        expect(Cart::count())->toBe(1);
+    });
+});
+
+describe('Cart Storage Operations', function () {
+    beforeEach(function () {
+        Cart::setInstance('default')->clear();
+    });
+
+    it('can check if cart exists', function () {
+        // Initially no cart exists (empty)
+        expect(Cart::exists())->toBeFalse();
+
+        // Add item to create cart
+        Cart::add('item-1', 'Item 1', 10.00, 1);
+
+        // Now cart exists
+        expect(Cart::exists())->toBeTrue();
+    });
+
+    it('can check if cart exists for specific identifier and instance', function () {
+        // Add items to different instances
+        Cart::setInstance('default')->add('item-1', 'Item 1', 10.00, 1);
+        Cart::setInstance('wishlist')->add('item-2', 'Item 2', 20.00, 1);
+
+        $identifier = Cart::getIdentifier();
+
+        // Both instances should exist
+        expect(Cart::exists($identifier, 'default'))->toBeTrue();
+        expect(Cart::exists($identifier, 'wishlist'))->toBeTrue();
+
+        // Non-existent instance should not exist
+        expect(Cart::exists($identifier, 'nonexistent'))->toBeFalse();
+    });
+
+    it('can destroy cart completely', function () {
+        Cart::add('item-1', 'Item 1', 10.00, 1);
+        expect(Cart::exists())->toBeTrue();
+
+        // Destroy removes cart completely
+        Cart::destroy();
+
+        expect(Cart::exists())->toBeFalse();
+        expect(Cart::isEmpty())->toBeTrue();
+    });
+
+    it('can destroy specific cart instance', function () {
+        $identifier = Cart::getIdentifier();
+
+        Cart::setInstance('default')->add('item-1', 'Item 1', 10.00, 1);
+        Cart::setInstance('wishlist')->add('item-2', 'Item 2', 20.00, 1);
+
+        // Destroy only default instance
+        Cart::destroy($identifier, 'default');
+
+        expect(Cart::exists($identifier, 'default'))->toBeFalse();
+        expect(Cart::exists($identifier, 'wishlist'))->toBeTrue();
+    });
+
+    it('can list all instances for identifier', function () {
+        Cart::setInstance('default')->add('item-1', 'Item 1', 10.00, 1);
+        Cart::setInstance('wishlist')->add('item-2', 'Item 2', 20.00, 1);
+        Cart::setInstance('compare')->add('item-3', 'Item 3', 30.00, 1);
+
+        $instances = Cart::instances();
+
+        expect($instances)->toBeArray();
+        expect($instances)->toContain('default');
+        expect($instances)->toContain('wishlist');
+        expect($instances)->toContain('compare');
+    });
+
+    it('returns empty array when no instances exist', function () {
+        $instances = Cart::instances();
+
+        expect($instances)->toBeArray();
+        expect($instances)->toBeEmpty();
+    });
+
+    it('distinguishes between clear and destroy', function () {
+        Cart::add('item-1', 'Item 1', 10.00, 1);
+
+        // Clear empties the cart but it still exists
+        Cart::clear();
+        expect(Cart::isEmpty())->toBeTrue();
+        expect(Cart::exists())->toBeFalse(); // Session storage removes on clear
+
+        // Add item again
+        Cart::add('item-2', 'Item 2', 20.00, 1);
+        expect(Cart::exists())->toBeTrue();
+
+        // Destroy removes it completely
+        Cart::destroy();
+        expect(Cart::exists())->toBeFalse();
+    });
+});

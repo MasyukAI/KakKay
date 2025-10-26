@@ -712,6 +712,65 @@ public function handle(Login $event): void
 
 ## 🎯 Advanced Patterns
 
+### Loading Carts by UUID
+
+When integrating with payment systems, orders, or webhooks, you often need to load a cart by its database UUID:
+
+```php
+// In payment callback handler
+public function handlePaymentCallback(Request $request)
+{
+    $cartUuid = $request->input('cart_id');
+    
+    // Load cart by UUID
+    $cart = Cart::getById($cartUuid);
+    
+    if (!$cart) {
+        throw new Exception('Cart not found');
+    }
+    
+    // Process the cart
+    $total = $cart->total();
+    $items = $cart->getItems();
+    
+    // Create order from cart
+    $order = Order::createFromCart($cart);
+}
+```
+
+**Common Use Cases:**
+
+```php
+// 1. Payment Gateway Integration
+$payment = Payment::create([
+    'cart_id' => Cart::getId(), // Store UUID
+    'amount' => Cart::total()->getAmount(),
+]);
+
+// Later, when webhook arrives...
+$cart = Cart::getById($payment->cart_id);
+
+// 2. Order Processing
+$order->cart_id = Cart::getId();
+$order->save();
+
+// Retrieve cart when processing
+$cart = Cart::getById($order->cart_id);
+
+// 3. Abandoned Cart Recovery
+$abandonedCarts = DB::table('carts')
+    ->where('updated_at', '<', now()->subHours(24))
+    ->get();
+
+foreach ($abandonedCarts as $snapshot) {
+    $cart = Cart::getById($snapshot->id);
+    if ($cart && $cart->count() > 0) {
+        Mail::to($snapshot->user_email)
+            ->send(new AbandonedCartEmail($cart));
+    }
+}
+```
+
 ### Multi-Tenant Migration
 
 ```php
