@@ -31,6 +31,7 @@ final class OrderStatusHistory extends Model
     /**
      * Get the order this history belongs to
      */
+    /** @phpstan-ignore-next-line */
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);
@@ -39,6 +40,7 @@ final class OrderStatusHistory extends Model
     /**
      * Get the user who changed the status (if applicable)
      */
+    /** @phpstan-ignore-next-line */
     public function changedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'changed_by');

@@ -28,6 +28,7 @@ final class ViewOrder extends ViewRecord
                 ->icon(Heroicon::OutlinedDocumentText)
                 ->color('primary')
                 ->action(function () {
+                    /** @var \App\Models\Order $record */
                     $record = $this->record;
 
                     // Check if invoice already exists for this order
@@ -50,8 +51,9 @@ final class ViewOrder extends ViewRecord
 
                     // Create new invoice document
                     $items = [];
-                    if ($record->orderItems && $record->orderItems->isNotEmpty()) {
+                    if ($record->orderItems->isNotEmpty()) {
                         foreach ($record->orderItems as $item) {
+                            /** @var \App\Models\OrderItem $item */
                             $items[] = [
                                 'description' => $item->product_name ?? 'Product',
                                 'quantity' => $item->quantity,
@@ -71,19 +73,21 @@ final class ViewOrder extends ViewRecord
                     }
 
                     $customerData = [
-                        'name' => $record->user?->name ?? 'Guest',
-                        'email' => $record->user?->email ?? '',
+                        'name' => $record->user->name ?? 'Guest',
+                        'email' => $record->user->email ?? '',
                     ];
 
                     if ($record->address) {
-                        $customerData['address'] = $record->address->street1;
-                        if ($record->address->street2) {
-                            $customerData['address'] .= ', '.$record->address->street2;
+                        /** @var \App\Models\Address $address */
+                        $address = $record->address;
+                        $customerData['address'] = $address->street1;
+                        if ($address->street2) {
+                            $customerData['address'] .= ', '.$address->street2;
                         }
-                        $customerData['city'] = $record->address->city;
-                        $customerData['state'] = $record->address->state;
-                        $customerData['postal_code'] = $record->address->postcode;
-                        $customerData['phone'] = $record->address->phone;
+                        $customerData['city'] = $address->city;
+                        $customerData['state'] = $address->state;
+                        $customerData['postal_code'] = $address->postcode;
+                        $customerData['phone'] = $address->phone;
                     }
 
                     $documentData = DocumentData::from([

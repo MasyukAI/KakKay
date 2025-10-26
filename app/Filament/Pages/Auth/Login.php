@@ -11,6 +11,7 @@ use Filament\Auth\Pages\Login as PagesLogin;
 use Filament\Facades\Filament;
 use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Contracts\Auth\StatefulGuard;
 
 final class Login extends PagesLogin
 {
@@ -26,10 +27,10 @@ final class Login extends PagesLogin
 
         $data = $this->form->getState();
 
-        /** @var SessionGuard $authGuard */
+        /** @var StatefulGuard $authGuard */
         $authGuard = Filament::auth();
 
-        $authProvider = $authGuard->getProvider(); /** @phpstan-ignore-line */
+        $authProvider = $authGuard->getProvider(); /** @phpstan-ignore-line method.notFound */
         $credentials = $this->getCredentialsFromFormData($data);
 
         $user = $authProvider->retrieveByCredentials($credentials);
@@ -75,7 +76,7 @@ final class Login extends PagesLogin
             }
         }
 
-        if (! $authGuard->attemptWhen($credentials, function (Authenticatable $user): bool {
+        if (! $authGuard->attemptWhen($credentials, function (Authenticatable $user): bool { /** @phpstan-ignore-line method.notFound */
             if (! ($user instanceof FilamentUser)) {
                 return true;
             }

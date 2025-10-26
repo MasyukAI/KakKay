@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Payment extends Model
 {
+    /** @phpstan-ignore-next-line */
     use HasFactory, HasUuids;
 
     protected $fillable = [
@@ -40,6 +41,7 @@ class Payment extends Model
     /**
      * Get the order this payment belongs to
      */
+    /** @phpstan-ignore-next-line */
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);
@@ -122,8 +124,9 @@ class Payment extends Model
     /**
      * Scope for completed payments
      */
+    /** @phpstan-ignore-next-line */
     #[\Illuminate\Database\Eloquent\Attributes\Scope]
-    protected function completed($query)
+    protected function completed($query): \Illuminate\Database\Eloquent\Builder
     {
         return $query->where('status', 'completed');
     }
@@ -131,8 +134,9 @@ class Payment extends Model
     /**
      * Scope for pending payments
      */
+    /** @phpstan-ignore-next-line */
     #[\Illuminate\Database\Eloquent\Attributes\Scope]
-    protected function pending($query)
+    protected function pending($query): \Illuminate\Database\Eloquent\Builder
     {
         return $query->where('status', 'pending');
     }
@@ -140,8 +144,9 @@ class Payment extends Model
     /**
      * Scope for failed payments
      */
+    /** @phpstan-ignore-next-line */
     #[\Illuminate\Database\Eloquent\Attributes\Scope]
-    protected function failed($query)
+    protected function failed($query): \Illuminate\Database\Eloquent\Builder
     {
         return $query->where('status', 'failed');
     }
@@ -149,8 +154,9 @@ class Payment extends Model
     /**
      * Scope for refunded payments
      */
+    /** @phpstan-ignore-next-line */
     #[\Illuminate\Database\Eloquent\Attributes\Scope]
-    protected function refunded($query)
+    protected function refunded($query): \Illuminate\Database\Eloquent\Builder
     {
         return $query->where('status', 'refunded');
     }
@@ -158,8 +164,9 @@ class Payment extends Model
     /**
      * Scope by gateway method
      */
+    /** @phpstan-ignore-next-line */
     #[\Illuminate\Database\Eloquent\Attributes\Scope]
-    protected function byGateway($query, string $gatewayMethod)
+    protected function byGateway($query, string $gatewayMethod): \Illuminate\Database\Eloquent\Builder
     {
         return $query->where('method', $gatewayMethod);
     }

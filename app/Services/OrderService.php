@@ -25,6 +25,10 @@ final class OrderService
 
     /**
      * Create order record with optimized code generation
+     *
+     * @param  array<string, mixed>  $customerData
+     * @param  array<array<string, mixed>>  $cartItems
+     * @param  array<string, mixed>|null  $cartSnapshot
      */
     public function createOrder(
         User $user,
@@ -54,6 +58,8 @@ final class OrderService
 
     /**
      * Create order with retry logic for unique order_number generation
+     *
+     * @param  array<string, mixed>  $attributes
      */
     public function createOrderWithRetry(array $attributes, int $maxRetries = 3): Order
     {
@@ -92,6 +98,8 @@ final class OrderService
 
     /**
      * Create order items from cart items
+     *
+     * @param  array<array<string, mixed>>  $cartItems
      */
     public function createOrderItems(Order $order, array $cartItems): void
     {
@@ -140,6 +148,9 @@ final class OrderService
 
     /**
      * Calculate order totals using cart calculations
+     *
+     * @param  array<string, mixed>  $customerData
+     * @return array{subtotal: int, shipping: int, tax: int, total: int}
      */
     public function calculateOrderTotals(array $customerData): array
     {
@@ -203,6 +214,7 @@ final class OrderService
     /**
      * Get orders for a user
      */
+    /** @phpstan-ignore-next-line */
     public function getUserOrders(User $user, int $limit = 10): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
         return Order::where('user_id', $user->id)
@@ -214,6 +226,8 @@ final class OrderService
     /**
      * Resolve monetary totals for an order, preferring cart snapshot data when available.
      *
+     * @param  array<string, mixed>  $customerData
+     * @param  array<string, mixed>|null  $cartSnapshot
      * @return array{subtotal:int, shipping:int, tax:int, total:int}
      */
     private function resolveTotals(array $customerData, ?array $cartSnapshot = null): array

@@ -27,26 +27,21 @@ class CodeGeneratorService
     public static function generateUniqueOrderCode(): string
     {
         $maxRetries = 10;
-        $retries = 0;
 
-        do {
+        for ($retries = 0; $retries < $maxRetries; $retries++) {
             $code = self::generateOrderCode();
 
             try {
-                // Quick check - only if we've had collisions
-                if ($retries > 0 && Order::where('order_number', $code)->exists()) {
-                    continue;
+                // Check uniqueness
+                if (! Order::where('order_number', $code)->exists()) {
+                    return $code;
                 }
-
-                return $code;
             } catch (QueryException $e) {
-                if (++$retries >= $maxRetries) {
-                    throw new Exception("Unable to generate unique order code after {$maxRetries} attempts");
-                }
+                // Continue to next attempt
             }
-        } while ($retries < $maxRetries);
+        }
 
-        throw new Exception('Unable to generate unique order code');
+        throw new Exception("Unable to generate unique order code after {$maxRetries} attempts");
     }
 
     /**

@@ -22,7 +22,7 @@ final class District extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'id',
@@ -56,18 +56,22 @@ final class District extends Model
 
     /**
      * Get districts by state name.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, District>
      */
     public static function getByState(string $state): \Illuminate\Database\Eloquent\Collection
     {
-        return self::forState($state)->orderBy('name')->get();
+        return self::query()->forState($state)->orderBy('name')->get();
     }
 
     /**
      * Get districts options for a specific state (for select dropdowns).
+     *
+     * @return array<string, string>
      */
     public static function getByStateOptions(string $state): array
     {
-        return self::forState($state)
+        return self::query()->forState($state)
             ->orderBy('name')
             ->pluck('name', 'name')
             ->toArray();
@@ -75,6 +79,8 @@ final class District extends Model
 
     /**
      * Get the district data for Sushi.
+     *
+     * @return array<array<string, mixed>>
      */
     public function getRows(): array
     {
@@ -96,9 +102,12 @@ final class District extends Model
 
     /**
      * Scope a query to only include districts for a specific state name.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder<District>  $query
+     * @return \Illuminate\Database\Eloquent\Builder<District>
      */
     #[\Illuminate\Database\Eloquent\Attributes\Scope]
-    protected function forState($query, string $state)
+    protected function forState($query, string $state): \Illuminate\Database\Eloquent\Builder
     {
         return $query->where('state', $state);
     }

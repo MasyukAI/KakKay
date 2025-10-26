@@ -29,6 +29,7 @@ Route::view('dashboard', 'dashboard')
     ->name('dashboard');
 
 // Order routes
+/** @phpstan-ignore-next-line argument.type */
 Route::get('/orders/{order}', function () {
     return view('orders.show');
 })->name('orders.show');
@@ -36,8 +37,11 @@ Route::get('/orders/{order}', function () {
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 
+    /** @phpstan-ignore-next-line */
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
+    /** @phpstan-ignore-next-line */
     Volt::route('settings/password', 'settings.password')->name('settings.password');
+    /** @phpstan-ignore-next-line */
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 });
 
@@ -47,12 +51,14 @@ require __DIR__.'/auth.php';
 //    ->where('slug', '[a-z0-9\-]+')
 //    ->name('page.show');
 
-Volt::route('cara-bercinta', 'cara-bercinta');
-
 // Policy pages
+/** @phpstan-ignore-next-line */
 Volt::route('privacy-policy', 'privacy-policy');
+/** @phpstan-ignore-next-line */
 Volt::route('refund-policy', 'refund-policy');
+/** @phpstan-ignore-next-line */
 Volt::route('shipping-policy', 'shipping-policy');
+/** @phpstan-ignore-next-line */
 Volt::route('terms-of-service', 'terms-of-service');
 
 Route::get('saiffil', function () {

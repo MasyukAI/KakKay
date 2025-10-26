@@ -16,9 +16,10 @@ class PaymentService
 {
     private PaymentGatewayInterface $gateway;
 
+    /** @phpstan-ignore-next-line property.onlyWritten */
     private CodeGeneratorService $codeGenerator;
 
-    private $paymentCodeGenerator;
+    private mixed $paymentCodeGenerator;
 
     private ?LoggerInterface $logger;
 
@@ -36,6 +37,8 @@ class PaymentService
 
     /**
      * Create payment with retry logic for unique reference generation
+     *
+     * @param  array<string, mixed>  $attributes
      */
     public function createPaymentWithRetry(array $attributes, int $maxRetries = 3): Payment
     {
@@ -76,6 +79,10 @@ class PaymentService
 
     /**
      * Process payment with the gateway
+     *
+     * @param  array<string, mixed>  $customerData
+     * @param  array<array<string, mixed>>  $cartItems
+     * @return array<string, mixed>
      */
     public function processPayment(array $customerData, array $cartItems): array
     {
@@ -102,6 +109,8 @@ class PaymentService
 
     /**
      * Get purchase status from payment gateway
+     *
+     * @return array<string, mixed>|null
      */
     public function getPurchaseStatus(string $purchaseId): ?array
     {
@@ -121,6 +130,8 @@ class PaymentService
 
     /**
      * Get available payment methods
+     *
+     * @return array<array<string, mixed>>
      */
     public function getAvailablePaymentMethods(): array
     {
@@ -156,6 +167,8 @@ class PaymentService
 
     /**
      * Get payments by order
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, Payment>
      */
     public function getPaymentsByOrderId(int $orderId): \Illuminate\Database\Eloquent\Collection
     {
@@ -164,6 +177,8 @@ class PaymentService
 
     /**
      * Calculate total payment amount from cart items
+     *
+     * @param  array<array<string, mixed>>  $cartItems
      */
     public function calculatePaymentAmount(array $cartItems, ?float $shippingCost = null): int
     {
@@ -204,6 +219,9 @@ class PaymentService
 
     /**
      * Create a payment intent and store it in cart metadata
+     *
+     * @param  array<string, mixed>  $customerData
+     * @return array<string, mixed>
      */
     public function createPaymentIntent(Cart $cart, array $customerData): array
     {
@@ -218,8 +236,8 @@ class PaymentService
         $result = $this->gateway->createPurchase($customerData, $cartItems);
 
         if ($result['success']) {
-            // Store intent in cart metadata
-            $cart->setMetadata('payment_intent', [
+            // Store intent in cart metadata using batch operation for better performance
+            $paymentIntentData = [
                 'purchase_id' => $result['purchase_id'],
                 'amount' => (int) $cart->total()->getAmount(),
                 'cart_version' => $cartVersion,
@@ -229,6 +247,13 @@ class PaymentService
                 'status' => 'created',
                 'checkout_url' => $result['checkout_url'],
                 'reference' => $reference,
+            ];
+
+            // Use batch metadata operation (optimized with single DB transaction)
+            $cart->setMetadataBatch([
+                'payment_intent' => $paymentIntentData,
+                'payment_intent_created_at' => now()->toISOString(),
+                'payment_intent_purchase_id' => $result['purchase_id'], // For quick lookups
             ]);
 
             Log::info('Payment intent created and stored in cart', [
@@ -238,7 +263,7 @@ class PaymentService
             ]);
 
             Log::debug('Payment intent metadata snapshot stored', [
-                'amount' => $cart->getMetadata('payment_intent')['amount'] ?? null,
+                'amount' => $paymentIntentData['amount'],
             ]);
         }
 
@@ -254,6 +279,8 @@ class PaymentService
      *
      * Note: Expiry removed - CHIP doesn't expire purchases, cart version already handles staleness
      * Note: Amount check removed - cart version changes whenever items/quantities/conditions change
+     *
+     * @return array{is_valid: bool, reason?: string, cart_changed: bool, status?: string, intent?: array<string, mixed>, has_active_intent?: bool}
      */
     public function validateCartPaymentIntent(Cart $cart): array
     {
@@ -310,6 +337,8 @@ class PaymentService
 
     /**
      * Update payment intent status
+     *
+     * @param  array<string, mixed>  $additionalData
      */
     public function updatePaymentIntentStatus(Cart $cart, string $status, array $additionalData = []): void
     {
@@ -333,6 +362,9 @@ class PaymentService
 
     /**
      * Validate payment webhook data against cart intent
+     *
+     * @param  array<string, mixed>  $paymentIntent
+     * @param  array<string, mixed>  $webhookData
      */
     public function validatePaymentWebhook(array $paymentIntent, array $webhookData): bool
     {
@@ -392,7 +424,7 @@ class PaymentService
      * - Cart-level conditions (shipping, discounts, taxes, fees)
      * - Totals breakdown for audit trail and refunds
      *
-     * @return array{items: array, conditions: array, totals: array}
+     * @return array{items: array<array<string, mixed>>, conditions: array<array<string, mixed>>, totals: array{subtotal: int, subtotal_without_conditions: int, total: int, savings: int}}
      */
     private function createCartSnapshot(Cart $cart): array
     {

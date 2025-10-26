@@ -565,6 +565,8 @@ it('shouldApply returns true for static and evaluates rules for dynamic', functi
 
             public function putMetadata(string $identifier, string $instance, string $key, mixed $value): void {}
 
+            public function putMetadataBatch(string $identifier, string $instance, array $metadata): void {}
+
             public function getMetadata(string $identifier, string $instance, string $key): mixed
             {
                 return null;

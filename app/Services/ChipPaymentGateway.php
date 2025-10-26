@@ -25,9 +25,9 @@ final class ChipPaymentGateway implements PaymentGatewayInterface
     /**
      * Create a purchase through CHIP gateway
      *
-     * @param  array  $customerData  Customer details
-     * @param  array  $items  Cart items to be purchased
-     * @return array Result with success status, purchase ID, checkout URL, etc.
+     * @param  array<string, mixed>  $customerData  Customer details
+     * @param  array<array<string, mixed>>  $items  Cart items to be purchased
+     * @return array<string, mixed> Result with success status, purchase ID, checkout URL, etc.
      */
     public function createPurchase(array $customerData, array $items): array
     {
@@ -90,7 +90,7 @@ final class ChipPaymentGateway implements PaymentGatewayInterface
     /**
      * Get available payment methods from CHIP
      *
-     * @return array List of available payment methods
+     * @return array<array<string, mixed>> List of available payment methods
      */
     public function getAvailablePaymentMethods(): array
     {
@@ -141,7 +141,7 @@ final class ChipPaymentGateway implements PaymentGatewayInterface
      * Get the status of an existing purchase from CHIP
      *
      * @param  string  $purchaseId  The purchase ID to check
-     * @return array|null Purchase status data or null if not found
+     * @return array{status: string, amount: float, currency: string}|null
      */
     public function getPurchaseStatus(string $purchaseId): ?array
     {
@@ -167,8 +167,8 @@ final class ChipPaymentGateway implements PaymentGatewayInterface
     /**
      * Convert cart items to CHIP products
      *
-     * @param  array  $items  Cart items
-     * @return array CHIP product objects
+     * @param  array<array<string, mixed>>  $items  Cart items
+     * @return array<ChipProduct> CHIP product objects
      */
     private function convertToChipProducts(array $items): array
     {
@@ -186,7 +186,9 @@ final class ChipPaymentGateway implements PaymentGatewayInterface
             elseif (isset($item['id'])) {
                 $product = Product::find($item['id']);
                 if ($product && $product->category) {
-                    $category = $product->category->name;
+                    /** @var \App\Models\Category $categoryModel */
+                    $categoryModel = $product->category;
+                    $category = $categoryModel->name;
                 }
             }
 
@@ -207,7 +209,7 @@ final class ChipPaymentGateway implements PaymentGatewayInterface
      * Create CHIP client details from customer data
      * Send ONLY required fields to CHIP API (email is the only required field)
      *
-     * @param  array  $customerData  Customer details
+     * @param  array<string, mixed>  $customerData  Customer details
      * @return ClientDetails CHIP client details object
      */
     private function createClientDetails(array $customerData): ClientDetails

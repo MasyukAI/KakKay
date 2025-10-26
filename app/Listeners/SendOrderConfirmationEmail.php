@@ -33,7 +33,9 @@ final class SendOrderConfirmationEmail implements ShouldQueue
 
         try {
             // Send confirmation email to customer
-            Notification::route('mail', $event->order->user->email)
+            /** @var \App\Models\User $user */
+            $user = $event->order->user;
+            Notification::route('mail', $user->email)
                 ->notify(new OrderConfirmation($event->order, $event->payment));
 
             Log::info('Order confirmation email sent successfully', [

@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Livewire\Checkout;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
 final class PaymentStep extends Component
 {
+    /** @var array<string, mixed> */
     public array $checkoutData;
 
     #[Validate('required|string|min:2')]
@@ -42,6 +44,9 @@ final class PaymentStep extends Component
     #[Validate('nullable|string')]
     public string $voucherCode = '';
 
+    /**
+     * @param  array<string, mixed>  $checkoutData
+     */
     public function mount(array $checkoutData = []): void
     {
         $this->checkoutData = $checkoutData;
@@ -137,7 +142,7 @@ final class PaymentStep extends Component
         return 'RM '.number_format($cents / 100, 2);
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.checkout.payment-step');
     }

@@ -6,19 +6,22 @@ namespace App\Livewire\Checkout;
 
 use AIArmada\Cart\Facades\Cart;
 use App\Services\ShippingService;
+use Illuminate\View\View;
 use Livewire\Component;
 
 final class ShippingMethodSelector extends Component
 {
     public string $selectedMethod = 'standard';
 
+    /** @var array<array<string, mixed>> */
     public array $availableMethods = [];
 
     public bool $shippingRequired = true;
 
+    /** @var array<string, string> */
     protected $listeners = ['refresh-shipping-methods' => 'refreshShippingMethods'];
 
-    public function mount(ShippingService $shippingService)
+    public function mount(ShippingService $shippingService): void
     {
         $this->availableMethods = $shippingService->getAvailableShippingMethods();
         $this->shippingRequired = $this->checkIfShippingRequired();
@@ -30,7 +33,7 @@ final class ShippingMethodSelector extends Component
         }
     }
 
-    public function initializeSelectedMethod()
+    public function initializeSelectedMethod(): void
     {
         // Check if shipping method is already set in the cart
         $shippingMethod = Cart::getShippingMethod();
@@ -63,12 +66,12 @@ final class ShippingMethodSelector extends Component
         $this->selectedMethod = 'standard';
     }
 
-    public function updatedSelectedMethod($value)
+    public function updatedSelectedMethod(string $value): void
     {
         $this->updateShippingMethod($value);
     }
 
-    public function updateShippingMethod($methodId)
+    public function updateShippingMethod(string $methodId): void
     {
         $method = $this->findMethodById($methodId);
 
@@ -93,12 +96,12 @@ final class ShippingMethodSelector extends Component
         $this->dispatch('cart-updated');
     }
 
-    public function refreshShippingMethods()
+    public function refreshShippingMethods(): void
     {
         $this->shippingRequired = $this->checkIfShippingRequired();
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.checkout.shipping-method-selector', [
             'methods' => $this->shippingRequired ? $this->availableMethods : [],
@@ -106,12 +109,17 @@ final class ShippingMethodSelector extends Component
     }
 
     // This method is no longer needed as Cart::addShipping now automatically removes existing shipping conditions
-    protected function removeExistingShippingConditions()
+    protected function removeExistingShippingConditions(): void
     {
         Cart::removeShipping();
     }
 
-    protected function findMethodById($id)
+    /**
+     * Find an available method by id.
+     *
+     * @return array<string, mixed>|null
+     */
+    protected function findMethodById(string $id): ?array
     {
         foreach ($this->availableMethods as $method) {
             if ($method['id'] === $id) {
@@ -122,7 +130,7 @@ final class ShippingMethodSelector extends Component
         return null;
     }
 
-    protected function checkIfShippingRequired()
+    protected function checkIfShippingRequired(): bool
     {
         $cartItems = Cart::content();
         foreach ($cartItems as $item) {

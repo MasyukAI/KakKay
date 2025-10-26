@@ -15,7 +15,11 @@ final class ChipWebhookFactory
     {
         $payload = $request->all();
         $event = $payload['event_type'] ?? $payload['event'] ?? null;
-        $data = $payload; // CHIP puts all purchase data at root level
+
+        // CHIP can send data in two formats:
+        // 1. Nested: {'event': 'purchase.paid', 'data': {'id': '123', ...}}
+        // 2. Flat: {'event_type': 'purchase.paid', 'id': '123', ...}
+        $data = $payload['data'] ?? $payload;
 
         $timestamp = $payload['timestamp'] ?? now()->toIso8601String();
         $epoch = is_numeric($timestamp)
@@ -33,6 +37,7 @@ final class ChipWebhookFactory
         Log::debug('Constructing CHIP webhook data object', [
             'event' => $event,
             'identifier' => $identifier,
+            'has_nested_data' => isset($payload['data']),
         ]);
 
         return Webhook::fromArray([

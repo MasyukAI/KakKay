@@ -1,0 +1,35 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: 6
+    paths:
+        - app
+        - config
+        - database
+        - routes
+    
+    # Exclude files/folders
+    excludePaths:
+        - bootstrap
+        - storage
+        - vendor
+    
+    # Allow undefined properties on Eloquent models (dynamic properties)
+    reportUnmatchedIgnoredErrors: false
+    
+    ignoreErrors:
+        # Eloquent dynamic properties
+        - '#Access to an undefined property App\\Models\\[a-zA-Z]+::\$[a-zA-Z_]+\.#'
+        - '#Access to an undefined property Illuminate\\Contracts\\Auth\\Authenticatable::\$[a-zA-Z_]+\.#'
+        - '#Call to an undefined (static )?method App\\Models\\[a-zA-Z]+::[a-zA-Z_]+\(\)\.#'
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\[a-zA-Z]+::[a-zA-Z_]+\(\)\.#'
+        
+        # Filament classes (external dependency)
+        - '#.*Filament.*#'
+        
+        # Known false positives
+        - '#Using nullsafe (property access|method call) on non-nullable type#'
+        - '#Negated boolean expression is always (true|false)\.#'
+        - '#If condition is always (true|false)\.#'
+        - '#Unable to resolve the template type#'

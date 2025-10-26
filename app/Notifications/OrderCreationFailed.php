@@ -13,6 +13,9 @@ final class OrderCreationFailed extends Notification implements ShouldQueue
 {
     use Queueable;
 
+    /**
+     * @param  array<string, mixed>|null  $webhookData
+     */
     public function __construct(
         private string $purchaseId,
         private string $error,
@@ -21,6 +24,8 @@ final class OrderCreationFailed extends Notification implements ShouldQueue
 
     /**
      * Get the notification's delivery channels.
+     *
+     * @return array<string>
      */
     public function via(object $notifiable): array
     {
@@ -45,6 +50,8 @@ final class OrderCreationFailed extends Notification implements ShouldQueue
 
     /**
      * Get the array representation of the notification.
+     *
+     * @return array<string, mixed>
      */
     public function toArray(object $notifiable): array
     {

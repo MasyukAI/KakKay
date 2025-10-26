@@ -12,7 +12,7 @@ use Livewire\Component;
 #[Layout('components.layouts.home')]
 final class Home extends Component
 {
-    public function render()
+    public function render(): \Illuminate\Contracts\View\View
     {
         $allProducts = Product::query()
             ->where('is_active', true)

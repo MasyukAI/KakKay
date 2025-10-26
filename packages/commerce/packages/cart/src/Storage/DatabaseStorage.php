@@ -186,7 +186,7 @@ final readonly class DatabaseStorage implements StorageInterface
                 ->value('metadata');
 
             $existingMetadata = $this->decodeData($existing, 'metadata', []);
-            
+
             // Merge new metadata with existing
             $mergedMetadata = array_merge($existingMetadata, $metadata);
             $this->validateDataSize($mergedMetadata, 'metadata');

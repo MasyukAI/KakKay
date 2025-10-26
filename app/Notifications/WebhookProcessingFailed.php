@@ -13,6 +13,9 @@ final class WebhookProcessingFailed extends Notification implements ShouldQueue
 {
     use Queueable;
 
+    /**
+     * @param  array<string, mixed>|null  $webhookData
+     */
     public function __construct(
         public readonly string $eventType,
         public readonly string $error,
@@ -22,6 +25,8 @@ final class WebhookProcessingFailed extends Notification implements ShouldQueue
 
     /**
      * Get the notification's delivery channels.
+     *
+     * @return array<string>
      */
     public function via(object $notifiable): array
     {
@@ -51,6 +56,8 @@ final class WebhookProcessingFailed extends Notification implements ShouldQueue
 
     /**
      * Get the array representation of the notification.
+     *
+     * @return array<string, mixed>
      */
     public function toArray(object $notifiable): array
     {

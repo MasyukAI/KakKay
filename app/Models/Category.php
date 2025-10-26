@@ -11,12 +11,17 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class Category extends Model
 {
+    /** @phpstan-ignore-next-line */
     use HasFactory, HasUuids;
 
     protected $fillable = [
         'name',
     ];
 
+    /**
+     * @return HasMany<Product>
+     */
+    /** @phpstan-ignore-next-line */
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);

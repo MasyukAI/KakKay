@@ -205,7 +205,7 @@ class ChipDataRecorder
         $this->setColumn($record, $columns, 'force_recurring', $purchase->force_recurring ? 1 : 0);
 
         $this->setColumn($record, $columns, 'reference', $purchase->reference);
-        $this->setColumn($record, $columns, 'reference_generated', $purchase->reference_generated ? '1' : ($purchase->reference_generated ?? null));
+        $this->setColumn($record, $columns, 'reference_generated', $purchase->reference_generated ? '1' : null);
         $this->setColumn($record, $columns, 'notes', $purchase->notes);
         $this->setColumn($record, $columns, 'issued', $purchase->issued);
         $this->setColumn($record, $columns, 'due', $purchase->due);
@@ -262,6 +262,7 @@ class ChipDataRecorder
     }
 
     /**
+     * @param  array<string, mixed>  $record
      * @param  array<int, string>  $columns
      * @param  mixed  $value
      */
@@ -274,7 +275,7 @@ class ChipDataRecorder
         $record[$column] = $value;
     }
 
-    private function jsonOrNull($value): ?string
+    private function jsonOrNull(mixed $value): ?string
     {
         if ($value === null) {
             return null;
@@ -283,7 +284,7 @@ class ChipDataRecorder
         return json_encode($value);
     }
 
-    private function datetimeOrNull($value): ?string
+    private function datetimeOrNull(mixed $value): ?string
     {
         if ($value === null || $value === '') {
             return null;
@@ -305,11 +306,14 @@ class ChipDataRecorder
         }
     }
 
+    /**
+     * @param  array<string, mixed>  $payload
+     */
     private function extractAmountCents(Purchase $purchase, array $payload): ?int
     {
         $amount = $payload['amount']
             ?? $purchase->purchase->total
-            ?? $purchase->payment?->amount
+            ?? $purchase->payment->amount
             ?? null;
 
         if ($amount === null) {
@@ -319,21 +323,30 @@ class ChipDataRecorder
         return is_numeric($amount) ? (int) $amount : null;
     }
 
+    /**
+     * @param  array<string, mixed>  $payload
+     */
     private function extractCurrency(Purchase $purchase, array $payload): ?string
     {
         $currency = $payload['currency']
             ?? $purchase->purchase->currency
-            ?? $purchase->payment?->currency
+            ?? $purchase->payment->currency
             ?? null;
 
         return is_string($currency) ? $currency : null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function purchaseDetailsArray(PurchaseDetails $details): array
     {
         return $details->toArray();
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function paymentArray(?ChipPayment $payment): array
     {
         return $payment?->toArray() ?? [];

@@ -10,10 +10,12 @@ use App\Models\Payment;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
 use Livewire\Component;
 
 final class OrderSummaryStep extends Component
 {
+    /** @var array<string, mixed> */
     public array $checkoutData;
 
     public ?Order $order = null;
@@ -22,6 +24,9 @@ final class OrderSummaryStep extends Component
 
     public string $orderNumber = '';
 
+    /**
+     * @param  array<string, mixed>  $checkoutData
+     */
     public function mount(array $checkoutData = []): void
     {
         $this->checkoutData = $checkoutData;
@@ -65,7 +70,7 @@ final class OrderSummaryStep extends Component
                 'status' => 'pending',
             ]);
 
-            $this->orderNumber = 'ORD-'.mb_str_pad($this->order->id, 6, '0', STR_PAD_LEFT);
+            $this->orderNumber = 'ORD-'.mb_str_pad((string) $this->order->id, 6, '0', STR_PAD_LEFT);
             $this->orderProcessed = true;
 
             DB::commit();
@@ -171,7 +176,7 @@ final class OrderSummaryStep extends Component
         };
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.checkout.order-summary-step');
     }

@@ -80,6 +80,14 @@ it('retrieves applied vouchers from cart conditions', function () {
             $this->metadata[$identifier][$instance][$key] = $value;
         }
 
+        public function putMetadataBatch(string $identifier, string $instance, array $metadata): void
+        {
+            $this->metadata[$identifier][$instance] = array_merge(
+                $this->metadata[$identifier][$instance] ?? [],
+                $metadata
+            );
+        }
+
         public function getMetadata(string $identifier, string $instance, string $key): mixed
         {
             return $this->metadata[$identifier][$instance][$key] ?? null;

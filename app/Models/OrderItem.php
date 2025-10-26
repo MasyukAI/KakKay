@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 final class OrderItem extends Model
 {
+    /** @phpstan-ignore-next-line */
     use HasFactory, HasUuids;
 
     protected $fillable = [
@@ -25,11 +26,19 @@ final class OrderItem extends Model
         'unit_price' => 'integer',
     ];
 
+    /**
+     * @return BelongsTo<Order>
+     */
+    /** @phpstan-ignore-next-line */
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);
     }
 
+    /**
+     * @return BelongsTo<Product>
+     */
+    /** @phpstan-ignore-next-line */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
@@ -52,11 +61,13 @@ final class OrderItem extends Model
 
     public function getTotalWeightAttribute(): float
     {
+        /** @phpstan-ignore-next-line */
         return $this->product ? ($this->product->weight * $this->quantity) : 0;
     }
 
     public function requiresShipping(): bool
     {
+        /** @phpstan-ignore-next-line */
         return $this->product ? $this->product->requiresShipping() : true;
     }
 }

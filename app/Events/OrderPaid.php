@@ -15,6 +15,8 @@ final class OrderPaid
 
     /**
      * Create a new event instance.
+     *
+     * @param  array<string, mixed>  $webhookData
      */
     public function __construct(
         public readonly Order $order,

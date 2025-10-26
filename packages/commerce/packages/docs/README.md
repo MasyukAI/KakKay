@@ -218,6 +218,22 @@ The package includes predefined statuses for documents:
 - PHP 8.3+
 - Laravel 12.0+
 - Spatie Laravel PDF 1.5+
+- Node.js 18+ and npm
+- Puppeteer (for PDF generation)
+
+### Installing Dependencies
+
+After installing the package, you need to install Node.js dependencies for PDF generation:
+
+```bash
+# Install npm packages (includes puppeteer)
+npm install
+
+# Or if dependencies are already defined in package.json
+npm install puppeteer
+```
+
+> **Note:** Puppeteer is required for PDF generation. The package uses Spatie Laravel PDF which relies on Puppeteer/Chromium to render PDFs from HTML.
 
 ## Development Tools
 

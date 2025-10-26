@@ -8,6 +8,8 @@ final class SubdistrictData
 {
     /**
      * Subdistricts organized by district.
+     *
+     * @var array<string, array<string>>
      */
     public static array $subdistricts = [
         'Alor Gajah' => [
@@ -1997,6 +1999,8 @@ final class SubdistrictData
 
     /**
      * Get all subdistricts for a specific district.
+     *
+     * @return array<string>
      */
     public static function getByDistrict(string $district): array
     {
@@ -2005,12 +2009,12 @@ final class SubdistrictData
 
     /**
      * Get subdistricts for a specific district as key-value options.
+     *
+     * @return array<string, string>
      */
     public static function getByDistrictOptions(string $district): array
     {
         $subdistricts = self::getByDistrict($district);
-
-        dd($subdistricts);
 
         $options = [];
         foreach ($subdistricts as $subdistrict) {
@@ -2022,6 +2026,9 @@ final class SubdistrictData
 
     /**
      * Get subdistricts for multiple districts.
+     *
+     * @param  array<string>  $districts
+     * @return array<string>
      */
     public static function getByDistricts(array $districts): array
     {
@@ -2037,6 +2044,9 @@ final class SubdistrictData
 
     /**
      * Get subdistricts for multiple districts as key-value options.
+     *
+     * @param  array<string>  $districts
+     * @return array<string, string>
      */
     public static function getByDistrictsOptions(array $districts): array
     {
@@ -2052,6 +2062,8 @@ final class SubdistrictData
 
     /**
      * Get all subdistricts.
+     *
+     * @return array<string, array<string>>
      */
     public static function getSubdistricts(): array
     {
@@ -2070,6 +2082,8 @@ final class SubdistrictData
 
     /**
      * Get all districts that have subdistricts.
+     *
+     * @return array<string>
      */
     public static function getAvailableDistricts(): array
     {

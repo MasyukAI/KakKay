@@ -42,6 +42,7 @@ test('payment failure webhook marks payment and order as failed', function (): v
         'gateway_payment_id' => 'purchase-failure-123',
     ]);
 
+    // CHIP webhook payload format: nested data structure
     $response = $this->postJson('/webhooks/chip/wh_test', [
         'event' => 'purchase.payment_failure',
         'data' => [
@@ -54,6 +55,8 @@ test('payment failure webhook marks payment and order as failed', function (): v
                 'payment_method' => 'fpx',
             ],
         ],
+    ], [
+        'X-Signature' => 'test-signature',
     ]);
 
     $response->assertOk();

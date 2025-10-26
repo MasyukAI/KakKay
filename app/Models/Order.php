@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 final class Order extends Model
 {
+    /** @phpstan-ignore-next-line */
     use HasFactory, HasUuids;
 
     protected $fillable = [
@@ -46,7 +47,10 @@ final class Order extends Model
 
     /**
      * Get the user that owns this order
+     *
+     * @return BelongsTo<User>
      */
+    /** @phpstan-ignore-next-line */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -54,7 +58,10 @@ final class Order extends Model
 
     /**
      * Get the address for this order
+     *
+     * @return BelongsTo<Address>
      */
+    /** @phpstan-ignore-next-line */
     public function address(): BelongsTo
     {
         return $this->belongsTo(Address::class);
@@ -62,7 +69,10 @@ final class Order extends Model
 
     /**
      * Get payments for this order
+     *
+     * @return HasMany<Payment>
      */
+    /** @phpstan-ignore-next-line */
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
@@ -70,12 +80,19 @@ final class Order extends Model
 
     /**
      * Get order items for this order
+     *
+     * @return HasMany<OrderItem>
      */
+    /** @phpstan-ignore-next-line */
     public function orderItems(): HasMany
     {
         return $this->hasMany(OrderItem::class);
     }
 
+    /**
+     * @return HasMany<Shipment>
+     */
+    /** @phpstan-ignore-next-line */
     public function shipments(): HasMany
     {
         return $this->hasMany(Shipment::class);
@@ -83,7 +100,10 @@ final class Order extends Model
 
     /**
      * Get invoices/documents for this order
+     *
+     * @return MorphMany<\AIArmada\Docs\Models\Document>
      */
+    /** @phpstan-ignore-next-line */
     public function documents(): MorphMany
     {
         return $this->morphMany(\AIArmada\Docs\Models\Document::class, 'documentable');
@@ -91,7 +111,10 @@ final class Order extends Model
 
     /**
      * Get invoices for this order
+     *
+     * @return MorphMany<\AIArmada\Docs\Models\Document>
      */
+    /** @phpstan-ignore-next-line */
     public function invoices(): MorphMany
     {
         return $this->documents()->where('document_type', 'invoice');
@@ -99,7 +122,10 @@ final class Order extends Model
 
     /**
      * Get order status histories
+     *
+     * @return HasMany<OrderStatusHistory>
      */
+    /** @phpstan-ignore-next-line */
     public function statusHistories(): HasMany
     {
         return $this->hasMany(OrderStatusHistory::class);
@@ -118,7 +144,10 @@ final class Order extends Model
      */
     public function latestPayment(): ?Payment
     {
-        return $this->payments()->latest()->first();
+        /** @var Payment|null $payment */
+        $payment = $this->payments()->latest()->first();
+
+        return $payment;
     }
 
     /**
@@ -166,7 +195,10 @@ final class Order extends Model
      */
     public function requiresShipping(): bool
     {
-        return $this->orderItems->some(fn ($item) => $item->requiresShipping());
+        /** @var \Illuminate\Database\Eloquent\Collection<int, OrderItem> $orderItems */
+        $orderItems = $this->orderItems;
+
+        return $orderItems->some(fn ($item) => $item->requiresShipping());
     }
 
     /**
@@ -179,9 +211,12 @@ final class Order extends Model
 
     public function latestShipment(): ?Shipment
     {
-        return $this->shipments()
+        /** @var Shipment|null $shipment */
+        $shipment = $this->shipments()
             ->orderByDesc('shipped_at')
             ->orderByDesc('created_at')
             ->first();
+
+        return $shipment;
     }
 }

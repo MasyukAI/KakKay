@@ -9,6 +9,8 @@ final class PaymentMethodService
     /**
      * Get available payment methods for Malaysia
      * Since we removed the payment gateway infrastructure, we'll use the default methods
+     *
+     * @return array<array<string, mixed>>
      */
     public function getAvailablePaymentMethods(): array
     {
@@ -17,6 +19,9 @@ final class PaymentMethodService
 
     /**
      * Format payment methods for frontend display
+     *
+     * @param  array<array<string, mixed>>  $methods
+     * @return array<array<string, mixed>>
      */
     public function formatPaymentMethods(array $methods): array
     {
@@ -37,6 +42,8 @@ final class PaymentMethodService
 
     /**
      * Get default payment methods (fallback)
+     *
+     * @return array<array<string, mixed>>
      */
     public function getDefaultPaymentMethods(): array
     {
@@ -179,6 +186,8 @@ final class PaymentMethodService
 
     /**
      * Get payment methods grouped by type
+     *
+     * @return array<array<array<string, mixed>>>
      */
     public function getGroupedPaymentMethods(): array
     {
@@ -195,6 +204,8 @@ final class PaymentMethodService
 
     /**
      * Get payment method by ID
+     *
+     * @return array<string, mixed>|null
      */
     public function getPaymentMethodById(string $id): ?array
     {

@@ -11,7 +11,7 @@ final class PageController extends Controller
     /**
      * Display the specified page by slug.
      */
-    public function show(string $slug)
+    public function show(string $slug): \Illuminate\Contracts\View\View
     {
         return view('pages.'.$slug);
     }

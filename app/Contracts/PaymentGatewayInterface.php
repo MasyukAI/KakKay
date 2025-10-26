@@ -9,24 +9,23 @@ interface PaymentGatewayInterface
     /**
      * Create a purchase through the payment gateway
      *
-     * @param  array  $customerData  Customer details
-     * @param  array  $items  Cart items to be purchased
-     * @return array Result containing success status, purchase ID, checkout URL, and other details
+     * @param  array<string, mixed>  $customerData  Customer details
+     * @param  array<array<string, mixed>>  $items  Cart items to be purchased
+     * @return array<string, mixed> Result containing success status, purchase ID, checkout URL, and other details
      */
     public function createPurchase(array $customerData, array $items): array;
 
     /**
-     * Get the status of an existing purchase
+     * Get purchase status.
      *
-     * @param  string  $purchaseId  The purchase ID to check
-     * @return array|null Purchase status data or null if not found
+     * @return array{status: string, amount: float, currency: string}|null
      */
     public function getPurchaseStatus(string $purchaseId): ?array;
 
     /**
-     * Get available payment methods for this gateway
+     * Get available payment methods.
      *
-     * @return array List of available payment methods
+     * @return array<int, array{id: string, name: string, group?: string}>
      */
     public function getAvailablePaymentMethods(): array;
 }

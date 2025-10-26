@@ -8,6 +8,8 @@ final class DistrictData
 {
     /**
      * Districts organized by state.
+     *
+     * @var array<string, array<string>>
      */
     public static array $districts = [
         'Johor' => [
@@ -205,6 +207,8 @@ final class DistrictData
 
     /**
      * Get districts for a specific state.
+     *
+     * @return array<string>
      */
     public static function getByState(string $state): array
     {
@@ -213,6 +217,8 @@ final class DistrictData
 
     /**
      * Get districts for a specific state as key-value pairs (name => name).
+     *
+     * @return array<string, string>
      */
     public static function getByStateOptions(string $state): array
     {
@@ -223,6 +229,8 @@ final class DistrictData
 
     /**
      * Get all districts.
+     *
+     * @return array<string>
      */
     public static function getAllDistricts(): array
     {

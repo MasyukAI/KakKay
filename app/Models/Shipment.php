@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 final class Shipment extends Model
 {
+    /** @phpstan-ignore-next-line */
     use HasFactory, HasUuids;
 
     protected $fillable = [
@@ -33,6 +34,7 @@ final class Shipment extends Model
         'estimated_delivery' => 'datetime',
     ];
 
+    /** @phpstan-ignore-next-line */
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);

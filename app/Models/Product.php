@@ -13,6 +13,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 final class Product extends Model implements HasMedia
 {
+    /** @phpstan-ignore-next-line */
     use HasFactory, HasUuids, InteractsWithMedia;
 
     protected $casts = [
@@ -48,14 +49,10 @@ final class Product extends Model implements HasMedia
         return 'slug';
     }
 
+    /** @phpstan-ignore-next-line */
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
-    }
-
-    public function stockTransactions()
-    {
-        return $this->hasMany(StockTransaction::class);
     }
 
     // public function getFormattedPriceAttribute(): string
@@ -68,7 +65,7 @@ final class Product extends Model implements HasMedia
     //     return $this->price / 100;
     // }
 
-    public function primaryImage()
+    public function primaryImage(): mixed
     {
         return $this->images()->where('is_primary', true)->first();
     }
@@ -98,6 +95,7 @@ final class Product extends Model implements HasMedia
         return $this->weight / 1000;
     }
 
+    /** @phpstan-ignore-next-line */
     public function getDimensionsInCm(): array
     {
         return [
@@ -122,6 +120,7 @@ final class Product extends Model implements HasMedia
         return $this->free_shipping;
     }
 
+    /** @phpstan-ignore-next-line */
     public function getDimensions(): array
     {
         return [

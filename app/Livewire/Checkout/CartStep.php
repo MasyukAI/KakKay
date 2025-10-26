@@ -12,13 +12,18 @@ use Livewire\Component;
 
 final class CartStep extends Component
 {
+    /** @var array<string, mixed> */
     public array $checkoutData;
 
+    /** @var array<array<string, mixed>> */
     public array $cartItems = [];
 
     public string $voucherCode = '';
 
-    public function mount(array $checkoutData = []): void
+    /**
+     * @param  array<string, mixed>  $checkoutData
+     */
+    public function mount(array $checkoutData): void
     {
         $this->checkoutData = $checkoutData;
         $this->loadCartItems();
@@ -108,9 +113,9 @@ final class CartStep extends Component
     #[Computed]
     public function getSubtotal(): int
     {
-        $total = Cart::getSubTotal();
+        $total = Cart::subtotal();
 
-        return is_numeric($total) ? (int) ($total * 100) : 0; // Convert to cents
+        return (int) $total->getAmount(); // Money object returns amount in cents
     }
 
     #[Computed]
@@ -142,7 +147,7 @@ final class CartStep extends Component
         return 'RM '.number_format($cents / 100, 2);
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.checkout.cart-step');
     }

@@ -8,6 +8,8 @@ final class ShippingService
 {
     /**
      * Calculate shipping cost based on delivery method
+     *
+     * @param  array<string, mixed>  $options
      */
     public function calculateShipping(string $method, array $options = []): int
     {
@@ -21,6 +23,8 @@ final class ShippingService
 
     /**
      * Get available shipping methods
+     *
+     * @return array<array<string, mixed>>
      */
     public function getAvailableShippingMethods(): array
     {
@@ -58,6 +62,8 @@ final class ShippingService
 
     /**
      * Get shipping method by ID
+     *
+     * @return array<string, mixed>|null
      */
     public function getShippingMethodById(string $id): ?array
     {
@@ -92,6 +98,8 @@ final class ShippingService
 
     /**
      * Check if shipping is required for the order
+     *
+     * @param  array<array<string, mixed>>  $cartItems
      */
     public function isShippingRequired(array $cartItems): bool
     {

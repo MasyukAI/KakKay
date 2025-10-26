@@ -37,7 +37,10 @@ final class DeductOrderStock implements ShouldQueue
 
         try {
             // Process stock deduction for each order item
-            foreach ($event->order->orderItems as $orderItem) {
+            /** @var \Illuminate\Database\Eloquent\Collection<int, OrderItem> $orderItems */
+            $orderItems = $event->order->orderItems;
+
+            foreach ($orderItems as $orderItem) {
                 $this->processStockDeduction($orderItem);
             }
 
@@ -75,6 +78,7 @@ final class DeductOrderStock implements ShouldQueue
     private function processStockDeduction(OrderItem $orderItem): void
     {
         try {
+            /** @var \App\Models\Product $product */
             $product = $orderItem->product;
 
             if (! $product) {
@@ -99,11 +103,13 @@ final class DeductOrderStock implements ShouldQueue
             }
 
             // Record the sale and deduct stock
+            /** @var \App\Models\Order $order */
+            $order = $orderItem->order;
             $stockTransaction = $this->stockService->removeStock(
                 model: $product,
                 quantity: $orderItem->quantity,
                 reason: 'sale',
-                note: "Stock deducted for Order #{$orderItem->order->order_number}"
+                note: "Stock deducted for Order #{$order->order_number}"
             );
 
             Log::info('Stock deducted successfully', [

@@ -8,6 +8,8 @@ final class StateData
 {
     /**
      * Malaysian states.
+     *
+     * @var array<string>
      */
     public static array $states = [
         'Johor',
@@ -29,7 +31,9 @@ final class StateData
     ];
 
     /**
-     * Get all states as key-value pairs (name => name).
+     * Get state options for forms.
+     *
+     * @return array<string, string>
      */
     public static function getStatesOptions(): array
     {
@@ -38,6 +42,8 @@ final class StateData
 
     /**
      * Get all states.
+     *
+     * @return array<string, string>
      */
     public static function getStates(): array
     {

@@ -42,6 +42,9 @@ final class OrderResource extends Resource
         return $table;
     }
 
+    /**
+     * @return Builder<Order>
+     */
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->with(['user', 'address']);

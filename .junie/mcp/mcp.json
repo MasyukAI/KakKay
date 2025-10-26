@@ -1,9 +1,9 @@
 {
     "mcpServers": {
         "laravel-boost": {
-            "command": "/opt/homebrew/Cellar/php/8.4.13/bin/php",
+            "command": "/Users/saiffil/Library/Application Support/Herd/bin/php84",
             "args": [
-                "/Users/Saiffil/Herd/kakkay/artisan",
+                "/Users/saiffil/Herd/KakKay/artisan",
                 "boost:mcp"
             ]
         },

@@ -40,6 +40,7 @@ final class ProductFactory extends Factory
     /**
      * Indicate that the product is inactive.
      */
+    /** @phpstan-ignore-next-line */
     public function inactive(): Factory
     {
         return $this->state(fn (array $attributes) => [
@@ -50,6 +51,7 @@ final class ProductFactory extends Factory
     /**
      * Indicate that the product is digital (no shipping required).
      */
+    /** @phpstan-ignore-next-line */
     public function digital(): Factory
     {
         return $this->state(fn (array $attributes) => [
@@ -65,6 +67,7 @@ final class ProductFactory extends Factory
     /**
      * Indicate that the product has free shipping.
      */
+    /** @phpstan-ignore-next-line */
     public function freeShipping(): Factory
     {
         return $this->state(fn (array $attributes) => [
@@ -75,6 +78,7 @@ final class ProductFactory extends Factory
     /**
      * Indicate that the product is heavy (for testing shipping calculations).
      */
+    /** @phpstan-ignore-next-line */
     public function heavy(): Factory
     {
         return $this->state(fn (array $attributes) => [

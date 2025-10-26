@@ -24,11 +24,13 @@ final class Review extends Model
         'rating' => 'integer',
     ];
 
+    /** @phpstan-ignore-next-line */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /** @phpstan-ignore-next-line */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);

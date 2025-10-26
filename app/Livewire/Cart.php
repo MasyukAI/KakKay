@@ -14,10 +14,16 @@ use Livewire\Component;
 
 final class Cart extends Component
 {
+    /** @var array<array<string, mixed>> */
     public array $cartItems = [];
 
     public string $voucherCode = '';
 
+    /**
+     * Suggested products based on cart items.
+     *
+     * @var \Illuminate\Support\Collection<int, Product>
+     */
     public $suggestedProducts;
 
     public function mount(): void
@@ -85,7 +91,10 @@ final class Cart extends Component
         $this->dispatch('cart-updated');
     }
 
-    public function incrementQuantity($itemId)
+    /**
+     * Increment quantity of a cart item.
+     */
+    public function incrementQuantity(string $itemId): void
     {
         $item = CartFacade::get($itemId);
         if ($item) {
@@ -103,7 +112,7 @@ final class Cart extends Component
         }
     }
 
-    public function decrementQuantity($itemId)
+    public function decrementQuantity(string $itemId): void
     {
         $item = CartFacade::get($itemId);
         if ($item) {
@@ -173,7 +182,7 @@ final class Cart extends Component
         }
     }
 
-    public function addToCart($productId, int $quantity = 1): void
+    public function addToCart(int|Product $productId, int $quantity = 1): void
     {
         // Handle both Product object and product ID
         if ($productId instanceof Product) {
@@ -184,7 +193,7 @@ final class Cart extends Component
 
         // Add item to cart - price is already in cents (integer)
         CartFacade::add(
-            id: $product->id,
+            id: (string) $product->id,
             name: $product->name,
             price: $product->price, // Keep as cents (integer)
             quantity: $quantity,
@@ -246,7 +255,7 @@ final class Cart extends Component
         return CartFacade::total(); // Cart total already includes all conditions (including shipping)
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.cart');
     }

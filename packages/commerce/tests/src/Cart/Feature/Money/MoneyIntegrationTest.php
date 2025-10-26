@@ -69,6 +69,14 @@ function createTestCart(string $instance = 'test'): Cart
                 $this->data[$identifier][$instance]['metadata'][$key] = $value;
             }
 
+            public function putMetadataBatch(string $identifier, string $instance, array $metadata): void
+            {
+                $this->data[$identifier][$instance]['metadata'] = array_merge(
+                    $this->data[$identifier][$instance]['metadata'] ?? [],
+                    $metadata
+                );
+            }
+
             public function getMetadata(string $identifier, string $instance, string $key): mixed
             {
                 return $this->data[$identifier][$instance]['metadata'][$key] ?? null;

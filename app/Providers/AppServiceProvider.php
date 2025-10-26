@@ -38,8 +38,8 @@ final class AppServiceProvider extends ServiceProvider
 
         // Register CHIP payment success listener
         Event::listen(
-            PurchasePaid::class,
-            HandlePaymentSuccess::class
+            PurchasePaid::class, /** @phpstan-ignore-line class.notFound */
+            HandlePaymentSuccess::class /** @phpstan-ignore-line class.notFound */
         );
 
         // Livewire::addPersistentMiddleware([

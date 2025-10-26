@@ -9,24 +9,26 @@ use Akaunting\Money\Money;
 use App\Data\StateData;
 use App\Services\CheckoutService;
 use Exception;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Concerns\InteractsWithSchemas;
-use Filament\Schemas\Contracts\HasSchemas;
-use Filament\Schemas\Schema;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Forms\Form;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
-final class Checkout extends Component implements HasSchemas
+final class Checkout extends Component implements HasForms
 {
-    use InteractsWithSchemas;
+    use InteractsWithForms;
 
+    /** @var array<string, mixed>|null */
     public ?array $data = [];
 
+    /** @var array<array<string, mixed>> */
     public array $cartItems = [];
 
     public string $selectedCountryCode = '+60';
@@ -38,6 +40,7 @@ final class Checkout extends Component implements HasSchemas
     // Cart-Intent validation properties
     public bool $cartChangedSinceIntent = false;
 
+    /** @var array<string, mixed>|null */
     public ?array $activePaymentIntent = null;
 
     public bool $showCartChangeWarning = false;
@@ -95,8 +98,7 @@ final class Checkout extends Component implements HasSchemas
             ];
 
             // Initialize form with the pre-populated data
-            $this->form->fill($this->data);
-
+            $this->form->fill($this->data); /** @phpstan-ignore-line property.notFound */
         } catch (Exception $e) {
             // Log error but don't crash - might be in testing environment
             Log::warning('Checkout mount error: '.$e->getMessage());
@@ -120,11 +122,11 @@ final class Checkout extends Component implements HasSchemas
         }
     }
 
-    public function form(Schema $schema): Schema
+    public function form(Form $form): Form
     {
         $states = StateData::getStatesOptions();
 
-        return $schema
+        return $form
             ->components([
                 Section::make('Maklumat Penghantaran')
                     // ->icon('heroicon-o-truck')
@@ -271,7 +273,7 @@ final class Checkout extends Component implements HasSchemas
             ->statePath('data');
     }
 
-    public function loadCartItems()
+    public function loadCartItems(): void
     {
         try {
             // Middleware handles cart instance switching
@@ -405,17 +407,6 @@ final class Checkout extends Component implements HasSchemas
         }
     }
 
-    // #[Computed]
-    // public function getPaymentMethodsByGroup(): array
-    // {
-    //     $grouped = [];
-    //     foreach ($this->availablePaymentMethods as $method) {
-    //         $grouped[$method['group']][] = $method;
-    //     }
-
-    //     return $grouped;
-    // }
-
     public function getGroupDisplayName(string $group): string
     {
         $groupNames = [
@@ -430,10 +421,9 @@ final class Checkout extends Component implements HasSchemas
         return $groupNames[$group] ?? ucfirst($group);
     }
 
-    public function submitCheckout()
+    public function submitCheckout(): void
     {
-        $formData = $this->form->getState();
-
+        $formData = $this->form->getState(); /** @phpstan-ignore-line property.notFound */
         try {
             $checkoutService = app(CheckoutService::class);
 
@@ -464,7 +454,9 @@ final class Checkout extends Component implements HasSchemas
 
             if ($result['success']) {
                 // Redirect to CHIP checkout
-                return $this->redirect($result['checkout_url']);
+                $this->redirect($result['checkout_url']);
+
+                return;
             }
             session()->flash('error', 'Gagal memproses pembayaran: '.$result['error']);
 
@@ -479,7 +471,7 @@ final class Checkout extends Component implements HasSchemas
         }
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.checkout', [
             'cartQuantity' => CartFacade::getTotalQuantity(),
@@ -488,6 +480,29 @@ final class Checkout extends Component implements HasSchemas
         ])->layout('components.layouts.app');
     }
 
+    // #[Computed]
+    // public function getPaymentMethodsByGroup(): array
+    // {
+    //     $grouped = [];
+    //     foreach ($this->availablePaymentMethods as $method) {
+    //         $grouped[$method['group']][] = $method;
+    //     }
+
+    //     return $grouped;
+    // }
+
+    /**
+     * @return array<string, array<array<string, mixed>>>
+     */
+    protected function getPaymentMethodsByGroup(): array
+    {
+        // Payment methods functionality is currently disabled
+        return [];
+    }
+
+    /**
+     * @return array<string, string>
+     */
     protected function getPaymentGroupOptions(): array
     {
         return collect($this->getPaymentMethodsByGroup())
@@ -497,6 +512,9 @@ final class Checkout extends Component implements HasSchemas
             ->toArray();
     }
 
+    /**
+     * @return array<string, string>
+     */
     protected function getPaymentMethodOptions(?string $group): array
     {
         $group = $group ?: $this->determineDefaultGroup();

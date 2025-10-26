@@ -116,8 +116,8 @@ final class OrdersTable
                         }
 
                         $customerData = [
-                            'name' => $record->user?->name ?? 'Guest',
-                            'email' => $record->user?->email ?? '',
+                            'name' => $record->user->name ?? 'Guest',
+                            'email' => $record->user->email ?? '',
                         ];
 
                         if ($record->address) {

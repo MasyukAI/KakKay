@@ -4,16 +4,23 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use AIArmada\Cart\CartManager;
 use App\Models\Payment;
 use App\Services\CheckoutService;
+use App\Services\Traits\ManagesCartIdentifiers;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 final class CheckoutController extends Controller
 {
-    public function __construct(private readonly CheckoutService $checkoutService) {}
+    use ManagesCartIdentifiers;
+
+    public function __construct(
+        private readonly CheckoutService $checkoutService,
+        /** @phpstan-ignore property.onlyWritten */
+        private readonly CartManager $cartManager
+    ) {}
 
     /**
      * Show checkout success page
@@ -43,16 +50,14 @@ final class CheckoutController extends Controller
         $order = null;
         $payment = null;
 
-        // Find cart by reference and get purchase ID from metadata
-        $cartData = DB::table('carts')->where('id', $reference)->first();
+        // Try to find cart by reference to get purchase ID
+        $cart = $this->findCartByReference($reference);
 
-        if ($cartData && $cartData->metadata) {
-            $metadata = json_decode($cartData->metadata, true);
-            $paymentIntent = $metadata['payment_intent'] ?? null;
+        if ($cart) {
+            $paymentIntent = $cart->getMetadata('payment_intent');
+            $purchaseId = $paymentIntent['purchase_id'] ?? null;
 
-            if ($paymentIntent && isset($paymentIntent['purchase_id'])) {
-                $purchaseId = $paymentIntent['purchase_id'];
-
+            if ($purchaseId) {
                 // Find payment by CHIP purchase ID
                 $payment = Payment::where('gateway_payment_id', $purchaseId)->first();
                 $order = $payment?->order;
@@ -84,16 +89,14 @@ final class CheckoutController extends Controller
         $order = null;
         $payment = null;
 
-        // Find cart by reference and get purchase ID from metadata
-        $cartData = DB::table('carts')->where('id', $reference)->first();
+        // Try to find cart by reference to get purchase ID
+        $cart = $this->findCartByReference($reference);
 
-        if ($cartData && $cartData->metadata) {
-            $metadata = json_decode($cartData->metadata, true);
-            $paymentIntent = $metadata['payment_intent'] ?? null;
+        if ($cart) {
+            $paymentIntent = $cart->getMetadata('payment_intent');
+            $purchaseId = $paymentIntent['purchase_id'] ?? null;
 
-            if ($paymentIntent && isset($paymentIntent['purchase_id'])) {
-                $purchaseId = $paymentIntent['purchase_id'];
-
+            if ($purchaseId) {
                 // Find payment by CHIP purchase ID
                 $payment = Payment::where('gateway_payment_id', $purchaseId)->first();
                 $order = $payment?->order;

@@ -11,6 +11,7 @@ final class CheckoutFlow extends Component
 {
     public int $currentStep = 1;
 
+    /** @var array<string, mixed> */
     public array $checkoutData = [];
 
     public function mount(): void
@@ -23,6 +24,9 @@ final class CheckoutFlow extends Component
         ];
     }
 
+    /**
+     * @param  array<string, mixed>  $stepData
+     */
     #[On('next-step')]
     public function nextStep(array $stepData = []): void
     {
@@ -50,6 +54,9 @@ final class CheckoutFlow extends Component
         }
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     #[On('update-step-data')]
     public function updateStepData(array $data): void
     {
@@ -83,7 +90,7 @@ final class CheckoutFlow extends Component
         $this->redirect('/');
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.checkout.checkout-flow', [
             'stepTitle' => $this->getStepTitle(),

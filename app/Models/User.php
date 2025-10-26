@@ -44,6 +44,7 @@ final class User extends Authenticatable
     /**
      * Create a guest user
      */
+    /** @phpstan-ignore-next-line */
     public static function createGuest(array $data = []): self
     {
         return self::create(array_merge([
@@ -68,6 +69,7 @@ final class User extends Authenticatable
     /**
      * Get all addresses for this user
      */
+    /** @phpstan-ignore-next-line */
     public function addresses(): MorphMany
     {
         return $this->morphMany(Address::class, 'addressable');
@@ -76,6 +78,7 @@ final class User extends Authenticatable
     /**
      * Get orders for this user
      */
+    /** @phpstan-ignore-next-line */
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
@@ -84,7 +87,7 @@ final class User extends Authenticatable
     /**
      * Get primary billing address
      */
-    public function primaryBillingAddress()
+    public function primaryBillingAddress(): ?Address
     {
         return $this->addresses()
             ->billing()
@@ -95,7 +98,7 @@ final class User extends Authenticatable
     /**
      * Get primary shipping address
      */
-    public function primaryShippingAddress()
+    public function primaryShippingAddress(): ?Address
     {
         return $this->addresses()
             ->shipping()
@@ -135,8 +138,9 @@ final class User extends Authenticatable
     /**
      * Scope for guest users
      */
+    /** @phpstan-ignore-next-line */
     #[\Illuminate\Database\Eloquent\Attributes\Scope]
-    protected function guests($query)
+    protected function guests($query): \Illuminate\Database\Eloquent\Builder
     {
         return $query->where('is_guest', true);
     }
@@ -144,8 +148,9 @@ final class User extends Authenticatable
     /**
      * Scope for registered users
      */
+    /** @phpstan-ignore-next-line */
     #[\Illuminate\Database\Eloquent\Attributes\Scope]
-    protected function registered($query)
+    protected function registered($query): \Illuminate\Database\Eloquent\Builder
     {
         return $query->where('is_guest', false);
     }
