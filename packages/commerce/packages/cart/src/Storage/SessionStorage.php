@@ -174,6 +174,23 @@ final readonly class SessionStorage implements StorageInterface
     }
 
     /**
+     * Store multiple metadata values at once
+     *
+     * @param  array<string, mixed>  $metadata
+     */
+    public function putMetadataBatch(string $identifier, string $instance, array $metadata): void
+    {
+        if (empty($metadata)) {
+            return;
+        }
+
+        foreach ($metadata as $key => $value) {
+            $metadataKey = $this->getMetadataKey($identifier, $instance, $key);
+            $this->session->put($metadataKey, $value);
+        }
+    }
+
+    /**
      * Retrieve cart metadata
      */
     public function getMetadata(string $identifier, string $instance, string $key): mixed

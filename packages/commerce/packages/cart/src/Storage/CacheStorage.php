@@ -174,6 +174,52 @@ final readonly class CacheStorage implements StorageInterface
     }
 
     /**
+     * Store multiple metadata values at once
+     *
+     * @param  array<string, mixed>  $metadata
+     */
+    public function putMetadataBatch(string $identifier, string $instance, array $metadata): void
+    {
+        if (empty($metadata)) {
+            return;
+        }
+
+        $keysRegistryKey = "{$this->keyPrefix}.{$identifier}.{$instance}.metadata._keys";
+
+        if ($this->useLocking && method_exists($this->cache, 'lock')) {
+            $lock = $this->cache->lock("{$this->keyPrefix}.lock.{$identifier}.{$instance}.metadata", 10);
+
+            try {
+                $lock->block(5);
+
+                // Store all metadata values
+                foreach ($metadata as $key => $value) {
+                    $metadataKey = $this->getMetadataKey($identifier, $instance, $key);
+                    $this->cache->put($metadataKey, $value, $this->ttl);
+                }
+
+                // Update registry with all new keys
+                $metadataKeys = $this->cache->get($keysRegistryKey, []);
+                $newKeys = array_unique(array_merge($metadataKeys, array_keys($metadata)));
+                $this->cache->put($keysRegistryKey, $newKeys, $this->ttl);
+            } finally {
+                $lock->release();
+            }
+        } else {
+            // Store all metadata values without locking
+            foreach ($metadata as $key => $value) {
+                $metadataKey = $this->getMetadataKey($identifier, $instance, $key);
+                $this->cache->put($metadataKey, $value, $this->ttl);
+            }
+
+            // Update registry with all new keys
+            $metadataKeys = $this->cache->get($keysRegistryKey, []);
+            $newKeys = array_unique(array_merge($metadataKeys, array_keys($metadata)));
+            $this->cache->put($keysRegistryKey, $newKeys, $this->ttl);
+        }
+    }
+
+    /**
      * Retrieve cart metadata
      */
     public function getMetadata(string $identifier, string $instance, string $key): mixed

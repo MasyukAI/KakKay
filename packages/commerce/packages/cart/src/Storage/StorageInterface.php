@@ -99,6 +99,15 @@ interface StorageInterface
     public function putMetadata(string $identifier, string $instance, string $key, mixed $value): void;
 
     /**
+     * Store multiple metadata values at once
+     *
+     * @param  string  $identifier  User/session identifier
+     * @param  string  $instance  Cart instance name
+     * @param  array<string, mixed>  $metadata  Metadata key-value pairs
+     */
+    public function putMetadataBatch(string $identifier, string $instance, array $metadata): void;
+
+    /**
      * Retrieve cart metadata
      *
      * @param  string  $identifier  User/session identifier

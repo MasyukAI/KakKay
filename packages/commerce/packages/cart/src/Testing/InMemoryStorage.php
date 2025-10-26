@@ -114,6 +114,18 @@ class InMemoryStorage implements StorageInterface
         $this->incrementVersion($identifier, $instance);
     }
 
+    public function putMetadataBatch(string $identifier, string $instance, array $metadata): void
+    {
+        if (empty($metadata)) {
+            return;
+        }
+
+        foreach ($metadata as $key => $value) {
+            $this->metadata[$identifier][$instance][$key] = $value;
+        }
+        $this->incrementVersion($identifier, $instance);
+    }
+
     public function getMetadata(string $identifier, string $instance, string $key): mixed
     {
         return $this->metadata[$identifier][$instance][$key] ?? null;

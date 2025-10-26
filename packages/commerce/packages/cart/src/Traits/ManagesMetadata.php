@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AIArmada\Cart\Traits;
 
 use AIArmada\Cart\Events\MetadataAdded;
+use AIArmada\Cart\Events\MetadataBatchAdded;
 use AIArmada\Cart\Events\MetadataCleared;
 use AIArmada\Cart\Events\MetadataRemoved;
 
@@ -61,8 +62,14 @@ trait ManagesMetadata
      */
     public function setMetadataBatch(array $metadata): static
     {
-        foreach ($metadata as $key => $value) {
-            $this->setMetadata($key, $value);
+        if (empty($metadata)) {
+            return $this;
+        }
+
+        $this->storage->putMetadataBatch($this->getIdentifier(), $this->instance(), $metadata);
+
+        if ($this->eventsEnabled && $this->events) {
+            $this->events->dispatch(new MetadataBatchAdded($metadata, $this));
         }
 
         return $this;

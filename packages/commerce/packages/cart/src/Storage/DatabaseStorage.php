@@ -168,6 +168,40 @@ final readonly class DatabaseStorage implements StorageInterface
     }
 
     /**
+     * Store multiple metadata values at once
+     *
+     * @param  array<string, mixed>  $metadata
+     */
+    public function putMetadataBatch(string $identifier, string $instance, array $metadata): void
+    {
+        if (empty($metadata)) {
+            return;
+        }
+
+        $this->database->transaction(function () use ($identifier, $instance, $metadata) {
+            // Get existing metadata
+            $existing = $this->database->table($this->table)
+                ->where('identifier', $identifier)
+                ->where('instance', $instance)
+                ->value('metadata');
+
+            $existingMetadata = $this->decodeData($existing, 'metadata', []);
+            
+            // Merge new metadata with existing
+            $mergedMetadata = array_merge($existingMetadata, $metadata);
+            $this->validateDataSize($mergedMetadata, 'metadata');
+
+            // Filter out null values and convert empty metadata to null
+            $mergedMetadata = array_filter($mergedMetadata, fn ($value) => $value !== null);
+            $metadataJson = empty($mergedMetadata) ? null : $this->encodeData($mergedMetadata, 'metadata');
+
+            $this->performCasUpdate($identifier, $instance, [
+                'metadata' => $metadataJson,
+            ], 'metadata batch update');
+        });
+    }
+
+    /**
      * Retrieve cart metadata
      */
     public function getMetadata(string $identifier, string $instance, string $key): mixed
