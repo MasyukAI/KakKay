@@ -12,6 +12,7 @@ return new class extends Migration
     {
         Schema::create('vouchers', function (Blueprint $table): void {
             $table->id();
+            $table->nullableMorphs('owner');
             $table->string('code')->unique();
             $table->string('name');
             $table->text('description')->nullable();
@@ -23,6 +24,7 @@ return new class extends Migration
             $table->integer('usage_limit')->nullable();
             $table->integer('usage_limit_per_user')->nullable();
             $table->integer('times_used')->default(0);
+            $table->boolean('allows_manual_redemption')->default(false);
             $table->datetime('starts_at')->nullable();
             $table->datetime('expires_at')->nullable();
             $table->string('status')->default('active');
@@ -37,10 +39,16 @@ return new class extends Migration
         Schema::create('voucher_usage', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('voucher_id')->constrained()->cascadeOnDelete();
-            $table->nullableUuidMorphs('usable');
-            $table->uuid('user_id')->nullable();
-            $table->decimal('discount_applied', 10, 2);
-            $table->timestamps();
+            $table->string('user_identifier');
+            $table->string('cart_identifier')->nullable();
+            $table->decimal('discount_amount', 10, 2);
+            $table->string('currency', 3);
+            $table->json('cart_snapshot')->nullable();
+            $table->string('channel')->default('automatic');
+            $table->nullableMorphs('redeemed_by');
+            $table->text('notes')->nullable();
+            $table->json('metadata')->nullable();
+            $table->timestamp('used_at');
         });
     }
 

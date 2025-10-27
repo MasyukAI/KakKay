@@ -20,11 +20,16 @@ return new class extends Migration
             $table->decimal('discount_amount', 10, 2);
             $table->string('currency', 3);
             $table->json('cart_snapshot')->nullable();
+            $table->string('channel')->default('automatic');
+            $table->nullableMorphs('redeemed_by');
+            $table->text('notes')->nullable();
+            $table->json('metadata')->nullable();
             $table->timestamp('used_at');
 
             // Indexes
             $table->index('voucher_id');
             $table->index('user_identifier');
+            $table->index('channel');
             $table->index('used_at');
         });
     }

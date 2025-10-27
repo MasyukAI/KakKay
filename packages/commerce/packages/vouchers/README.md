@@ -11,6 +11,8 @@ Add powerful voucher functionality to your Laravel shopping cart with support fo
 - 📅 **Time-Based** - Start and expiry dates for campaigns
 - 🎯 **Targeted Discounts** - Apply to specific products or categories
 - 💰 **Smart Constraints** - Minimum cart values, maximum discounts
+- 🧑‍🤝‍🧑 **Multi-Owner Aware** - Scope vouchers to the current tenant or merchant using a configurable resolver
+- 🧾 **Manual Redemption** - Record offline usage with channels, metadata, and staff attribution
 - 📊 **Usage Tracking** - Complete history of voucher applications
 - ⚡ **Real-Time Validation** - Instant feedback on voucher validity
 - 🔐 **Secure** - Built-in validation and fraud prevention
@@ -39,8 +41,8 @@ php artisan migrate
 ### Create a Voucher
 
 ```php
-use AIArmada\Cart\Vouchers\Facades\Voucher;
-use AIArmada\Cart\Vouchers\Enums\VoucherType;
+use AIArmada\Vouchers\Facades\Voucher;
+use AIArmada\Vouchers\Enums\VoucherType;
 
 $voucher = Voucher::create([
     'code' => 'SUMMER2024',
@@ -67,12 +69,44 @@ try {
     $total = Cart::getTotal();
     echo "Total with voucher: {$total->format()}";
     
-} catch (\AIArmada\Cart\Vouchers\Exceptions\VoucherNotFoundException $e) {
+} catch (\AIArmada\Vouchers\Exceptions\VoucherNotFoundException $e) {
     // Voucher doesn't exist
-} catch (\AIArmada\Cart\Vouchers\Exceptions\VoucherExpiredException $e) {
+} catch (\AIArmada\Vouchers\Exceptions\VoucherExpiredException $e) {
     // Voucher has expired
 }
 ```
+
+### Manual Redemption
+
+Record offline usage for POS or concierge scenarios while keeping analytics accurate:
+
+```php
+use AIArmada\Vouchers\Facades\Voucher;
+use Akaunting\Money\Money;
+
+Voucher::redeemManually(
+    code: 'SUMMER2024',
+    userIdentifier: 'order-1001',
+    discountAmount: Money::USD(2500),
+    reference: 'counter-19',
+    metadata: ['source' => 'retail-pos'],
+    notes: 'Awarded during in-store event'
+);
+```
+
+### Owner Scoping
+
+Enable multi-tenant or multi-merchant scoping by registering a resolver that returns the current owner model:
+
+```php
+// config/vouchers.php
+'owner' => [
+    'enabled' => true,
+    'resolver' => App\Support\Vouchers\CurrentOwnerResolver::class,
+],
+```
+
+When enabled, all lookups automatically constrain vouchers to the resolved owner while optionally including global vouchers. New vouchers created through the service are associated with the current owner for you.
 
 ## 📚 Documentation
 

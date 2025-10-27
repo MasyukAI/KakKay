@@ -6,9 +6,14 @@ namespace AIArmada\Vouchers\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class VoucherUsage extends Model
 {
+    public const CHANNEL_AUTOMATIC = 'automatic';
+    public const CHANNEL_MANUAL = 'manual';
+    public const CHANNEL_API = 'api';
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -18,6 +23,11 @@ class VoucherUsage extends Model
         'discount_amount',
         'currency',
         'cart_snapshot',
+        'channel',
+        'notes',
+        'metadata',
+        'redeemed_by_type',
+        'redeemed_by_id',
         'used_at',
     ];
 
@@ -31,11 +41,22 @@ class VoucherUsage extends Model
         return $this->belongsTo(Voucher::class);
     }
 
+    public function redeemedBy(): MorphTo
+    {
+        return $this->morphTo();
+    }
+
+    public function isManual(): bool
+    {
+        return $this->getAttribute('channel') === self::CHANNEL_MANUAL;
+    }
+
     protected function casts(): array
     {
         return [
             'discount_amount' => 'decimal:2',
             'cart_snapshot' => 'array',
+            'metadata' => 'array',
             'used_at' => 'datetime',
         ];
     }

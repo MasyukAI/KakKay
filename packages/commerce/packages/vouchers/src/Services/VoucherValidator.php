@@ -4,18 +4,29 @@ declare(strict_types=1);
 
 namespace AIArmada\Vouchers\Services;
 
+use AIArmada\Vouchers\Contracts\VoucherOwnerResolver;
 use AIArmada\Vouchers\Data\VoucherValidationResult;
 use AIArmada\Vouchers\Models\Voucher;
 use AIArmada\Vouchers\Models\VoucherUsage;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class VoucherValidator
 {
+    public function __construct(
+        protected VoucherOwnerResolver $ownerResolver
+    ) {}
+
     public function validate(string $code, mixed $cart): VoucherValidationResult
     {
         $code = $this->normalizeCode($code);
 
         // Find voucher
-        $voucher = Voucher::where('code', $code)->first();
+        $voucher = $this->query()
+            ->where('code', $code)
+            ->first();
 
         if (! $voucher) {
             return VoucherValidationResult::invalid('Voucher not found.');
@@ -78,9 +89,32 @@ class VoucherValidator
         return VoucherValidationResult::valid();
     }
 
+    protected function query(): Builder
+    {
+        return Voucher::query()->forOwner(
+            $this->resolveOwner(),
+            (bool) config('vouchers.owner.include_global', true)
+        );
+    }
+
+    protected function resolveOwner(): ?Model
+    {
+        if (! config('vouchers.owner.enabled', false)) {
+            return null;
+        }
+
+        return $this->ownerResolver->resolve();
+    }
+
     protected function getUserIdentifier(): string
     {
-        return (string) (auth()->id() ?? session()->getId());
+        $userId = Auth::id();
+
+        if ($userId !== null) {
+            return (string) $userId;
+        }
+
+        return (string) Session::getId();
     }
 
     protected function getCartTotal(mixed $cart): float

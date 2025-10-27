@@ -12,6 +12,7 @@ return new class extends Migration
     {
         Schema::create(config('vouchers.table_names.vouchers', 'vouchers'), function (Blueprint $table) {
             $table->id();
+            $table->nullableMorphs('owner');
             $table->string('code')->unique();
             $table->string('name');
             $table->text('description')->nullable();
@@ -29,6 +30,7 @@ return new class extends Migration
             $table->integer('usage_limit')->nullable();
             $table->integer('usage_limit_per_user')->nullable();
             $table->integer('times_used')->default(0);
+            $table->boolean('allows_manual_redemption')->default(false);
 
             // Validity period
             $table->datetime('starts_at')->nullable();

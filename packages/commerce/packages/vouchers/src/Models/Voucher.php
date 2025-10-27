@@ -6,9 +6,12 @@ namespace AIArmada\Vouchers\Models;
 
 use AIArmada\Vouchers\Enums\VoucherStatus;
 use AIArmada\Vouchers\Enums\VoucherType;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Model as EloquentModel;
 
 /**
  * @property int $id
@@ -50,6 +53,7 @@ class Voucher extends Model
         'usage_limit',
         'usage_limit_per_user',
         'times_used',
+        'allows_manual_redemption',
         'starts_at',
         'expires_at',
         'status',
@@ -57,6 +61,8 @@ class Voucher extends Model
         'excluded_products',
         'applicable_categories',
         'metadata',
+        'owner_type',
+        'owner_id',
     ];
 
     public function getTable(): string
@@ -67,6 +73,40 @@ class Voucher extends Model
     public function usages(): HasMany
     {
         return $this->hasMany(VoucherUsage::class);
+    }
+
+    public function owner(): MorphTo
+    {
+        return $this->morphTo();
+    }
+
+    public function scopeForOwner(Builder $query, ?EloquentModel $owner, bool $includeGlobal = true): Builder
+    {
+        if (! config('vouchers.owner.enabled', false)) {
+            return $query;
+        }
+
+        if (! $owner) {
+            return $includeGlobal
+                ? $query
+                : $query->whereNull('owner_type')->whereNull('owner_id');
+        }
+
+        return $query->where(function (Builder $builder) use ($owner, $includeGlobal): void {
+            $builder->where('owner_type', $owner->getMorphClass())
+                ->where('owner_id', $owner->getKey());
+
+            if ($includeGlobal) {
+                $builder->orWhere(function (Builder $inner): void {
+                    $inner->whereNull('owner_type')->whereNull('owner_id');
+                });
+            }
+        });
+    }
+
+    public function allowsManualRedemption(): bool
+    {
+        return (bool) $this->getAttribute('allows_manual_redemption');
     }
 
     public function isActive(): bool
@@ -138,6 +178,7 @@ class Voucher extends Model
             'usage_limit' => 'integer',
             'usage_limit_per_user' => 'integer',
             'times_used' => 'integer',
+            'allows_manual_redemption' => 'boolean',
             'starts_at' => 'datetime',
             'expires_at' => 'datetime',
             'applicable_products' => 'array',

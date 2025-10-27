@@ -85,4 +85,42 @@ return [
         'vouchers' => 'vouchers',
         'voucher_usage' => 'voucher_usage',
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Voucher Ownership
+    |--------------------------------------------------------------------------
+    |
+    | Configure how vouchers are associated with a specific owner / tenant.
+    | When disabled, all vouchers are treated as global. When enabled, the
+    | resolver should return the current owner model so lookups can be scoped.
+    |
+    */
+
+    'owner' => [
+    'enabled' => env('VOUCHERS_OWNER_ENABLED', false),
+    'resolver' => \AIArmada\Vouchers\Support\Resolvers\NullOwnerResolver::class,
+        'include_global' => env('VOUCHERS_OWNER_INCLUDE_GLOBAL', true),
+        'auto_assign_on_create' => env('VOUCHERS_OWNER_AUTO_ASSIGN_ON_CREATE', true),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Redemption Channels
+    |--------------------------------------------------------------------------
+    |
+    | Configure manual redemption policies and channel names that are used
+    | when tracking voucher usage. Manual redemption can be toggled per
+    | voucher by setting the allows_manual_redemption flag.
+    |
+    */
+
+    'redemption' => [
+        'manual_requires_flag' => env('VOUCHERS_MANUAL_REQUIRES_FLAG', true),
+        'channels' => [
+            'automatic' => 'automatic',
+            'manual' => 'manual',
+            'api' => 'api',
+        ],
+    ],
 ];

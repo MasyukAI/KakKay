@@ -8,12 +8,15 @@ use AIArmada\Cart\CartManager;
 use AIArmada\Cart\Facades\Cart as CartFacade;
 use AIArmada\Cart\Services\CartConditionResolver;
 use AIArmada\Vouchers\Conditions\VoucherCondition;
+use AIArmada\Vouchers\Contracts\VoucherOwnerResolver;
 use AIArmada\Vouchers\Data\VoucherData;
 use AIArmada\Vouchers\Facades\Voucher;
 use AIArmada\Vouchers\Services\VoucherService;
 use AIArmada\Vouchers\Services\VoucherValidator;
 use AIArmada\Vouchers\Support\CartManagerWithVouchers;
 use AIArmada\Vouchers\Support\VoucherRulesFactory;
+use AIArmada\Vouchers\Support\Resolvers\NullOwnerResolver;
+use InvalidArgumentException;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -34,6 +37,20 @@ final class VoucherServiceProvider extends PackageServiceProvider
         $this->app->singleton(VoucherService::class);
         $this->app->singleton(VoucherValidator::class);
         $this->app->singleton(VoucherRulesFactory::class, static fn () => new VoucherRulesFactory());
+
+        $this->app->singleton(VoucherOwnerResolver::class, function ($app): VoucherOwnerResolver {
+            $resolverClass = config('vouchers.owner.resolver', NullOwnerResolver::class);
+
+            $resolver = $app->make($resolverClass);
+
+            if (! $resolver instanceof VoucherOwnerResolver) {
+                throw new InvalidArgumentException(
+                    sprintf('%s must implement %s', $resolverClass, VoucherOwnerResolver::class)
+                );
+            }
+
+            return $resolver;
+        });
 
         $this->app->resolving(CartConditionResolver::class, function (CartConditionResolver $resolver): void {
             $resolver->register(function (mixed $payload) {
@@ -96,6 +113,7 @@ final class VoucherServiceProvider extends PackageServiceProvider
         return [
             VoucherService::class,
             VoucherValidator::class,
+            VoucherOwnerResolver::class,
             'voucher',
         ];
     }
