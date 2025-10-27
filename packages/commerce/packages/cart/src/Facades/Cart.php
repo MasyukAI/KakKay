@@ -30,7 +30,6 @@ use Illuminate\Support\Facades\Facade;
  * @method static \AIArmada\Cart\Models\CartItem|null get(string $id)
  * @method static \AIArmada\Cart\Collections\CartCollection getItems()
  * @method static array<string, mixed> getContent()
- * @method static \AIArmada\Cart\Collections\CartCollection content()
  * @method static bool isEmpty()
  * @method static int getTotalQuantity()
  * @method static \Akaunting\Money\Money subtotal()

@@ -51,10 +51,6 @@ class WebhookProcessor
         };
     }
 
-    /**
-     * @param  array<string, mixed>  $purchaseData
-     * @param  array<string, mixed>  $payload
-     */
     private function handlePurchasePaid(Webhook $webhook, array $purchaseData, array $payload): void
     {
         $purchaseId = $purchaseData['id'] ?? null;
@@ -106,9 +102,6 @@ class WebhookProcessor
         }
     }
 
-    /**
-     * @param  array<string, mixed>  $purchaseData
-     */
     private function handlePaymentFailure(Webhook $webhook, array $purchaseData): void
     {
         $purchaseId = $purchaseData['id']
@@ -150,8 +143,7 @@ class WebhookProcessor
 
                 // Update order status
                 $order = $payment->order;
-                /** @var \App\Models\Order $order */
-                if ($order->status !== 'failed') {
+                if ($order && $order->status !== 'failed') {
                     $order->statusHistories()->create([
                         'from_status' => $order->status,
                         'to_status' => 'failed',
@@ -197,12 +189,8 @@ class WebhookProcessor
             ));
     }
 
-    /**
-     * @param  array<string, mixed>  $payload
-     */
     private function logInformationalEvent(Webhook $webhook, string $event, array $payload): void
     {
-        /** @var Webhook $webhook */
         Log::info('CHIP webhook received', [
             'event' => $event,
             'webhook_id' => $webhook->id,
