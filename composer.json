@@ -12,6 +12,7 @@
         "aiarmada/docs": "@dev",
         "aiarmada/filament-cart": "^1.0",
         "aiarmada/filament-chip": "@dev",
+        "aiarmada/filament-vouchers": "@dev",
         "aiarmada/jnt": "@dev",
         "akaunting/laravel-money": "^6.0",
         "asmit/resized-column": "^1.1",

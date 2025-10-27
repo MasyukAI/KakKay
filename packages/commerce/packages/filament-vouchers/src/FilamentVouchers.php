@@ -27,7 +27,7 @@ final class FilamentVouchers implements Plugin
 
     public function getId(): string
     {
-    return 'filament-vouchers';
+        return 'filament-vouchers';
     }
 
     public function register(Panel $panel): void

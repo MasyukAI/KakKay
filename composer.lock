@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "57be52ec54e992a7dbc45e32d1f78f2b",
+    "content-hash": "7d8a74f433a2518c99670c63f42b518e",
     "packages": [
         {
             "name": "aiarmada/commerce",
@@ -165,6 +165,86 @@
                 "laravel",
                 "laravel12",
                 "shopping-cart"
+            ],
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "aiarmada/filament-vouchers",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "./packages/commerce/packages/filament-vouchers",
+                "reference": "b153cc2732f65cb53dda4de6926957fed524d28a"
+            },
+            "require": {
+                "aiarmada/commerce": "self.version",
+                "aiarmada/commerce-support": "self.version",
+                "aiarmada/vouchers": "self.version",
+                "filament/filament": "^4.0"
+            },
+            "require-dev": {
+                "driftingly/rector-laravel": "^2.0",
+                "larastan/larastan": "^3.0",
+                "laravel/framework": "^12.0",
+                "laravel/pint": "^1.18",
+                "livewire/livewire": "^3.0",
+                "orchestra/testbench": "^10.0",
+                "pestphp/pest": "^4.0",
+                "pestphp/pest-plugin-browser": "^4.0",
+                "pestphp/pest-plugin-laravel": "^4.0",
+                "pestphp/pest-plugin-type-coverage": "^4.0"
+            },
+            "suggest": {
+                "aiarmada/filament-cart": "Enables deep linking from voucher usage records to cart snapshots"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "AIArmada\\FilamentVouchers\\FilamentVouchersServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "AIArmada\\FilamentVouchers\\": "src/",
+                    "AIArmada\\FilamentVouchers\\Database\\Factories\\": "database/factories/",
+                    "AIArmada\\FilamentVouchers\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "AIArmada\\FilamentVouchers\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "vendor/bin/pest"
+                ],
+                "format": [
+                    "vendor/bin/pint"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "AIArmada",
+                    "email": "info@aiarmada.com"
+                }
+            ],
+            "description": "A Filament v4 plugin for administering vouchers provided by the AIArmada vouchers package",
+            "keywords": [
+                "aiarmada",
+                "discount",
+                "e-commerce",
+                "filament",
+                "laravel",
+                "plugin",
+                "voucher"
             ],
             "transport-options": {
                 "relative": true
@@ -12588,16 +12668,16 @@
         },
         {
             "name": "rector/rector",
-            "version": "2.2.5",
+            "version": "2.2.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rectorphp/rector.git",
-                "reference": "fb9418af7777dfb1c87a536dc58398b5b07c74b9"
+                "reference": "5c5bbc956b9a056a26cb593379253104b7ed9c2d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rectorphp/rector/zipball/fb9418af7777dfb1c87a536dc58398b5b07c74b9",
-                "reference": "fb9418af7777dfb1c87a536dc58398b5b07c74b9",
+                "url": "https://api.github.com/repos/rectorphp/rector/zipball/5c5bbc956b9a056a26cb593379253104b7ed9c2d",
+                "reference": "5c5bbc956b9a056a26cb593379253104b7ed9c2d",
                 "shasum": ""
             },
             "require": {
@@ -12636,7 +12716,7 @@
             ],
             "support": {
                 "issues": "https://github.com/rectorphp/rector/issues",
-                "source": "https://github.com/rectorphp/rector/tree/2.2.5"
+                "source": "https://github.com/rectorphp/rector/tree/2.2.6"
             },
             "funding": [
                 {
@@ -12644,7 +12724,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-10-23T11:22:37+00:00"
+            "time": "2025-10-27T11:35:56+00:00"
         },
         {
             "name": "sebastian/cli-parser",
@@ -13852,6 +13932,7 @@
         "aiarmada/commerce": 20,
         "aiarmada/docs": 20,
         "aiarmada/filament-chip": 20,
+        "aiarmada/filament-vouchers": 20,
         "aiarmada/jnt": 20
     },
     "prefer-stable": true,

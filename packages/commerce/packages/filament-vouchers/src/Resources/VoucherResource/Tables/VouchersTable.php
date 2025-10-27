@@ -8,7 +8,9 @@ use AIArmada\FilamentVouchers\Models\Voucher;
 use AIArmada\Vouchers\Enums\VoucherStatus;
 use AIArmada\Vouchers\Enums\VoucherType;
 use Akaunting\Money\Money;
+use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Support\Icons\Heroicon;
@@ -55,7 +57,7 @@ final class VouchersTable
                         $type = $rawType instanceof VoucherType ? $rawType : VoucherType::from((string) $rawType);
 
                         if ($type === VoucherType::Percentage) {
-                            return rtrim(rtrim(number_format((float) $state, 2), '0'), '.').' %';
+                            return mb_rtrim(mb_rtrim(number_format((float) $state, 2), '0'), '.').' %';
                         }
 
                         return self::formatMoneyDecimal((float) $state, (string) $record->currency);
@@ -156,7 +158,7 @@ final class VouchersTable
                             });
                     }),
             ])
-            ->recordActions([
+            ->actions([
                 ViewAction::make()
                     ->icon(Heroicon::OutlinedEye),
 
@@ -168,10 +170,12 @@ final class VouchersTable
                     ->requiresConfirmation(),
             ])
             ->bulkActions([
-                DeleteAction::make()
-                    ->label('Delete selected')
-                    ->icon(Heroicon::OutlinedTrash)
-                    ->requiresConfirmation(),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
+                        ->label('Delete selected')
+                        ->icon(Heroicon::OutlinedTrash)
+                        ->requiresConfirmation(),
+                ]),
             ])
             ->defaultSort('updated_at', 'desc')
             ->poll(static function () {
