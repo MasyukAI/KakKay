@@ -9,21 +9,21 @@ use Akaunting\Money\Money;
 use App\Data\StateData;
 use App\Services\CheckoutService;
 use Exception;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Concerns\InteractsWithForms;
-use Filament\Forms\Contracts\HasForms;
-use Filament\Forms\Form;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Concerns\InteractsWithSchemas;
+use Filament\Schemas\Contracts\HasSchemas;
+use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
-final class Checkout extends Component implements HasForms
+final class Checkout extends Component implements HasSchemas
 {
-    use InteractsWithForms;
+    use InteractsWithSchemas;
 
     /** @var array<string, mixed>|null */
     public ?array $data = [];
@@ -122,12 +122,12 @@ final class Checkout extends Component implements HasForms
         }
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $form): Schema
     {
         $states = StateData::getStatesOptions();
 
         return $form
-            ->components([
+            ->components([/** @phpstan-ignore-next-line class.notFound */
                 Section::make('Maklumat Penghantaran')
                     // ->icon('heroicon-o-truck')
                     ->schema([
