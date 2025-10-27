@@ -5,8 +5,9 @@
         "aiarmada/cart": "self.version",
         "aiarmada/chip": "self.version",
         "aiarmada/docs": "self.version",
-        "aiarmada/filament-cart": "self.version",
-        "aiarmada/filament-chip": "self.version",
+    "aiarmada/filament-cart": "self.version",
+    "aiarmada/filament-chip": "self.version",
+    "aiarmada/filament-vouchers": "self.version",
         "aiarmada/jnt": "self.version",
         "aiarmada/stock": "self.version",
         "aiarmada/vouchers": "self.version"
@@ -34,8 +35,9 @@
         "aiarmada/cart": "@dev",
         "aiarmada/chip": "@dev",
         "aiarmada/docs": "@dev",
-        "aiarmada/filament-cart": "@dev",
-        "aiarmada/filament-chip": "@dev",
+    "aiarmada/filament-cart": "@dev",
+    "aiarmada/filament-chip": "@dev",
+    "aiarmada/filament-vouchers": "@dev",
         "aiarmada/jnt": "@dev",
         "aiarmada/stock": "@dev",
         "aiarmada/vouchers": "@dev"
@@ -109,6 +111,13 @@
                 "symlink": true
             },
             "type": "path",
+            "url": "./packages/filament-vouchers"
+        },
+        {
+            "options": {
+                "symlink": true
+            },
+            "type": "path",
             "url": "./packages/jnt"
         },
         {
@@ -138,6 +147,9 @@
             "AIArmada\\FilamentCart\\Database\\Factories\\": "packages/filament-cart/database/factories/",
             "AIArmada\\FilamentCart\\Database\\Seeders\\": "packages/filament-cart/database/seeders/",
             "AIArmada\\FilamentChip\\": "packages/filament-chip/src",
+            "AIArmada\\FilamentVouchers\\": "packages/filament-vouchers/src",
+            "AIArmada\\FilamentVouchers\\Database\\Factories\\": "packages/filament-vouchers/database/factories/",
+            "AIArmada\\FilamentVouchers\\Database\\Seeders\\": "packages/filament-vouchers/database/seeders/",
             "AIArmada\\Jnt\\": "packages/jnt/src",
             "AIArmada\\Stock\\": "packages/stock/src",
             "AIArmada\\Vouchers\\": "packages/vouchers/src"
@@ -149,6 +161,7 @@
             "AIArmada\\Commerce\\Tests\\": "tests/src",
             "AIArmada\\FilamentCart\\Tests\\": "packages/filament-cart/tests/",
             "AIArmada\\FilamentChip\\Tests\\": "packages/filament-chip/tests/",
+            "AIArmada\\FilamentVouchers\\Tests\\": "packages/filament-vouchers/tests/",
             "AIArmada\\Jnt\\Tests\\": "packages/jnt/tests/",
             "Tests\\": "tests/"
         }
@@ -177,6 +190,7 @@
                 "AIArmada\\Docs\\DocsServiceProvider",
                 "AIArmada\\FilamentCart\\FilamentCartServiceProvider",
                 "AIArmada\\FilamentChip\\FilamentChipServiceProvider",
+                "AIArmada\\FilamentVouchers\\FilamentVouchersServiceProvider",
                 "AIArmada\\Jnt\\JntServiceProvider",
                 "AIArmada\\Stock\\StockServiceProvider",
                 "AIArmada\\Vouchers\\VoucherServiceProvider"

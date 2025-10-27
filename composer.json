@@ -70,6 +70,10 @@
         },
         {
             "type": "path",
+            "url": "./packages/commerce/packages/filament-vouchers"
+        },
+        {
+            "type": "path",
             "url": "./packages/commerce/packages/jnt"
         },
         {
