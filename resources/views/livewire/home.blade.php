@@ -54,7 +54,7 @@
                                     <span>Real-time</span>
                                 </div> --}}
                                 <div class="relative overflow-hidden rounded-[28px]">
-                                    <img src="{{ asset('storage/images/kakkayhero.png') }}" alt="Kak Kay" class="w-full rounded-[28px] object-cover shadow-[0_25px_60px_rgba(17,0,34,0.55)]">
+                                    <img src="{{ asset('storage/images/kakkayhero.webp') }}" alt="Kak Kay" class="w-full rounded-[28px] object-cover shadow-[0_25px_60px_rgba(17,0,34,0.55)]">
                                     <div class="pointer-events-none absolute inset-0 border border-white/20"></div>
                                 </div>
                                 <div class="mt-6 grid gap-3 text-sm text-white/80">
@@ -138,7 +138,7 @@
                         <div class="relative overflow-hidden rounded-[36px] border border-white/15 bg-white/10 p-8 backdrop-blur-xl shadow-[0_35px_110px_rgba(15,3,37,0.55)]">
                             <div class="relative mx-auto w-full max-w-sm">
                                 <div class="absolute inset-0 rounded-[30px] border border-white/20"></div>
-                                <img src="{{ asset('storage/images/cover/' . $featuredProduct->slug . '.png') }}" alt="{{ $featuredProduct->name }}" class="relative w-full rounded-[30px] border border-white/20 object-cover shadow-[0_30px_80px_rgba(17,0,34,0.55)]">
+                                <img src="{{ asset('storage/images/cover/' . $featuredProduct->slug . '.webp') }}" alt="{{ $featuredProduct->name }}" class="relative w-full rounded-[30px] border border-white/20 object-cover shadow-[0_30px_80px_rgba(17,0,34,0.55)]">
                             </div>
                             {{-- <div class="mt-6 grid gap-3 text-sm text-white/80">
                                 <div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-pink-200">Hot pick minggu ini</div>
@@ -193,7 +193,7 @@
                         @foreach ($products as $product)
                             <a wire:key="product-{{ $product->id }}" href="/{{ $product->slug }}" class="group relative flex h-full flex-col overflow-hidden rounded-[30px] border border-white/15 bg-white/5 p-5 text-left text-white/80 shadow-[0_25px_70px_rgba(12,5,24,0.4)] transition duration-300 hover:-translate-y-2 hover:shadow-[0_35px_90px_rgba(236,72,153,0.3)] w-full max-w-sm sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                                 <div class="relative overflow-hidden rounded-[22px]">
-                                    <img src="{{ asset('storage/images/cover/' . $product->slug . '.png') }}" alt="{{ $product->name }}" class="w-full rounded-[22px] border border-white/20 object-cover shadow-[0_20px_60px_rgba(17,0,34,0.45)]">
+                                    <img src="{{ asset('storage/images/cover/' . $product->slug . '.webp') }}" alt="{{ $product->name }}" class="w-full rounded-[22px] border border-white/20 object-cover shadow-[0_20px_60px_rgba(17,0,34,0.45)]">
                                     {{-- <div class="absolute inset-0 bg-gradient-to-t from-[#0f0218]/80 via-transparent to-transparent opacity-0 transition group-hover:opacity-100"></div> --}}
                                     {{-- <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between text-xs uppercase tracking-[0.28em] text-white/80">
                                         <span>{{ $product->category->name ?? 'Buku Kak Kay' }}</span>

@@ -128,7 +128,7 @@
                                     <div>Sokongan selepas jualan tersedia 7 hari seminggu. Kami bantu sehingga buku selamat di tangan anda.</div>
                                 </div> --}}
                                 <div class="mt-6 flex items-center justify-center rounded-2xl border border-white/10 bg-white/5 p-4">
-                                    <img src="{{ asset('storage/images/fpx.png') }}" alt="Payment methods" class="h-10 object-contain " />
+                                    <img src="{{ asset('storage/images/fpx.webp') }}" alt="Payment methods" class="h-10 object-contain " />
                                 </div>
                             </div>
                         </aside>

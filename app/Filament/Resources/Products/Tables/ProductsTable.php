@@ -21,7 +21,7 @@ final class ProductsTable
             ->columns([
                 ImageColumn::make('cover')
                     ->defaultImageUrl(function ($record) {
-                        return asset('images/cover/'.$record->slug.'.png');
+                        return asset('images/cover/'.$record->slug.'.webp');
                     }),
                 TextColumn::make('name')
                     ->searchable(),

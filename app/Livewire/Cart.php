@@ -182,9 +182,9 @@ final class Cart extends Component
         }
     }
 
-    public function addToCart(int|Product $productId, int $quantity = 1): void
+    public function addToCart(string|int|Product $productId, int $quantity = 1): void
     {
-        // Handle both Product object and product ID
+        // Handle both Product object and product ID (string UUID or int)
         if ($productId instanceof Product) {
             $product = $productId;
         } else {

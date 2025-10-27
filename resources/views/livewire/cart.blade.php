@@ -69,7 +69,7 @@
                                         <div class="flex flex-col gap-6 sm:flex-row">
                                             <div class="relative w-full sm:w-36 sm:flex-shrink-0">
                                                 <div class="rounded-[20px] border border-white/20 bg-[#14021f]/60 shadow-md">
-                                                    <img src="{{ asset('storage/images/cover/' . $item['slug'] . '.png') }}" alt="{{ $item['name'] }}" class="block h-full w-full object-cover rounded-[18px]">
+                                                    <img src="{{ asset('storage/images/cover/' . $item['slug'] . '.webp') }}" alt="{{ $item['name'] }}" class="block h-full w-full object-cover rounded-[18px]">
                                                 </div>
                                             </div>
                                             <div class="relative flex flex-1 flex-col justify-between gap-6">
@@ -208,7 +208,7 @@
                             <div wire:key="suggested-product-{{ $product->id }}" class="group relative flex h-full flex-col overflow-hidden rounded-[30px] border border-white/15 bg-white/5 p-5 text-left text-white/80 shadow-[0_25px_70px_rgba(12,5,24,0.4)] transition duration-300 hover:-translate-y-2 hover:shadow-[0_35px_90px_rgba(236,72,153,0.3)]" style="min-width:280px;max-width:340px;flex:1 1 320px;">
                                 <a href="/{{ $product->slug }}" class="block">
                                     <div class="relative overflow-hidden rounded-[22px]">
-                                        <img src="{{ asset('storage/images/cover/' . $product->slug . '.png') }}" alt="{{ $product->name }}" class="w-full rounded-[22px] border border-white/20 object-cover shadow-[0_20px_60px_rgba(17,0,34,0.45)]">
+                                        <img src="{{ asset('storage/images/cover/' . $product->slug . '.webp') }}" alt="{{ $product->name }}" class="w-full rounded-[22px] border border-white/20 object-cover shadow-[0_20px_60px_rgba(17,0,34,0.45)]">
                                         <div class="absolute inset-0 bg-gradient-to-t from-[#0f0218]/80 via-transparent to-transparent opacity-0 transition group-hover:opacity-100"></div>
                                         <div class="absolute bottom-4 left-4 right-4 flex justify-end text-xs uppercase tracking-[0.28em] text-white/80">
                                             {{-- <span>Buku Kak Kay</span> --}}

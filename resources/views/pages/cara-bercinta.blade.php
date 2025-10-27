@@ -119,7 +119,7 @@ class extends Component {
                 </div>
                 <div class="relative mx-auto flex justify-center">
                   <div class="absolute inset-0 rounded-[28px] border border-white/20"></div>
-                  <img src="{{ asset('storage/images/cover/cara-bercinta.png') }}" alt="34 Teknik Bercinta" class="relative w-full max-w-xs rounded-[26px] object-cover shadow-[0_25px_60px_rgba(17,0,34,0.55)]">
+                  <img src="{{ asset('storage/images/cover/cara-bercinta.webp') }}" alt="34 Teknik Bercinta" class="relative w-full max-w-xs rounded-[26px] object-cover shadow-[0_25px_60px_rgba(17,0,34,0.55)]">
                 </div>
                 <div class="mt-6 flex flex-col gap-3 rounded-2xl bg-white/10 p-4 text-sm text-white/80">
                   <div class="flex items-center gap-3">
