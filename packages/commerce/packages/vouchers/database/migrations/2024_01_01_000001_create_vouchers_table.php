@@ -38,12 +38,12 @@ return new class extends Migration
             $table->string('status')->default('active'); // active, paused, expired, depleted
 
             // Targeting
-            $table->json('applicable_products')->nullable();
-            $table->json('excluded_products')->nullable();
-            $table->json('applicable_categories')->nullable();
+            $table->jsonb('applicable_products')->nullable();
+            $table->jsonb('excluded_products')->nullable();
+            $table->jsonb('applicable_categories')->nullable();
 
             // Metadata
-            $table->json('metadata')->nullable();
+            $table->jsonb('metadata')->nullable();
 
             $table->timestamps();
             $table->softDeletes();
@@ -52,6 +52,15 @@ return new class extends Migration
             $table->index('code');
             $table->index('status');
             $table->index(['starts_at', 'expires_at']);
+        });
+
+        // Add GIN indexes for JSONB columns for efficient querying
+        $tableName = config('vouchers.table_names.vouchers', 'vouchers');
+        Schema::table($tableName, function (Blueprint $table) {
+            $table->rawIndex('applicable_products', 'vouchers_applicable_products_gin_index', 'gin');
+            $table->rawIndex('excluded_products', 'vouchers_excluded_products_gin_index', 'gin');
+            $table->rawIndex('applicable_categories', 'vouchers_applicable_categories_gin_index', 'gin');
+            $table->rawIndex('metadata', 'vouchers_metadata_gin_index', 'gin');
         });
     }
 

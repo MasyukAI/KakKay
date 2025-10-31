@@ -55,6 +55,12 @@ return new class extends Migration
             $table->index('is_global');
             $table->index('order');
         });
+
+        // Add GIN indexes for JSONB columns for efficient querying
+        Schema::table('conditions', function (Blueprint $table) {
+            $table->rawIndex('attributes', 'conditions_attributes_gin_index', 'gin');
+            $table->rawIndex('rules', 'conditions_rules_gin_index', 'gin');
+        });
     }
 
     /**

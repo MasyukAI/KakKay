@@ -118,6 +118,15 @@ interface StorageInterface
     public function getMetadata(string $identifier, string $instance, string $key): mixed;
 
     /**
+     * Retrieve all cart metadata
+     *
+     * @param  string  $identifier  User/session identifier
+     * @param  string  $instance  Cart instance name
+     * @return array<string, mixed> All metadata key-value pairs
+     */
+    public function getAllMetadata(string $identifier, string $instance): array;
+
+    /**
      * Clear all metadata for a cart
      *
      * @param  string  $identifier  User/session identifier
@@ -156,4 +165,22 @@ interface StorageInterface
      * @return bool True if swap was successful (new identifier now has the cart)
      */
     public function swapIdentifier(string $oldIdentifier, string $newIdentifier, string $instance): bool;
+
+    /**
+     * Get cart creation timestamp
+     *
+     * @param  string  $identifier  User/session identifier
+     * @param  string  $instance  Cart instance name
+     * @return string|null ISO 8601 timestamp or null if cart doesn't exist
+     */
+    public function getCreatedAt(string $identifier, string $instance): ?string;
+
+    /**
+     * Get cart last updated timestamp
+     *
+     * @param  string  $identifier  User/session identifier
+     * @param  string  $instance  Cart instance name
+     * @return string|null ISO 8601 timestamp or null if cart doesn't exist
+     */
+    public function getUpdatedAt(string $identifier, string $instance): ?string;
 }

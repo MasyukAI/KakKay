@@ -25,6 +25,14 @@ return new class extends Migration
 
             $table->unique(['identifier', 'instance']);
         });
+
+        // Add GIN indexes for JSONB columns for efficient querying
+        $tableName = config('cart.database.table', 'carts');
+        Schema::table($tableName, function (Blueprint $table) {
+            $table->rawIndex('items', 'carts_items_gin_index', 'gin');
+            $table->rawIndex('conditions', 'carts_conditions_gin_index', 'gin');
+            $table->rawIndex('metadata', 'carts_metadata_gin_index', 'gin');
+        });
     }
 
     /**

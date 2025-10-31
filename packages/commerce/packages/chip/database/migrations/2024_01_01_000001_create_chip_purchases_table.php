@@ -98,6 +98,9 @@ return new class extends Migration
             $table->boolean('marked_as_paid')->default(false);
             $table->string('order_id')->nullable();
 
+            // Metadata for additional application-specific data
+            $table->jsonb('metadata')->nullable();
+
             // Laravel timestamps for internal use
             $table->timestamps();
 
@@ -108,6 +111,11 @@ return new class extends Migration
             $table->index('created_on');
             $table->index('viewed_on');
             $table->index('due');
+        });
+
+        // Add GIN index for JSONB metadata column for efficient querying
+        Schema::table($tablePrefix.'purchases', function (Blueprint $table) {
+            $table->rawIndex('metadata', 'chip_purchases_metadata_gin_index', 'gin');
         });
     }
 

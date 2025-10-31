@@ -56,13 +56,18 @@ trait ManagesStorage
 
     /**
      * Get complete cart content (items, conditions, totals, etc.)
+     * Includes all database columns for complete snapshots and auditing
      *
      * @return array<string, mixed>
      */
     public function content(): array
     {
         return [
+            'id' => $this->getId(),
+            'identifier' => $this->getIdentifier(),
             'instance' => $this->instanceName,
+            'version' => $this->getVersion(),
+            'metadata' => $this->storage->getAllMetadata($this->getIdentifier(), $this->instance()),
             'items' => $this->getItems()->toArray(),
             'conditions' => $this->getConditions()->toArray(),
             'subtotal' => $this->getRawSubtotal(),
@@ -70,6 +75,8 @@ trait ManagesStorage
             'quantity' => $this->getTotalQuantity(),
             'count' => $this->countItems(), // Number of unique items, not total quantity
             'is_empty' => $this->isEmpty(),
+            'created_at' => $this->storage->getCreatedAt($this->getIdentifier(), $this->instance()),
+            'updated_at' => $this->storage->getUpdatedAt($this->getIdentifier(), $this->instance()),
         ];
     }
 

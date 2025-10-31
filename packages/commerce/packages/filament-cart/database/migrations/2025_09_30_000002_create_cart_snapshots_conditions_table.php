@@ -45,6 +45,12 @@ return new class extends Migration
             $table->index('created_at');
             $table->index('updated_at');
         });
+
+        // Add GIN indexes for JSONB columns for efficient querying
+        Schema::table('cart_snapshot_conditions', function (Blueprint $table) {
+            $table->rawIndex('rules', 'cart_snapshot_conditions_rules_gin_index', 'gin');
+            $table->rawIndex('attributes', 'cart_snapshot_conditions_attributes_gin_index', 'gin');
+        });
     }
 
     public function down(): void

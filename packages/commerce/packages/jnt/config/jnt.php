@@ -71,4 +71,24 @@ return [
         'middleware' => ['api', 'jnt.verify.signature'],
         'log_payloads' => env('JNT_WEBHOOK_LOG_PAYLOADS', false),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Database Tables
+    |--------------------------------------------------------------------------
+    |
+    | Configure the database tables used by the J&T package. Override any of
+    | these values if the defaults conflict with existing schema naming.
+    |
+    */
+    'database' => [
+        'table_prefix' => env('JNT_TABLE_PREFIX', 'jnt_'),
+        'tables' => [
+            'orders' => env('JNT_ORDERS_TABLE', env('JNT_TABLE_PREFIX', 'jnt_').'orders'),
+            'order_items' => env('JNT_ORDER_ITEMS_TABLE', env('JNT_TABLE_PREFIX', 'jnt_').'order_items'),
+            'order_parcels' => env('JNT_ORDER_PARCELS_TABLE', env('JNT_TABLE_PREFIX', 'jnt_').'order_parcels'),
+            'tracking_events' => env('JNT_TRACKING_EVENTS_TABLE', env('JNT_TABLE_PREFIX', 'jnt_').'tracking_events'),
+            'webhook_logs' => env('JNT_WEBHOOK_LOGS_TABLE', env('JNT_TABLE_PREFIX', 'jnt_').'webhook_logs'),
+        ],
+    ],
 ];

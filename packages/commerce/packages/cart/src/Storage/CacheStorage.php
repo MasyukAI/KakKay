@@ -230,6 +230,28 @@ final readonly class CacheStorage implements StorageInterface
     }
 
     /**
+     * Retrieve all cart metadata
+     *
+     * @return array<string, mixed>
+     */
+    public function getAllMetadata(string $identifier, string $instance): array
+    {
+        $keysRegistryKey = "{$this->keyPrefix}.{$identifier}.{$instance}.metadata._keys";
+        $metadataKeys = $this->cache->get($keysRegistryKey, []);
+        $metadata = [];
+
+        foreach ($metadataKeys as $key) {
+            $metadataKey = $this->getMetadataKey($identifier, $instance, $key);
+            $value = $this->cache->get($metadataKey);
+            if ($value !== null) {
+                $metadata[$key] = $value;
+            }
+        }
+
+        return $metadata;
+    }
+
+    /**
      * Clear all metadata for a cart
      */
     public function clearMetadata(string $identifier, string $instance): void
@@ -421,5 +443,21 @@ final readonly class CacheStorage implements StorageInterface
     private function getMetadataKey(string $identifier, string $instance, string $key): string
     {
         return "{$this->keyPrefix}.{$identifier}.{$instance}.metadata.{$key}";
+    }
+
+    /**
+     * Get cart creation timestamp (not supported by cache storage)
+     */
+    public function getCreatedAt(string $identifier, string $instance): ?string
+    {
+        return null;
+    }
+
+    /**
+     * Get cart last updated timestamp (not supported by cache storage)
+     */
+    public function getUpdatedAt(string $identifier, string $instance): ?string
+    {
+        return null;
     }
 }

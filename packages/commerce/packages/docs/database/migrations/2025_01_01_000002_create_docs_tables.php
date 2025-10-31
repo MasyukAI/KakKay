@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('view_name');
             $table->string('document_type')->default('invoice');
             $table->boolean('is_default')->default(false);
-            $table->json('settings')->nullable();
+            $table->jsonb('settings')->nullable();
             $table->timestamps();
 
             $table->index('is_default');
@@ -42,10 +42,10 @@ return new class extends Migration
             $table->string('currency', 3)->default('MYR');
             $table->text('notes')->nullable();
             $table->text('terms')->nullable();
-            $table->json('customer_data')->nullable();
-            $table->json('company_data')->nullable();
-            $table->json('items')->nullable();
-            $table->json('metadata')->nullable();
+            $table->jsonb('customer_data')->nullable();
+            $table->jsonb('company_data')->nullable();
+            $table->jsonb('items')->nullable();
+            $table->jsonb('metadata')->nullable();
             $table->string('pdf_path')->nullable();
             $table->timestamps();
 

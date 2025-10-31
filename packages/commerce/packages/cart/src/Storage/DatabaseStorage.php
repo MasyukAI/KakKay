@@ -221,6 +221,25 @@ final readonly class DatabaseStorage implements StorageInterface
     }
 
     /**
+     * Retrieve all cart metadata
+     *
+     * @return array<string, mixed>
+     */
+    public function getAllMetadata(string $identifier, string $instance): array
+    {
+        $result = $this->database->table($this->table)
+            ->where('identifier', $identifier)
+            ->where('instance', $instance)
+            ->value('metadata');
+
+        if (! $result) {
+            return [];
+        }
+
+        return $this->decodeData($result, 'metadata', []);
+    }
+
+    /**
      * Clear all metadata for a cart
      */
     public function clearMetadata(string $identifier, string $instance): void
@@ -464,5 +483,47 @@ final readonly class DatabaseStorage implements StorageInterface
             $expectedVersion,
             $currentVersion
         );
+    }
+
+    /**
+     * Get cart creation timestamp
+     */
+    public function getCreatedAt(string $identifier, string $instance): ?string
+    {
+        /** @var stdClass|null $cart */
+        $cart = $this->database->table($this->table)
+            ->where('identifier', $identifier)
+            ->where('instance', $instance)
+            ->first(['created_at']);
+
+        if (! $cart || ! $cart->created_at) {
+            return null;
+        }
+
+        // Handle both Carbon objects and string timestamps
+        return $cart->created_at instanceof \DateTimeInterface
+            ? $cart->created_at->format('c')
+            : (string) $cart->created_at;
+    }
+
+    /**
+     * Get cart last updated timestamp
+     */
+    public function getUpdatedAt(string $identifier, string $instance): ?string
+    {
+        /** @var stdClass|null $cart */
+        $cart = $this->database->table($this->table)
+            ->where('identifier', $identifier)
+            ->where('instance', $instance)
+            ->first(['updated_at']);
+
+        if (! $cart || ! $cart->updated_at) {
+            return null;
+        }
+
+        // Handle both Carbon objects and string timestamps
+        return $cart->updated_at instanceof \DateTimeInterface
+            ? $cart->updated_at->format('c')
+            : (string) $cart->updated_at;
     }
 }

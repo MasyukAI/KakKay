@@ -151,7 +151,7 @@ return [
     */
     'defaults' => [
         'currency' => env('CHIP_DEFAULT_CURRENCY', 'MYR'),
-        'creator_agent' => env('CHIP_CREATOR_AGENT', 'KakKay'),
+        'creator_agent' => env('CHIP_CREATOR_AGENT', 'AIArmada/Chip'),
         'platform' => env('CHIP_PLATFORM', 'api'),
         'payment_method_whitelist' => env('CHIP_PAYMENT_METHOD_WHITELIST', ''),
         'success_redirect' => env('CHIP_SUCCESS_REDIRECT'),

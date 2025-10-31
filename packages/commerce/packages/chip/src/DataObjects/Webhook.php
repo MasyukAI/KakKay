@@ -52,8 +52,8 @@ final class Webhook
      */
     public static function fromArray(array $data): self
     {
-        // Handle webhook event data (live delivery payload)
-        if (isset($data['event'])) {
+        // Handle webhook event data with wrapped payload (old format: {event: "purchase.paid", data: {...}})
+        if (isset($data['event']) && isset($data['data'])) {
             /** @var array<string, mixed> $events */
             $events = is_array($data['event']) ? $data['event'] : [$data['event']];
             $events = array_combine(array_map('strval', array_keys($events)), array_values($events));
@@ -79,6 +79,44 @@ final class Webhook
                 timestamp: isset($data['timestamp']) ? (string) $data['timestamp'] : null,
                 event_type: $data['event_type'] ?? (is_string($data['event']) ? $data['event'] : null),
                 payload: $data['payload'] ?? null,
+                headers: $data['headers'] ?? null,
+                signature: $data['signature'] ?? null,
+                verified: (bool) ($data['verified'] ?? false),
+                processed: (bool) ($data['processed'] ?? false),
+                processed_at: isset($data['processed_at']) ? (string) $data['processed_at'] : null,
+                processing_error: $data['processing_error'] ?? null,
+                processing_attempts: (int) ($data['processing_attempts'] ?? 0),
+            );
+        }
+
+        // Handle current CHIP webhook format where entire payload IS the purchase object
+        // (format: {id: "...", type: "purchase", event_type: "purchase.paid", client: {...}, payment: {...}, ...})
+        if (isset($data['event_type']) && isset($data['type']) && $data['type'] === 'purchase') {
+            /** @var array<string, mixed> $events */
+            $events = [$data['event_type']];
+            $events = array_combine(array_map('strval', array_keys($events)), array_values($events));
+
+            /** @var array<string> $uniqueBrands */
+            $uniqueBrands = isset($data['brand_id']) ? [$data['brand_id']] : [];
+
+            return new self(
+                id: $data['id'] ?? 'webhook_event_'.uniqid(),
+                type: 'webhook_event',
+                created_on: $data['created_on'] ?? time(),
+                updated_on: $data['updated_on'] ?? time(),
+                title: 'Webhook Event',
+                all_events: false,
+                public_key: '',
+                events: $events,
+                callback: '',
+                is_test: (bool) ($data['is_test'] ?? false),
+                version: 'v1',
+                unique_brands: $uniqueBrands,
+                event: null,
+                data: null,
+                timestamp: null,
+                event_type: $data['event_type'],
+                payload: $data, // Store entire payload as it IS the purchase object
                 headers: $data['headers'] ?? null,
                 signature: $data['signature'] ?? null,
                 verified: (bool) ($data['verified'] ?? false),
@@ -127,9 +165,15 @@ final class Webhook
 
     public function getPurchase(): ?Purchase
     {
-        // Only return purchase for purchase-related events
+        // Handle wrapped data format (old format: {event: "purchase.paid", data: {...}})
         if ($this->event && str_starts_with($this->event, 'purchase.') && $this->data) {
             return Purchase::fromArray($this->data);
+        }
+
+        // Handle current CHIP format where payload IS the purchase object
+        // (format: {id: "...", type: "purchase", event_type: "purchase.paid", ...})
+        if ($this->event_type && str_starts_with($this->event_type, 'purchase.') && $this->payload) {
+            return Purchase::fromArray($this->payload);
         }
 
         return null;

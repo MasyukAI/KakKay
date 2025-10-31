@@ -131,6 +131,14 @@ class InMemoryStorage implements StorageInterface
         return $this->metadata[$identifier][$instance][$key] ?? null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
+    public function getAllMetadata(string $identifier, string $instance): array
+    {
+        return $this->metadata[$identifier][$instance] ?? [];
+    }
+
     public function clearMetadata(string $identifier, string $instance): void
     {
         if (isset($this->metadata[$identifier][$instance])) {
@@ -198,5 +206,21 @@ class InMemoryStorage implements StorageInterface
     {
         $current = $this->versions[$identifier][$instance] ?? 0;
         $this->versions[$identifier][$instance] = $current + 1;
+    }
+
+    /**
+     * Get cart creation timestamp (not supported by in-memory storage)
+     */
+    public function getCreatedAt(string $identifier, string $instance): ?string
+    {
+        return null;
+    }
+
+    /**
+     * Get cart last updated timestamp (not supported by in-memory storage)
+     */
+    public function getUpdatedAt(string $identifier, string $instance): ?string
+    {
+        return null;
     }
 }
