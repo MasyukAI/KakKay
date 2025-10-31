@@ -19,10 +19,10 @@ use Illuminate\Database\Eloquent\Model as EloquentModel;
  * @property string $name
  * @property string|null $description
  * @property VoucherType $type
- * @property float $value
+ * @property int $value Value in cents for fixed amounts, or basis points for percentage (e.g., 10.50% = 1050)
  * @property string $currency
- * @property float|null $min_cart_value
- * @property float|null $max_discount
+ * @property int|null $min_cart_value Value in cents
+ * @property int|null $max_discount Value in cents
  * @property int|null $usage_limit
  * @property int|null $usage_limit_per_user
  * @property int $times_used
@@ -172,9 +172,9 @@ class Voucher extends Model
         return [
             'type' => VoucherType::class,
             'status' => VoucherStatus::class,
-            'value' => 'decimal:2',
-            'min_cart_value' => 'decimal:2',
-            'max_discount' => 'decimal:2',
+            'value' => 'integer', // Stored as cents or basis points
+            'min_cart_value' => 'integer', // Stored as cents
+            'max_discount' => 'integer', // Stored as cents
             'usage_limit' => 'integer',
             'usage_limit_per_user' => 'integer',
             'times_used' => 'integer',

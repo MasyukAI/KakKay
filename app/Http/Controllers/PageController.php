@@ -11,21 +11,16 @@ final class PageController extends Controller
     /**
      * Display the specified page by slug.
      */
-    public function show(string $slug): \Illuminate\Contracts\View\View
+    public function show(string $slug): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
     {
-        return view('pages.'.$slug);
-    }
+        $page = Page::where('slug', $slug)
+            // ->where('is_published', true)
+            ->first();
 
-    //    public function show(string $slug)
-    //    {
-    //        $page = Page::where('slug', $slug)
-    //            // ->where('is_published', true)
-    //            ->first();
-    //
-    //        if (!$page) {
-    //            return redirect('/');
-    //        }
-    //
-    //        return view('pages.' . $slug, compact('page'));
-    //    }
+        if (! $page) {
+            abort(404);
+        }
+
+        return view('pages.'.$slug, compact('page'));
+    }
 }

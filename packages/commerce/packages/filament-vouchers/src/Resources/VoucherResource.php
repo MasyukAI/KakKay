@@ -51,9 +51,17 @@ final class VoucherResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
+        $relations = [
             VoucherUsagesRelationManager::class,
         ];
+
+        // Add carts relation manager if filament-cart is available
+        // Note: This shows carts in the conditions/metadata, not a direct database relationship
+        // if (class_exists(\AIArmada\FilamentCart\Models\Cart::class)) {
+        //     $relations[] = \AIArmada\FilamentVouchers\Resources\VoucherResource\RelationManagers\CartsRelationManager::class;
+        // }
+
+        return $relations;
     }
 
     public static function getPages(): array

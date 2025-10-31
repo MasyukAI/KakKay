@@ -8,6 +8,7 @@ use AIArmada\FilamentVouchers\Services\VoucherStatsAggregator;
 use AIArmada\FilamentVouchers\Support\Integrations\FilamentCartBridge;
 use AIArmada\FilamentVouchers\Support\OwnerTypeRegistry;
 use Filament\Facades\Filament;
+use Livewire\Livewire;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -19,7 +20,8 @@ final class FilamentVouchersServiceProvider extends PackageServiceProvider
     {
         $package
             ->name(static::$name)
-            ->hasConfigFile('filament-vouchers');
+            ->hasConfigFile('filament-vouchers')
+            ->hasViews('filament-vouchers');
     }
 
     public function packageRegistered(): void
@@ -31,6 +33,9 @@ final class FilamentVouchersServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
+        // Register Livewire components manually for class-based widgets
+        $this->registerLivewireComponents();
+
         Filament::registerRenderHook('panels::body.start', static function (): void {
             // Registering the plugin implicitly ensures it is discoverable via Filament's panel registry.
         });
@@ -40,5 +45,35 @@ final class FilamentVouchersServiceProvider extends PackageServiceProvider
             // any integration hooks are prepared before Filament renders resources.
             app(FilamentCartBridge::class)->warm();
         });
+    }
+
+    protected function registerLivewireComponents(): void
+    {
+        // Register all widget components with Livewire
+        // Class-based components require manual registration
+        Livewire::component(
+            'a-i-armada.filament-vouchers.widgets.voucher-usage-timeline-widget',
+            \AIArmada\FilamentVouchers\Widgets\VoucherUsageTimelineWidget::class
+        );
+
+        Livewire::component(
+            'a-i-armada.filament-vouchers.widgets.voucher-cart-stats-widget',
+            \AIArmada\FilamentVouchers\Widgets\VoucherCartStatsWidget::class
+        );
+
+        Livewire::component(
+            'a-i-armada.filament-vouchers.widgets.applied-voucher-badges-widget',
+            \AIArmada\FilamentVouchers\Widgets\AppliedVoucherBadgesWidget::class
+        );
+
+        Livewire::component(
+            'a-i-armada.filament-vouchers.widgets.quick-apply-voucher-widget',
+            \AIArmada\FilamentVouchers\Widgets\QuickApplyVoucherWidget::class
+        );
+
+        Livewire::component(
+            'a-i-armada.filament-vouchers.widgets.voucher-suggestions-widget',
+            \AIArmada\FilamentVouchers\Widgets\VoucherSuggestionsWidget::class
+        );
     }
 }

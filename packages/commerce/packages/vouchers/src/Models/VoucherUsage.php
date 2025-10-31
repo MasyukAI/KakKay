@@ -54,7 +54,7 @@ class VoucherUsage extends Model
     protected function casts(): array
     {
         return [
-            'discount_amount' => 'decimal:2',
+            'discount_amount' => 'integer', // Stored as cents
             'cart_snapshot' => 'array',
             'metadata' => 'array',
             'used_at' => 'datetime',

@@ -57,67 +57,103 @@ final class ViewCart extends ViewRecord
     {
         assert($this->record instanceof Cart);
 
-        return [
+        $actions = [
             Actions\EditAction::make()
                 ->icon(Heroicon::OutlinedPencil),
-
-            Actions\Action::make('clear_cart')
-                ->label('Clear Cart')
-                ->icon(Heroicon::OutlinedXCircle)
-                ->color('danger')
-                ->requiresConfirmation()
-                ->modalHeading('Clear Cart')
-                ->modalDescription('Are you sure you want to clear all items from this cart? This action cannot be undone.')
-                ->action(function (): void {
-                    /** @var Cart $record */
-                    $record = $this->record;
-                    app(CartInstanceManager::class)
-                        ->resolve($record->instance, $record->identifier)
-                        ->clear();
-                    $this->redirect($this->getResource()::getUrl('view', ['record' => $this->record]));
-                })
-                /** @phpstan-ignore-next-line */
-                ->visible(fn () => ! $this->record->isEmpty()),
-
-            Actions\Action::make('export_cart')
-                ->label('Export Cart')
-                ->icon(Heroicon::OutlinedArrowDownTray)
-                ->color('info')
-                ->action(function () {
-                    /** @var Cart $record */
-                    $record = $this->record;
-
-                    return response()->download(
-                        storage_path('app/temp/cart_'.$record->identifier.'.json'),
-                        'cart_'.$record->identifier.'.json',
-                        ['Content-Type' => 'application/json']
-                    );
-                })
-                ->before(function () {
-                    // Create the export file
-                    /** @var Cart $record */
-                    $record = $this->record;
-                    $cartData = [
-                        'identifier' => $record->identifier,
-                        'instance' => $record->instance,
-                        'items' => $record->items,
-                        'conditions' => $record->conditions,
-                        'metadata' => $record->metadata,
-                        'exported_at' => now()->toISOString(),
-                    ];
-
-                    if (! file_exists(storage_path('app/temp'))) {
-                        mkdir(storage_path('app/temp'), 0755, true);
-                    }
-
-                    file_put_contents(
-                        storage_path('app/temp/cart_'.$record->identifier.'.json'),
-                        json_encode($cartData, JSON_PRETTY_PRINT)
-                    );
-                }),
-
-            Actions\DeleteAction::make()
-                ->icon(Heroicon::OutlinedTrash),
         ];
+
+        // Add voucher management actions if filament-vouchers is available
+        if (class_exists(\AIArmada\FilamentVouchers\Extensions\CartVoucherActions::class)) {
+            $actions[] = \AIArmada\FilamentVouchers\Extensions\CartVoucherActions::applyVoucher();
+            $actions[] = \AIArmada\FilamentVouchers\Extensions\CartVoucherActions::showAppliedVouchers();
+        }
+
+        $actions[] = Actions\Action::make('clear_cart')
+            ->label('Clear Cart')
+            ->icon(Heroicon::OutlinedXCircle)
+            ->color('danger')
+            ->requiresConfirmation()
+            ->modalHeading('Clear Cart')
+            ->modalDescription('Are you sure you want to clear all items from this cart? This action cannot be undone.')
+            ->action(function (): void {
+                /** @var Cart $record */
+                $record = $this->record;
+                app(CartInstanceManager::class)
+                    ->resolve($record->instance, $record->identifier)
+                    ->clear();
+                $this->redirect($this->getResource()::getUrl('view', ['record' => $this->record]));
+            })
+            /** @phpstan-ignore-next-line */
+            ->visible(fn () => ! $this->record->isEmpty());
+
+        $actions[] = Actions\Action::make('export_cart')
+            ->label('Export Cart')
+            ->icon(Heroicon::OutlinedArrowDownTray)
+            ->color('info')
+            ->action(function () {
+                /** @var Cart $record */
+                $record = $this->record;
+
+                return response()->download(
+                    storage_path('app/temp/cart_'.$record->identifier.'.json'),
+                    'cart_'.$record->identifier.'.json',
+                    ['Content-Type' => 'application/json']
+                );
+            })
+            ->before(function () {
+                // Create the export file
+                /** @var Cart $record */
+                $record = $this->record;
+                $cartData = [
+                    'identifier' => $record->identifier,
+                    'instance' => $record->instance,
+                    'items' => $record->items,
+                    'conditions' => $record->conditions,
+                    'metadata' => $record->metadata,
+                    'exported_at' => now()->toISOString(),
+                ];
+
+                if (! file_exists(storage_path('app/temp'))) {
+                    mkdir(storage_path('app/temp'), 0755, true);
+                }
+
+                file_put_contents(
+                    storage_path('app/temp/cart_'.$record->identifier.'.json'),
+                    json_encode($cartData, JSON_PRETTY_PRINT)
+                );
+            });
+
+        $actions[] = Actions\DeleteAction::make()
+            ->icon(Heroicon::OutlinedTrash);
+
+        return $actions;
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        $widgets = [];
+
+        // Add voucher widgets if filament-vouchers is available
+        if (class_exists(\AIArmada\FilamentVouchers\Widgets\AppliedVoucherBadgesWidget::class)) {
+            $widgets[] = \AIArmada\FilamentVouchers\Widgets\AppliedVoucherBadgesWidget::class;
+        }
+
+        return $widgets;
+    }
+
+    protected function getFooterWidgets(): array
+    {
+        $widgets = [];
+
+        // Add voucher management widgets if filament-vouchers is available
+        if (class_exists(\AIArmada\FilamentVouchers\Widgets\QuickApplyVoucherWidget::class)) {
+            $widgets[] = \AIArmada\FilamentVouchers\Widgets\QuickApplyVoucherWidget::class;
+        }
+
+        if (class_exists(\AIArmada\FilamentVouchers\Widgets\VoucherSuggestionsWidget::class)) {
+            $widgets[] = \AIArmada\FilamentVouchers\Widgets\VoucherSuggestionsWidget::class;
+        }
+
+        return $widgets;
     }
 }

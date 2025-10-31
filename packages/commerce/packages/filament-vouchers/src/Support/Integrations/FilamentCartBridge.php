@@ -35,7 +35,16 @@ final class FilamentCartBridge
 
     public function warm(): void
     {
-        // Reserved for future runtime hooks when the cart plugin is present.
+        // When Filament Cart is available, we can add runtime integration hooks here.
+        // For now, the integration is handled via manual inclusion of actions in CartResource.
+        
+        if (! $this->available) {
+            return;
+        }
+        
+        // Future: Automatically inject voucher actions into CartResource
+        // Future: Register voucher-related cart events
+        // Future: Add voucher widgets to cart dashboard
     }
 
     /**

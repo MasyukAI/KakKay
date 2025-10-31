@@ -40,12 +40,9 @@ final class VoucherStatsAggregator
 
     private function sumDiscountMinor(): int
     {
-        $sum = (string) VoucherUsage::query()->sum('discount_amount');
+        // discount_amount is already stored as integer cents
+        $sum = VoucherUsage::query()->sum('discount_amount');
 
-        if ($sum === '' || $sum === '0' || $sum === '0.00') {
-            return 0;
-        }
-
-        return (int) round(((float) $sum) * 100);
+        return (int) $sum;
     }
 }

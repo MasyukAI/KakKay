@@ -46,20 +46,25 @@ Route::middleware(['auth'])->group(function () {
 });
 
 require __DIR__.'/auth.php';
-//
-// Route::get('/{slug}', [PageController::class, 'show'])
-//    ->where('slug', '[a-z0-9\-]+')
-//    ->name('page.show');
 
-// Policy pages
+// Product pages - Volt routes
 /** @phpstan-ignore-next-line */
-Volt::route('privacy-policy', 'privacy-policy');
+Volt::route('/cara-bercinta', 'cara-bercinta')->name('pages.cara-bercinta');
+
+// Policy pages - must be before catch-all route
 /** @phpstan-ignore-next-line */
-Volt::route('refund-policy', 'refund-policy');
+Volt::route('/privacy-policy', 'privacy-policy');
 /** @phpstan-ignore-next-line */
-Volt::route('shipping-policy', 'shipping-policy');
+Volt::route('/refund-policy', 'refund-policy');
 /** @phpstan-ignore-next-line */
-Volt::route('terms-of-service', 'terms-of-service');
+Volt::route('/shipping-policy', 'shipping-policy');
+/** @phpstan-ignore-next-line */
+Volt::route('/terms-of-service', 'terms-of-service');
+
+// Catch-all route for dynamic pages - must be last
+Route::get('/{slug}', [PageController::class, 'show'])
+    ->where('slug', '[a-z0-9\-]+')
+    ->name('page.show');
 
 Route::get('saiffil', function () {
     echo Money::USD(7777)->getAmount();

@@ -34,7 +34,7 @@ final class VoucherInfolist
                         ->schema([
                             TextEntry::make('type')
                                 ->label('Type')
-                                ->formatStateUsing(static fn (string $state): string => VoucherType::from($state)->label())
+                                ->formatStateUsing(static fn (VoucherType|string $state): string => $state instanceof VoucherType ? $state->label() : VoucherType::from($state)->label())
                                 ->badge(),
 
                             TextEntry::make('value_label')
@@ -42,7 +42,7 @@ final class VoucherInfolist
 
                             TextEntry::make('status')
                                 ->label('Status')
-                                ->formatStateUsing(static fn (string $state): string => VoucherStatus::from($state)->label())
+                                ->formatStateUsing(static fn (VoucherStatus|string $state): string => $state instanceof VoucherStatus ? $state->label() : VoucherStatus::from($state)->label())
                                 ->badge(),
                         ]),
 
@@ -72,12 +72,12 @@ final class VoucherInfolist
 
                             TextEntry::make('remaining_uses')
                                 ->label('Remaining')
-                                ->state(static fn (?int $state): string => Str::of((string) ($state ?? '∞'))->toString())
+                                ->state(static fn ($record): string => Str::of((string) ($record->getRemainingUses() ?? '∞'))->toString())
                                 ->badge(),
 
                             TextEntry::make('usageProgress')
                                 ->label('Usage %')
-                                ->state(static fn (?float $state): string => $state === null ? '—' : number_format($state, 1).'%')
+                                ->state(static fn ($record): string => $record->usageProgress === null ? '—' : number_format($record->usageProgress, 1).'%')
                                 ->badge(),
                         ]),
                 ]),

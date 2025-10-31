@@ -81,7 +81,20 @@ final class VoucherForm
                                 ->required()
                                 ->helperText('Percentage for percentage vouchers, fixed amount for other types')
                                 ->suffix(fn (Get $get): string => $get('type') === VoucherType::Percentage->value ? '%' : $get('currency') ?? $defaultCurrency)
-                                ->live(),
+                                ->live()
+                                // Convert from cents/basis points to decimal for display
+                                ->formatStateUsing(fn (?int $state, Get $get): ?string => $state !== null
+                                    ? ($get('type') === VoucherType::Percentage->value
+                                        ? number_format($state / 100, 2, '.', '') // Basis points to percentage
+                                        : number_format($state / 100, 2, '.', '') // Cents to currency
+                                    )
+                                    : null
+                                )
+                                // Convert from decimal input to cents/basis points for storage
+                                ->dehydrateStateUsing(fn (?string $state, Get $get): ?int => $state !== null && $state !== ''
+                                    ? (int) round((float) $state * 100)
+                                    : null
+                                ),
 
                             Select::make('currency')
                                 ->label('Currency')
@@ -99,13 +112,33 @@ final class VoucherForm
                                 ->label('Minimum Cart Value')
                                 ->numeric()
                                 ->helperText('Optional minimum subtotal required to redeem')
-                                ->suffix($defaultCurrency),
+                                ->suffix($defaultCurrency)
+                                // Convert from cents to decimal for display
+                                ->formatStateUsing(fn (?int $state): ?string => $state !== null
+                                    ? number_format($state / 100, 2, '.', '')
+                                    : null
+                                )
+                                // Convert from decimal input to cents for storage
+                                ->dehydrateStateUsing(fn (?string $state): ?int => $state !== null && $state !== ''
+                                    ? (int) round((float) $state * 100)
+                                    : null
+                                ),
 
                             TextInput::make('max_discount')
                                 ->label('Max Discount')
                                 ->numeric()
                                 ->helperText('Cap the total discount for percentage vouchers')
-                                ->suffix(fn (Get $get): string => $get('currency') ?? $defaultCurrency),
+                                ->suffix(fn (Get $get): string => $get('currency') ?? $defaultCurrency)
+                                // Convert from cents to decimal for display
+                                ->formatStateUsing(fn (?int $state): ?string => $state !== null
+                                    ? number_format($state / 100, 2, '.', '')
+                                    : null
+                                )
+                                // Convert from decimal input to cents for storage
+                                ->dehydrateStateUsing(fn (?string $state): ?int => $state !== null && $state !== ''
+                                    ? (int) round((float) $state * 100)
+                                    : null
+                                ),
 
                             Toggle::make('allows_manual_redemption')
                                 ->label('Manual Redemption')

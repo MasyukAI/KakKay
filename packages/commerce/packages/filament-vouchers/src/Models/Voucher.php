@@ -55,19 +55,22 @@ final class Voucher extends BaseVoucher
     {
         return Attribute::make(
             get: function (): string {
-                $value = (float) $this->getAttribute('value');
+                $value = (int) $this->getAttribute('value');
                 $type = $this->getAttribute('type');
 
                 $enumType = $type instanceof VoucherType ? $type : VoucherType::tryFrom((string) $type);
 
                 if ($enumType === VoucherType::Percentage) {
-                    return rtrim(rtrim(number_format($value, 2), '0'), '.').' %';
+                    // Value is stored as basis points (e.g., 1050 = 10.50%)
+                    $percentage = $value / 100;
+
+                    return rtrim(rtrim(number_format($percentage, 2), '0'), '.').' %';
                 }
 
+                // Value is stored as cents
                 $currency = mb_strtoupper((string) ($this->getAttribute('currency') ?? config('filament-vouchers.default_currency', 'MYR')));
-                $minor = (int) round($value * 100);
 
-                return (string) Money::{$currency}($minor);
+                return (string) Money::{$currency}($value);
             }
         );
     }

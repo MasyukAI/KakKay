@@ -19,12 +19,12 @@ return new class extends Migration
 
             // Discount configuration
             $table->string('type'); // percentage, fixed, free_shipping
-            $table->decimal('value', 10, 2);
+            $table->bigInteger('value'); // For percentage: store as basis points (e.g., 10.50% = 1050). For fixed: store as cents
             $table->string('currency', 3)->default('MYR');
 
-            // Constraints
-            $table->decimal('min_cart_value', 10, 2)->nullable();
-            $table->decimal('max_discount', 10, 2)->nullable();
+            // Constraints (in cents)
+            $table->bigInteger('min_cart_value')->nullable();
+            $table->bigInteger('max_discount')->nullable();
 
             // Usage limits
             $table->integer('usage_limit')->nullable();

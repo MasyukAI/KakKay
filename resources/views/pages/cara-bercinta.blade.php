@@ -8,8 +8,8 @@ use Filament\Notifications\Notification;
 
 new
 #[Layout('components.layouts.pages')]
+#[Title('34 Teknik Bercinta Dengan Pasangan')]
 class extends Component {
-    #[Title('34 Teknik Bercinta Dengan Pasangan')]
     public function addToCart()
     {
         $product = Product::where('slug', 'cara-bercinta')->first();

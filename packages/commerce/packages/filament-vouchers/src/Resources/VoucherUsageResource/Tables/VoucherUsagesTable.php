@@ -44,9 +44,8 @@ final class VoucherUsagesTable
                     ->label('Discount')
                     ->formatStateUsing(static function ($state, VoucherUsage $record): string {
                         $currency = mb_strtoupper((string) ($record->currency ?? config('filament-vouchers.default_currency', 'MYR')));
-                        $minor = (int) round(((float) $state) * 100);
-
-                        return (string) Money::{$currency}($minor);
+                        // Value is already stored as cents (integer)
+                        return (string) Money::{$currency}((int) $state);
                     })
                     ->alignEnd(),
 

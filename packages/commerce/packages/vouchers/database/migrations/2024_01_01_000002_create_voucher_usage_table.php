@@ -17,7 +17,7 @@ return new class extends Migration
             )->cascadeOnDelete();
             $table->string('user_identifier'); // user_id or session_id
             $table->string('cart_identifier')->nullable();
-            $table->decimal('discount_amount', 10, 2);
+            $table->bigInteger('discount_amount'); // stored in cents
             $table->string('currency', 3);
             $table->jsonb('cart_snapshot')->nullable();
             $table->string('channel')->default('automatic');
