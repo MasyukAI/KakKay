@@ -108,6 +108,21 @@ function createTestCart(string $instance = 'test'): Cart
             {
                 return null;
             }
+
+            public function getAllMetadata(string $identifier, string $instance): array
+            {
+                return $this->data[$identifier][$instance]['metadata'] ?? [];
+            }
+
+            public function getCreatedAt(string $identifier, string $instance): ?string
+            {
+                return null;
+            }
+
+            public function getUpdatedAt(string $identifier, string $instance): ?string
+            {
+                return null;
+            }
         },
         identifier: 'test-identifier',
         instanceName: $instance

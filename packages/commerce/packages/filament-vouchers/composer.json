@@ -1,7 +1,13 @@
 {
   "name": "aiarmada/filament-vouchers",
   "description": "A Filament v4 plugin for administering vouchers provided by the AIArmada vouchers package",
+  "type": "library",
   "license": "MIT",
+  "homepage": "https://github.com/aiarmada/commerce",
+  "support": {
+    "issues": "https://github.com/aiarmada/commerce/issues",
+    "source": "https://github.com/aiarmada/commerce"
+  },
   "keywords": [
     "laravel",
     "filament",
@@ -41,6 +47,7 @@
     }
   ],
   "require": {
+    "php": "^8.4",
     "aiarmada/commerce-support": "self.version",
     "aiarmada/commerce": "self.version",
     "aiarmada/vouchers": "self.version",
@@ -85,16 +92,11 @@
     "allow-plugins": {
       "pestphp/pest-plugin": true
     }
-  },
   "scripts": {
-    "test": [
-      "vendor/bin/pest"
-    ],
-    "format": [
-      "vendor/bin/pint"
-    ]
+    "test": "vendor/bin/pest",
+    "format": "vendor/bin/pint",
+    "analyse": "vendor/bin/phpstan analyse"
   },
-  "version": "1.0.0",
   "minimum-stability": "dev",
   "prefer-stable": true
 }

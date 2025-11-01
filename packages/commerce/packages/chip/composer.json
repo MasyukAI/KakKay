@@ -11,13 +11,19 @@
   ],
   "license": "MIT",
   "type": "library",
+  "homepage": "https://github.com/aiarmada/commerce",
+  "support": {
+    "issues": "https://github.com/aiarmada/commerce/issues",
+    "source": "https://github.com/aiarmada/commerce"
+  },
   "authors": [
     {
       "name": "AIArmada",
-      "email": "hello@masyuk.ai"
+      "email": "info@aiarmada.com"
     }
   ],
   "require": {
+    "php": "^8.4",
     "ext-curl": "*",
     "ext-json": "*",
     "aiarmada/commerce-support": "self.version",
@@ -70,6 +76,6 @@
       }
     }
   },
-  "minimum-stability": "stable",
+  "minimum-stability": "dev",
   "prefer-stable": true
 }
