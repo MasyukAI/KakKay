@@ -11,8 +11,20 @@
         <!-- Header -->
         <div class="mb-8 flex items-start justify-between">
             <div>
-                <h1 class="text-4xl font-bold text-gray-900">DOCUMENT</h1>
-                <p class="mt-2 text-sm text-gray-600">{{ $document->document_number }}</p>
+                <h1 class="text-4xl font-bold text-gray-900">
+                    @if($document->document_type === 'ticket')
+                        TICKET
+                    @else
+                        DOCUMENT
+                    @endif
+                </h1>
+                <p class="mt-2 text-sm text-gray-600">
+                    @if($document->document_type === 'ticket' && $document->documentable)
+                        {{ $document->documentable->ticket_number }}
+                    @else
+                        {{ $document->document_number }}
+                    @endif
+                </p>
             </div>
             @if($document->company_data)
             <div class="text-right">

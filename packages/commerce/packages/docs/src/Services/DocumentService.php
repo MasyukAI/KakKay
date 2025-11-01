@@ -88,6 +88,9 @@ class DocumentService
 
     public function generatePdf(Document $document, bool $save = true): string
     {
+        // Load the polymorphic relationship to access ticket/order data
+        $document->loadMissing('documentable');
+
         $documentType = $document->document_type ?? 'invoice';
         $template = $document->template ?? DocumentTemplate::where('is_default', true)
             ->where('document_type', $documentType)
