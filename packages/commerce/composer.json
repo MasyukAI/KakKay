@@ -1,26 +1,32 @@
 {
     "name": "aiarmada/commerce",
-    "replace": {
-        "aiarmada/commerce-support": "self.version",
-        "aiarmada/cart": "self.version",
-        "aiarmada/chip": "self.version",
-        "aiarmada/docs": "self.version",
-        "aiarmada/filament-cart": "self.version",
-        "aiarmada/filament-chip": "self.version",
-        "aiarmada/jnt": "self.version",
-        "aiarmada/stock": "self.version",
-        "aiarmada/vouchers": "self.version"
-    },
-    "description": "A modern, feature-rich shopping cart package for Laravel 12",
+    "type": "library",
+    "description": "A comprehensive commerce ecosystem for Laravel 12 with cart, payments, vouchers, shipping, and inventory management",
     "license": "MIT",
-    "version": "1.0.0",
+    "homepage": "https://github.com/aiarmada/commerce",
+    "support": {
+        "issues": "https://github.com/aiarmada/commerce/issues",
+        "source": "https://github.com/aiarmada/commerce",
+        "docs": "https://github.com/aiarmada/commerce/blob/main/README.md"
+    },
     "keywords": [
         "laravel",
-        "laravel12",
+        "laravel-12",
         "shopping-cart",
         "cart",
         "e-commerce",
-        "aiarmada"
+        "payment-gateway",
+        "chip",
+        "vouchers",
+        "shipping",
+        "inventory",
+        "filament",
+        "livewire",
+        "jnt",
+        "stock-management",
+        "documents",
+        "filament-plugin",
+        "commerce"
     ],
     "authors": [
         {
@@ -28,17 +34,20 @@
             "email": "info@aiarmada.com"
         }
     ],
+    "replace": {
+        "aiarmada/commerce-support": "self.version",
+        "aiarmada/cart": "self.version",
+        "aiarmada/chip": "self.version",
+        "aiarmada/docs": "self.version",
+        "aiarmada/filament-cart": "self.version",
+        "aiarmada/filament-chip": "self.version",
+        "aiarmada/filament-vouchers": "self.version",
+        "aiarmada/jnt": "self.version",
+        "aiarmada/stock": "self.version",
+        "aiarmada/vouchers": "self.version"
+    },
     "require": {
-        "php": "^8.4",
-        "aiarmada/commerce-support": "@dev",
-        "aiarmada/cart": "@dev",
-        "aiarmada/chip": "@dev",
-        "aiarmada/docs": "@dev",
-        "aiarmada/filament-cart": "@dev",
-        "aiarmada/filament-chip": "@dev",
-        "aiarmada/jnt": "@dev",
-        "aiarmada/stock": "@dev",
-        "aiarmada/vouchers": "@dev"
+        "php": "^8.4"
     },
     "require-dev": {
         "akaunting/laravel-money": "^6.0",
@@ -124,6 +133,13 @@
             },
             "type": "path",
             "url": "./packages/vouchers"
+        },
+        {
+            "options": {
+                "symlink": true
+            },
+            "type": "path",
+            "url": "./packages/filament-vouchers"
         }
     ],
     "minimum-stability": "dev",
@@ -138,6 +154,7 @@
             "AIArmada\\FilamentCart\\Database\\Factories\\": "packages/filament-cart/database/factories/",
             "AIArmada\\FilamentCart\\Database\\Seeders\\": "packages/filament-cart/database/seeders/",
             "AIArmada\\FilamentChip\\": "packages/filament-chip/src",
+            "AIArmada\\FilamentVouchers\\": "packages/filament-vouchers/src",
             "AIArmada\\Jnt\\": "packages/jnt/src",
             "AIArmada\\Stock\\": "packages/stock/src",
             "AIArmada\\Vouchers\\": "packages/vouchers/src"
@@ -145,19 +162,16 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "AIArmada\\Cart\\Tests\\": "packages/cart/tests/",
             "AIArmada\\Chip\\Tests\\": "packages/chip/tests/",
             "AIArmada\\Commerce\\Tests\\": "tests/src",
+            "AIArmada\\Docs\\Tests\\": "packages/docs/tests/",
             "AIArmada\\FilamentCart\\Tests\\": "packages/filament-cart/tests/",
             "AIArmada\\FilamentChip\\Tests\\": "packages/filament-chip/tests/",
+            "AIArmada\\FilamentVouchers\\Tests\\": "packages/filament-vouchers/tests/",
             "AIArmada\\Jnt\\Tests\\": "packages/jnt/tests/",
-            "Tests\\": "tests/"
-        }
-    },
-    "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "pestphp/pest-plugin": true,
-            "phpstan/extension-installer": true
+            "AIArmada\\Stock\\Tests\\": "packages/stock/tests/",
+            "AIArmada\\Vouchers\\Tests\\": "packages/vouchers/tests/"
         }
     },
     "extra": {
@@ -177,10 +191,18 @@
                 "AIArmada\\Docs\\DocsServiceProvider",
                 "AIArmada\\FilamentCart\\FilamentCartServiceProvider",
                 "AIArmada\\FilamentChip\\FilamentChipServiceProvider",
+                "AIArmada\\FilamentVouchers\\FilamentVouchersServiceProvider",
                 "AIArmada\\Jnt\\JntServiceProvider",
                 "AIArmada\\Stock\\StockServiceProvider",
                 "AIArmada\\Vouchers\\VoucherServiceProvider"
             ]
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "phpstan/extension-installer": true
         }
     },
     "scripts": {
