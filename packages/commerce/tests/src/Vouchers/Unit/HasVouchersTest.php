@@ -124,21 +124,6 @@ it('retrieves applied vouchers from cart conditions', function () {
 
             return true;
         }
-
-        public function getAllMetadata(string $identifier, string $instance): array
-        {
-            return $this->metadata[$identifier][$instance] ?? [];
-        }
-
-        public function getCreatedAt(string $identifier, string $instance): ?string
-        {
-            return null;
-        }
-
-        public function getUpdatedAt(string $identifier, string $instance): ?string
-        {
-            return null;
-        }
     };
 
     $cart = new Cart(

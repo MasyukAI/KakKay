@@ -3,29 +3,13 @@
   "description": "J&T Express Malaysia API Integration Package",
   "type": "library",
   "license": "MIT",
-  "homepage": "https://github.com/aiarmada/commerce",
-  "support": {
-    "issues": "https://github.com/aiarmada/commerce/issues",
-    "source": "https://github.com/aiarmada/commerce"
-  },
-  "keywords": [
-    "laravel",
-    "jnt",
-    "j&t-express",
-    "shipping",
-    "logistics",
-    "malaysia",
-    "tracking",
-    "aiarmada"
-  ],
   "authors": [
     {
       "name": "AIArmada",
-      "email": "info@aiarmada.com"
+      "email": "hello@masyuk.ai"
     }
   ],
   "require": {
-    "php": "^8.4",
     "aiarmada/commerce-support": "self.version",
     "guzzlehttp/guzzle": "^7.0"
   },
@@ -60,7 +44,6 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "config": {
-    "sort-packages": true,
     "allow-plugins": {
       "pestphp/pest-plugin": true
     }

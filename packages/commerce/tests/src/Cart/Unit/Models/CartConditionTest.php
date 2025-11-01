@@ -588,21 +588,6 @@ it('shouldApply returns true for static and evaluates rules for dynamic', functi
             {
                 return null;
             }
-
-            public function getAllMetadata(string $identifier, string $instance): array
-            {
-                return [];
-            }
-
-            public function getCreatedAt(string $identifier, string $instance): ?string
-            {
-                return null;
-            }
-
-            public function getUpdatedAt(string $identifier, string $instance): ?string
-            {
-                return null;
-            }
         },
         identifier: 'test-user'
     );

@@ -1,13 +1,7 @@
 {
   "name": "aiarmada/docs",
-  "description": "Document generation package for Laravel with PDF support for invoices, receipts, shipping labels, and customizable templates",
-  "type": "library",
+  "description": "Laravel document generation package with PDF support for invoices, receipts, and more",
   "license": "MIT",
-  "homepage": "https://github.com/aiarmada/commerce",
-  "support": {
-    "issues": "https://github.com/aiarmada/commerce/issues",
-    "source": "https://github.com/aiarmada/commerce"
-  },
   "keywords": [
     "laravel",
     "invoice",
@@ -24,18 +18,10 @@
     }
   ],
   "require": {
-    "php": "^8.4",
     "ext-json": "*",
     "aiarmada/commerce-support": "self.version",
     "illuminate/database": "^12.0",
     "spatie/laravel-pdf": "^1.5"
-  },
-  "require-dev": {
-    "orchestra/testbench": "^10.0",
-    "pestphp/pest": "^4.0",
-    "pestphp/pest-plugin-laravel": "^4.0",
-    "larastan/larastan": "^3.0",
-    "laravel/pint": "^1.18"
   },
   "autoload": {
     "psr-4": {
@@ -46,23 +32,12 @@
     "psr-4": {
       "AIArmada\\Docs\\Tests\\": "tests/"
     }
-      }
-    }
   },
-  "scripts": {
-    "test": "vendor/bin/pest",
-    "format": "vendor/bin/pint",
-    "analyse": "vendor/bin/phpstan analyse"
-  },
-  "config": {
-    "sort-packages": true,
-    "allow-plugins": {
-      "pestphp/pest-plugin": true
-    }
-  },
-  "minimum-stability": "dev",
-  "prefer-stable": true
-}     ],
+  "extra": {
+    "laravel": {
+      "providers": [
+        "AIArmada\\Docs\\DocsServiceProvider"
+      ],
       "aliases": {
         "Document": "AIArmada\\Docs\\Facades\\Document"
       }

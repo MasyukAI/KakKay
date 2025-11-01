@@ -12,13 +12,11 @@ jobs:
       fail-fast: false
       matrix:
         package:
-          - support
           - cart
           - chip
           - docs
           - filament-cart
           - filament-chip
-          - filament-vouchers
           - jnt
           - stock
           - vouchers

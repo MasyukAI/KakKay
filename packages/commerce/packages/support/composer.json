@@ -1,13 +1,7 @@
 {
     "name": "aiarmada/commerce-support",
     "description": "Core helper methods and foundation code for all AIArmada Commerce packages.",
-    "type": "library",
     "license": "MIT",
-    "homepage": "https://github.com/aiarmada/commerce",
-    "support": {
-        "issues": "https://github.com/aiarmada/commerce/issues",
-        "source": "https://github.com/aiarmada/commerce"
-    },
     "keywords": [
         "laravel",
         "commerce",
@@ -32,10 +26,7 @@
     },
     "require-dev": {
         "larastan/larastan": "^3.0",
-        "laravel/pint": "^1.18",
-        "orchestra/testbench": "^10.0",
-        "pestphp/pest": "^4.0",
-        "pestphp/pest-plugin-laravel": "^4.0"
+        "laravel/pint": "^1.18"
     },
     "autoload": {
         "files": [
@@ -47,22 +38,14 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "AIArmada\\CommerceSupport\\Tests\\": "tests/"
+        }
+    },
     "extra": {
         "laravel": {
             "providers": [
                 "AIArmada\\CommerceSupport\\SupportServiceProvider"
             ]
-        }
-    },
-    "scripts": {
-        "test": "vendor/bin/pest",
-        "format": "vendor/bin/pint",
-        "analyse": "vendor/bin/phpstan analyse"
-    },
-    "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "pestphp/pest-plugin": true
         }
     },
     "config": {

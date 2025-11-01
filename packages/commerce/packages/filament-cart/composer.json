@@ -1,13 +1,7 @@
 {
   "name": "aiarmada/filament-cart",
   "description": "A comprehensive Filament admin interface for managing shopping carts created by the AIArmada Cart package",
-  "type": "library",
   "license": "MIT",
-  "homepage": "https://github.com/aiarmada/commerce",
-  "support": {
-    "issues": "https://github.com/aiarmada/commerce/issues",
-    "source": "https://github.com/aiarmada/commerce"
-  },
   "keywords": [
     "laravel",
     "filament",
@@ -62,7 +56,6 @@
     }
   ],
   "require": {
-    "php": "^8.4",
     "aiarmada/commerce-support": "self.version",
     "aiarmada/commerce": "self.version",
     "filament/filament": "^4.0"
@@ -105,10 +98,14 @@
     }
   },
   "scripts": {
-    "test": "vendor/bin/pest",
-    "format": "vendor/bin/pint",
-    "analyse": "vendor/bin/phpstan analyse"
+    "test": [
+      "vendor/bin/pest"
+    ],
+    "format": [
+      "vendor/bin/pint"
+    ]
   },
+  "version": "1.0.0",
   "minimum-stability": "dev",
   "prefer-stable": true
 }
