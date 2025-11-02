@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document {{ $document->document_number }}</title>
+    <title>Document {{ $doc->document_number }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-white">
@@ -12,42 +12,42 @@
         <div class="mb-8 flex items-start justify-between">
             <div>
                 <h1 class="text-4xl font-bold text-gray-900">
-                    @if($document->document_type === 'ticket')
+                    @if($doc->document_type === 'ticket')
                         TICKET
                     @else
                         DOCUMENT
                     @endif
                 </h1>
                 <p class="mt-2 text-sm text-gray-600">
-                    @if($document->document_type === 'ticket' && $document->documentable)
-                        {{ $document->documentable->ticket_number }}
+                    @if($doc->document_type === 'ticket' && $doc->documentable)
+                        {{ $doc->documentable->ticket_number }}
                     @else
-                        {{ $document->document_number }}
+                        {{ $doc->document_number }}
                     @endif
                 </p>
             </div>
-            @if($document->company_data)
+            @if($doc->company_data)
             <div class="text-right">
-                <p class="font-semibold text-gray-900">{{ $document->company_data['name'] ?? '' }}</p>
-                @if(!empty($document->company_data['address']))
-                <p class="text-sm text-gray-600">{{ $document->company_data['address'] ?? '' }}</p>
+                <p class="font-semibold text-gray-900">{{ $doc->company_data['name'] ?? '' }}</p>
+                @if(!empty($doc->company_data['address']))
+                <p class="text-sm text-gray-600">{{ $doc->company_data['address'] ?? '' }}</p>
                 @endif
-                @if(!empty($document->company_data['city']))
+                @if(!empty($doc->company_data['city']))
                 <p class="text-sm text-gray-600">
-                    {{ $document->company_data['city'] ?? '' }}
-                    @if(!empty($document->company_data['state']))
-                    , {{ $document->company_data['state'] }}
+                    {{ $doc->company_data['city'] ?? '' }}
+                    @if(!empty($doc->company_data['state']))
+                    , {{ $doc->company_data['state'] }}
                     @endif
-                    @if(!empty($document->company_data['postal_code']))
-                    {{ $document->company_data['postal_code'] }}
+                    @if(!empty($doc->company_data['postal_code']))
+                    {{ $doc->company_data['postal_code'] }}
                     @endif
                 </p>
                 @endif
-                @if(!empty($document->company_data['email']))
-                <p class="text-sm text-gray-600">{{ $document->company_data['email'] }}</p>
+                @if(!empty($doc->company_data['email']))
+                <p class="text-sm text-gray-600">{{ $doc->company_data['email'] }}</p>
                 @endif
-                @if(!empty($document->company_data['phone']))
-                <p class="text-sm text-gray-600">{{ $document->company_data['phone'] }}</p>
+                @if(!empty($doc->company_data['phone']))
+                <p class="text-sm text-gray-600">{{ $doc->company_data['phone'] }}</p>
                 @endif
             </div>
             @endif
@@ -56,30 +56,30 @@
         <!-- Invoice Details -->
         <div class="mb-8 grid grid-cols-2 gap-8">
             <!-- Bill To -->
-            @if($document->customer_data)
+            @if($doc->customer_data)
             <div>
                 <h2 class="mb-2 text-sm font-semibold uppercase text-gray-600">Bill To</h2>
                 <div class="text-sm">
-                    <p class="font-semibold text-gray-900">{{ $document->customer_data['name'] ?? '' }}</p>
-                    @if(!empty($document->customer_data['email']))
-                    <p class="text-gray-600">{{ $document->customer_data['email'] }}</p>
+                    <p class="font-semibold text-gray-900">{{ $doc->customer_data['name'] ?? '' }}</p>
+                    @if(!empty($doc->customer_data['email']))
+                    <p class="text-gray-600">{{ $doc->customer_data['email'] }}</p>
                     @endif
-                    @if(!empty($document->customer_data['address']))
-                    <p class="text-gray-600">{{ $document->customer_data['address'] }}</p>
+                    @if(!empty($doc->customer_data['address']))
+                    <p class="text-gray-600">{{ $doc->customer_data['address'] }}</p>
                     @endif
-                    @if(!empty($document->customer_data['city']))
+                    @if(!empty($doc->customer_data['city']))
                     <p class="text-gray-600">
-                        {{ $document->customer_data['city'] }}
-                        @if(!empty($document->customer_data['state']))
-                        , {{ $document->customer_data['state'] }}
+                        {{ $doc->customer_data['city'] }}
+                        @if(!empty($doc->customer_data['state']))
+                        , {{ $doc->customer_data['state'] }}
                         @endif
-                        @if(!empty($document->customer_data['postal_code']))
-                        {{ $document->customer_data['postal_code'] }}
+                        @if(!empty($doc->customer_data['postal_code']))
+                        {{ $doc->customer_data['postal_code'] }}
                         @endif
                     </p>
                     @endif
-                    @if(!empty($document->customer_data['phone']))
-                    <p class="text-gray-600">{{ $document->customer_data['phone'] }}</p>
+                    @if(!empty($doc->customer_data['phone']))
+                    <p class="text-gray-600">{{ $doc->customer_data['phone'] }}</p>
                     @endif
                 </div>
             </div>
@@ -91,23 +91,23 @@
                 <div class="space-y-1 text-sm">
                     <div class="flex justify-between">
                         <span class="text-gray-600">Issue Date:</span>
-                        <span class="font-medium text-gray-900">{{ $document->issue_date->format('M d, Y') }}</span>
+                        <span class="font-medium text-gray-900">{{ $doc->issue_date->format('M d, Y') }}</span>
                     </div>
-                    @if($document->due_date)
+                    @if($doc->due_date)
                     <div class="flex justify-between">
                         <span class="text-gray-600">Due Date:</span>
-                        <span class="font-medium text-gray-900">{{ $document->due_date->format('M d, Y') }}</span>
+                        <span class="font-medium text-gray-900">{{ $doc->due_date->format('M d, Y') }}</span>
                     </div>
                     @endif
                     <div class="flex justify-between">
                         <span class="text-gray-600">Status:</span>
                         <span class="rounded-full px-2 py-1 text-xs font-semibold
-                            @if($document->status->value === 'paid') bg-green-100 text-green-800
-                            @elseif($document->status->value === 'pending' || $document->status->value === 'sent') bg-blue-100 text-blue-800
-                            @elseif($document->status->value === 'overdue') bg-red-100 text-red-800
+                            @if($doc->status->value === 'paid') bg-green-100 text-green-800
+                            @elseif($doc->status->value === 'pending' || $doc->status->value === 'sent') bg-blue-100 text-blue-800
+                            @elseif($doc->status->value === 'overdue') bg-red-100 text-red-800
                             @else bg-gray-100 text-gray-800
                             @endif">
-                            {{ $document->status->label() }}
+                            {{ $doc->status->label() }}
                         </span>
                     </div>
                 </div>
@@ -126,7 +126,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($document->items as $item)
+                    @foreach($doc->items as $item)
                     <tr class="border-b border-gray-200">
                         <td class="py-3 text-sm text-gray-900">
                             <div class="font-medium">{{ $item['name'] ?? $item['description'] ?? '' }}</div>
@@ -135,8 +135,8 @@
                             @endif
                         </td>
                         <td class="py-3 text-right text-sm text-gray-900">{{ $item['quantity'] ?? 1 }}</td>
-                        <td class="py-3 text-right text-sm text-gray-900">{{ $document->currency }} {{ number_format($item['price'] ?? 0, 2) }}</td>
-                        <td class="py-3 text-right text-sm font-medium text-gray-900">{{ $document->currency }} {{ number_format(($item['quantity'] ?? 1) * ($item['price'] ?? 0), 2) }}</td>
+                        <td class="py-3 text-right text-sm text-gray-900">{{ $doc->currency }} {{ number_format($item['price'] ?? 0, 2) }}</td>
+                        <td class="py-3 text-right text-sm font-medium text-gray-900">{{ $doc->currency }} {{ number_format(($item['quantity'] ?? 1) * ($item['price'] ?? 0), 2) }}</td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -149,41 +149,41 @@
                 <div class="space-y-2">
                     <div class="flex justify-between text-sm">
                         <span class="text-gray-600">Subtotal:</span>
-                        <span class="text-gray-900">{{ $document->currency }} {{ number_format($document->subtotal, 2) }}</span>
+                        <span class="text-gray-900">{{ $doc->currency }} {{ number_format($doc->subtotal, 2) }}</span>
                     </div>
-                    @if($document->tax_amount > 0)
+                    @if($doc->tax_amount > 0)
                     <div class="flex justify-between text-sm">
                         <span class="text-gray-600">Tax:</span>
-                        <span class="text-gray-900">{{ $document->currency }} {{ number_format($document->tax_amount, 2) }}</span>
+                        <span class="text-gray-900">{{ $doc->currency }} {{ number_format($doc->tax_amount, 2) }}</span>
                     </div>
                     @endif
-                    @if($document->discount_amount > 0)
+                    @if($doc->discount_amount > 0)
                     <div class="flex justify-between text-sm">
                         <span class="text-gray-600">Discount:</span>
-                        <span class="text-gray-900">-{{ $document->currency }} {{ number_format($document->discount_amount, 2) }}</span>
+                        <span class="text-gray-900">-{{ $doc->currency }} {{ number_format($doc->discount_amount, 2) }}</span>
                     </div>
                     @endif
                     <div class="flex justify-between border-t-2 border-gray-900 pt-2 text-lg font-bold">
                         <span class="text-gray-900">Total:</span>
-                        <span class="text-gray-900">{{ $document->currency }} {{ number_format($document->total, 2) }}</span>
+                        <span class="text-gray-900">{{ $doc->currency }} {{ number_format($doc->total, 2) }}</span>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Notes -->
-        @if($document->notes)
+        @if($doc->notes)
         <div class="mb-8">
             <h3 class="mb-2 text-sm font-semibold uppercase text-gray-600">Notes</h3>
-            <p class="text-sm text-gray-600">{{ $document->notes }}</p>
+            <p class="text-sm text-gray-600">{{ $doc->notes }}</p>
         </div>
         @endif
 
         <!-- Terms -->
-        @if($document->terms)
+        @if($doc->terms)
         <div class="mb-8">
             <h3 class="mb-2 text-sm font-semibold uppercase text-gray-600">Terms & Conditions</h3>
-            <p class="text-sm text-gray-600">{{ $document->terms }}</p>
+            <p class="text-sm text-gray-600">{{ $doc->terms }}</p>
         </div>
         @endif
 

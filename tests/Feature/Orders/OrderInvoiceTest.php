@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use AIArmada\Docs\DataObjects\DocumentData;
-use AIArmada\Docs\Enums\DocumentStatus;
-use AIArmada\Docs\Facades\Document;
+use AIArmada\Docs\DataObjects\DocData;
+use AIArmada\Docs\Enums\DocStatus;
+use AIArmada\Docs\Facades\Doc;
 use App\Models\Address;
 use App\Models\Order;
 use App\Models\User;
@@ -64,11 +64,11 @@ test('can generate invoice document for order', function () {
         'phone' => $this->address->phone,
     ];
 
-    $documentData = DocumentData::from([
-        'document_type' => 'invoice',
-        'documentable_type' => Order::class,
-        'documentable_id' => $this->order->id,
-        'status' => DocumentStatus::PAID,
+    $docData = DocData::from([
+        'doc_type' => 'invoice',
+        'docable_type' => Order::class,
+        'docable_id' => $this->order->id,
+        'status' => DocStatus::PAID,
         'issue_date' => $this->order->created_at,
         'due_date' => $this->order->created_at,
         'currency' => 'MYR',
@@ -78,16 +78,16 @@ test('can generate invoice document for order', function () {
         'generate_pdf' => false,
     ]);
 
-    $document = Document::createDocument($documentData);
+    $doc = Doc::createDoc($docData);
 
-    expect($document)->toBeInstanceOf(AIArmada\Docs\Models\Document::class)
-        ->and($document->document_type)->toBe('invoice')
-        ->and($document->documentable_type)->toBe(Order::class)
-        ->and($document->documentable_id)->toBe($this->order->id)
-        ->and($document->status)->toBe(DocumentStatus::PAID)
-        ->and($document->total)->toBe('50.00')
-        ->and($document->customer_data['name'])->toBe('John Doe')
-        ->and($document->customer_data['email'])->toBe('john@example.com');
+    expect($doc)->toBeInstanceOf(AIArmada\Docs\Models\Doc::class)
+        ->and($doc->doc_type)->toBe('invoice')
+        ->and($doc->docable_type)->toBe(Order::class)
+        ->and($doc->docable_id)->toBe($this->order->id)
+        ->and($doc->status)->toBe(DocStatus::PAID)
+        ->and($doc->total)->toBe('50.00')
+        ->and($doc->customer_data['name'])->toBe('John Doe')
+        ->and($doc->customer_data['email'])->toBe('john@example.com');
 });
 
 test('can generate PDF for invoice document', function () {
@@ -110,11 +110,11 @@ test('can generate PDF for invoice document', function () {
         'phone' => $this->address->phone,
     ];
 
-    $documentData = DocumentData::from([
-        'document_type' => 'invoice',
-        'documentable_type' => Order::class,
-        'documentable_id' => $this->order->id,
-        'status' => DocumentStatus::PAID,
+    $docData = DocData::from([
+        'doc_type' => 'invoice',
+        'docable_type' => Order::class,
+        'docable_id' => $this->order->id,
+        'status' => DocStatus::PAID,
         'issue_date' => $this->order->created_at,
         'due_date' => $this->order->created_at,
         'currency' => 'MYR',
@@ -124,10 +124,10 @@ test('can generate PDF for invoice document', function () {
         'generate_pdf' => false,
     ]);
 
-    $document = Document::createDocument($documentData);
+    $document = Doc::createDoc($docData);
 
     // Generate PDF content
-    $pdfContent = Document::generatePdf($document, false);
+    $pdfContent = Doc::generatePdf($document, false);
 
     expect($pdfContent)->toBeString()
         ->and(mb_strlen($pdfContent))->toBeGreaterThan(0);
@@ -148,11 +148,11 @@ test('order has documents relationship', function () {
         'email' => $this->user->email,
     ];
 
-    $documentData = DocumentData::from([
-        'document_type' => 'invoice',
-        'documentable_type' => Order::class,
-        'documentable_id' => $this->order->id,
-        'status' => DocumentStatus::PAID,
+    $docData = DocData::from([
+        'doc_type' => 'invoice',
+        'docable_type' => Order::class,
+        'docable_id' => $this->order->id,
+        'status' => DocStatus::PAID,
         'issue_date' => $this->order->created_at,
         'due_date' => $this->order->created_at,
         'currency' => 'MYR',
@@ -161,12 +161,12 @@ test('order has documents relationship', function () {
         'generate_pdf' => false,
     ]);
 
-    $document = Document::createDocument($documentData);
+    $document = Doc::createDoc($docData);
 
     $this->order->refresh();
 
-    expect($this->order->documents)->toHaveCount(1)
-        ->and($this->order->documents->first()->document_type)->toBe('invoice')
+    expect($this->order->docs)->toHaveCount(1)
+        ->and($this->order->docs->first()->doc_type)->toBe('invoice')
         ->and($this->order->invoices)->toHaveCount(1);
 });
 
@@ -185,11 +185,11 @@ test('can retrieve existing invoice for order', function () {
         'email' => $this->user->email,
     ];
 
-    $documentData = DocumentData::from([
-        'document_type' => 'invoice',
-        'documentable_type' => Order::class,
-        'documentable_id' => $this->order->id,
-        'status' => DocumentStatus::PAID,
+    $docData = DocData::from([
+        'doc_type' => 'invoice',
+        'docable_type' => Order::class,
+        'docable_id' => $this->order->id,
+        'status' => DocStatus::PAID,
         'issue_date' => $this->order->created_at,
         'due_date' => $this->order->created_at,
         'currency' => 'MYR',
@@ -198,16 +198,16 @@ test('can retrieve existing invoice for order', function () {
         'generate_pdf' => false,
     ]);
 
-    $document = Document::createDocument($documentData);
+    $document = Doc::createDoc($docData);
 
     // Retrieve existing document
-    $existingDocument = AIArmada\Docs\Models\Document::query()
-        ->where('documentable_type', Order::class)
-        ->where('documentable_id', $this->order->id)
-        ->where('document_type', 'invoice')
+    $existingDoc = AIArmada\Docs\Models\Doc::query()
+        ->where('docable_type', Order::class)
+        ->where('docable_id', $this->order->id)
+        ->where('doc_type', 'invoice')
         ->first();
 
-    expect($existingDocument)->not->toBeNull()
-        ->and($existingDocument->id)->toBe($document->id)
-        ->and($existingDocument->document_number)->toBe($document->document_number);
+    expect($existingDoc)->not->toBeNull()
+        ->and($existingDoc->id)->toBe($document->id)
+        ->and($existingDoc->doc_number)->toBe($document->doc_number);
 });

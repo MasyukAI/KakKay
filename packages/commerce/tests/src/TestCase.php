@@ -156,28 +156,28 @@ abstract class TestCase extends Orchestra
         });
 
         // Docs tables
-        Schema::dropIfExists('documents');
-        Schema::dropIfExists('document_histories');
-        Schema::dropIfExists('document_templates');
+        Schema::dropIfExists('docs');
+        Schema::dropIfExists('doc_histories');
+        Schema::dropIfExists('doc_templates');
 
-        Schema::create('document_templates', function (Blueprint $table) {
+        Schema::create('doc_templates', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('description')->nullable();
             $table->string('view_name');
-            $table->string('document_type')->default('invoice');
+            $table->string('doc_type')->default('invoice');
             $table->boolean('is_default')->default(false);
             $table->json('settings')->nullable();
             $table->timestamps();
         });
 
-        Schema::create('documents', function (Blueprint $table) {
+        Schema::create('docs', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('document_number')->unique();
-            $table->string('document_type')->default('invoice');
-            $table->foreignUuid('document_template_id')->nullable()->constrained('document_templates')->nullOnDelete();
-            $table->nullableUuidMorphs('documentable');
+            $table->string('doc_number')->unique();
+            $table->string('doc_type')->default('invoice');
+            $table->foreignUuid('doc_template_id')->nullable()->constrained('doc_templates')->nullOnDelete();
+            $table->nullableUuidMorphs('docable');
             $table->string('status')->default('draft');
             $table->date('issue_date');
             $table->date('due_date')->nullable();
@@ -197,9 +197,9 @@ abstract class TestCase extends Orchestra
             $table->timestamps();
         });
 
-        Schema::create('document_histories', function (Blueprint $table) {
+        Schema::create('doc_histories', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('document_id')->constrained('documents')->cascadeOnDelete();
+            $table->foreignUuid('doc_id')->constrained('docs')->cascadeOnDelete();
             $table->string('action');
             $table->string('old_status')->nullable();
             $table->string('new_status')->nullable();

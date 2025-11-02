@@ -179,7 +179,7 @@
             "aliases": {
                 "Cart": "AIArmada\\Cart\\Facades\\Cart",
                 "Chip": "AIArmada\\Chip\\Facades\\Chip",
-                "Document": "AIArmada\\Docs\\Facades\\Document",
+                "Doc": "AIArmada\\Docs\\Facades\\Doc",
                 "JntExpress": "AIArmada\\Jnt\\Facades\\JntExpress",
                 "Stock": "AIArmada\\Stock\\Facades\\Stock",
                 "Voucher": "AIArmada\\Vouchers\\Facades\\Voucher"

@@ -24,7 +24,7 @@ return [
             ],
             'storage' => [
                 'disk' => env('DOCS_STORAGE_DISK', 'local'),
-                'path' => env('DOCS_STORAGE_PATH', 'documents/invoices'),
+                'path' => env('DOCS_STORAGE_PATH', 'docs/invoices'),
             ],
             'defaults' => [
                 'currency' => env('DOCS_CURRENCY', 'MYR'),
@@ -33,7 +33,7 @@ return [
             ],
         ],
         'receipt' => [
-            'default_template' => 'document-default',
+            'default_template' => 'doc-default',
             'number_format' => [
                 'prefix' => 'RCP',
                 'year_format' => 'y',
@@ -42,7 +42,7 @@ return [
             ],
             'storage' => [
                 'disk' => env('DOCS_STORAGE_DISK', 'local'),
-                'path' => env('DOCS_STORAGE_PATH', 'documents/receipts'),
+                'path' => env('DOCS_STORAGE_PATH', 'docs/receipts'),
             ],
             'defaults' => [
                 'currency' => env('DOCS_CURRENCY', 'MYR'),

@@ -10,7 +10,7 @@
         "aiarmada/chip": "@dev",
         "aiarmada/commerce": "@dev",
         "aiarmada/docs": "@dev",
-        "aiarmada/filament-cart": "^1.0",
+        "aiarmada/filament-cart": "@dev",
         "aiarmada/filament-chip": "@dev",
         "aiarmada/filament-vouchers": "@dev",
         "aiarmada/jnt": "@dev",

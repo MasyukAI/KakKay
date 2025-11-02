@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace AIArmada\Docs\Models;
 
-use AIArmada\Docs\Enums\DocumentStatus;
+use AIArmada\Docs\Enums\DocStatus;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,12 +13,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
- * @property string $document_number
- * @property string $document_type
- * @property string|null $document_template_id
- * @property string|null $documentable_type
- * @property string|null $documentable_id
- * @property DocumentStatus $status
+ * @property string $doc_number
+ * @property string $doc_type
+ * @property string|null $doc_template_id
+ * @property string|null $docable_type
+ * @property string|null $docable_id
+ * @property DocStatus $status
  * @property \Illuminate\Support\Carbon $issue_date
  * @property \Illuminate\Support\Carbon|null $due_date
  * @property \Illuminate\Support\Carbon|null $paid_at
@@ -37,17 +37,19 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon $updated_at
  */
-class Document extends Model
+class Doc extends Model
 {
     use HasFactory;
     use HasUuids;
 
+    protected $table = 'docs';
+
     protected $fillable = [
-        'document_number',
-        'document_type',
-        'document_template_id',
-        'documentable_type',
-        'documentable_id',
+        'doc_number',
+        'doc_type',
+        'doc_template_id',
+        'docable_type',
+        'docable_id',
         'status',
         'issue_date',
         'due_date',
@@ -67,7 +69,7 @@ class Document extends Model
     ];
 
     protected $casts = [
-        'status' => DocumentStatus::class,
+        'status' => DocStatus::class,
         'issue_date' => 'date',
         'due_date' => 'date',
         'paid_at' => 'datetime',
@@ -81,24 +83,24 @@ class Document extends Model
         'metadata' => 'array',
     ];
 
-    public function documentable(): MorphTo
+    public function docable(): MorphTo
     {
         return $this->morphTo();
     }
 
     public function template(): BelongsTo
     {
-        return $this->belongsTo(DocumentTemplate::class, 'document_template_id');
+        return $this->belongsTo(DocTemplate::class, 'doc_template_id');
     }
 
     public function statusHistories(): HasMany
     {
-        return $this->hasMany(DocumentStatusHistory::class);
+        return $this->hasMany(DocStatusHistory::class);
     }
 
     public function isOverdue(): bool
     {
-        if ($this->status === DocumentStatus::PAID || $this->status === DocumentStatus::CANCELLED) {
+        if ($this->status === DocStatus::PAID || $this->status === DocStatus::CANCELLED) {
             return false;
         }
 
@@ -107,7 +109,7 @@ class Document extends Model
 
     public function isPaid(): bool
     {
-        return $this->status === DocumentStatus::PAID;
+        return $this->status === DocStatus::PAID;
     }
 
     public function canBePaid(): bool
@@ -118,22 +120,22 @@ class Document extends Model
     public function markAsPaid(): void
     {
         $this->update([
-            'status' => DocumentStatus::PAID,
+            'status' => DocStatus::PAID,
             'paid_at' => now(),
         ]);
     }
 
     public function markAsSent(): void
     {
-        if ($this->status === DocumentStatus::DRAFT || $this->status === DocumentStatus::PENDING) {
-            $this->update(['status' => DocumentStatus::SENT]);
+        if ($this->status === DocStatus::DRAFT || $this->status === DocStatus::PENDING) {
+            $this->update(['status' => DocStatus::SENT]);
         }
     }
 
     public function cancel(): void
     {
-        if ($this->status !== DocumentStatus::PAID) {
-            $this->update(['status' => DocumentStatus::CANCELLED]);
+        if ($this->status !== DocStatus::PAID) {
+            $this->update(['status' => DocStatus::CANCELLED]);
         }
     }
 
@@ -142,8 +144,8 @@ class Document extends Model
      */
     public function updateStatus(): void
     {
-        if ($this->isOverdue() && $this->status !== DocumentStatus::OVERDUE) {
-            $this->update(['status' => DocumentStatus::OVERDUE]);
+        if ($this->isOverdue() && $this->status !== DocStatus::OVERDUE) {
+            $this->update(['status' => DocStatus::OVERDUE]);
         }
     }
 }

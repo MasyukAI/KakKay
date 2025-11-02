@@ -99,25 +99,25 @@ final class Order extends Model
     }
 
     /**
-     * Get invoices/documents for this order
+     * Get invoices/docs for this order
      *
-     * @return MorphMany<\AIArmada\Docs\Models\Document>
+     * @return MorphMany<\AIArmada\Docs\Models\Doc>
      */
     /** @phpstan-ignore-next-line */
-    public function documents(): MorphMany
+    public function docs(): MorphMany
     {
-        return $this->morphMany(\AIArmada\Docs\Models\Document::class, 'documentable');
+        return $this->morphMany(\AIArmada\Docs\Models\Doc::class, 'docable');
     }
 
     /**
      * Get invoices for this order
      *
-     * @return MorphMany<\AIArmada\Docs\Models\Document>
+     * @return MorphMany<\AIArmada\Docs\Models\Doc>
      */
     /** @phpstan-ignore-next-line */
     public function invoices(): MorphMany
     {
-        return $this->documents()->where('document_type', 'invoice');
+        return $this->docs()->where('doc_type', 'invoice');
     }
 
     /**

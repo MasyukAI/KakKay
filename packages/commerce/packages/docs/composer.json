@@ -1,6 +1,6 @@
 {
   "name": "aiarmada/docs",
-  "description": "Document generation package for Laravel with PDF support for invoices, receipts, shipping labels, and customizable templates",
+  "description": "Doc generation package for Laravel with PDF support for invoices, receipts, shipping labels, and customizable templates",
   "type": "library",
   "license": "MIT",
   "homepage": "https://github.com/aiarmada/commerce",
@@ -12,7 +12,7 @@
     "laravel",
     "invoice",
     "receipt",
-    "document",
+    "doc",
     "pdf",
     "spatie",
     "aiarmada"
@@ -46,6 +46,14 @@
     "psr-4": {
       "AIArmada\\Docs\\Tests\\": "tests/"
     }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "AIArmada\\Docs\\DocsServiceProvider"
+      ],
+      "aliases": {
+        "Doc": "AIArmada\\Docs\\Facades\\Doc"
       }
     }
   },
@@ -61,13 +69,5 @@
     }
   },
   "minimum-stability": "dev",
-  "prefer-stable": true
-}     ],
-      "aliases": {
-        "Document": "AIArmada\\Docs\\Facades\\Document"
-      }
-    }
-  },
-  "minimum-stability": "stable",
   "prefer-stable": true
 }

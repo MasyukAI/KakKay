@@ -5,17 +5,17 @@ declare(strict_types=1);
 return [
     /*
     |--------------------------------------------------------------------------
-    | Document Types Configuration
+    | Doc Types Configuration
     |--------------------------------------------------------------------------
     |
-    | Configuration for different document types supported by the package.
+    | Configuration for different doc types supported by the package.
     | Currently supports: invoices and receipts (more can be added).
     |
     */
 
     'types' => [
         'invoice' => [
-            'default_template' => 'document-default',
+            'default_template' => 'doc-default',
             'number_format' => [
                 'prefix' => 'INV',
                 'year_format' => 'y',
@@ -24,7 +24,7 @@ return [
             ],
             'storage' => [
                 'disk' => env('DOCS_STORAGE_DISK', 'local'),
-                'path' => env('DOCS_STORAGE_PATH', 'documents/invoices'),
+                'path' => env('DOCS_STORAGE_PATH', 'docs/invoices'),
             ],
             'defaults' => [
                 'currency' => env('DOCS_CURRENCY', 'MYR'),
@@ -33,7 +33,7 @@ return [
             ],
         ],
         'receipt' => [
-            'default_template' => 'document-default',
+            'default_template' => 'doc-default',
             'number_format' => [
                 'prefix' => 'RCP',
                 'year_format' => 'y',
@@ -42,14 +42,14 @@ return [
             ],
             'storage' => [
                 'disk' => env('DOCS_STORAGE_DISK', 'local'),
-                'path' => env('DOCS_STORAGE_PATH', 'documents/receipts'),
+                'path' => env('DOCS_STORAGE_PATH', 'docs/receipts'),
             ],
             'defaults' => [
                 'currency' => env('DOCS_CURRENCY', 'MYR'),
             ],
         ],
         'ticket' => [
-            'default_template' => 'document-default',
+            'default_template' => 'doc-default',
             'number_format' => [
                 'prefix' => 'TKT',
                 'year_format' => 'y',
@@ -58,7 +58,7 @@ return [
             ],
             'storage' => [
                 'disk' => env('DOCS_STORAGE_DISK', 'local'),
-                'path' => env('DOCS_STORAGE_PATH', 'documents/tickets'),
+                'path' => env('DOCS_STORAGE_PATH', 'docs/tickets'),
             ],
             'defaults' => [
                 'currency' => env('DOCS_CURRENCY', 'MYR'),
@@ -91,8 +91,8 @@ return [
     | Company Information
     |--------------------------------------------------------------------------
     |
-    | Default company information to display on documents. This can be
-    | overridden when creating a document.
+    | Default company information to display on docs. This can be
+    | overridden when creating a doc.
     |
     */
     'company' => [

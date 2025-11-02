@@ -4,26 +4,17 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7d8a74f433a2518c99670c63f42b518e",
+    "content-hash": "082e16276a3147fba350e6eec419a954",
     "packages": [
         {
             "name": "aiarmada/commerce",
-            "version": "1.0.0",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./packages/commerce",
-                "reference": "90cef1f857353a1613e61c172b6018844c092a31"
+                "reference": "cf68373bd1d7fc384b2a1260a2f3cca3725775ff"
             },
             "require": {
-                "aiarmada/cart": "@dev",
-                "aiarmada/chip": "@dev",
-                "aiarmada/commerce-support": "@dev",
-                "aiarmada/docs": "@dev",
-                "aiarmada/filament-cart": "@dev",
-                "aiarmada/filament-chip": "@dev",
-                "aiarmada/jnt": "@dev",
-                "aiarmada/stock": "@dev",
-                "aiarmada/vouchers": "@dev",
                 "php": "^8.4"
             },
             "replace": {
@@ -33,6 +24,7 @@
                 "aiarmada/docs": "self.version",
                 "aiarmada/filament-cart": "self.version",
                 "aiarmada/filament-chip": "self.version",
+                "aiarmada/filament-vouchers": "self.version",
                 "aiarmada/jnt": "self.version",
                 "aiarmada/stock": "self.version",
                 "aiarmada/vouchers": "self.version"
@@ -64,7 +56,7 @@
                     "aliases": {
                         "Cart": "AIArmada\\Cart\\Facades\\Cart",
                         "Chip": "AIArmada\\Chip\\Facades\\Chip",
-                        "Document": "AIArmada\\Docs\\Facades\\Document",
+                        "Doc": "AIArmada\\Docs\\Facades\\Doc",
                         "JntExpress": "AIArmada\\Jnt\\Facades\\JntExpress",
                         "Stock": "AIArmada\\Stock\\Facades\\Stock",
                         "Voucher": "AIArmada\\Vouchers\\Facades\\Voucher"
@@ -76,6 +68,7 @@
                         "AIArmada\\Docs\\DocsServiceProvider",
                         "AIArmada\\FilamentCart\\FilamentCartServiceProvider",
                         "AIArmada\\FilamentChip\\FilamentChipServiceProvider",
+                        "AIArmada\\FilamentVouchers\\FilamentVouchersServiceProvider",
                         "AIArmada\\Jnt\\JntServiceProvider",
                         "AIArmada\\Stock\\StockServiceProvider",
                         "AIArmada\\Vouchers\\VoucherServiceProvider"
@@ -92,6 +85,7 @@
                     "AIArmada\\FilamentCart\\Database\\Factories\\": "packages/filament-cart/database/factories/",
                     "AIArmada\\FilamentCart\\Database\\Seeders\\": "packages/filament-cart/database/seeders/",
                     "AIArmada\\FilamentChip\\": "packages/filament-chip/src",
+                    "AIArmada\\FilamentVouchers\\": "packages/filament-vouchers/src",
                     "AIArmada\\Jnt\\": "packages/jnt/src",
                     "AIArmada\\Stock\\": "packages/stock/src",
                     "AIArmada\\Vouchers\\": "packages/vouchers/src"
@@ -99,12 +93,16 @@
             },
             "autoload-dev": {
                 "psr-4": {
+                    "AIArmada\\Cart\\Tests\\": "packages/cart/tests/",
                     "AIArmada\\Chip\\Tests\\": "packages/chip/tests/",
                     "AIArmada\\Commerce\\Tests\\": "tests/src",
+                    "AIArmada\\Docs\\Tests\\": "packages/docs/tests/",
                     "AIArmada\\FilamentCart\\Tests\\": "packages/filament-cart/tests/",
                     "AIArmada\\FilamentChip\\Tests\\": "packages/filament-chip/tests/",
+                    "AIArmada\\FilamentVouchers\\Tests\\": "packages/filament-vouchers/tests/",
                     "AIArmada\\Jnt\\Tests\\": "packages/jnt/tests/",
-                    "Tests\\": "tests/"
+                    "AIArmada\\Stock\\Tests\\": "packages/stock/tests/",
+                    "AIArmada\\Vouchers\\Tests\\": "packages/vouchers/tests/"
                 }
             },
             "scripts": {
@@ -157,95 +155,32 @@
                     "email": "info@aiarmada.com"
                 }
             ],
-            "description": "A modern, feature-rich shopping cart package for Laravel 12",
+            "description": "A comprehensive commerce ecosystem for Laravel 12 with cart, payments, vouchers, shipping, and inventory management",
+            "homepage": "https://github.com/aiarmada/commerce",
             "keywords": [
-                "aiarmada",
                 "cart",
-                "e-commerce",
-                "laravel",
-                "laravel12",
-                "shopping-cart"
-            ],
-            "transport-options": {
-                "relative": true
-            }
-        },
-        {
-            "name": "aiarmada/filament-vouchers",
-            "version": "1.0.0",
-            "dist": {
-                "type": "path",
-                "url": "./packages/commerce/packages/filament-vouchers",
-                "reference": "b153cc2732f65cb53dda4de6926957fed524d28a"
-            },
-            "require": {
-                "aiarmada/commerce": "self.version",
-                "aiarmada/commerce-support": "self.version",
-                "aiarmada/vouchers": "self.version",
-                "filament/filament": "^4.0"
-            },
-            "require-dev": {
-                "driftingly/rector-laravel": "^2.0",
-                "larastan/larastan": "^3.0",
-                "laravel/framework": "^12.0",
-                "laravel/pint": "^1.18",
-                "livewire/livewire": "^3.0",
-                "orchestra/testbench": "^10.0",
-                "pestphp/pest": "^4.0",
-                "pestphp/pest-plugin-browser": "^4.0",
-                "pestphp/pest-plugin-laravel": "^4.0",
-                "pestphp/pest-plugin-type-coverage": "^4.0"
-            },
-            "suggest": {
-                "aiarmada/filament-cart": "Enables deep linking from voucher usage records to cart snapshots"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "AIArmada\\FilamentVouchers\\FilamentVouchersServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "AIArmada\\FilamentVouchers\\": "src/",
-                    "AIArmada\\FilamentVouchers\\Database\\Factories\\": "database/factories/",
-                    "AIArmada\\FilamentVouchers\\Database\\Seeders\\": "database/seeders/"
-                }
-            },
-            "autoload-dev": {
-                "psr-4": {
-                    "AIArmada\\FilamentVouchers\\Tests\\": "tests/"
-                }
-            },
-            "scripts": {
-                "test": [
-                    "vendor/bin/pest"
-                ],
-                "format": [
-                    "vendor/bin/pint"
-                ]
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "AIArmada",
-                    "email": "info@aiarmada.com"
-                }
-            ],
-            "description": "A Filament v4 plugin for administering vouchers provided by the AIArmada vouchers package",
-            "keywords": [
-                "aiarmada",
-                "discount",
+                "chip",
+                "commerce",
+                "documents",
                 "e-commerce",
                 "filament",
+                "filament-plugin",
+                "inventory",
+                "jnt",
                 "laravel",
-                "plugin",
-                "voucher"
+                "laravel-12",
+                "livewire",
+                "payment-gateway",
+                "shipping",
+                "shopping-cart",
+                "stock-management",
+                "vouchers"
             ],
+            "support": {
+                "issues": "https://github.com/aiarmada/commerce/issues",
+                "source": "https://github.com/aiarmada/commerce",
+                "docs": "https://github.com/aiarmada/commerce/blob/main/README.md"
+            },
             "transport-options": {
                 "relative": true
             }
@@ -1349,29 +1284,28 @@
         },
         {
             "name": "dragonmantank/cron-expression",
-            "version": "v3.4.0",
+            "version": "v3.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dragonmantank/cron-expression.git",
-                "reference": "8c784d071debd117328803d86b2097615b457500"
+                "reference": "d61a8a9604ec1f8c3d150d09db6ce98b32675013"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dragonmantank/cron-expression/zipball/8c784d071debd117328803d86b2097615b457500",
-                "reference": "8c784d071debd117328803d86b2097615b457500",
+                "url": "https://api.github.com/repos/dragonmantank/cron-expression/zipball/d61a8a9604ec1f8c3d150d09db6ce98b32675013",
+                "reference": "d61a8a9604ec1f8c3d150d09db6ce98b32675013",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.2|^8.0",
-                "webmozart/assert": "^1.0"
+                "php": "^8.2|^8.3|^8.4|^8.5"
             },
             "replace": {
                 "mtdowling/cron-expression": "^1.0"
             },
             "require-dev": {
-                "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "^1.0",
-                "phpunit/phpunit": "^7.0|^8.0|^9.0"
+                "phpstan/extension-installer": "^1.4.3",
+                "phpstan/phpstan": "^1.12.32|^2.1.31",
+                "phpunit/phpunit": "^8.5.48|^9.0"
             },
             "type": "library",
             "extra": {
@@ -1402,7 +1336,7 @@
             ],
             "support": {
                 "issues": "https://github.com/dragonmantank/cron-expression/issues",
-                "source": "https://github.com/dragonmantank/cron-expression/tree/v3.4.0"
+                "source": "https://github.com/dragonmantank/cron-expression/tree/v3.6.0"
             },
             "funding": [
                 {
@@ -1410,7 +1344,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-10-09T13:47:03+00:00"
+            "time": "2025-10-31T18:51:33+00:00"
         },
         {
             "name": "egulias/email-validator",
@@ -9842,64 +9776,6 @@
             "time": "2024-11-21T01:49:47+00:00"
         },
         {
-            "name": "webmozart/assert",
-            "version": "1.12.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/webmozarts/assert.git",
-                "reference": "9be6926d8b485f55b9229203f962b51ed377ba68"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/webmozarts/assert/zipball/9be6926d8b485f55b9229203f962b51ed377ba68",
-                "reference": "9be6926d8b485f55b9229203f962b51ed377ba68",
-                "shasum": ""
-            },
-            "require": {
-                "ext-ctype": "*",
-                "ext-date": "*",
-                "ext-filter": "*",
-                "php": "^7.2 || ^8.0"
-            },
-            "suggest": {
-                "ext-intl": "",
-                "ext-simplexml": "",
-                "ext-spl": ""
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.10-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Webmozart\\Assert\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Bernhard Schussek",
-                    "email": "bschussek@gmail.com"
-                }
-            ],
-            "description": "Assertions to validate method input/output with nice error messages.",
-            "keywords": [
-                "assert",
-                "check",
-                "validate"
-            ],
-            "support": {
-                "issues": "https://github.com/webmozarts/assert/issues",
-                "source": "https://github.com/webmozarts/assert/tree/1.12.1"
-            },
-            "time": "2025-10-29T15:56:20+00:00"
-        },
-        {
             "name": "ysfkaya/filament-phone-input",
             "version": "v4.0.0",
             "source": {
@@ -10108,21 +9984,21 @@
         },
         {
             "name": "driftingly/rector-laravel",
-            "version": "2.1.1",
+            "version": "2.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/driftingly/rector-laravel.git",
-                "reference": "abc336cbf06f53d90ab74cecfd319379fc55d408"
+                "reference": "d7cd932cff9e398a43393f1a1a63b27d574e35ef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/driftingly/rector-laravel/zipball/abc336cbf06f53d90ab74cecfd319379fc55d408",
-                "reference": "abc336cbf06f53d90ab74cecfd319379fc55d408",
+                "url": "https://api.github.com/repos/driftingly/rector-laravel/zipball/d7cd932cff9e398a43393f1a1a63b27d574e35ef",
+                "reference": "d7cd932cff9e398a43393f1a1a63b27d574e35ef",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.4 || ^8.0",
-                "rector/rector": "^2.0"
+                "rector/rector": "^2.2.7"
             },
             "type": "rector-extension",
             "autoload": {
@@ -10137,9 +10013,9 @@
             "description": "Rector upgrades rules for Laravel Framework",
             "support": {
                 "issues": "https://github.com/driftingly/rector-laravel/issues",
-                "source": "https://github.com/driftingly/rector-laravel/tree/2.1.1"
+                "source": "https://github.com/driftingly/rector-laravel/tree/2.1.2"
             },
-            "time": "2025-10-23T13:53:44+00:00"
+            "time": "2025-10-31T21:56:58+00:00"
         },
         {
             "name": "fidry/cpu-core-counter",
@@ -13925,6 +13801,64 @@
                 }
             ],
             "time": "2024-03-03T12:36:25+00:00"
+        },
+        {
+            "name": "webmozart/assert",
+            "version": "1.12.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/webmozarts/assert.git",
+                "reference": "9be6926d8b485f55b9229203f962b51ed377ba68"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/webmozarts/assert/zipball/9be6926d8b485f55b9229203f962b51ed377ba68",
+                "reference": "9be6926d8b485f55b9229203f962b51ed377ba68",
+                "shasum": ""
+            },
+            "require": {
+                "ext-ctype": "*",
+                "ext-date": "*",
+                "ext-filter": "*",
+                "php": "^7.2 || ^8.0"
+            },
+            "suggest": {
+                "ext-intl": "",
+                "ext-simplexml": "",
+                "ext-spl": ""
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.10-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Webmozart\\Assert\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Bernhard Schussek",
+                    "email": "bschussek@gmail.com"
+                }
+            ],
+            "description": "Assertions to validate method input/output with nice error messages.",
+            "keywords": [
+                "assert",
+                "check",
+                "validate"
+            ],
+            "support": {
+                "issues": "https://github.com/webmozarts/assert/issues",
+                "source": "https://github.com/webmozarts/assert/tree/1.12.1"
+            },
+            "time": "2025-10-29T15:56:20+00:00"
         }
     ],
     "aliases": [],
@@ -13933,6 +13867,7 @@
         "aiarmada/chip": 20,
         "aiarmada/commerce": 20,
         "aiarmada/docs": 20,
+        "aiarmada/filament-cart": 20,
         "aiarmada/filament-chip": 20,
         "aiarmada/filament-vouchers": 20,
         "aiarmada/jnt": 20

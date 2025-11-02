@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace AIArmada\Docs\Enums;
 
-enum DocumentStatus: string
+enum DocStatus: string
 {
     case DRAFT = 'draft';
     case PENDING = 'pending';

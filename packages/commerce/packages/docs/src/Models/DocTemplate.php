@@ -15,23 +15,25 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $slug
  * @property string|null $description
  * @property string $view_name
- * @property string $document_type
+ * @property string $doc_type
  * @property bool $is_default
  * @property array<string, mixed>|null $settings
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon $updated_at
  */
-class DocumentTemplate extends Model
+class DocTemplate extends Model
 {
     use HasFactory;
     use HasUuids;
+
+    protected $table = 'doc_templates';
 
     protected $fillable = [
         'name',
         'slug',
         'description',
         'view_name',
-        'document_type',
+        'doc_type',
         'is_default',
         'settings',
     ];
@@ -41,9 +43,9 @@ class DocumentTemplate extends Model
         'settings' => 'array',
     ];
 
-    public function documents(): HasMany
+    public function docs(): HasMany
     {
-        return $this->hasMany(Document::class);
+        return $this->hasMany(Doc::class);
     }
 
     /**
@@ -53,7 +55,7 @@ class DocumentTemplate extends Model
     {
         // Remove default from all other templates of the same type
         static::where('id', '!=', $this->id)
-            ->where('document_type', $this->document_type)
+            ->where('doc_type', $this->doc_type)
             ->update(['is_default' => false]);
 
         // Set this as default
@@ -63,15 +65,15 @@ class DocumentTemplate extends Model
     /**
      * Scope to get default template
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<DocumentTemplate>  $query
+     * @param  \Illuminate\Database\Eloquent\Builder<DocTemplate>  $query
      */
     #[\Illuminate\Database\Eloquent\Attributes\Scope]
-    protected function default($query, ?string $documentType = null): ?self
+    protected function default($query, ?string $docType = null): ?self
     {
         $query = $query->where('is_default', true);
 
-        if ($documentType) {
-            $query->where('document_type', $documentType);
+        if ($docType) {
+            $query->where('doc_type', $docType);
         }
 
         return $query->first();

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace AIArmada\Docs\DataObjects;
 
-use AIArmada\Docs\Enums\DocumentStatus;
+use AIArmada\Docs\Enums\DocStatus;
 use DateTimeInterface;
 
-class DocumentData
+class DocData
 {
     /**
      * @param  array<int, array<string, mixed>>  $items
@@ -16,13 +16,13 @@ class DocumentData
      * @param  array<string, mixed>|null  $metadata
      */
     public function __construct(
-        public readonly ?string $documentNumber = null,
-        public readonly ?string $documentType = null,
-        public readonly ?string $templateId = null,
+        public readonly ?string $docNumber = null,
+        public readonly ?string $docType = null,
+        public readonly ?string $docTemplateId = null,
         public readonly ?string $templateSlug = null,
-        public readonly ?string $documentableType = null,
-        public readonly ?string $documentableId = null,
-        public readonly ?DocumentStatus $status = null,
+        public readonly ?string $docableType = null,
+        public readonly ?string $docableId = null,
+        public readonly ?DocStatus $status = null,
         public readonly ?DateTimeInterface $issueDate = null,
         public readonly ?DateTimeInterface $dueDate = null,
         public readonly array $items = [],
@@ -44,13 +44,13 @@ class DocumentData
     public static function from(array $data): self
     {
         return new self(
-            documentNumber: $data['document_number'] ?? $data['invoice_number'] ?? null,
-            documentType: $data['document_type'] ?? 'invoice',
-            templateId: $data['template_id'] ?? null,
+            docNumber: $data['doc_number'] ?? $data['document_number'] ?? $data['invoice_number'] ?? null,
+            docType: $data['doc_type'] ?? $data['document_type'] ?? 'invoice',
+            docTemplateId: $data['doc_template_id'] ?? $data['template_id'] ?? null,
             templateSlug: $data['template_slug'] ?? null,
-            documentableType: $data['documentable_type'] ?? $data['invoiceable_type'] ?? null,
-            documentableId: $data['documentable_id'] ?? $data['invoiceable_id'] ?? null,
-            status: isset($data['status']) ? (is_string($data['status']) ? DocumentStatus::from($data['status']) : $data['status']) : null,
+            docableType: $data['docable_type'] ?? $data['documentable_type'] ?? $data['invoiceable_type'] ?? null,
+            docableId: $data['docable_id'] ?? $data['documentable_id'] ?? $data['invoiceable_id'] ?? null,
+            status: isset($data['status']) ? (is_string($data['status']) ? DocStatus::from($data['status']) : $data['status']) : null,
             issueDate: $data['issue_date'] ?? null,
             dueDate: $data['due_date'] ?? null,
             items: $data['items'] ?? [],

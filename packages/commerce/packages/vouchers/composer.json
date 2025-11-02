@@ -49,6 +49,7 @@
     "laravel/pint": "^1.18",
     "phpunit/phpunit": "^12.3",
     "larastan/larastan": "^3.0"
+  },
   "autoload": {
     "psr-4": {
       "AIArmada\\Vouchers\\": "src/"
@@ -65,7 +66,6 @@
     "analyse": "vendor/bin/phpstan analyse"
   },
   "extra": {
-  "extra": {
     "laravel": {
       "providers": [
         "AIArmada\\Vouchers\\VoucherServiceProvider"
@@ -75,12 +75,12 @@
       }
     }
   },
-  "minimum-stability": "dev",
-  "prefer-stable": true,
   "config": {
     "sort-packages": true,
     "allow-plugins": {
       "pestphp/pest-plugin": true
     }
-  }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }

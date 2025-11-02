@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Orders\Tables;
 
-use AIArmada\Docs\DataObjects\DocumentData;
-use AIArmada\Docs\Enums\DocumentStatus;
-use AIArmada\Docs\Facades\Document;
+use AIArmada\Docs\DataObjects\DocData;
+use AIArmada\Docs\Enums\DocStatus;
+use AIArmada\Docs\Facades\Doc;
 use Akaunting\Money\Money;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -76,19 +76,19 @@ final class OrdersTable
                     ->color('primary')
                     ->action(function ($record) {
                         // Check if invoice already exists for this order
-                        $existingDocument = \AIArmada\Docs\Models\Document::query()
-                            ->where('documentable_type', \App\Models\Order::class)
-                            ->where('documentable_id', $record->id)
-                            ->where('document_type', 'invoice')
+                        $existingDoc = \AIArmada\Docs\Models\Doc::query()
+                            ->where('docable_type', \App\Models\Order::class)
+                            ->where('docable_id', $record->id)
+                            ->where('doc_type', 'invoice')
                             ->first();
 
-                        if ($existingDocument) {
+                        if ($existingDoc) {
                             // Generate PDF on-the-fly
-                            $pdfContent = Document::generatePdf($existingDocument, false);
+                            $pdfContent = Doc::generatePdf($existingDoc, false);
 
                             return Response::streamDownload(
                                 fn () => print ($pdfContent),
-                                "invoice-{$existingDocument->document_number}.pdf",
+                                "invoice-{$existingDoc->doc_number}.pdf",
                                 ['Content-Type' => 'application/pdf']
                             );
                         }
@@ -131,11 +131,11 @@ final class OrdersTable
                             $customerData['phone'] = $record->address->phone;
                         }
 
-                        $documentData = DocumentData::from([
-                            'document_type' => 'invoice',
-                            'documentable_type' => \App\Models\Order::class,
-                            'documentable_id' => $record->id,
-                            'status' => DocumentStatus::PAID,
+                        $docData = DocData::from([
+                            'doc_type' => 'invoice',
+                            'docable_type' => \App\Models\Order::class,
+                            'docable_id' => $record->id,
+                            'status' => DocStatus::PAID,
                             'issue_date' => $record->created_at,
                             'due_date' => $record->created_at,
                             'currency' => 'MYR',
@@ -145,20 +145,20 @@ final class OrdersTable
                             'generate_pdf' => false,
                         ]);
 
-                        $document = Document::createDocument($documentData);
+                        $doc = Doc::createDocument($docData);
 
                         // Generate PDF on-the-fly
-                        $pdfContent = Document::generatePdf($document, false);
+                        $pdfContent = Doc::generatePdf($doc, false);
 
                         Notification::make()
                             ->success()
                             ->title('Invoice Generated')
-                            ->body("Invoice {$document->document_number} has been generated.")
+                            ->body("Invoice {$doc->doc_number} has been generated.")
                             ->send();
 
                         return Response::streamDownload(
                             fn () => print ($pdfContent),
-                            "invoice-{$document->document_number}.pdf",
+                            "invoice-{$doc->doc_number}.pdf",
                             ['Content-Type' => 'application/pdf']
                         );
                     })

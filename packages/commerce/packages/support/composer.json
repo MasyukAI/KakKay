@@ -47,6 +47,9 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "AIArmada\\CommerceSupport\\Tests\\": "tests/"
+        }
+    },
     "extra": {
         "laravel": {
             "providers": [
@@ -64,9 +67,6 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true
         }
-    },
-    "config": {
-        "sort-packages": true
     },
     "minimum-stability": "dev",
     "prefer-stable": true

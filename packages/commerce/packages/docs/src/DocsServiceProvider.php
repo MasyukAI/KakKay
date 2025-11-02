@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace AIArmada\Docs;
 
-use AIArmada\Docs\Services\DocumentService;
-use AIArmada\Docs\Services\ReceiptService;
+use AIArmada\Docs\Services\DocService;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -23,13 +22,9 @@ final class DocsServiceProvider extends PackageServiceProvider
 
     public function packageRegistered(): void
     {
-        // Register Document Service
-        $this->app->singleton(DocumentService::class);
-        $this->app->alias(DocumentService::class, 'document');
-
-        // Register Receipt Service (placeholder for future implementation)
-        // $this->app->singleton(ReceiptService::class);
-        // $this->app->alias(ReceiptService::class, 'receipt');
+        // Register Doc Service
+        $this->app->singleton(DocService::class);
+        $this->app->alias(DocService::class, 'doc');
     }
 
     /**
@@ -38,10 +33,8 @@ final class DocsServiceProvider extends PackageServiceProvider
     public function provides(): array
     {
         return [
-            DocumentService::class,
-            'document',
-            // ReceiptService::class,
-            // 'receipt',
+            DocService::class,
+            'doc',
         ];
     }
 }
