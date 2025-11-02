@@ -22,7 +22,12 @@ final class CartItemResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShoppingBag;
 
-    protected static string|UnitEnum|null $navigationGroup = 'E-commerce';
+    protected static string|UnitEnum|null $navigationGroup = null;
+
+    public static function getNavigationGroup(): string|UnitEnum|null
+    {
+        return config('filament-cart.navigation_group');
+    }
 
     protected static ?string $recordTitleAttribute = 'name';
 
