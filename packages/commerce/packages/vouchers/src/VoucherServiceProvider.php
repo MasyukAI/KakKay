@@ -93,15 +93,24 @@ final class VoucherServiceProvider extends PackageServiceProvider
 
         // Bind facade accessor
         $this->app->alias(VoucherService::class, 'voucher');
-        CartFacade::resolved(function (CartManager $manager, $app): void {
+    }
+
+    public function packageBooted(): void
+    {
+        $this->app->extend('cart', function (CartManager $manager, $app): CartManager {
             if ($manager instanceof CartManagerWithVouchers) {
-                return;
+                return $manager;
             }
 
             $proxy = CartManagerWithVouchers::fromCartManager($manager);
 
-            $app->instance('cart', $proxy);
+            // Ensure type-hinting resolution returns the proxied manager
             $app->instance(CartManager::class, $proxy);
+
+            // Clear cached facade instance so the proxy is used
+            CartFacade::clearResolvedInstance('cart');
+
+            return $proxy;
         });
     }
 

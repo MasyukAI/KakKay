@@ -193,6 +193,16 @@ final class PurchasesApi extends CollectApi
             'platform' => config('chip.defaults.platform', 'api'),
         ];
 
+        if (! empty($options['purchase_overrides']) && is_array($options['purchase_overrides'])) {
+            $data['purchase'] = array_merge(
+                $data['purchase'],
+                array_filter(
+                    $options['purchase_overrides'],
+                    static fn ($value) => $value !== null
+                )
+            );
+        }
+
         // Only add reference if it's not null/empty
         if (! empty($options['reference'])) {
             $data['reference'] = $options['reference'];

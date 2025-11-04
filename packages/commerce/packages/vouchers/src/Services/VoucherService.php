@@ -119,7 +119,7 @@ class VoucherService
             && $voucher->hasUsageLimitRemaining();
     }
 
-    public function canBeUsedBy(string $code, string $userIdentifier): bool
+    public function canBeUsedBy(string $code, ?Model $user = null): bool
     {
         $voucher = $this->query()
             ->where('code', $this->normalizeCode($code))
@@ -129,12 +129,13 @@ class VoucherService
             return false;
         }
 
-        if (! $voucher->usage_limit_per_user) {
+        if (! $voucher->usage_limit_per_user || ! $user) {
             return true;
         }
 
         $usageCount = VoucherUsage::where('voucher_id', $voucher->id)
-            ->where('user_identifier', $userIdentifier)
+            ->where('redeemed_by_type', $user->getMorphClass())
+            ->where('redeemed_by_id', $user->getKey())
             ->count();
 
         return $usageCount < $voucher->usage_limit_per_user;
@@ -158,11 +159,8 @@ class VoucherService
      */
     public function recordUsage(
         string $code,
-        string $userIdentifier,
         Money $discountAmount,
-        ?string $cartIdentifier = null,
-        ?array $cartSnapshot = null,
-        string $channel = VoucherUsage::CHANNEL_AUTOMATIC,
+        ?string $channel = null,
         ?array $metadata = null,
         ?Model $redeemedBy = null,
         ?string $notes = null,
@@ -174,10 +172,7 @@ class VoucherService
 
         DB::transaction(function () use (
             $voucher,
-            $userIdentifier,
             $discountAmount,
-            $cartIdentifier,
-            $cartSnapshot,
             $channel,
             $metadata,
             $redeemedBy,
@@ -185,11 +180,8 @@ class VoucherService
         ): void {
             $payload = [
                 'voucher_id' => $voucher->id,
-                'user_identifier' => $userIdentifier,
-                'cart_identifier' => $cartIdentifier,
-                'discount_amount' => $discountAmount->getValue(),
+                'discount_amount' => $discountAmount->getAmount(),
                 'currency' => $discountAmount->getCurrency()->getCurrency(),
-                'cart_snapshot' => config('vouchers.tracking.store_cart_snapshot') ? $cartSnapshot : null,
                 'channel' => $channel,
                 'metadata' => $metadata,
                 'notes' => $notes,
@@ -209,7 +201,6 @@ class VoucherService
 
     public function redeemManually(
         string $code,
-        string $userIdentifier,
         Money $discountAmount,
         ?string $reference = null,
         ?array $metadata = null,
@@ -232,12 +223,9 @@ class VoucherService
 
         $this->recordUsage(
             code: $code,
-            userIdentifier: $userIdentifier,
             discountAmount: $discountAmount,
-            cartIdentifier: $reference,
-            cartSnapshot: null,
             channel: $channel,
-            metadata: $metadata,
+            metadata: array_merge($metadata ?? [], ['reference' => $reference]),
             redeemedBy: $redeemedBy,
             notes: $notes,
             voucherModel: $voucher

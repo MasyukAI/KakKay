@@ -62,15 +62,18 @@ class VoucherValidator
 
         // Check per-user usage limit
         if (config('vouchers.validation.check_user_limit', true) && $voucher->usage_limit_per_user) {
-            $userIdentifier = $this->getUserIdentifier();
-            $usageCount = VoucherUsage::where('voucher_id', $voucher->id)
-                ->where('user_identifier', $userIdentifier)
-                ->count();
+            $user = $this->getUser();
+            if ($user) {
+                $usageCount = VoucherUsage::where('voucher_id', $voucher->id)
+                    ->where('redeemed_by_type', $user->getMorphClass())
+                    ->where('redeemed_by_id', $user->getKey())
+                    ->count();
 
-            if ($usageCount >= $voucher->usage_limit_per_user) {
-                return VoucherValidationResult::invalid(
-                    'You have already used this voucher the maximum number of times.'
-                );
+                if ($usageCount >= $voucher->usage_limit_per_user) {
+                    return VoucherValidationResult::invalid(
+                        'You have already used this voucher the maximum number of times.'
+                    );
+                }
             }
         }
 
@@ -104,6 +107,13 @@ class VoucherValidator
         }
 
         return $this->ownerResolver->resolve();
+    }
+
+    protected function getUser(): ?Model
+    {
+        $user = Auth::user();
+
+        return $user instanceof Model ? $user : null;
     }
 
     protected function getUserIdentifier(): string

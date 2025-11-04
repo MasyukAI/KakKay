@@ -57,9 +57,14 @@ trait HasVouchers
         $currentVoucherCount = count($this->getAppliedVouchers());
 
         if ($currentVoucherCount >= $maxVouchers && $maxVouchers > 0) {
-            throw new InvalidVoucherException(
-                "Cart already has the maximum number of vouchers ({$maxVouchers})"
-            );
+            // If max is 1 and cart has vouchers, remove them to allow replacement
+            if ($maxVouchers === 1 && $currentVoucherCount > 0) {
+                $this->clearVouchers();
+            } else {
+                throw new InvalidVoucherException(
+                    "Cart already has the maximum number of vouchers ({$maxVouchers})"
+                );
+            }
         }
 
         $voucherData = Voucher::find($code);
@@ -204,7 +209,7 @@ trait HasVouchers
         $discount = 0.0;
         $cart = $this->getUnderlyingCart();
         $subtotalMoney = $cart->subtotal();
-        $baseValue = (float) $subtotalMoney->getValue();
+        $baseValue = (float) $subtotalMoney->getAmount();
 
         foreach ($this->getAppliedVouchers() as $voucher) {
             $discountAmount = abs($voucher->getCalculatedValue($baseValue));

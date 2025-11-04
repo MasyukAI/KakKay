@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace AIArmada\Vouchers\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class VoucherUsage extends Model
 {
+    use HasUuids;
     public const CHANNEL_AUTOMATIC = 'automatic';
     public const CHANNEL_MANUAL = 'manual';
     public const CHANNEL_API = 'api';
@@ -18,11 +20,8 @@ class VoucherUsage extends Model
 
     protected $fillable = [
         'voucher_id',
-        'user_identifier',
-        'cart_identifier',
         'discount_amount',
         'currency',
-        'cart_snapshot',
         'channel',
         'notes',
         'metadata',
@@ -55,7 +54,6 @@ class VoucherUsage extends Model
     {
         return [
             'discount_amount' => 'integer', // Stored as cents
-            'cart_snapshot' => 'array',
             'metadata' => 'array',
             'used_at' => 'datetime',
         ];

@@ -475,13 +475,13 @@ class VoucherCondition implements Arrayable, CartConditionConvertible
     /**
      * Format the voucher value for cart condition system.
      *
-     * @return string The formatted value (e.g., '-10%', '-50', '+0')
+     * @return string The formatted value (e.g., '-10%', '-2000', '+0')
      */
     private function formatVoucherValue(VoucherData $voucher): string
     {
         return match ($voucher->type) {
             VoucherType::Percentage => "-{$voucher->value}%",
-            VoucherType::Fixed => "-{$voucher->value}",
+            VoucherType::Fixed => "-{$voucher->value}", // Value is already in cents
             VoucherType::FreeShipping => '+0', // Free shipping is handled separately
         };
     }

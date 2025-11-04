@@ -1,14 +1,8 @@
 {
     "name": "aiarmada/commerce",
-    "type": "library",
     "description": "A comprehensive commerce ecosystem for Laravel 12 with cart, payments, vouchers, shipping, and inventory management",
     "license": "MIT",
-    "homepage": "https://github.com/aiarmada/commerce",
-    "support": {
-        "issues": "https://github.com/aiarmada/commerce/issues",
-        "source": "https://github.com/aiarmada/commerce",
-        "docs": "https://github.com/aiarmada/commerce/blob/main/README.md"
-    },
+    "type": "library",
     "keywords": [
         "laravel",
         "laravel-12",
@@ -34,29 +28,34 @@
             "email": "info@aiarmada.com"
         }
     ],
-    "replace": {
-        "aiarmada/commerce-support": "self.version",
-        "aiarmada/cart": "self.version",
-        "aiarmada/chip": "self.version",
-        "aiarmada/docs": "self.version",
-        "aiarmada/filament-cart": "self.version",
-        "aiarmada/filament-chip": "self.version",
-        "aiarmada/filament-vouchers": "self.version",
-        "aiarmada/jnt": "self.version",
-        "aiarmada/stock": "self.version",
-        "aiarmada/vouchers": "self.version"
+    "homepage": "https://github.com/aiarmada/commerce",
+    "support": {
+        "issues": "https://github.com/aiarmada/commerce/issues",
+        "source": "https://github.com/aiarmada/commerce",
+        "docs": "https://github.com/aiarmada/commerce/blob/main/README.md"
     },
     "require": {
-        "php": "^8.4"
+        "php": "^8.4",
+        "ext-curl": "*",
+        "ext-json": "*",
+        "akaunting/laravel-money": "^6.0",
+        "filament/filament": "^4.0",
+        "guzzlehttp/guzzle": "^7.0",
+        "illuminate/contracts": "^12.0",
+        "illuminate/database": "^12.0",
+        "illuminate/http": "^12.0",
+        "illuminate/queue": "^12.0",
+        "illuminate/support": "^12.0",
+        "illuminate/validation": "^12.0",
+        "laravel/framework": "^12.0",
+        "livewire/livewire": "^3.0",
+        "spatie/laravel-package-tools": "^1.92",
+        "spatie/laravel-pdf": "^1.5"
     },
     "require-dev": {
-        "akaunting/laravel-money": "^6.0",
         "driftingly/rector-laravel": "^2.0",
-        "filament/filament": "^4.0",
         "larastan/larastan": "^3.0",
-        "laravel/framework": "^12.0",
         "laravel/pint": "^1.18",
-        "livewire/livewire": "^3.0",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
         "orchestra/testbench": "^10.0",
@@ -70,13 +69,50 @@
         "rector/rector": "^2.2",
         "symplify/monorepo-builder": "^11.0"
     },
+    "replace": {
+        "aiarmada/cart": "self.version",
+        "aiarmada/chip": "self.version",
+        "aiarmada/commerce-support": "self.version",
+        "aiarmada/docs": "self.version",
+        "aiarmada/filament-cart": "self.version",
+        "aiarmada/filament-chip": "self.version",
+        "aiarmada/filament-vouchers": "self.version",
+        "aiarmada/jnt": "self.version",
+        "aiarmada/stock": "self.version",
+        "aiarmada/vouchers": "self.version"
+    },
     "repositories": [
+        {
+            "type": "path",
+            "url": "cart"
+        },
         {
             "options": {
                 "symlink": true
             },
             "type": "path",
-            "url": "./packages/support"
+            "url": "docs"
+        },
+        {
+            "options": {
+                "symlink": true
+            },
+            "type": "path",
+            "url": "filament-cart"
+        },
+        {
+            "options": {
+                "symlink": true
+            },
+            "type": "path",
+            "url": "stock"
+        },
+        {
+            "options": {
+                "symlink": true
+            },
+            "type": "path",
+            "url": "vouchers"
         },
         {
             "options": {
@@ -118,6 +154,13 @@
                 "symlink": true
             },
             "type": "path",
+            "url": "./packages/filament-vouchers"
+        },
+        {
+            "options": {
+                "symlink": true
+            },
+            "type": "path",
             "url": "./packages/jnt"
         },
         {
@@ -132,38 +175,44 @@
                 "symlink": true
             },
             "type": "path",
-            "url": "./packages/vouchers"
+            "url": "./packages/support"
         },
         {
             "options": {
                 "symlink": true
             },
             "type": "path",
-            "url": "./packages/filament-vouchers"
+            "url": "./packages/vouchers"
         }
     ],
     "minimum-stability": "dev",
     "prefer-stable": true,
     "autoload": {
         "psr-4": {
-            "AIArmada\\CommerceSupport\\": "packages/support/src",
             "AIArmada\\Cart\\": "packages/cart/src",
             "AIArmada\\Chip\\": "packages/chip/src",
+            "AIArmada\\CommerceSupport\\": "packages/support/src",
             "AIArmada\\Docs\\": "packages/docs/src",
             "AIArmada\\FilamentCart\\": "packages/filament-cart/src",
             "AIArmada\\FilamentCart\\Database\\Factories\\": "packages/filament-cart/database/factories/",
             "AIArmada\\FilamentCart\\Database\\Seeders\\": "packages/filament-cart/database/seeders/",
             "AIArmada\\FilamentChip\\": "packages/filament-chip/src",
             "AIArmada\\FilamentVouchers\\": "packages/filament-vouchers/src",
+            "AIArmada\\FilamentVouchers\\Database\\Factories\\": "packages/filament-vouchers/database/factories/",
+            "AIArmada\\FilamentVouchers\\Database\\Seeders\\": "packages/filament-vouchers/database/seeders/",
             "AIArmada\\Jnt\\": "packages/jnt/src",
             "AIArmada\\Stock\\": "packages/stock/src",
             "AIArmada\\Vouchers\\": "packages/vouchers/src"
-        }
+        },
+        "files": [
+            "packages/support/src/helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
             "AIArmada\\Cart\\Tests\\": "packages/cart/tests/",
             "AIArmada\\Chip\\Tests\\": "packages/chip/tests/",
+            "AIArmada\\CommerceSupport\\Tests\\": "packages/support/tests/",
             "AIArmada\\Commerce\\Tests\\": "tests/src",
             "AIArmada\\Docs\\Tests\\": "packages/docs/tests/",
             "AIArmada\\FilamentCart\\Tests\\": "packages/filament-cart/tests/",
@@ -171,7 +220,15 @@
             "AIArmada\\FilamentVouchers\\Tests\\": "packages/filament-vouchers/tests/",
             "AIArmada\\Jnt\\Tests\\": "packages/jnt/tests/",
             "AIArmada\\Stock\\Tests\\": "packages/stock/tests/",
-            "AIArmada\\Vouchers\\Tests\\": "packages/vouchers/tests/"
+            "AIArmada\\Vouchers\\Tests\\": "packages/vouchers/tests/",
+            "Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "phpstan/extension-installer": true
         }
     },
     "extra": {
@@ -185,9 +242,9 @@
                 "Voucher": "AIArmada\\Vouchers\\Facades\\Voucher"
             },
             "providers": [
-                "AIArmada\\CommerceSupport\\SupportServiceProvider",
                 "AIArmada\\Cart\\CartServiceProvider",
                 "AIArmada\\Chip\\ChipServiceProvider",
+                "AIArmada\\CommerceSupport\\SupportServiceProvider",
                 "AIArmada\\Docs\\DocsServiceProvider",
                 "AIArmada\\FilamentCart\\FilamentCartServiceProvider",
                 "AIArmada\\FilamentChip\\FilamentChipServiceProvider",
@@ -196,13 +253,6 @@
                 "AIArmada\\Stock\\StockServiceProvider",
                 "AIArmada\\Vouchers\\VoucherServiceProvider"
             ]
-        }
-    },
-    "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "pestphp/pest-plugin": true,
-            "phpstan/extension-installer": true
         }
     },
     "scripts": {
