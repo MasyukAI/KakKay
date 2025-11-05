@@ -32,14 +32,13 @@ jobs:
         uses: WyriHaximus/github-action-get-previous-tag@master
       
       - name: Monorepo Split of ${{ matrix.package }}
-        uses: danharrin/monorepo-split-github-action@v2.4.0
+        uses: symplify/monorepo-split-github-action@2.3
         env:
           GITHUB_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
         with:
           package_directory: 'packages/${{ matrix.package }}'
-          repository_organization: 'aiarmada'
-          repository_name: '${{ matrix.package }}'
-          branch: main
+          split_repository_organization: 'aiarmada'
+          split_repository_name: '${{ matrix.package }}'
           tag: ${{ steps.previous-tag.outputs.tag }}
           user_name: 'AIArmada Bot'
           user_email: 'bot@aiarmada.com'
