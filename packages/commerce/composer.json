@@ -90,7 +90,7 @@
             "phpstan/extension-installer": true
         }
     },
-    "minimum-stability": "beta",
+    "minimum-stability": "dev",
     "prefer-stable": true,
     "scripts": {
         "cs": [
