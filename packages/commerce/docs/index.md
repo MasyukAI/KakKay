@@ -1,7 +1,7 @@
 # AIArmada Commerce Documentation
 
 **Version**: 0.1.0  
-**Laravel**: ^12.0 | **PHP**: ^8.4 | **Filament**: ^4.0
+**Laravel**: ^12.0 | **PHP**: ^8.4 | **Filament**: ^5.0
 
 ---
 
@@ -138,9 +138,9 @@ Advanced topics and maintenance:
 
 | Package | Purpose | Dependencies |
 |---------|---------|--------------|
-| **aiarmada/filament-cart** | Cart admin panel | cart, filament ^4.0 |
-| **aiarmada/filament-chip** | Payment admin panel | chip, filament ^4.0 |
-| **aiarmada/filament-vouchers** | Voucher admin panel | vouchers, filament ^4.0 |
+| **aiarmada/filament-cart** | Cart admin panel | cart, filament ^5.0 |
+| **aiarmada/filament-chip** | Payment admin panel | chip, filament ^5.0 |
+| **aiarmada/filament-vouchers** | Voucher admin panel | vouchers, filament ^5.0 |
 
 ### Infrastructure
 
@@ -267,7 +267,7 @@ vendor/bin/pest packages/filament-cart/tests
 **Requirements**:
 - PHP: ^8.4
 - Laravel: ^12.0
-- Filament: ^4.0 (for admin panels)
+- Filament: ^5.0 (for admin panels)
 - PostgreSQL: 14+ (recommended)
 
 **Release Date**: November 2025
@@ -319,7 +319,7 @@ We welcome contributions! See:
 ### External Resources
 
 - [Laravel Documentation](https://laravel.com/docs/12.x)
-- [Filament Documentation](https://filamentphp.com/docs/4.x)
+- [Filament Documentation](https://filamentphp.com/docs/5.x)
 - [CHIP API Documentation](https://developer.chip-in.asia/)
 - [J&T Express API](https://developer.jet.co.id/)
 

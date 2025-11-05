@@ -12,7 +12,7 @@ This is the initial public release of AIArmada Commerce. No upgrade path needed.
 
 - Complete monorepo with 10 packages
 - Support for Laravel 12 and PHP 8.4
-- Filament 4 admin panels
+- Filament 5 admin panels
 - Comprehensive documentation
 - Pest v4 testing with browser support
 
@@ -20,7 +20,7 @@ This is the initial public release of AIArmada Commerce. No upgrade path needed.
 
 - PHP: ^8.4 (baseline raised from ^8.2)
 - Laravel: ^12.0
-- Filament: ^4.0 (optional, for admin panels)
+- Filament: ^5.0 (optional, for admin panels)
 - PostgreSQL: 14+ (recommended) or MySQL 8+
 
 ### Migration & Schema Changes
