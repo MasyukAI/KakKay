@@ -7,34 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-- GitHub Actions workflows for CI/CD (PHPStan, Tests, Code Style, Rector, Coverage)
-- Comprehensive CONTRIBUTING.md with development guidelines
-- Test coverage reporting workflow
-- Composer CI scripts for local development
-- Status badges in README
-- Phase 1 & 2 completion documentation
-
-### Changed
-- Centralized PHPStan configuration to analyze all packages
-- Centralized Rector configuration to process all packages
-- Simplified paths configuration (now just `packages/`)
-- Updated README with workflow status badges
-
-### Removed
-- Duplicate phpstan.neon files from 4 packages
-- Duplicate pint.json files from 4 packages
-- Duplicate rector.php files from 4 packages
-- Duplicate phpunit.xml files from 4 packages
-- Duplicate composer.lock files from packages
-- vendor/ directories from 4 packages (monorepo anti-pattern)
-
-### Fixed
-- PHPStan errors reduced from 170 to 0
-- All code now passes Pint formatting checks
-- Rector refactoring suggestions resolved
-
-## [1.0.0] - 2025-10-12
+## [1.0.0] - 2025-11-06
 
 ### Initial Release
 
