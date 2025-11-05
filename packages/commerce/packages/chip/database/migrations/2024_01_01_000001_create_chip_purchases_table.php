@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -117,6 +118,17 @@ return new class extends Migration
         Schema::table($tablePrefix.'purchases', function (Blueprint $table) {
             $table->rawIndex('metadata', 'chip_purchases_metadata_gin_index', 'gin');
         });
+
+        // Add optimized expression indexes for cart_id lookups (faster than GIN for equality)
+        DB::statement("
+            CREATE INDEX chip_purchases_metadata_cart_id_idx 
+            ON {$tablePrefix}purchases ((metadata->>'cart_id'))
+        ");
+
+        DB::statement("
+            CREATE INDEX chip_purchases_status_cart_id_idx 
+            ON {$tablePrefix}purchases (status, ((metadata->>'cart_id')))
+        ");
     }
 
     public function down(): void
