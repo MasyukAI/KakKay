@@ -10,9 +10,7 @@
   "require": {
     "php": "^8.4",
     "ext-curl": "*",
-    "ext-json": "*",
     "aiarmada/commerce-support": "self.version",
-    "guzzlehttp/guzzle": "^7.0",
     "illuminate/http": "^12.0",
     "illuminate/queue": "^12.0",
     "illuminate/validation": "^12.0"

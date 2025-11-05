@@ -12,8 +12,8 @@ use Symfony\Component\Console\Input\InputOption;
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\multiselect;
 use function Laravel\Prompts\note;
-use function Laravel\Prompts\spin;
 use function Laravel\Prompts\select;
+use function Laravel\Prompts\spin;
 
 #[AsCommand(name: 'commerce:install', aliases: ['install:commerce'])]
 final class InstallCommand extends Command
@@ -25,17 +25,20 @@ final class InstallCommand extends Command
      */
     private const REQUIRED_PACKAGES = [
         'cart' => 'Cart Management',
-        'stock' => 'Stock Management',
-        'vouchers' => 'Voucher System',
     ];
 
     /**
      * @var array<string, string>
      */
     private const OPTIONAL_PACKAGES = [
+        'stock' => 'Stock Management',
+        'vouchers' => 'Voucher System',
         'chip' => 'CHIP Payment Gateway',
         'jnt' => 'J&T Express Shipping',
-        'filament' => 'Filament Admin Panels',
+        'docs' => 'Document Generation (Invoices, Receipts, PDFs)',
+        'filament-cart' => 'Filament Cart Admin',
+        'filament-chip' => 'Filament CHIP Admin',
+        'filament-vouchers' => 'Filament Vouchers Admin',
     ];
 
     protected Filesystem $files;
@@ -54,21 +57,6 @@ final class InstallCommand extends Command
         parent::__construct();
 
         $this->files = $files;
-    }
-
-    /**
-     * @return array<InputOption>
-     */
-    protected function getOptions(): array
-    {
-        return [
-            new InputOption('all', null, InputOption::VALUE_NONE, 'Install all optional packages'),
-            new InputOption('chip', null, InputOption::VALUE_NONE, 'Install CHIP payment gateway integrations'),
-            new InputOption('jnt', null, InputOption::VALUE_NONE, 'Install J&T Express shipping integrations'),
-            new InputOption('filament', null, InputOption::VALUE_NONE, 'Install Filament admin packages'),
-            new InputOption('force', 'F', InputOption::VALUE_NONE, 'Overwrite existing configuration files'),
-            new InputOption('no-star', null, InputOption::VALUE_NONE, 'Skip GitHub star prompt'),
-        ];
     }
 
     public function __invoke(): int
@@ -98,6 +86,26 @@ final class InstallCommand extends Command
         $this->askToStar();
 
         return self::SUCCESS;
+    }
+
+    /**
+     * @return array<InputOption>
+     */
+    protected function getOptions(): array
+    {
+        return [
+            new InputOption('all', null, InputOption::VALUE_NONE, 'Install all optional packages'),
+            new InputOption('stock', null, InputOption::VALUE_NONE, 'Install Stock management'),
+            new InputOption('vouchers', null, InputOption::VALUE_NONE, 'Install Voucher system'),
+            new InputOption('chip', null, InputOption::VALUE_NONE, 'Install CHIP payment gateway integrations'),
+            new InputOption('jnt', null, InputOption::VALUE_NONE, 'Install J&T Express shipping integrations'),
+            new InputOption('docs', null, InputOption::VALUE_NONE, 'Install Document generation (invoices, receipts, PDFs)'),
+            new InputOption('filament-cart', null, InputOption::VALUE_NONE, 'Install Filament Cart admin'),
+            new InputOption('filament-chip', null, InputOption::VALUE_NONE, 'Install Filament CHIP admin'),
+            new InputOption('filament-vouchers', null, InputOption::VALUE_NONE, 'Install Filament Vouchers admin'),
+            new InputOption('force', 'F', InputOption::VALUE_NONE, 'Overwrite existing configuration files'),
+            new InputOption('no-star', null, InputOption::VALUE_NONE, 'Skip GitHub star prompt'),
+        ];
     }
 
     protected function configureJsonColumnType(): void
@@ -198,9 +206,14 @@ final class InstallCommand extends Command
 
             match ($package) {
                 'cart' => $this->setupCart(),
+                'stock' => $this->setupStock(),
+                'vouchers' => $this->setupVouchers(),
                 'chip' => $this->setupChip(),
                 'jnt' => $this->setupJnt(),
-                'filament' => $this->setupFilament(),
+                'docs' => $this->setupDocs(),
+                'filament-cart' => $this->setupFilamentCart(),
+                'filament-chip' => $this->setupFilamentChip(),
+                'filament-vouchers' => $this->setupFilamentVouchers(),
                 default => null,
             };
         }, sprintf('Installing %s...', $label));
@@ -219,31 +232,52 @@ final class InstallCommand extends Command
             $parameters['--force'] = true;
         }
 
-        $this->callSilently('vendor:publish', $parameters);
+        $exitCode = $this->callSilent('vendor:publish', $parameters);
+
+        // If the first attempt fails (no matching tag), it might be because the package
+        // hasn't been registered yet, so we'll try to force a second publish after boot
+        if ($exitCode !== 0 && ! $this->option('force')) {
+            $this->call('vendor:publish', array_merge($parameters, ['--force' => true]));
+        }
     }
 
     protected function runMigrations(string $package): void
     {
-        if ($package !== 'cart') {
-            return;
+        // Publish migrations for all packages that have them
+        $parameters = [
+            '--tag' => sprintf('%s-migrations', $package),
+            '--ansi' => true,
+        ];
+
+        if ($this->option('force')) {
+            $parameters['--force'] = true;
         }
 
-        if (config('cart.storage') !== 'database') {
-            return;
+        $this->callSilent('vendor:publish', $parameters);
+
+        // For cart package, run migrations if using database storage
+        if ($package === 'cart' && config('cart.storage') === 'database') {
+            $path = base_path('vendor/aiarmada/cart/database/migrations');
+
+            if ($this->files->isDirectory($path)) {
+                $this->call('migrate', ['--path' => 'vendor/aiarmada/cart/database/migrations']);
+            }
         }
-
-        $path = base_path('vendor/aiarmada/cart/database/migrations');
-
-        if (! $this->files->isDirectory($path)) {
-            return;
-        }
-
-        $this->call('migrate', ['--path' => 'vendor/aiarmada/cart/database/migrations']);
     }
 
     protected function setupCart(): void
     {
         // Configuration published and migrations handled in runMigrations().
+    }
+
+    protected function setupStock(): void
+    {
+        // Stock package bootstraps itself through auto-discovery.
+    }
+
+    protected function setupVouchers(): void
+    {
+        // Vouchers package bootstraps itself through auto-discovery.
     }
 
     protected function setupChip(): void
@@ -265,9 +299,24 @@ final class InstallCommand extends Command
         ]);
     }
 
-    protected function setupFilament(): void
+    protected function setupDocs(): void
     {
-        // Filament packages bootstrap themselves through auto-discovery.
+        // Document generation package bootstraps itself through auto-discovery.
+    }
+
+    protected function setupFilamentCart(): void
+    {
+        // Filament Cart package bootstraps itself through auto-discovery.
+    }
+
+    protected function setupFilamentChip(): void
+    {
+        // Filament CHIP package bootstraps itself through auto-discovery.
+    }
+
+    protected function setupFilamentVouchers(): void
+    {
+        // Filament Vouchers package bootstraps itself through auto-discovery.
     }
 
     /**
@@ -289,7 +338,7 @@ final class InstallCommand extends Command
                 continue;
             }
 
-            $content = rtrim($content) . PHP_EOL . sprintf('%s=%s', $key, $value);
+            $content = mb_rtrim($content).PHP_EOL.sprintf('%s=%s', $key, $value);
             $updated = true;
         }
 
@@ -297,7 +346,7 @@ final class InstallCommand extends Command
             return;
         }
 
-        $this->files->put($path, rtrim($content) . PHP_EOL);
+        $this->files->put($path, mb_rtrim($content).PHP_EOL);
     }
 
     protected function askToStar(): void

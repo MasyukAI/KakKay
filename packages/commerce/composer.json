@@ -11,15 +11,15 @@
         "akaunting/laravel-money": "^6.0",
         "anourvalar/eloquent-serialize": "^1.2",
         "chillerlan/php-qrcode": "^5.0",
-        "aiarmada/commerce-support": "*",
-        "filament/filament": "^4.0",
+        
+        "filament/filament": "^5.0",
         "filament/support": "*",
         "guzzlehttp/guzzle": "^7.0",
         "larastan/larastan": "^3.0",
         "laravel/framework": "^12.0",
         "laravel/pint": "^1.0",
         "laravel/prompts": "^0.3.5",
-        "livewire/livewire": "^3.0",
+        "livewire/livewire": "^4.0@beta",
         "league/csv": "^9.27",
         "league/flysystem-aws-s3-v3": "^3.0",
         "nunomaduro/termwind": "^2.0",
@@ -41,17 +41,14 @@
         "spatie/laravel-tags": "^4.2",
         "staudenmeir/belongs-to-through": "^2.5",
         "staudenmeir/eloquent-has-many-deep": "^1.7",
-        "symplify/monorepo-builder": "^11.0",
-        "ueberdosis/tiptap-php": "^1.4"
+        "symplify/monorepo-builder": "^11.0"
     },
     "repositories": [
         {
             "type": "path",
-            "url": "./packages/support"
+            "url": "packages/support"
         }
     ],
-    "minimum-stability": "dev",
-    "prefer-stable": true,
     "autoload": {
         "files": [
             "packages/support/src/helpers.php"
@@ -93,6 +90,8 @@
             "phpstan/extension-installer": true
         }
     },
+    "minimum-stability": "beta",
+    "prefer-stable": true,
     "scripts": {
         "cs": [
             "rector",

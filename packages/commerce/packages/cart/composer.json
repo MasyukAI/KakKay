@@ -10,8 +10,7 @@
   "require": {
     "php": "^8.4",
     "aiarmada/commerce-support": "self.version",
-    "akaunting/laravel-money": "^6.0",
-    "illuminate/database": "^12.0"
+    "akaunting/laravel-money": "^6.0"
   },
   "autoload": {
     "psr-4": {

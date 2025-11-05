@@ -37,7 +37,7 @@ final class ConfigureDatabaseCommand extends Command
 
         $this->setEnv('COMMERCE_JSON_COLUMN_TYPE', $choice);
 
-        note('Saved COMMERCE_JSON_COLUMN_TYPE=' . $choice . ' to your .env file.');
+        note('Saved COMMERCE_JSON_COLUMN_TYPE='.$choice.' to your .env file.');
         note('You can override per-package with VOUCHERS_JSON_COLUMN_TYPE, etc.');
 
         $this->newLine();
@@ -55,14 +55,14 @@ final class ConfigureDatabaseCommand extends Command
 
         $content = $this->files->get($path);
 
-        if (preg_match('/^' . preg_quote($key, '/') . '=.*/m', $content)) {
+        if (preg_match('/^'.preg_quote($key, '/').'=.*/m', $content)) {
             $content = (string) preg_replace(
-                '/^' . preg_quote($key, '/') . '=.*/m',
-                $key . '=' . $value,
+                '/^'.preg_quote($key, '/').'=.*/m',
+                $key.'='.$value,
                 $content,
             );
         } else {
-            $content = rtrim($content) . PHP_EOL . $key . '=' . $value . PHP_EOL;
+            $content = mb_rtrim($content).PHP_EOL.$key.'='.$value.PHP_EOL;
         }
 
         $this->files->put($path, $content);

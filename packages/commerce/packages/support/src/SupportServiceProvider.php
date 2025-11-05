@@ -22,7 +22,7 @@ final class SupportServiceProvider extends PackageServiceProvider
             ->name('commerce-support')
             ->hasCommands([
                 InstallCommand::class,
-                \AIArmada\CommerceSupport\Commands\ConfigureDatabaseCommand::class,
+                Commands\ConfigureDatabaseCommand::class,
             ]);
     }
 
