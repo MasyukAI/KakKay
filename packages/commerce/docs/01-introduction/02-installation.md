@@ -1,77 +1,104 @@
-# Installation Guide
+---
+title: Installation
+contents: false
+---
+import Aside from "@components/Aside.astro"
+import RadioGroup from "@components/RadioGroup.astro"
+import RadioGroupOption from "@components/RadioGroupOption.astro"
 
-## Requirements
+AIArmada Commerce requires the following to run:
 
-Before installing AIArmada Commerce, ensure your environment meets these requirements:
+- PHP 8.4+
+- Laravel v12.0+
+- Composer v2.7+
 
-- **PHP**: ^8.4
-- **Laravel**: ^12.0
-- **Composer**: ^2.0
-- **Database**: PostgreSQL 14+ (primary), MySQL 8+, SQLite 3.35+
+Installation comes in two flavors, depending on whether you want to bootstrap the entire commerce suite or pull in individual packages for custom flows:
 
-### Optional Requirements
+<div x-data="{ package: (window.location.hash === '#components') ? 'components' : 'suite' }">
 
-- **Filament**: ^4.0 (for admin panels)
-- **Redis**: ^6.0 (recommended for cart caching)
-- **Node.js**: ^20.0 (for frontend assets)
+<RadioGroup model="package">
+    <RadioGroupOption value="suite">
+        Commerce suite
 
-## Installation Methods
+        <span slot="description">
+            Install the full AIArmada Commerce stack with a single command, including carts, payments, vouchers, shipping, inventory, and Filament admin panels.
+        </span>
+    </RadioGroupOption>
 
-### Method 1: Meta-Package (Recommended)
+    <RadioGroupOption value="components">
+        Individual packages
 
-Install all packages at once for a complete e-commerce solution:
+        <span slot="description">
+            Pull in only the packages you need. Compose your own commerce stack by mixing and matching carts, payments, vouchers, shipping, stock, and Filament plugins.
+        </span>
+    </RadioGroupOption>
+</RadioGroup>
+
+<div x-show="package === 'suite'" x-cloak>
+
+## Installing the commerce suite
+
+Require the meta-package and run the guided installer:
 
 ```bash
 composer require aiarmada/commerce
+
+php artisan commerce:install --all
 ```
 
-This installs:
-- ✅ Cart system
-- ✅ CHIP payment gateway
-- ✅ Voucher management
-- ✅ J&T shipping
-- ✅ Stock management
-- ✅ All Filament admin panels
-- ✅ Support utilities
+<Aside variant="warning">
+    Windows PowerShell ignores `^` characters in version constraints. If Composer errors, run `composer require aiarmada/commerce "~1.0"` instead.
+</Aside>
 
-### Method 2: Individual Packages
-
-Install only what you need:
+The installer publishes configuration, scaffolds environment variables, prompts for JSON vs JSONB for database columns, and guides you through optional integrations. You can rerun it at any time:
 
 ```bash
-# Core packages
-composer require aiarmada/cart
-composer require aiarmada/chip
-composer require aiarmada/vouchers
-composer require aiarmada/jnt
-composer require aiarmada/stock
-
-# Filament plugins (optional)
-composer require aiarmada/filament-cart
-composer require aiarmada/filament-chip
-composer require aiarmada/filament-vouchers
-
-# Support utilities (auto-installed as dependency)
-composer require aiarmada/commerce-support
+php artisan commerce:install
 ```
 
-### Method 3: Development Version
+When prompted, choose the optional packages you want to enable (CHIP payments, J&T shipping, Filament panels).
 
-For testing unreleased features:
+### Create an admin user
 
 ```bash
-composer require aiarmada/commerce:dev-main
+php artisan make:filament-user
 ```
 
-## Configuration
+Visit `/admin` in your browser to explore the Filament panels bundled with the suite.
 
-### 1. Publish Configuration Files
+</div>
+
+<div x-show="package === 'components'" x-cloak>
+
+## Installing individual packages
+
+Install the core packages you need with Composer:
 
 ```bash
-# Publish all commerce configurations
-php artisan vendor:publish --tag=commerce-config
+composer require \
+    aiarmada/cart \
+    aiarmada/chip \
+    aiarmada/vouchers \
+    aiarmada/jnt \
+    aiarmada/stock
+```
 
-# Or publish individually
+Add Filament admin panels when you are ready for back-office tooling:
+
+```bash
+composer require \
+    aiarmada/filament-cart \
+    aiarmada/filament-chip \
+    aiarmada/filament-vouchers
+```
+
+The shared support utilities are included automatically when you install any package.
+
+### Publishing configuration
+
+Publish configuration files for the packages you installed:
+
+```bash
 php artisan vendor:publish --tag=cart-config
 php artisan vendor:publish --tag=chip-config
 php artisan vendor:publish --tag=vouchers-config
@@ -79,75 +106,9 @@ php artisan vendor:publish --tag=jnt-config
 php artisan vendor:publish --tag=stock-config
 ```
 
-This creates:
-- `config/cart.php`
-- `config/chip.php`
-- `config/vouchers.php`
-- `config/jnt.php`
-- `config/stock.php`
+### Registering Filament plugins
 
-### 2. Environment Variables
-
-Add to your `.env` file:
-
-```env
-# Cart Configuration
-CART_STORAGE_DRIVER=database
-CART_DEFAULT_CURRENCY=MYR
-CART_SESSION_KEY=shopping_cart
-
-# CHIP Payment Gateway
-CHIP_COLLECT_API_KEY=your-collect-api-key
-CHIP_COLLECT_BRAND_ID=your-brand-id
-CHIP_COLLECT_ENVIRONMENT=sandbox
-CHIP_SEND_API_KEY=your-send-api-key
-CHIP_SEND_API_SECRET=your-send-secret
-CHIP_SEND_ENVIRONMENT=sandbox
-
-# Vouchers
-VOUCHER_CODE_LENGTH=8
-VOUCHER_CODE_PREFIX=VCH
-VOUCHER_AUTO_APPLY=false
-
-# J&T Express
-JNT_API_KEY=your-jnt-api-key
-JNT_API_SECRET=your-jnt-secret
-JNT_ENVIRONMENT=sandbox
-
-# Stock Management
-STOCK_RESERVATION_TIMEOUT=1800
-STOCK_LOW_THRESHOLD=10
-```
-
-### 3. Database Migrations
-
-Run migrations to create required tables:
-
-```bash
-php artisan migrate
-```
-
-This creates tables for:
-- `carts`, `cart_items`, `cart_conditions`
-- `chip_purchases`, `chip_payments`, `chip_clients`, `chip_webhooks`
-- `vouchers`, `voucher_redemptions`, `voucher_conditions`
-- `jnt_shipments`, `jnt_tracking_events`
-- `stock_items`, `stock_movements`, `stock_reservations`
-
-### 4. Register Service Providers (Laravel 11+)
-
-Service providers are auto-discovered. Verify in `bootstrap/providers.php`:
-
-```php
-return [
-    App\Providers\AppServiceProvider::class,
-    // Commerce providers auto-registered via composer.json
-];
-```
-
-### 5. Register Filament Plugins (Optional)
-
-If using Filament admin panels, register plugins in `app/Providers/Filament/AdminPanelProvider.php`:
+If you added Filament packages, register them inside your panel provider:
 
 ```php
 use AIArmada\FilamentCart\FilamentCartPlugin;
@@ -168,226 +129,45 @@ public function panel(Panel $panel): Panel
 }
 ```
 
-## Quick Start Verification
+</div>
 
-### Test Cart System
+</div>
 
-```bash
-php artisan tinker
-```
+## Post-install checklist
 
-```php
-use AIArmada\Cart\Facades\Cart;
+1. Publish configuration using `php artisan vendor:publish --tag=commerce-config` or the individual tags shown above.
+2. Add the generated environment keys (CHIP, J&T, vouchers, stock) to your `.env` file.
+3. Run database migrations with `php artisan migrate`.
+4. Review the package docs for storage drivers, webhooks, and Filament setup.
 
-// Add item to cart
-Cart::add('test-001', 'Test Product', 9999, 1);
+### Database JSON configuration tips
 
-// View cart
-Cart::content();
+- Replace-on-max: Control behavior when the cart already has the maximum number of vouchers.
 
-// Get total
-Cart::total(); // Returns Money instance
-```
+    Set `vouchers.cart.replace_when_max_reached` (env: `VOUCHERS_REPLACE_WHEN_MAX_REACHED`) to `true` to automatically replace the existing voucher, or `false` to throw a validation error.
 
-### Test CHIP Integration
+- JSON vs JSONB (PostgreSQL only): Migrations default to portable `json` columns. To use `jsonb` and create GIN indexes on a fresh install, set one of:
 
-```php
-use AIArmada\Chip\Facades\Chip;
+    ```env
+    COMMERCE_JSON_COLUMN_TYPE=jsonb
+    # or override per package
+    VOUCHERS_JSON_COLUMN_TYPE=jsonb
+    CART_JSON_COLUMN_TYPE=jsonb
+    CHIP_JSON_COLUMN_TYPE=jsonb
+    ```
+    Or run the interactive setup:
 
-// Create test purchase
-$purchase = Chip::createPurchase([
-    'amount' => 10000, // RM 100.00
-    'currency' => 'MYR',
-    'reference' => 'test-' . uniqid(),
-    'client' => [
-        'email' => 'test@example.com',
-    ],
-    'send_receipt' => false,
-]);
+    ```bash
+    php artisan commerce:configure-database
+    ```
 
-echo $purchase->checkout_url;
-```
+    Enable this BEFORE running `php artisan migrate`. Existing installs should use a dedicated migration to convert types if needed.
 
-### Test Voucher System
+    When `jsonb` is enabled and you're using PostgreSQL, GIN indexes are created automatically where beneficial:
+    - Vouchers: `applicable_products`, `excluded_products`, `applicable_categories`, `metadata`
+    - Cart: `items`, `conditions`, `metadata`
+    - CHIP: `purchases.metadata`
 
-```php
-use AIArmada\Vouchers\Models\Voucher;
+    Other JSON fields remain unindexed by default to avoid unnecessary index bloat; add custom indexes based on your query patterns.
 
-// Create voucher
-$voucher = Voucher::create([
-    'code' => 'WELCOME10',
-    'name' => 'Welcome Discount',
-    'type' => 'percentage',
-    'discount_amount' => 10,
-    'is_active' => true,
-]);
-
-// Validate voucher
-$voucher->canBeRedeemed(); // Returns ValidationResult
-```
-
-## Filament Panel Access
-
-After installation, access the admin panel:
-
-1. **Create Admin User**:
-```bash
-php artisan make:filament-user
-```
-
-2. **Navigate**: `https://your-app.test/admin`
-
-3. **Available Resources**:
-   - **Commerce > Carts**: Manage shopping carts
-   - **Commerce > Cart Items**: View cart contents
-   - **Payments > Purchases**: CHIP purchases
-   - **Payments > Payments**: Payment transactions
-   - **Payments > Clients**: Customer payment profiles
-   - **Vouchers > Vouchers**: Create and manage vouchers
-   - **Vouchers > Redemptions**: Track voucher usage
-   - **Shipping > Shipments**: J&T shipments
-   - **Inventory > Stock**: Stock levels
-
-## Storage Driver Configuration
-
-### Session Storage (Default)
-
-No additional setup required. Best for simple applications.
-
-```php
-// config/cart.php
-'storage_driver' => 'session',
-```
-
-### Cache Storage
-
-Requires cache driver (Redis recommended):
-
-```bash
-composer require predis/predis
-```
-
-```env
-CACHE_DRIVER=redis
-REDIS_HOST=127.0.0.1
-REDIS_PASSWORD=null
-REDIS_PORT=6379
-```
-
-```php
-// config/cart.php
-'storage_driver' => 'cache',
-'cache' => [
-    'ttl' => 3600, // 1 hour
-],
-```
-
-### Database Storage
-
-Best for production with cart persistence:
-
-```php
-// config/cart.php
-'storage_driver' => 'database',
-'database' => [
-    'connection' => null, // Uses default
-    'enable_optimistic_locking' => true,
-],
-```
-
-## Webhook Configuration
-
-### CHIP Webhooks
-
-Register webhook URL in CHIP dashboard:
-
-```
-https://your-app.com/webhooks/chip/{webhook_id}
-```
-
-Route automatically registered by package.
-
-### J&T Webhooks
-
-Register webhook URL in J&T portal:
-
-```
-https://your-app.com/webhooks/jnt/{webhook_id}
-```
-
-## Testing Installation
-
-Run package test suites:
-
-```bash
-# Test all packages
-composer test
-
-# Test specific package
-vendor/bin/pest packages/cart/tests
-vendor/bin/pest packages/chip/tests
-vendor/bin/pest packages/vouchers/tests
-```
-
-## Common Issues
-
-### Issue: "Class not found" errors
-
-**Solution**: Clear autoload cache
-```bash
-composer dump-autoload
-php artisan optimize:clear
-```
-
-### Issue: Migration conflicts
-
-**Solution**: Check existing table names
-```bash
-php artisan migrate:status
-```
-
-If tables exist, skip specific migrations or use `--force`.
-
-### Issue: Service provider not registered
-
-**Solution**: Ensure `composer.json` has provider discovery:
-```json
-{
-    "extra": {
-        "laravel": {
-            "providers": [
-                "AIArmada\\Cart\\CartServiceProvider"
-            ]
-        }
-    }
-}
-```
-
-### Issue: Filament plugin not showing
-
-**Solution**: Clear Filament cache
-```bash
-php artisan filament:clear-cache
-php artisan filament:cache-components
-```
-
-## Next Steps
-
-Now that you're installed, explore:
-
-- **[Cart Basics](../02-getting-started/01-cart-basics.md)**: Build your first shopping cart
-- **[Payment Integration](../02-getting-started/02-payment-integration.md)**: Accept payments with CHIP
-- **[Voucher System](../02-getting-started/03-voucher-system.md)**: Create discount codes
-- **[Configuration Reference](../03-packages/)**: Deep dive into each package
-
-## Upgrading
-
-For upgrade instructions from older versions, see:
-
-- **[Upgrade Guide](../05-upgrade-guide.md)**
-
-## Getting Help
-
-- **Documentation Issues**: [GitHub Issues](https://github.com/aiarmada/commerce/issues)
-- **Questions**: [GitHub Discussions](https://github.com/aiarmada/commerce/discussions)
-- **Commercial Support**: info@aiarmada.com
+Need a refresher on the suite features? Head over to the [Getting Started](../02-getting-started/01-cart-basics.md) section.

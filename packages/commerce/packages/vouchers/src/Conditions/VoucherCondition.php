@@ -158,7 +158,7 @@ class VoucherCondition implements Arrayable, CartConditionConvertible
     /**
      * Get the voucher ID.
      */
-    public function getVoucherId(): int
+    public function getVoucherId(): string
     {
         return $this->voucher->id;
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -17,22 +18,26 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('identifier')->index();
             $table->string('instance')->default('default')->index();
-            $table->jsonb('items')->nullable();
-            $table->jsonb('conditions')->nullable();
-            $table->jsonb('metadata')->nullable();
+            $jsonType = (string) commerce_json_column_type('cart', 'json');
+            $table->{$jsonType}('items')->nullable();
+            $table->{$jsonType}('conditions')->nullable();
+            $table->{$jsonType}('metadata')->nullable();
             $table->integer('version')->default(1)->index();
             $table->timestamps();
 
             $table->unique(['identifier', 'instance']);
         });
 
-        // Add GIN indexes for JSONB columns for efficient querying
+        // Optional: create GIN indexes when using jsonb on PostgreSQL
         $tableName = config('cart.database.table', 'carts');
-        Schema::table($tableName, function (Blueprint $table) {
-            $table->rawIndex('items', 'carts_items_gin_index', 'gin');
-            $table->rawIndex('conditions', 'carts_conditions_gin_index', 'gin');
-            $table->rawIndex('metadata', 'carts_metadata_gin_index', 'gin');
-        });
+        if (
+            commerce_json_column_type('cart', 'json') === 'jsonb'
+            && Schema::getConnection()->getDriverName() === 'pgsql'
+        ) {
+            DB::statement("CREATE INDEX IF NOT EXISTS carts_items_gin_index ON \"{$tableName}\" USING GIN (\"items\")");
+            DB::statement("CREATE INDEX IF NOT EXISTS carts_conditions_gin_index ON \"{$tableName}\" USING GIN (\"conditions\")");
+            DB::statement("CREATE INDEX IF NOT EXISTS carts_metadata_gin_index ON \"{$tableName}\" USING GIN (\"metadata\")");
+        }
     }
 
     /**

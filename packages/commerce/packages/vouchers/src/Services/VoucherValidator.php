@@ -92,6 +92,9 @@ class VoucherValidator
         return VoucherValidationResult::valid();
     }
 
+    /**
+     * @return Builder<\AIArmada\Vouchers\Models\Voucher>
+     */
     protected function query(): Builder
     {
         return Voucher::query()->forOwner(

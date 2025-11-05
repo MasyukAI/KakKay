@@ -2,224 +2,85 @@
     "name": "aiarmada/commerce",
     "description": "A comprehensive commerce ecosystem for Laravel 12 with cart, payments, vouchers, shipping, and inventory management",
     "license": "MIT",
-    "type": "library",
-    "keywords": [
-        "laravel",
-        "laravel-12",
-        "shopping-cart",
-        "cart",
-        "e-commerce",
-        "payment-gateway",
-        "chip",
-        "vouchers",
-        "shipping",
-        "inventory",
-        "filament",
-        "livewire",
-        "jnt",
-        "stock-management",
-        "documents",
-        "filament-plugin",
-        "commerce"
-    ],
-    "authors": [
-        {
-            "name": "AIArmada",
-            "email": "info@aiarmada.com"
-        }
-    ],
-    "homepage": "https://github.com/aiarmada/commerce",
-    "support": {
-        "issues": "https://github.com/aiarmada/commerce/issues",
-        "source": "https://github.com/aiarmada/commerce",
-        "docs": "https://github.com/aiarmada/commerce/blob/main/README.md"
-    },
     "require": {
         "php": "^8.4",
-        "ext-curl": "*",
-        "ext-json": "*",
-        "akaunting/laravel-money": "^6.0",
-        "filament/filament": "^4.0",
-        "guzzlehttp/guzzle": "^7.0",
-        "illuminate/contracts": "^12.0",
-        "illuminate/database": "^12.0",
-        "illuminate/http": "^12.0",
-        "illuminate/queue": "^12.0",
-        "illuminate/support": "^12.0",
-        "illuminate/validation": "^12.0",
-        "laravel/framework": "^12.0",
-        "livewire/livewire": "^3.0",
-        "spatie/laravel-package-tools": "^1.92",
-        "spatie/laravel-pdf": "^1.5"
+        "composer-runtime-api": "^2.1",
+        "ext-intl": "*"
     },
     "require-dev": {
-        "driftingly/rector-laravel": "^2.0",
+        "akaunting/laravel-money": "^6.0",
+        "anourvalar/eloquent-serialize": "^1.2",
+        "chillerlan/php-qrcode": "^5.0",
+        "aiarmada/commerce-support": "*",
+        "filament/filament": "^4.0",
+        "filament/support": "*",
+        "guzzlehttp/guzzle": "^7.0",
         "larastan/larastan": "^3.0",
-        "laravel/pint": "^1.18",
-        "mockery/mockery": "^1.6",
-        "nunomaduro/collision": "^8.6",
-        "orchestra/testbench": "^10.0",
-        "pestphp/pest": "^4.0",
-        "pestphp/pest-plugin-browser": "^4.0",
-        "pestphp/pest-plugin-laravel": "^4.0",
-        "pestphp/pest-plugin-type-coverage": "^4.0",
-        "phpstan/extension-installer": "^1.4",
+        "laravel/framework": "^12.0",
+        "laravel/pint": "^1.0",
+        "laravel/prompts": "^0.3.5",
+        "livewire/livewire": "^3.0",
+        "league/csv": "^9.27",
+        "league/flysystem-aws-s3-v3": "^3.0",
+        "nunomaduro/termwind": "^2.0",
+        "openspout/openspout": "^4.23",
+        "orchestra/testbench": "^9.0|^10.0",
+        "pestphp/pest": "^3.7",
+        "pestphp/pest-plugin-laravel": "^3.0",
+        "phiki/phiki": "^2.0",
+        "phpstan/extension-installer": "^1.1",
         "phpstan/phpstan": "^2.1",
-        "phpunit/phpunit": "^12.3",
-        "rector/rector": "^2.2",
-        "symplify/monorepo-builder": "^11.0"
-    },
-    "replace": {
-        "aiarmada/cart": "self.version",
-        "aiarmada/chip": "self.version",
-        "aiarmada/commerce-support": "self.version",
-        "aiarmada/docs": "self.version",
-        "aiarmada/filament-cart": "self.version",
-        "aiarmada/filament-chip": "self.version",
-        "aiarmada/filament-vouchers": "self.version",
-        "aiarmada/jnt": "self.version",
-        "aiarmada/stock": "self.version",
-        "aiarmada/vouchers": "self.version"
+        "pragmarx/google2fa": "^8.0",
+        "pragmarx/google2fa-qrcode": "^3.0",
+        "rector/rector": "^2.0",
+        "spatie/laravel-medialibrary": "^11.0",
+        "spatie/laravel-package-tools": "^1.92",
+        "spatie/laravel-pdf": "^1.5",
+        "spatie/laravel-ray": "^1.29",
+        "spatie/laravel-settings": "^3.0",
+        "spatie/laravel-tags": "^4.2",
+        "staudenmeir/belongs-to-through": "^2.5",
+        "staudenmeir/eloquent-has-many-deep": "^1.7",
+        "symplify/monorepo-builder": "^11.0",
+        "ueberdosis/tiptap-php": "^1.4"
     },
     "repositories": [
         {
             "type": "path",
-            "url": "cart"
-        },
-        {
-            "options": {
-                "symlink": true
-            },
-            "type": "path",
-            "url": "docs"
-        },
-        {
-            "options": {
-                "symlink": true
-            },
-            "type": "path",
-            "url": "filament-cart"
-        },
-        {
-            "options": {
-                "symlink": true
-            },
-            "type": "path",
-            "url": "stock"
-        },
-        {
-            "options": {
-                "symlink": true
-            },
-            "type": "path",
-            "url": "vouchers"
-        },
-        {
-            "options": {
-                "symlink": true
-            },
-            "type": "path",
-            "url": "./packages/cart"
-        },
-        {
-            "options": {
-                "symlink": true
-            },
-            "type": "path",
-            "url": "./packages/chip"
-        },
-        {
-            "options": {
-                "symlink": true
-            },
-            "type": "path",
-            "url": "./packages/docs"
-        },
-        {
-            "options": {
-                "symlink": true
-            },
-            "type": "path",
-            "url": "./packages/filament-cart"
-        },
-        {
-            "options": {
-                "symlink": true
-            },
-            "type": "path",
-            "url": "./packages/filament-chip"
-        },
-        {
-            "options": {
-                "symlink": true
-            },
-            "type": "path",
-            "url": "./packages/filament-vouchers"
-        },
-        {
-            "options": {
-                "symlink": true
-            },
-            "type": "path",
-            "url": "./packages/jnt"
-        },
-        {
-            "options": {
-                "symlink": true
-            },
-            "type": "path",
-            "url": "./packages/stock"
-        },
-        {
-            "options": {
-                "symlink": true
-            },
-            "type": "path",
             "url": "./packages/support"
-        },
-        {
-            "options": {
-                "symlink": true
-            },
-            "type": "path",
-            "url": "./packages/vouchers"
         }
     ],
     "minimum-stability": "dev",
     "prefer-stable": true,
     "autoload": {
+        "files": [
+            "packages/support/src/helpers.php"
+        ],
         "psr-4": {
             "AIArmada\\Cart\\": "packages/cart/src",
+            "AIArmada\\Cart\\Tests\\": "packages/cart/tests/",
             "AIArmada\\Chip\\": "packages/chip/src",
+            "AIArmada\\Chip\\Tests\\": "packages/chip/tests/",
             "AIArmada\\CommerceSupport\\": "packages/support/src",
+            "AIArmada\\CommerceSupport\\Tests\\": "packages/support/tests/",
+            "AIArmada\\Commerce\\Tests\\": "tests/src",
             "AIArmada\\Docs\\": "packages/docs/src",
+            "AIArmada\\Docs\\Tests\\": "packages/docs/tests/",
             "AIArmada\\FilamentCart\\": "packages/filament-cart/src",
             "AIArmada\\FilamentCart\\Database\\Factories\\": "packages/filament-cart/database/factories/",
             "AIArmada\\FilamentCart\\Database\\Seeders\\": "packages/filament-cart/database/seeders/",
+            "AIArmada\\FilamentCart\\Tests\\": "packages/filament-cart/tests/",
             "AIArmada\\FilamentChip\\": "packages/filament-chip/src",
+            "AIArmada\\FilamentChip\\Tests\\": "packages/filament-chip/tests/",
             "AIArmada\\FilamentVouchers\\": "packages/filament-vouchers/src",
             "AIArmada\\FilamentVouchers\\Database\\Factories\\": "packages/filament-vouchers/database/factories/",
             "AIArmada\\FilamentVouchers\\Database\\Seeders\\": "packages/filament-vouchers/database/seeders/",
-            "AIArmada\\Jnt\\": "packages/jnt/src",
-            "AIArmada\\Stock\\": "packages/stock/src",
-            "AIArmada\\Vouchers\\": "packages/vouchers/src"
-        },
-        "files": [
-            "packages/support/src/helpers.php"
-        ]
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "AIArmada\\Cart\\Tests\\": "packages/cart/tests/",
-            "AIArmada\\Chip\\Tests\\": "packages/chip/tests/",
-            "AIArmada\\CommerceSupport\\Tests\\": "packages/support/tests/",
-            "AIArmada\\Commerce\\Tests\\": "tests/src",
-            "AIArmada\\Docs\\Tests\\": "packages/docs/tests/",
-            "AIArmada\\FilamentCart\\Tests\\": "packages/filament-cart/tests/",
-            "AIArmada\\FilamentChip\\Tests\\": "packages/filament-chip/tests/",
             "AIArmada\\FilamentVouchers\\Tests\\": "packages/filament-vouchers/tests/",
+            "AIArmada\\Jnt\\": "packages/jnt/src",
             "AIArmada\\Jnt\\Tests\\": "packages/jnt/tests/",
+            "AIArmada\\Stock\\": "packages/stock/src",
             "AIArmada\\Stock\\Tests\\": "packages/stock/tests/",
+            "AIArmada\\Vouchers\\": "packages/vouchers/src",
             "AIArmada\\Vouchers\\Tests\\": "packages/vouchers/tests/",
             "Tests\\": "tests/"
         }
@@ -227,73 +88,24 @@
     "config": {
         "sort-packages": true,
         "allow-plugins": {
+            "composer/package-versions-deprecated": true,
             "pestphp/pest-plugin": true,
             "phpstan/extension-installer": true
         }
     },
-    "extra": {
-        "laravel": {
-            "aliases": {
-                "Cart": "AIArmada\\Cart\\Facades\\Cart",
-                "Chip": "AIArmada\\Chip\\Facades\\Chip",
-                "Doc": "AIArmada\\Docs\\Facades\\Doc",
-                "JntExpress": "AIArmada\\Jnt\\Facades\\JntExpress",
-                "Stock": "AIArmada\\Stock\\Facades\\Stock",
-                "Voucher": "AIArmada\\Vouchers\\Facades\\Voucher"
-            },
-            "providers": [
-                "AIArmada\\Cart\\CartServiceProvider",
-                "AIArmada\\Chip\\ChipServiceProvider",
-                "AIArmada\\CommerceSupport\\SupportServiceProvider",
-                "AIArmada\\Docs\\DocsServiceProvider",
-                "AIArmada\\FilamentCart\\FilamentCartServiceProvider",
-                "AIArmada\\FilamentChip\\FilamentChipServiceProvider",
-                "AIArmada\\FilamentVouchers\\FilamentVouchersServiceProvider",
-                "AIArmada\\Jnt\\JntServiceProvider",
-                "AIArmada\\Stock\\StockServiceProvider",
-                "AIArmada\\Vouchers\\VoucherServiceProvider"
-            ]
-        }
-    },
     "scripts": {
+        "cs": [
+            "rector",
+            "pint",
+            "npm run prettier"
+        ],
+        "pint": "pint --config pint-strict-imports.json",
+        "rector": "rector",
+        "test:pest": "pest --parallel",
+        "test:phpstan": "phpstan analyse",
         "test": [
-            "php -d memory_limit=512M vendor/bin/pest"
-        ],
-        "test-coverage": [
-            "php -d memory_limit=512M vendor/bin/pest --coverage"
-        ],
-        "format": [
-            "php -d memory_limit=512M vendor/bin/pint"
-        ],
-        "format-test": [
-            "php -d memory_limit=512M vendor/bin/pint --test"
-        ],
-        "phpstan": [
-            "vendor/bin/phpstan analyse --memory-limit=1G"
-        ],
-        "rector": [
-            "vendor/bin/rector"
-        ],
-        "rector-dry": [
-            "vendor/bin/rector --dry-run"
-        ],
-        "ci": [
-            "@phpstan",
-            "@rector-dry",
-            "@format-test",
-            "@test"
-        ],
-        "monorepo:merge": [
-            "vendor/bin/monorepo-builder merge"
-        ],
-        "monorepo:validate": [
-            "vendor/bin/monorepo-builder validate"
-        ],
-        "monorepo:bump-interdependency": [
-            "vendor/bin/monorepo-builder bump-interdependency"
-        ],
-        "monorepo:release": [
-            "vendor/bin/monorepo-builder release"
+            "@test:pest",
+            "@test:phpstan"
         ]
     }
 }

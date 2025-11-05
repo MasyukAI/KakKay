@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -12,7 +13,7 @@ return new class extends Migration
     {
         Schema::create(config('vouchers.table_names.voucher_usage', 'voucher_usage'), function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignId('voucher_id')->constrained(
+            $table->foreignUuid('voucher_id')->constrained(
                 config('vouchers.table_names.vouchers', 'vouchers')
             )->cascadeOnDelete();
             $table->bigInteger('discount_amount'); // stored in cents
@@ -20,7 +21,8 @@ return new class extends Migration
             $table->string('channel')->nullable();
             $table->nullableUuidMorphs('redeemed_by');
             $table->text('notes')->nullable();
-            $table->jsonb('metadata')->nullable();
+            $jsonType = (string) commerce_json_column_type('vouchers', 'json');
+            $table->{$jsonType}('metadata')->nullable();
             $table->timestamp('used_at');
 
             // Indexes
@@ -29,11 +31,14 @@ return new class extends Migration
             $table->index('used_at');
         });
 
-        // Add GIN index for JSONB metadata for efficient querying
+        // Optional: create GIN index when using jsonb on PostgreSQL
         $tableName = config('vouchers.table_names.voucher_usage', 'voucher_usage');
-        Schema::table($tableName, function (Blueprint $table) {
-            $table->rawIndex('metadata', 'voucher_usage_metadata_gin_index', 'gin');
-        });
+        if (
+            commerce_json_column_type('vouchers', 'json') === 'jsonb'
+            && Schema::getConnection()->getDriverName() === 'pgsql'
+        ) {
+            DB::statement("CREATE INDEX IF NOT EXISTS voucher_usage_metadata_gin_index ON \"{$tableName}\" USING GIN (\"metadata\")");
+        }
     }
 
     public function down(): void

@@ -281,7 +281,7 @@ test('can get applied voucher codes', function (): void {
 });
 
 test('respects maximum vouchers per cart', function (): void {
-    config(['vouchers.cart.max_vouchers_per_cart' => 1]);
+    config(['vouchers.cart.max_vouchers_per_cart' => 1, 'vouchers.cart.replace_when_max_reached' => false]);
 
     VoucherModel::create([
         'name' => 'First Voucher',
@@ -312,6 +312,40 @@ test('respects maximum vouchers per cart', function (): void {
     // Should throw exception because max is 1
     Cart::applyVoucher('SECOND');
 })->throws(InvalidVoucherException::class, 'Cart already has the maximum number of vouchers');
+
+test('replaces voucher when max per cart and replacement enabled', function (): void {
+    config(['vouchers.cart.max_vouchers_per_cart' => 1, 'vouchers.cart.replace_when_max_reached' => true]);
+
+    VoucherModel::create([
+        'name' => 'First Voucher',
+        'code' => 'FIRST_REPL',
+        'type' => VoucherType::Percentage,
+        'status' => VoucherStatus::Active,
+        'value' => 10,
+        'currency' => 'MYR',
+        'starts_at' => now()->subDay(),
+        'expires_at' => now()->addMonth(),
+    ]);
+
+    VoucherModel::create([
+        'name' => 'Second Voucher',
+        'code' => 'SECOND_REPL',
+        'type' => VoucherType::Percentage,
+        'status' => VoucherStatus::Active,
+        'value' => 5,
+        'currency' => 'MYR',
+        'starts_at' => now()->subDay(),
+        'expires_at' => now()->addMonth(),
+    ]);
+
+    Cart::add('sku-replace', 'Test Product', 200.00, 1);
+
+    Cart::applyVoucher('FIRST_REPL');
+    Cart::applyVoucher('SECOND_REPL');
+
+    expect(Cart::hasVoucher('FIRST_REPL'))->toBeFalse()
+        ->and(Cart::hasVoucher('SECOND_REPL'))->toBeTrue();
+});
 
 test('throws exception when applying same voucher twice', function (): void {
     VoucherModel::create([

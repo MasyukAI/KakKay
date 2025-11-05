@@ -35,6 +35,7 @@ return [
 
     'cart' => [
         'max_vouchers_per_cart' => env('VOUCHERS_MAX_PER_CART', 1),
+        'replace_when_max_reached' => env('VOUCHERS_REPLACE_WHEN_MAX_REACHED', true),
         'auto_apply_best' => env('VOUCHERS_AUTO_APPLY_BEST', false),
         'condition_order' => env('VOUCHERS_CONDITION_ORDER', 50),
         'allow_stacking' => env('VOUCHERS_ALLOW_STACKING', false),
@@ -84,6 +85,23 @@ return [
     'table_names' => [
         'vouchers' => 'vouchers',
         'voucher_usage' => 'voucher_usage',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Database Options
+    |--------------------------------------------------------------------------
+    |
+    | Migrations default to portable JSON columns. If you prefer JSONB on
+    | PostgreSQL, set this to true BEFORE running initial migrations. When
+    | enabled and using pgsql, migrations will convert JSON columns to JSONB
+    | and create GIN indexes.
+    |
+    */
+
+    'database' => [
+        // Accepts 'json' or 'jsonb' (pgsql only). Defaults to global COMMERCE_JSON_COLUMN_TYPE.
+        'json_column_type' => env('VOUCHERS_JSON_COLUMN_TYPE', env('COMMERCE_JSON_COLUMN_TYPE', 'json')),
     ],
 
     /*

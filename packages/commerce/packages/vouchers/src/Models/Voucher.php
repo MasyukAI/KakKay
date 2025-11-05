@@ -7,6 +7,7 @@ namespace AIArmada\Vouchers\Models;
 use AIArmada\Vouchers\Enums\VoucherStatus;
 use AIArmada\Vouchers\Enums\VoucherType;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -14,7 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 
 /**
- * @property int $id
+ * @property string $id
  * @property string $code
  * @property string $name
  * @property string|null $description
@@ -39,9 +40,10 @@ use Illuminate\Database\Eloquent\Model as EloquentModel;
  */
 class Voucher extends Model
 {
-    use SoftDeletes;
+     use HasUuids;
+     use SoftDeletes;
 
-    protected $fillable = [
+     protected $fillable = [
         'code',
         'name',
         'description',
@@ -72,7 +74,10 @@ class Voucher extends Model
 
     public function usages(): HasMany
     {
-        return $this->hasMany(VoucherUsage::class);
+        /** @var HasMany<\AIArmada\Vouchers\Models\VoucherUsage, \AIArmada\Vouchers\Models\Voucher> $relation */
+        $relation = $this->hasMany(VoucherUsage::class);
+
+        return $relation;
     }
 
     public function owner(): MorphTo
@@ -88,7 +93,7 @@ class Voucher extends Model
 
         if (! $owner) {
             return $includeGlobal
-                ? $query
+                ? $query->whereNull('owner_id')
                 : $query->whereNull('owner_type')->whereNull('owner_id');
         }
 

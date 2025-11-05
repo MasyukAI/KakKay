@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -20,10 +21,11 @@ return new class extends Migration
             $table->integer('updated_on'); // Unix timestamp as per API
 
             // Client details - stored as JSON per API structure
-            $table->jsonb('client'); // Full client object from API
+            $jsonType = (string) commerce_json_column_type('chip', 'json');
+            $table->{$jsonType}('client'); // Full client object from API
 
             // Purchase details - stored as JSON per API structure
-            $table->jsonb('purchase'); // Full purchase object from API
+            $table->{$jsonType}('purchase'); // Full purchase object from API
 
             // Core identifiers - all UUIDs as per API
             $table->uuid('brand_id');
@@ -33,12 +35,12 @@ return new class extends Migration
             $table->uuid('client_id')->nullable();
 
             // Payment details - stored as JSON when present
-            $table->jsonb('payment')->nullable(); // Full payment object from API
+            $table->{$jsonType}('payment')->nullable(); // Full payment object from API
 
             // Additional API objects
-            $table->jsonb('issuer_details'); // Company/brand details
-            $table->jsonb('transaction_data'); // Payment method specific data
-            $table->jsonb('status_history'); // Status change tracking
+            $table->{$jsonType}('issuer_details'); // Company/brand details
+            $table->{$jsonType}('transaction_data'); // Payment method specific data
+            $table->{$jsonType}('status_history'); // Status change tracking
 
             // Status and workflow - All official CHIP purchase statuses
             $table->string('status', 32)
@@ -70,10 +72,10 @@ return new class extends Migration
             $table->integer('refundable_amount')->default(0);
 
             // Currency conversion data
-            $table->jsonb('currency_conversion')->nullable();
+            $table->{$jsonType}('currency_conversion')->nullable();
 
             // Payment methods and restrictions
-            $table->jsonb('payment_method_whitelist')->nullable();
+            $table->{$jsonType}('payment_method_whitelist')->nullable();
 
             // URLs and redirects
             $table->string('success_redirect', 500)->nullable();
@@ -99,7 +101,7 @@ return new class extends Migration
             $table->string('order_id')->nullable();
 
             // Metadata for additional application-specific data
-            $table->jsonb('metadata')->nullable();
+            $table->{$jsonType}('metadata')->nullable();
 
             // Laravel timestamps for internal use
             $table->timestamps();
@@ -113,10 +115,14 @@ return new class extends Migration
             $table->index('due');
         });
 
-        // Add GIN index for JSONB metadata column for efficient querying
-        Schema::table($tablePrefix.'purchases', function (Blueprint $table) {
-            $table->rawIndex('metadata', 'chip_purchases_metadata_gin_index', 'gin');
-        });
+        // Optional: create GIN index for metadata when using jsonb on PostgreSQL
+        if (
+            commerce_json_column_type('chip', 'json') === 'jsonb'
+            && Schema::getConnection()->getDriverName() === 'pgsql'
+        ) {
+            $tableName = $tablePrefix.'purchases';
+            DB::statement("CREATE INDEX IF NOT EXISTS chip_purchases_metadata_gin_index ON \"{$tableName}\" USING GIN (\"metadata\")");
+        }
     }
 
     public function down(): void

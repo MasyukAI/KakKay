@@ -1,69 +1,17 @@
 {
   "name": "aiarmada/filament-vouchers",
   "description": "A Filament v4 plugin for administering vouchers provided by the AIArmada vouchers package",
-  "type": "library",
   "license": "MIT",
   "homepage": "https://github.com/aiarmada/commerce",
   "support": {
     "issues": "https://github.com/aiarmada/commerce/issues",
     "source": "https://github.com/aiarmada/commerce"
   },
-  "keywords": [
-    "laravel",
-    "filament",
-    "plugin",
-    "voucher",
-    "discount",
-    "e-commerce",
-    "aiarmada"
-  ],
-  "authors": [
-    {
-      "name": "AIArmada",
-      "email": "info@aiarmada.com"
-    }
-  ],
-  "repositories": [
-    {
-      "type": "path",
-      "url": "../../",
-      "options": {
-        "symlink": true
-      }
-    },
-    {
-      "type": "path",
-      "url": "../vouchers",
-      "options": {
-        "symlink": true
-      }
-    },
-    {
-      "type": "path",
-      "url": "../filament-cart",
-      "options": {
-        "symlink": true
-      }
-    }
-  ],
   "require": {
-    "php": "^8.4",
+    "php": "^8.2",
     "aiarmada/commerce-support": "self.version",
-    "aiarmada/commerce": "self.version",
     "aiarmada/vouchers": "self.version",
     "filament/filament": "^4.0"
-  },
-  "require-dev": {
-    "driftingly/rector-laravel": "^2.0",
-    "larastan/larastan": "^3.0",
-    "laravel/framework": "^12.0",
-    "laravel/pint": "^1.18",
-    "livewire/livewire": "^3.0",
-    "orchestra/testbench": "^10.0",
-    "pestphp/pest": "^4.0",
-    "pestphp/pest-plugin-browser": "^4.0",
-    "pestphp/pest-plugin-laravel": "^4.0",
-    "pestphp/pest-plugin-type-coverage": "^4.0"
   },
   "suggest": {
     "aiarmada/filament-cart": "Enables deep linking from voucher usage records to cart snapshots"
@@ -75,11 +23,6 @@
       "AIArmada\\FilamentVouchers\\Database\\Seeders\\": "database/seeders/"
     }
   },
-  "autoload-dev": {
-    "psr-4": {
-      "AIArmada\\FilamentVouchers\\Tests\\": "tests/"
-    }
-  },
   "extra": {
     "laravel": {
       "providers": [
@@ -88,15 +31,7 @@
     }
   },
   "config": {
-    "sort-packages": true,
-    "allow-plugins": {
-      "pestphp/pest-plugin": true
-    }
-  },
-  "scripts": {
-    "test": "vendor/bin/pest",
-    "format": "vendor/bin/pint",
-    "analyse": "vendor/bin/phpstan analyse"
+    "sort-packages": true
   },
   "minimum-stability": "dev",
   "prefer-stable": true

@@ -168,5 +168,7 @@ return [
     */
     'database' => [
         'table_prefix' => env('CHIP_TABLE_PREFIX', 'chip_'),
+        // Preferred JSON column type if/when JSON columns are introduced
+        'json_column_type' => env('CHIP_JSON_COLUMN_TYPE', env('COMMERCE_JSON_COLUMN_TYPE', 'json')),
     ],
 ];

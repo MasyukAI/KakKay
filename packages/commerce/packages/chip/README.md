@@ -31,6 +31,24 @@ php artisan vendor:publish --tag="chip-migrations" # optional persistence
 php artisan migrate
 ```
 
+### Database JSON type (PostgreSQL)
+
+Migrations default to portable `json` columns. To opt into `jsonb` on a fresh install, set one of the following BEFORE running migrations:
+
+```env
+COMMERCE_JSON_COLUMN_TYPE=jsonb
+# or per-package override
+CHIP_JSON_COLUMN_TYPE=jsonb
+```
+
+Or run the interactive setup:
+
+```bash
+php artisan commerce:configure-database
+```
+
+When using PostgreSQL + `jsonb`, a GIN index is created automatically on `purchases.metadata`. Other JSON fields are left unindexed by default; add indexes based on your query patterns.
+
 ### Environment variables
 
 ```env

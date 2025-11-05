@@ -57,8 +57,10 @@ trait HasVouchers
         $currentVoucherCount = count($this->getAppliedVouchers());
 
         if ($currentVoucherCount >= $maxVouchers && $maxVouchers > 0) {
-            // If max is 1 and cart has vouchers, remove them to allow replacement
-            if ($maxVouchers === 1 && $currentVoucherCount > 0) {
+            $replaceWhenMaxReached = config('vouchers.cart.replace_when_max_reached', false);
+            
+            if ($replaceWhenMaxReached) {
+                // Clear existing vouchers to make room for the new one
                 $this->clearVouchers();
             } else {
                 throw new InvalidVoucherException(

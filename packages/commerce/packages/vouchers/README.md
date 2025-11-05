@@ -36,6 +36,24 @@ Run migrations:
 php artisan migrate
 ```
 
+### JSON vs JSONB (PostgreSQL)
+
+Migrations default to portable `json` columns. To opt into `jsonb` on a fresh install, set one of the following BEFORE running migrations:
+
+```env
+COMMERCE_JSON_COLUMN_TYPE=jsonb
+# or per-package override
+VOUCHERS_JSON_COLUMN_TYPE=jsonb
+```
+
+Or run the interactive setup:
+
+```bash
+php artisan commerce:configure-database
+```
+
+When using PostgreSQL + `jsonb`, GIN indexes are created automatically on voucher JSON fields: `applicable_products`, `excluded_products`, `applicable_categories`, and `metadata`.
+
 ## 🚀 Quick Start
 
 ### Create a Voucher

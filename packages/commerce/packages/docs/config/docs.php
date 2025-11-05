@@ -5,6 +5,17 @@ declare(strict_types=1);
 return [
     /*
     |--------------------------------------------------------------------------
+    | Database
+    |--------------------------------------------------------------------------
+    | Preferred JSON column type for future database tables that include JSON
+    | data. This mirrors other packages and defaults to the global setting.
+    */
+    'database' => [
+        'json_column_type' => env('DOCS_JSON_COLUMN_TYPE', env('COMMERCE_JSON_COLUMN_TYPE', 'json')),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Doc Types Configuration
     |--------------------------------------------------------------------------
     |

@@ -10,6 +10,8 @@ Support package contains:
 - **MoneyHelper**: Currency utilities for safe money operations
 - **Enum Concerns**: Traits for enhanced Laravel enums
 
+Tip: Configure database JSON type via `php artisan commerce:configure-database` to set `COMMERCE_JSON_COLUMN_TYPE` or per-package overrides before running migrations.
+
 ## Exception Hierarchy
 
 ### CommerceException

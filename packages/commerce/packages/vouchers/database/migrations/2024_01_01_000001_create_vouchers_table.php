@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -11,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create(config('vouchers.table_names.vouchers', 'vouchers'), function (Blueprint $table) {
-            $table->id();
-            $table->nullableMorphs('owner');
+            $table->uuid('id')->primary();
+            $table->nullableUuidMorphs('owner');
             $table->string('code')->unique();
             $table->string('name');
             $table->text('description')->nullable();
@@ -37,13 +38,14 @@ return new class extends Migration
             $table->datetime('expires_at')->nullable();
             $table->string('status')->default('active'); // active, paused, expired, depleted
 
-            // Targeting
-            $table->jsonb('applicable_products')->nullable();
-            $table->jsonb('excluded_products')->nullable();
-            $table->jsonb('applicable_categories')->nullable();
+            // Targeting (portable by default, overridable via config)
+            $jsonType = (string) commerce_json_column_type('vouchers', 'json');
+            $table->{$jsonType}('applicable_products')->nullable();
+            $table->{$jsonType}('excluded_products')->nullable();
+            $table->{$jsonType}('applicable_categories')->nullable();
 
             // Metadata
-            $table->jsonb('metadata')->nullable();
+            $table->{$jsonType}('metadata')->nullable();
 
             $table->timestamps();
             $table->softDeletes();
@@ -54,14 +56,17 @@ return new class extends Migration
             $table->index(['starts_at', 'expires_at']);
         });
 
-        // Add GIN indexes for JSONB columns for efficient querying
+        // Optional: create GIN indexes when using jsonb on PostgreSQL
         $tableName = config('vouchers.table_names.vouchers', 'vouchers');
-        Schema::table($tableName, function (Blueprint $table) {
-            $table->rawIndex('applicable_products', 'vouchers_applicable_products_gin_index', 'gin');
-            $table->rawIndex('excluded_products', 'vouchers_excluded_products_gin_index', 'gin');
-            $table->rawIndex('applicable_categories', 'vouchers_applicable_categories_gin_index', 'gin');
-            $table->rawIndex('metadata', 'vouchers_metadata_gin_index', 'gin');
-        });
+        if (
+            commerce_json_column_type('vouchers', 'json') === 'jsonb'
+            && Schema::getConnection()->getDriverName() === 'pgsql'
+        ) {
+            DB::statement("CREATE INDEX IF NOT EXISTS vouchers_applicable_products_gin_index ON \"{$tableName}\" USING GIN (\"applicable_products\")");
+            DB::statement("CREATE INDEX IF NOT EXISTS vouchers_excluded_products_gin_index ON \"{$tableName}\" USING GIN (\"excluded_products\")");
+            DB::statement("CREATE INDEX IF NOT EXISTS vouchers_applicable_categories_gin_index ON \"{$tableName}\" USING GIN (\"applicable_categories\")");
+            DB::statement("CREATE INDEX IF NOT EXISTS vouchers_metadata_gin_index ON \"{$tableName}\" USING GIN (\"metadata\")");
+        }
     }
 
     public function down(): void

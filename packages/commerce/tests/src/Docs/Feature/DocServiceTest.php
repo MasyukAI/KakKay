@@ -106,7 +106,7 @@ test('it can mark doc as paid', function (): void {
         ->and($doc->paid_at)->not->toBeNull();
 });
 
-test('it can check if document is overdue', function (): void {
+test('it can check if doc is overdue', function (): void {
     $service = new DocService;
 
     $doc = $service->createDoc(DocData::from([
@@ -121,7 +121,7 @@ test('it can check if document is overdue', function (): void {
 });
 
 test('it uses default template when none specified', function (): void {
-    DocumentTemplate::create([
+    DocTemplate::create([
         'name' => 'Test Default',
         'slug' => 'test-default',
         'view_name' => 'test-default',
@@ -140,7 +140,7 @@ test('it uses default template when none specified', function (): void {
 });
 
 test('it can use custom template', function (): void {
-    $template = DocumentTemplate::create([
+    $template = DocTemplate::create([
         'name' => 'Custom Template',
         'slug' => 'custom',
         'view_name' => 'custom',
@@ -159,13 +159,13 @@ test('it can use custom template', function (): void {
         ->and($doc->template->slug)->toBe('custom');
 });
 
-test('document status enum has correct labels', function (): void {
+test('doc status enum has correct labels', function (): void {
     expect(DocStatus::DRAFT->label())->toBe('Draft')
         ->and(DocStatus::PAID->label())->toBe('Paid')
         ->and(DocStatus::OVERDUE->label())->toBe('Overdue');
 });
 
-test('document status enum has correct colors', function (): void {
+test('doc status enum has correct colors', function (): void {
     expect(DocStatus::DRAFT->color())->toBe('gray')
         ->and(DocStatus::PAID->color())->toBe('success')
         ->and(DocStatus::OVERDUE->color())->toBe('danger');
@@ -189,6 +189,6 @@ test('it supports backward compatibility with invoice keys', function (): void {
     ]));
 
     expect($doc->doc_number)->toBe('INV-123')
-        ->and($doc->documentable_type)->toBe('App\\Models\\Order')
-        ->and($doc->documentable_id)->toBe('123');
+        ->and($doc->docable_type)->toBe('App\\Models\\Order')
+        ->and($doc->docable_id)->toBe('123');
 });

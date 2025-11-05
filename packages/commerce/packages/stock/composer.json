@@ -1,60 +1,25 @@
 {
   "name": "aiarmada/stock",
   "description": "Comprehensive stock and inventory management system for Laravel with UUID support, movement tracking, and reservation capabilities",
-  "type": "library",
   "license": "MIT",
   "homepage": "https://github.com/aiarmada/commerce",
   "support": {
     "issues": "https://github.com/aiarmada/commerce/issues",
     "source": "https://github.com/aiarmada/commerce"
   },
-  "keywords": [
-    "laravel",
-    "stock",
-    "inventory",
-    "management",
-    "uuid",
-    "aiarmada"
-  ],
-  "authors": [
-    {
-      "name": "AIArmada",
-      "email": "info@aiarmada.com"
-    }
-  ],
   "require": {
     "php": "^8.4",
     "ext-json": "*",
     "aiarmada/commerce-support": "self.version",
     "illuminate/database": "^12.0"
   },
-  "require-dev": {
-    "orchestra/testbench": "^10.0",
-    "pestphp/pest": "^4.0",
-    "pestphp/pest-plugin-laravel": "^4.0",
-    "larastan/larastan": "^3.0",
-    "laravel/pint": "^1.18"
-  },
   "autoload": {
     "psr-4": {
       "AIArmada\\Stock\\": "src/"
     }
   },
-  "autoload-dev": {
-    "psr-4": {
-      "AIArmada\\Stock\\Tests\\": "tests/"
-    }
-  },
-  "scripts": {
-    "test": "vendor/bin/pest",
-    "format": "vendor/bin/pint",
-    "analyse": "vendor/bin/phpstan analyse"
-  },
   "config": {
-    "sort-packages": true,
-    "allow-plugins": {
-      "pestphp/pest-plugin": true
-    }
+    "sort-packages": true
   },
   "extra": {
     "laravel": {

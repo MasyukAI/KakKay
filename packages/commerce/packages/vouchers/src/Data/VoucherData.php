@@ -12,7 +12,7 @@ use DateTimeInterface;
 readonly class VoucherData
 {
     public function __construct(
-        public int $id,
+        public string $id,
         public string $code,
         public string $name,
         public ?string $description,
@@ -94,7 +94,7 @@ readonly class VoucherData
             : null;
 
         return new self(
-            id: isset($data['id']) ? (int) $data['id'] : 0,
+            id: isset($data['id']) ? (string) $data['id'] : '',
             code: (string) ($data['code'] ?? ''),
             name: (string) ($data['name'] ?? ''),
             description: isset($data['description']) ? (string) $data['description'] : null,

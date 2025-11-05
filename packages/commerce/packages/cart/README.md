@@ -19,6 +19,24 @@ The full project documentation lives in the repository root under [`docs/`](../.
 - [Configuration Reference](../../docs/configuration.md)
 - [Conditions & Discounts](../../docs/conditions.md)
 
+## JSON vs JSONB (PostgreSQL)
+
+Migrations default to portable `json` columns. To opt into `jsonb` on a fresh install, set one of the following BEFORE running migrations:
+
+```env
+COMMERCE_JSON_COLUMN_TYPE=jsonb
+# or per-package override
+CART_JSON_COLUMN_TYPE=jsonb
+```
+
+Or run the interactive setup:
+
+```bash
+php artisan commerce:configure-database
+```
+
+When using PostgreSQL + `jsonb`, GIN indexes are created automatically on `items`, `conditions`, and `metadata`.
+
 ## Local Development
 
 Clone the monorepo and install dependencies:

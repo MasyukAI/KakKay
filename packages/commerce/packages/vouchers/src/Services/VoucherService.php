@@ -16,6 +16,7 @@ use Akaunting\Money\Money;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Facades\DB;
 
 class VoucherService
@@ -109,6 +110,8 @@ class VoucherService
             ->where('code', $this->normalizeCode($code))
             ->first();
 
+        /** @var \AIArmada\Vouchers\Models\Voucher|null $voucher */
+
         if (! $voucher) {
             return false;
         }
@@ -155,7 +158,7 @@ class VoucherService
     }
 
     /**
-     * @param  ?array<string, mixed>  $cartSnapshot
+     * @param array<string, mixed>|null $metadata
      */
     public function recordUsage(
         string $code,
@@ -169,6 +172,8 @@ class VoucherService
         $voucher = $voucherModel ?? $this->query()
             ->where('code', $this->normalizeCode($code))
             ->firstOrFail();
+
+        /** @var \AIArmada\Vouchers\Models\Voucher $voucher */
 
         DB::transaction(function () use (
             $voucher,
@@ -199,6 +204,9 @@ class VoucherService
         });
     }
 
+    /**
+     * @param array<string, mixed>|null $metadata
+     */
     public function redeemManually(
         string $code,
         Money $discountAmount,
@@ -210,6 +218,8 @@ class VoucherService
         $voucher = $this->query()
             ->where('code', $this->normalizeCode($code))
             ->firstOrFail();
+
+        /** @var \AIArmada\Vouchers\Models\Voucher $voucher */
 
         if (
             config('vouchers.redemption.manual_requires_flag', true)
@@ -233,23 +243,24 @@ class VoucherService
     }
 
     /**
-     * @return Collection<int, \Illuminate\Database\Eloquent\Model>
+     * @return EloquentCollection<int, \AIArmada\Vouchers\Models\VoucherUsage>
      */
-    public function getUsageHistory(string $code): Collection
+    public function getUsageHistory(string $code): EloquentCollection
     {
         $voucher = $this->query()
             ->where('code', $this->normalizeCode($code))
             ->first();
 
         if (! $voucher) {
-            return collect();
+            return new EloquentCollection();
         }
 
-        return collect(
-            $voucher->usages()
-                ->latest('used_at')
-                ->get()
-        );
+        /** @var EloquentCollection<int, \AIArmada\Vouchers\Models\VoucherUsage> $result */
+        $result = $voucher->usages()
+            ->latest('used_at')
+            ->get();
+
+        return $result;
     }
 
     protected function normalizeCode(string $code): string
@@ -261,6 +272,9 @@ class VoucherService
         return mb_trim($code);
     }
 
+    /**
+     * @return Builder<\AIArmada\Vouchers\Models\Voucher>
+     */
     protected function query(): Builder
     {
         return VoucherModel::query()->forOwner(

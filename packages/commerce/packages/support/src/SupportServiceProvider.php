@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AIArmada\CommerceSupport;
 
+use AIArmada\CommerceSupport\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -17,7 +18,12 @@ final class SupportServiceProvider extends PackageServiceProvider
 {
     public function configurePackage(Package $package): void
     {
-        $package->name('commerce-support');
+        $package
+            ->name('commerce-support')
+            ->hasCommands([
+                InstallCommand::class,
+                \AIArmada\CommerceSupport\Commands\ConfigureDatabaseCommand::class,
+            ]);
     }
 
     public function packageRegistered(): void

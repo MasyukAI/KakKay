@@ -1,69 +1,23 @@
 {
   "name": "aiarmada/vouchers",
   "description": "Flexible voucher and coupon system for Laravel with support for multiple redemption types, usage limits, expiry dates, and cart integration",
-  "type": "library",
   "license": "MIT",
   "homepage": "https://github.com/aiarmada/commerce",
   "support": {
     "issues": "https://github.com/aiarmada/commerce/issues",
     "source": "https://github.com/aiarmada/commerce"
   },
-  "keywords": [
-    "laravel",
-    "laravel12",
-    "vouchers",
-    "coupons",
-    "discounts",
-    "cart",
-    "e-commerce",
-    "aiarmada"
-  ],
-  "authors": [
-    {
-      "name": "AIArmada",
-      "email": "info@aiarmada.com"
-    }
-  ],
-  "repositories": [
-    {
-      "type": "path",
-      "url": "../cart"
-    },
-    {
-      "type": "path",
-      "url": "../../"
-    }
-  ],
   "require": {
     "php": "^8.4",
     "aiarmada/commerce-support": "self.version",
+    "aiarmada/cart": "self.version",
+    "akaunting/laravel-money": "^6.0",
     "illuminate/database": "^12.0"
-  },
-  "suggest": {
-    "aiarmada/cart": "Required for cart integration features (VoucherCondition, CartWithVouchers)"
-  },
-  "require-dev": {
-    "orchestra/testbench": "^10.0",
-    "pestphp/pest": "^4.0",
-    "pestphp/pest-plugin-laravel": "^4.0",
-    "laravel/pint": "^1.18",
-    "phpunit/phpunit": "^12.3",
-    "larastan/larastan": "^3.0"
   },
   "autoload": {
     "psr-4": {
       "AIArmada\\Vouchers\\": "src/"
     }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "AIArmada\\Vouchers\\Tests\\": "tests/"
-    }
-  },
-  "scripts": {
-    "test": "vendor/bin/pest",
-    "format": "vendor/bin/pint",
-    "analyse": "vendor/bin/phpstan analyse"
   },
   "extra": {
     "laravel": {
@@ -76,10 +30,7 @@
     }
   },
   "config": {
-    "sort-packages": true,
-    "allow-plugins": {
-      "pestphp/pest-plugin": true
-    }
+    "sort-packages": true
   },
   "minimum-stability": "dev",
   "prefer-stable": true

@@ -18,10 +18,20 @@ This is the initial public release of AIArmada Commerce. No upgrade path needed.
 
 ### System Requirements
 
-- PHP: ^8.4
+- PHP: ^8.4 (baseline raised from ^8.2)
 - Laravel: ^12.0
 - Filament: ^4.0 (optional, for admin panels)
 - PostgreSQL: 14+ (recommended) or MySQL 8+
+
+### Migration & Schema Changes
+
+- Database portability: JSON columns are now created as `json` by default across all drivers. Engine-specific features like `jsonb` and raw GIN indexes are opt-in.
+- PostgreSQL opt-in: To use `jsonb` on fresh installs, set `COMMERCE_JSON_COLUMN_TYPE=jsonb` (or per-package overrides like `VOUCHERS_JSON_COLUMN_TYPE=jsonb`, `CART_JSON_COLUMN_TYPE=jsonb`, `CHIP_JSON_COLUMN_TYPE=jsonb`) before running migrations. GIN indexes are created automatically for vouchers tables and selected cart/CHIP fields when using PostgreSQL.
+- UUID consistency: Voucher IDs and related foreign keys use UUIDs across the vouchers domain.
+
+### Configuration Changes
+
+- Vouchers cart behavior: New `vouchers.cart.replace_when_max_reached` controls how to handle adding a voucher when the cart already has the maximum allowed.
 
 ## Future Upgrade Paths
 

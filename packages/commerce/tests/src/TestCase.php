@@ -136,6 +136,7 @@ abstract class TestCase extends Orchestra
     protected function defineDatabaseMigrations(): void
     {
         $this->loadMigrationsFrom(__DIR__.'/../../packages/chip/database/migrations');
+        $this->loadMigrationsFrom(__DIR__.'/../../packages/vouchers/database/migrations');
     }
 
     protected function setUpDatabase(): void
@@ -182,10 +183,10 @@ abstract class TestCase extends Orchestra
             $table->date('issue_date');
             $table->date('due_date')->nullable();
             $table->timestamp('paid_at')->nullable();
-            $table->decimal('subtotal', 15, 2)->default(0);
-            $table->decimal('tax_amount', 15, 2)->default(0);
-            $table->decimal('discount_amount', 15, 2)->default(0);
-            $table->decimal('total', 15, 2)->default(0);
+            $table->bigInteger('subtotal')->default(0);
+            $table->bigInteger('tax_amount')->default(0);
+            $table->bigInteger('discount_amount')->default(0);
+            $table->bigInteger('total')->default(0);
             $table->string('currency', 3)->default('MYR');
             $table->text('notes')->nullable();
             $table->text('terms')->nullable();
@@ -228,51 +229,6 @@ abstract class TestCase extends Orchestra
             $table->uuid('id')->primary();
             $table->string('name');
             $table->timestamps();
-        });
-
-        // Vouchers tables
-        Schema::dropIfExists('voucher_usage');
-        Schema::dropIfExists('vouchers');
-
-        Schema::create('vouchers', function (Blueprint $table) {
-            $table->id();
-            $table->nullableMorphs('owner');
-            $table->string('code')->unique();
-            $table->string('name');
-            $table->text('description')->nullable();
-            $table->string('type');
-            $table->decimal('value', 10, 2);
-            $table->string('currency', 3)->default('MYR');
-            $table->decimal('min_cart_value', 10, 2)->nullable();
-            $table->decimal('max_discount', 10, 2)->nullable();
-            $table->integer('usage_limit')->nullable();
-            $table->integer('usage_limit_per_user')->nullable();
-            $table->integer('times_used')->default(0);
-            $table->boolean('allows_manual_redemption')->default(false);
-            $table->datetime('starts_at')->nullable();
-            $table->datetime('expires_at')->nullable();
-            $table->string('status')->default('active');
-            $table->json('applicable_products')->nullable();
-            $table->json('excluded_products')->nullable();
-            $table->json('applicable_categories')->nullable();
-            $table->json('metadata')->nullable();
-            $table->timestamps();
-            $table->softDeletes();
-        });
-
-        Schema::create('voucher_usage', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('voucher_id')->constrained()->cascadeOnDelete();
-            $table->string('user_identifier');
-            $table->string('cart_identifier')->nullable();
-            $table->decimal('discount_amount', 10, 2);
-            $table->string('currency', 3);
-            $table->json('cart_snapshot')->nullable();
-            $table->string('channel')->default('automatic');
-            $table->nullableMorphs('redeemed_by');
-            $table->text('notes')->nullable();
-            $table->json('metadata')->nullable();
-            $table->timestamp('used_at');
         });
     }
 }

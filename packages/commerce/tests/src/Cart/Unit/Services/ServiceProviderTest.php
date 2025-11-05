@@ -193,7 +193,7 @@ it('integration: publishes config, migrations, and views', function () {
     $provider->configurePackage($package);
 
     expect($package->name)->toBe('cart');
-    expect($package->commands)->toHaveCount(2);  // ClearAbandonedCartsCommand + InstallCommerceCommand
+    expect($package->commands)->toHaveCount(1);  // ClearAbandonedCartsCommand
     expect(true)->toBeTrue(); // Package was configured successfully
 });
 

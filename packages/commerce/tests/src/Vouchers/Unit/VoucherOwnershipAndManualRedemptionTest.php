@@ -11,12 +11,15 @@ use AIArmada\Vouchers\Models\VoucherUsage;
 use AIArmada\Vouchers\Services\VoucherService;
 use AIArmada\Vouchers\Services\VoucherValidator;
 use Akaunting\Money\Money;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 class TestOwner extends EloquentModel
 {
+    use HasUuids;
+
     protected $table = 'test_owners';
 
     protected $guarded = [];
@@ -28,7 +31,7 @@ beforeEach(function (): void {
     Schema::dropIfExists('test_owners');
 
     Schema::create('test_owners', function (Blueprint $table): void {
-        $table->id();
+        $table->uuid('id')->primary();
         $table->string('name');
     });
 
@@ -57,7 +60,6 @@ it('redeems voucher manually when allowed', function (): void {
 
     $service->redeemManually(
         code: 'MANUAL1',
-        userIdentifier: 'user-123',
         discountAmount: Money::USD(1000),
         reference: 'offline-001',
         metadata: ['source' => 'counter'],
@@ -69,8 +71,8 @@ it('redeems voucher manually when allowed', function (): void {
 
     expect($usage)->not->toBeNull()
         ->and($usage->channel)->toBe(config('vouchers.redemption.channels.manual'))
-        ->and($usage->cart_identifier)->toBe('offline-001')
-        ->and($usage->metadata)->toBe(['source' => 'counter'])
+        ->and($usage->metadata['reference'])->toBe('offline-001')
+        ->and($usage->metadata['source'])->toBe('counter')
         ->and($usage->notes)->toBe('Redeemed at counter')
         ->and($usage->redeemedBy)->toBeInstanceOf(TestOwner::class)
         ->and($usage->redeemedBy->is($redeemer))->toBeTrue();
@@ -96,7 +98,6 @@ it('rejects manual redemption when voucher disallows it', function (): void {
 
     $service->redeemManually(
         code: 'BLOCKED',
-        userIdentifier: 'user-123',
         discountAmount: Money::USD(500)
     );
 })->throws(ManualRedemptionNotAllowedException::class);
