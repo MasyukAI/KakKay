@@ -74,9 +74,11 @@ abstract class TestCase extends Orchestra
         // Set USD currency for consistent test formatting
         $app['config']->set('cart.money.default_currency', 'USD');
 
+        $database = getenv('DB_DATABASE') ?: ':memory:';
+
         $app['config']->set('database.connections.testing', [
             'driver' => 'sqlite',
-            'database' => ':memory:',
+            'database' => $database,
             'prefix' => '',
         ]);
 
