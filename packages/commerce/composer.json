@@ -46,7 +46,11 @@
     "repositories": [
         {
             "type": "path",
-            "url": "packages/support"
+            "url": "./packages/support"
+        },
+        {
+            "type": "path",
+            "url": "./packages/cart"
         }
     ],
     "autoload": {

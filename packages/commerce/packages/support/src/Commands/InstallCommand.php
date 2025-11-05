@@ -23,14 +23,13 @@ final class InstallCommand extends Command
     /**
      * @var array<string, string>
      */
-    private const REQUIRED_PACKAGES = [
-        'cart' => 'Cart Management',
-    ];
+    private const REQUIRED_PACKAGES = [];
 
     /**
      * @var array<string, string>
      */
     private const OPTIONAL_PACKAGES = [
+        'cart' => 'Cart Management (Core)',
         'stock' => 'Stock Management',
         'vouchers' => 'Voucher System',
         'chip' => 'CHIP Payment Gateway',
@@ -63,10 +62,24 @@ final class InstallCommand extends Command
     {
         $this->displayWelcome();
 
-        // Ask JSON column type preference once and persist globally
-        $this->configureJsonColumnType();
+        // If --cart is passed, mirror Filament's --panels: set up everything
+        if ($this->option('cart')) {
+            if (! class_exists(\AIArmada\Cart\CartServiceProvider::class)) {
+                $this->components->error('Please require [aiarmada/commerce] (which includes [aiarmada/cart]) before attempting to install.');
 
-        $packages = $this->determinePackagesToInstall();
+                return self::FAILURE;
+            }
+
+            // Configure env defaults before installing packages
+            $this->configureJsonColumnType();
+
+            $packages = array_merge(self::REQUIRED_PACKAGES, self::OPTIONAL_PACKAGES);
+        } else {
+            // Ask JSON column type preference once and persist globally
+            $this->configureJsonColumnType();
+
+            $packages = $this->determinePackagesToInstall();
+        }
 
         if (empty($packages)) {
             $this->components->error('No packages selected for installation.');
@@ -94,6 +107,7 @@ final class InstallCommand extends Command
     protected function getOptions(): array
     {
         return [
+            new InputOption('cart', null, InputOption::VALUE_NONE, 'Set up Cart management (core package)'),
             new InputOption('all', null, InputOption::VALUE_NONE, 'Install all optional packages'),
             new InputOption('stock', null, InputOption::VALUE_NONE, 'Install Stock management'),
             new InputOption('vouchers', null, InputOption::VALUE_NONE, 'Install Voucher system'),

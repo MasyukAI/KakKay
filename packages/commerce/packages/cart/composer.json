@@ -1,6 +1,6 @@
 {
   "name": "aiarmada/cart",
-  "description": "Flexible shopping cart system for Laravel with support for conditions, discounts, multiple storage drivers, and cart instances",
+  "description": "A comprehensive commerce ecosystem for Laravel with cart, payments, vouchers, shipping, and inventory management.",
   "license": "MIT",
   "homepage": "https://github.com/aiarmada/commerce",
   "support": {
