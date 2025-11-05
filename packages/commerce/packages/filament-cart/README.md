@@ -3,7 +3,7 @@
 Filament Cart brings the aiarmada/cart ecosystem into Filament with blazing-fast, normalized cart data, a delightful admin experience, and dynamic pricing insights built for high-volume commerce teams.
 
 <p align="center">
-    <strong>Laravel&nbsp;12 · Filament&nbsp;4 · aiarmada/cart · Tailwind&nbsp;4</strong>
+    <strong>Laravel&nbsp;12 · Filament&nbsp;5 · aiarmada/cart · Tailwind&nbsp;4</strong>
 </p>
 
 [![Packagist](https://img.shields.io/packagist/v/aiarmada/filament-cart.svg?style=flat-square)](https://packagist.org/packages/aiarmada/filament-cart)
@@ -28,7 +28,7 @@ Filament Cart brings the aiarmada/cart ecosystem into Filament with blazing-fast
 composer require aiarmada/filament-cart
 ```
 
-Register the plugin with your Filament panel (requires Laravel 12+, Filament 4+, and aiarmada/cart):
+Register the plugin with your Filament panel (requires Laravel 12+, Filament 5+, and aiarmada/cart):
 
 ```php
 <?php

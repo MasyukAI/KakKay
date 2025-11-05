@@ -1,6 +1,6 @@
 # AIArmada Filament CHIP
 
-> A comprehensive Filament v4 admin plugin for exploring and managing CHIP payment data ingested by the [aiarmada/chip](https://github.com/aiarmada/chip) package.
+> A comprehensive Filament v5 admin plugin for exploring and managing CHIP payment data ingested by the [aiarmada/chip](https://github.com/aiarmada/chip) package.
 
 [![Packagist](https://img.shields.io/packagist/v/aiarmada/filament-chip.svg?style=flat-square)](https://packagist.org/packages/aiarmada/filament-chip)
 [![Tests](https://img.shields.io/github/actions/workflow/status/aiarmada/filament-chip/tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/aiarmada/filament-chip/actions)
@@ -24,7 +24,7 @@
 
 - PHP ^8.4
 - Laravel ^12.0
-- Filament ^4.0
+- Filament ^5.0
 - aiarmada/chip ^0.1
 
 ---

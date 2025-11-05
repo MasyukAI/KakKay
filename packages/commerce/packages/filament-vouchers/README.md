@@ -1,6 +1,6 @@
 # AIArmada Filament Vouchers Plugin
 
-A comprehensive Filament v4 plugin that provides a futuristic admin experience for managing vouchers powered by the `aiarmada/vouchers` package. It ships with rich resources, usage analytics, manual redemption workflows, and optional deep links to the Filament Cart plugin.
+A comprehensive Filament v5 plugin that provides a futuristic admin experience for managing vouchers powered by the `aiarmada/vouchers` package. It ships with rich resources, usage analytics, manual redemption workflows, and optional deep links to the Filament Cart plugin.
 
 [![Packagist](https://img.shields.io/packagist/v/aiarmada/filament-vouchers.svg?style=flat-square)](https://packagist.org/packages/aiarmada/filament-vouchers)
 [![Tests](https://img.shields.io/github/actions/workflow/status/aiarmada/filament-vouchers/tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/aiarmada/filament-vouchers/actions)
@@ -25,7 +25,7 @@ A comprehensive Filament v4 plugin that provides a futuristic admin experience f
 
 - PHP ^8.4
 - Laravel ^12.0
-- Filament ^4.0
+- Filament ^5.0
 - aiarmada/vouchers ^0.1
 
 ---

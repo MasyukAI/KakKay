@@ -25,5 +25,5 @@ All notable changes to `aiarmada/filament-chip` will be documented in this file.
 ### Dependencies
 - PHP ^8.4
 - Laravel ^12.0
-- Filament ^4.0
+- Filament ^5.0
 - aiarmada/chip ^0.1

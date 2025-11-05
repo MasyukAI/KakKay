@@ -6,7 +6,7 @@ All notable changes to `aiarmada/filament-vouchers` will be documented in this f
 
 ### Added
 - Initial release
-- Filament v4 admin plugin for voucher management
+- Filament v5 admin plugin for voucher management
 - Voucher resource with create, edit, and view operations
 - Usage history resource with redemption tracking
 - Dashboard widget with voucher statistics
@@ -23,5 +23,5 @@ All notable changes to `aiarmada/filament-vouchers` will be documented in this f
 ### Dependencies
 - PHP ^8.4
 - Laravel ^12.0
-- Filament ^4.0
+- Filament ^5.0
 - aiarmada/vouchers ^0.1

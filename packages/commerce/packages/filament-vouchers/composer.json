@@ -1,6 +1,6 @@
 {
   "name": "aiarmada/filament-vouchers",
-  "description": "A Filament v4 plugin for administering vouchers provided by the AIArmada vouchers package",
+  "description": "A Filament v5 plugin for administering vouchers provided by the AIArmada vouchers package",
   "license": "MIT",
   "homepage": "https://github.com/aiarmada/commerce",
   "support": {
