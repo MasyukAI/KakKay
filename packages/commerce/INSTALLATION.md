@@ -1,234 +1,301 @@
-# Commerce Installation Guide
+# Installation Guide
 
-This guide explains how to install the Commerce package suite in your Laravel application.
+Complete guide for installing AIArmada Commerce packages in your Laravel application.
 
-## Quick Start
+## Requirements
 
-```bash
-# Install with interactive prompts
-php artisan commerce:install
-```
-
-The installer will:
-1. ✅ Always install Cart, Stock, and Vouchers (required)
-2. ✅ Prompt you to select optional packages (CHIP, JNT, Filament)
-3. ✅ Publish configuration files
-4. ✅ Run migrations
-5. ✅ Set up environment variables
+- PHP 8.4+
+- Laravel 12.0+
+- Composer
 
 ## Installation Options
 
-### Interactive Mode (Recommended)
+### Option 1: Install Complete Suite
+
+Install all packages at once:
+
 ```bash
-php artisan commerce:install
-```
-You'll be prompted to select which optional packages to install using a beautiful multiselect interface.
-
-### Install All Packages
-```bash
-php artisan commerce:install --all
-```
-Installs all required and optional packages without prompts.
-
-### Install Specific Packages
-```bash
-# Install with CHIP payment gateway
-php artisan commerce:install --chip
-
-# Install with J&T Express shipping
-php artisan commerce:install --jnt
-
-# Install with Filament UI components
-php artisan commerce:install --filament
-
-# Combine multiple options
-php artisan commerce:install --chip --jnt --filament
+composer require aiarmada/commerce
 ```
 
-### Force Overwrite
+This meta-package includes:
+- `aiarmada/commerce-support` - Core utilities
+- `aiarmada/cart` - Shopping cart
+- `aiarmada/stock` - Inventory management
+- `aiarmada/vouchers` - Voucher system
+- `aiarmada/chip` - CHIP payment gateway
+- `aiarmada/jnt` - J&T Express shipping
+- `aiarmada/docs` - Documentation
+- `aiarmada/filament-cart` - Filament cart admin
+- `aiarmada/filament-chip` - Filament payment admin
+- `aiarmada/filament-vouchers` - Filament voucher admin
+
+### Option 2: Install Individual Packages
+
+Pick only what you need:
+
 ```bash
-php artisan commerce:install --force
+# Core packages
+composer require aiarmada/cart
+composer require aiarmada/stock
+composer require aiarmada/vouchers
+
+# Payment gateway
+composer require aiarmada/chip
+
+# Shipping
+composer require aiarmada/jnt
+
+# Filament admin interfaces
+composer require aiarmada/filament-cart
+composer require aiarmada/filament-chip
+composer require aiarmada/filament-vouchers
 ```
-Overwrites existing configuration files. Use with caution!
 
-## Package Details
+## Post-Installation
 
-### Required Packages (Always Installed)
+### 1. Run Interactive Setup (Recommended)
 
-#### Cart Management
-- Configuration: `config/cart.php`
-- Migrations: Auto-run
-- Features: Shopping cart, sessions, conditions
+```bash
+php artisan commerce:setup
+```
 
-#### Stock Management
-- Configuration: `config/stock.php`
-- Migrations: Auto-run
-- Features: Inventory tracking, stock levels
+This interactive wizard will guide you through:
+- CHIP payment gateway configuration
+- J&T Express shipping configuration
+- Database settings (JSON vs JSONB for PostgreSQL)
+- Environment variable setup
 
-#### Voucher System
-- Configuration: `config/vouchers.php`
-- Migrations: Auto-run
-- Features: Discount codes, promotions
+Use `--force` flag to overwrite existing values:
 
-### Optional Packages
+```bash
+php artisan commerce:setup --force
+```
 
-#### CHIP Payment Gateway (`--chip`)
-- Configuration: `config/chip.php`
-- Migrations: Auto-run
-- Environment Variables:
-  ```env
-  CHIP_COLLECT_API_KEY=your_chip_collect_api_key
-  CHIP_COLLECT_BRAND_ID=your_chip_brand_id
-  CHIP_SEND_API_KEY=your_chip_send_api_key
-  CHIP_SEND_API_SECRET=your_chip_send_api_secret
-  ```
-- Features: Payment processing, webhooks, refunds
+### 2. Or Manually Configure Environment Variables
 
-#### J&T Express Shipping (`--jnt`)
-- Configuration: `config/jnt.php`
-- Migrations: Auto-run
-- Environment Variables:
-  ```env
-  JNT_CUSTOMER_CODE=your_jnt_customer_code
-  JNT_PASSWORD=your_jnt_password
-  JNT_PRIVATE_KEY=your_jnt_private_key
-  ```
-- Features: Shipping orders, tracking, webhooks
-
-#### Filament UI Components (`--filament`)
-- Configuration: `config/filament-cart.php`, `config/filament-chip.php`
-- Migrations: Auto-run
-- Features: Admin panels for Cart and CHIP
-
-## Post-Installation Steps
-
-After installation, follow these steps:
-
-### 1. Configure Environment Variables
-Open your `.env` file and update the placeholder values:
+If you prefer manual configuration, add to your `.env` file:
 
 ```env
-# Update Cart settings
+# Cart Configuration
 CART_STORAGE_DRIVER=database
 CART_DEFAULT_CURRENCY=MYR
 
-# If you installed CHIP
-CHIP_COLLECT_API_KEY=your_actual_api_key
-CHIP_COLLECT_BRAND_ID=your_actual_brand_id
+# CHIP Payment Gateway (if using)
+CHIP_ENVIRONMENT=sandbox
+CHIP_COLLECT_API_KEY=your_api_key
+CHIP_COLLECT_BRAND_ID=your_brand_id
+CHIP_SEND_API_KEY=your_send_api_key
+CHIP_SEND_API_SECRET=your_send_secret
 
-# If you installed J&T
-JNT_CUSTOMER_CODE=your_actual_customer_code
-JNT_PASSWORD=your_actual_password
-JNT_PRIVATE_KEY=your_actual_private_key
+# J&T Express Shipping (if using)
+JNT_ENVIRONMENT=testing
+JNT_CUSTOMER_CODE=your_customer_code
+JNT_PASSWORD=your_password
+
+# Database Configuration (PostgreSQL users)
+COMMERCE_JSON_COLUMN_TYPE=jsonb
 ```
 
-### 2. Run Migrations
+### 3. Publish Configuration Files (Optional)
+
+### 3. Publish Configuration Files (Optional)
+
+Only publish if you need to customize default behavior:
+
+```bash
+# Publish all commerce configs
+php artisan vendor:publish --tag=commerce-config
+
+# Or publish individually
+php artisan vendor:publish --tag=cart-config
+php artisan vendor:publish --tag=chip-config
+php artisan vendor:publish --tag=jnt-config
+php artisan vendor:publish --tag=stock-config
+php artisan vendor:publish --tag=vouchers-config
+```
+
+### 4. Run Migrations
+
+### 4. Run Migrations
+
 ```bash
 php artisan migrate
 ```
 
-### 3. Review Configuration Files
-Check the published config files in your `config/` directory:
-- `config/cart.php` - Cart settings
-- `config/stock.php` - Stock settings
-- `config/vouchers.php` - Voucher settings
-- `config/chip.php` - CHIP settings (if installed)
-- `config/jnt.php` - J&T settings (if installed)
+## Quick Start Guide
 
-### 4. Set Up Webhooks (If Applicable)
+After installation, the fastest way to get started:
 
-#### CHIP Webhooks
 ```bash
-# Register webhook endpoint
-POST https://gate.chip-in.asia/api/v1/webhooks/
+# 1. Install the complete suite
+composer require aiarmada/commerce
+
+# 2. Run the interactive setup
+php artisan commerce:setup
+
+# 3. Run migrations
+php artisan migrate
+
+# 4. Start using it!
 ```
-Point to: `https://your-domain.com/webhooks/chip/{webhook_id}`
 
-#### J&T Webhooks
-Configure in J&T Express dashboard:
-- Webhook URL: `https://your-domain.com/webhooks/jnt`
+That's it! You're ready to use Commerce.
 
-### 5. Test Your Installation
-```bash
-# Check configurations
-php artisan config:clear
-php artisan config:cache
+## Package-Specific Setup
 
-# If you installed CHIP
-php artisan chip:health-check
+### Cart
 
-# If you installed JNT
-php artisan jnt:config:check
+Basic usage:
 
-# Test cart functionality
-php artisan tinker
->>> Cart::add('product-123', 'Test Product', 99.99, 1);
->>> Cart::content();
+```php
+use AIArmada\Cart\Facades\Cart;
+
+// Add item
+Cart::add('product-1', 'Product Name', 99.99, 2);
+
+// Get contents
+$items = Cart::content();
+
+// Get total
+$total = Cart::total();
+```
+
+Configuration file: `config/cart.php`
+
+### CHIP Payment Gateway
+
+Process payments:
+
+```php
+use AIArmada\Chip\Facades\Chip;
+
+$payment = Chip::collect()->createPurchase([
+    'amount' => 10000, // in cents
+    'currency' => 'MYR',
+    'customer' => [...],
+]);
+```
+
+Configuration file: `config/chip.php`
+
+### J&T Express Shipping
+
+Create shipments:
+
+```php
+use AIArmada\Jnt\Facades\Jnt;
+
+$result = Jnt::createOrder([
+    'orderNo' => 'ORDER-123',
+    'receiver' => [...],
+    'items' => [...],
+]);
+```
+
+Configuration file: `config/jnt.php`
+
+### Stock Management
+
+Track inventory:
+
+```php
+use AIArmada\Stock\Facades\Stock;
+
+// Add stock
+Stock::add($product, 100, 'restock');
+
+// Remove stock
+Stock::remove($product, 5, 'sale');
+
+// Check available
+$available = Stock::available($product);
+```
+
+Configuration file: `config/stock.php`
+
+### Vouchers
+
+Apply discounts:
+
+```php
+use AIArmada\Cart\Facades\Cart;
+
+// Apply voucher to cart
+Cart::applyVoucher('SAVE20');
+
+// Check applied vouchers
+$vouchers = Cart::getAppliedVouchers();
+```
+
+Configuration file: `config/vouchers.php`
+
+## Filament Integration
+
+If using Filament admin panels, register the plugins in your panel provider:
+
+```php
+use Filament\Panel;
+
+public function panel(Panel $panel): Panel
+{
+    return $panel
+        ->plugin(\AIArmada\FilamentCart\FilamentCartPlugin::make())
+        ->plugin(\AIArmada\FilamentChip\FilamentChipPlugin::make())
+        ->plugin(\AIArmada\FilamentVouchers\FilamentVouchersPlugin::make());
+}
 ```
 
 ## Troubleshooting
 
-### Configuration Errors
-If you see errors about missing configuration:
-```
-RuntimeException: Required configuration key [cart.storage] is not set.
-Please publish the configuration file with: php artisan vendor:publish --tag=cart-config
-```
+### Package Not Found
 
-**Solution**: Run the suggested publish command.
-
-### Migration Errors
-If migrations fail:
 ```bash
-# Check migration status
+composer dump-autoload
+php artisan config:clear
+php artisan cache:clear
+```
+
+### Migration Issues
+
+```bash
+# Check status
 php artisan migrate:status
 
-# Rollback and retry
-php artisan migrate:rollback
-php artisan migrate
+# Fresh install
+php artisan migrate:fresh
 ```
 
-### Package Not Found
-If package classes aren't found:
+### Configuration Not Loading
+
 ```bash
-# Clear and rebuild autoload
-composer dump-autoload
-php artisan clear-compiled
 php artisan config:clear
+php artisan config:cache
 ```
 
-## Uninstalling Packages
+## Uninstalling
 
-To remove a package:
+Remove a package:
 
 ```bash
-# 1. Remove from composer
+# 1. Remove via composer
 composer remove aiarmada/chip
 
-# 2. Remove published config
+# 2. Delete published config
 rm config/chip.php
 
-# 3. Remove migrations (optional)
-# Be careful - this will delete data!
+# 3. Rollback migrations (CAUTION: deletes data)
 php artisan migrate:rollback --path=vendor/aiarmada/chip/database/migrations
 ```
 
 ## Getting Help
 
-- **Documentation**: Check package-specific docs in each package's README
-- **Issues**: Report issues on GitHub
-- **Support**: Contact support team
+- **Documentation**: [github.com/aiarmada/commerce](https://github.com/aiarmada/commerce)
+- **Issues**: [github.com/aiarmada/commerce/issues](https://github.com/aiarmada/commerce/issues)
+- **Discussions**: [github.com/aiarmada/commerce/discussions](https://github.com/aiarmada/commerce/discussions)
 
-## Version Information
+## Next Steps
 
-- Laravel: 12.x
-- PHP: 8.4+
-- All packages: Latest stable versions
-
-## Additional Resources
-
-- [Cart Documentation](../cart/README.md)
-- [CHIP Documentation](../chip/README.md)
-- [J&T Documentation](../jnt/README.md)
-- [Stock Documentation](../stock/README.md)
-- [Vouchers Documentation](../vouchers/README.md)
+- Read package-specific README files in `packages/*/README.md`
+- Check example implementations in the docs
+- Join the community discussions
