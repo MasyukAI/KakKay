@@ -31,6 +31,9 @@ namespace AIArmada\CommerceSupport\Concerns;
  * }
  * ```
  */
+/**
+ * @phpstan-ignore trait.unused
+ */
 trait HasLabels
 {
     /**

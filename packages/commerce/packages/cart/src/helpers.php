@@ -9,11 +9,11 @@ if (! function_exists('cart')) {
     function cart(?string $instance = null): AIArmada\Cart\Cart
     {
         $manager = app('cart');
-        
+
         if ($instance === null) {
             return $manager->getCurrentCart();
         }
-        
+
         return $manager->getCartInstance($instance);
     }
 }

@@ -177,6 +177,8 @@ abstract class BaseApiClient
 
     /**
      * Send the actual HTTP request.
+     *
+     * @param  array<string, mixed>  $data
      */
     protected function sendRequest(string $method, string $url, array $data): Response
     {
@@ -264,9 +266,9 @@ abstract class BaseApiClient
     {
         throw new CommerceApiException(
             message: $exception->getMessage(),
-            statusCode: $exception->response?->status() ?? 0,
-            errorData: $exception->response?->json() ?? [],
-            apiResponse: $exception->response?->body(),
+            statusCode: $exception->response->status(),
+            errorData: $exception->response->json() ?? [],
+            apiResponse: $exception->response->body(),
             previous: $exception
         );
     }

@@ -61,7 +61,7 @@ final class PurchaseInfolist
 
             Section::make('Client')
                 ->schema([
-                    Fieldset::make('Billing')->inlineLabelled()
+                    Fieldset::make('Billing')->inlineLabelled() // @phpstan-ignore method.notFound
                         ->schema([
                             TextEntry::make('client.full_name')
                                 ->label('Name')
@@ -87,7 +87,7 @@ final class PurchaseInfolist
                                 ->badge()
                                 ->placeholder('—'),
                         ]),
-                    Fieldset::make('Shipping')->inlineLabelled()
+                    Fieldset::make('Shipping')->inlineLabelled() // @phpstan-ignore method.notFound
                         ->schema([
                             TextEntry::make('client.shipping_street_address')
                                 ->label('Address')

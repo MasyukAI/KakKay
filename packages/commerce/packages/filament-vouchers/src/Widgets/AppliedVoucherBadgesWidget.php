@@ -23,6 +23,7 @@ final class AppliedVoucherBadgesWidget extends Widget
 {
     public ?Model $record = null;
 
+    /** @phpstan-ignore-next-line */
     protected static string $view = 'filament-vouchers::widgets.applied-voucher-badges';
 
     protected int|string|array $columnSpan = 'full';
@@ -47,7 +48,10 @@ final class AppliedVoucherBadgesWidget extends Widget
             /** @phpstan-ignore-next-line - getAppliedVouchers method added via proxy */
             $vouchers = $cartInstance->getAppliedVouchers();
 
-            return collect($vouchers)->map(function ($voucher) {
+            /** @var \Illuminate\Support\Collection<int, mixed> $voucherCollection */
+            $voucherCollection = collect($vouchers);
+
+            return $voucherCollection->map(function ($voucher) {
                 $type = $voucher->type->value ?? 'fixed';
                 $value = $voucher->value ?? 0;
                 $currency = $voucher->currency ?? 'MYR';

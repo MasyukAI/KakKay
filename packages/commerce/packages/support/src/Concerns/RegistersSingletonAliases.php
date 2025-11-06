@@ -12,6 +12,9 @@ use Closure;
  * Provides helper methods for registering services as singletons
  * with optional aliases. Reduces boilerplate in service providers.
  */
+/**
+ * @phpstan-ignore trait.unused
+ */
 trait RegistersSingletonAliases
 {
     /**

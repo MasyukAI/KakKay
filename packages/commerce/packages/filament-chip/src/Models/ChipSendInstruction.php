@@ -6,6 +6,10 @@ namespace AIArmada\FilamentChip\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
+/**
+ * @property string $amount
+ * @property string $state
+ */
 final class ChipSendInstruction extends ChipModel
 {
     public $timestamps = false;

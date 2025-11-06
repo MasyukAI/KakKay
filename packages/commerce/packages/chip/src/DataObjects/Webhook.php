@@ -92,8 +92,8 @@ final class Webhook
         // Handle current CHIP webhook format where entire payload IS the purchase object
         // (format: {id: "...", type: "purchase", event_type: "purchase.paid", client: {...}, payment: {...}, ...})
         if (isset($data['event_type']) && isset($data['type']) && $data['type'] === 'purchase') {
-            /** @var array<string, mixed> $events */
-            $events = [$data['event_type']];
+            /** @var array<string> $events */
+            $events = [(string) $data['event_type']];
             $events = array_combine(array_map('strval', array_keys($events)), array_values($events));
 
             /** @var array<string> $uniqueBrands */

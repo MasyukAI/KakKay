@@ -28,6 +28,7 @@ final class VoucherSuggestionsWidget extends Widget
 {
     public ?Model $record = null;
 
+    /** @phpstan-ignore-next-line */
     protected static string $view = 'filament-vouchers::widgets.voucher-suggestions';
 
     protected int|string|array $columnSpan = 'full';
@@ -35,7 +36,7 @@ final class VoucherSuggestionsWidget extends Widget
     /**
      * Get eligible voucher suggestions for this cart
      *
-     * @return Collection<int, array{voucher: Voucher, potential_savings: int, savings_text: string, recommendation: string}>
+     * @return Collection<int, array{voucher: Voucher, potential_savings: int<1, max>, savings_text: string, recommendation: string}>
      */
     public function getEligibleVouchers(): Collection
     {
@@ -76,14 +77,18 @@ final class VoucherSuggestionsWidget extends Widget
 
                     // Check if already applied
                     try {
+                        /** @var \AIArmada\Cart\Models\Cart $cartRecord */
+                        $cartRecord = $this->record;
                         $cartInstance = app(CartInstanceManager::class)->resolve(
-                            $this->record->instance,
-                            $this->record->identifier
+                            $cartRecord->instance,
+                            $cartRecord->identifier
                         );
 
                         /** @phpstan-ignore-next-line */
                         $appliedVouchers = $cartInstance->getAppliedVouchers();
-                        $appliedCodes = collect($appliedVouchers)->pluck('code')->toArray();
+                        /** @var Collection<int, mixed> $appliedCollection */
+                        $appliedCollection = collect($appliedVouchers);
+                        $appliedCodes = $appliedCollection->pluck('code')->toArray();
 
                         if (in_array($voucher->code, $appliedCodes, true)) {
                             return false;
@@ -96,7 +101,7 @@ final class VoucherSuggestionsWidget extends Widget
                 })
                 ->map(function (Voucher $voucher) use ($cartTotal, $cartCurrency) {
                     $potentialSavings = $this->calculatePotentialSavings($voucher, $cartTotal);
-                    $savingsText = Money::{$cartCurrency}($potentialSavings)->format();
+                    $savingsText = (string) Money::{$cartCurrency}($potentialSavings)->format();
 
                     $recommendation = $this->generateRecommendation($voucher, $cartTotal, $potentialSavings);
 
@@ -180,7 +185,6 @@ final class VoucherSuggestionsWidget extends Widget
             VoucherType::Percentage => (int) round(($cartTotal * $voucher->value) / 10000), // value is in basis points
             VoucherType::Fixed => $voucher->value, // value is in cents
             VoucherType::FreeShipping => 0, // Can't calculate shipping savings
-            default => 0,
         };
 
         // Apply max discount cap if set
@@ -206,8 +210,8 @@ final class VoucherSuggestionsWidget extends Widget
             return "Save {$savingsPercentage}% on your order!";
         }
 
-        if ($voucher->end_date && $voucher->end_date->diffInDays() <= 3) {
-            return 'Expires in '.$voucher->end_date->diffInDays().' days!';
+        if ($voucher->expires_at && $voucher->expires_at->diffInDays() <= 3) {
+            return 'Expires in '.$voucher->expires_at->diffInDays().' days!';
         }
 
         if ($voucher->usage_limit) {

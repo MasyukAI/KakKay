@@ -6,6 +6,9 @@ namespace AIArmada\FilamentChip\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
+/**
+ * @property string $status
+ */
 final class ChipCompanyStatement extends ChipModel
 {
     public $incrementing = false;

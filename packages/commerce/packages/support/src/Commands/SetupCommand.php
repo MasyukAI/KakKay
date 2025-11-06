@@ -140,6 +140,8 @@ final class SetupCommand extends Command
 
     /**
      * Update .env file with new values
+     *
+     * @param  array<string, string>  $updates
      */
     private function updateEnvFile(array $updates): void
     {

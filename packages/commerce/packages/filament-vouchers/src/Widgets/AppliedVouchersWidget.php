@@ -79,12 +79,12 @@ final class AppliedVouchersWidget extends BaseWidget
             ]);
     }
 
-    protected function getTableHeading(): ?string
+    protected function getTableHeading(): string
     {
         return 'Applied Vouchers';
     }
 
-    protected function getTableDescription(): ?string
+    protected function getTableDescription(): string
     {
         return 'Vouchers currently applied to this cart';
     }
@@ -108,7 +108,10 @@ final class AppliedVouchersWidget extends BaseWidget
             $appliedVouchers = $cartInstance->getAppliedVouchers();
 
             // Transform vouchers into a collection for the table
-            return collect($appliedVouchers)->map(function ($voucher) {
+            /** @var Collection<int, mixed> $voucherCollection */
+            $voucherCollection = collect($appliedVouchers);
+
+            return $voucherCollection->map(function ($voucher) {
                 return [
                     'code' => $voucher->code ?? 'N/A',
                     'type' => $voucher->type->value ?? 'unknown',

@@ -147,7 +147,10 @@ class Cart extends Model
     /** @phpstan-ignore-next-line */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(\App\Models\User::class, 'identifier', 'id');
+        /** @var class-string<Model> $userModel */
+        $userModel = config('auth.providers.users.model', \Illuminate\Foundation\Auth\User::class);
+
+        return $this->belongsTo($userModel, 'identifier', 'id');
     }
 
     public function isEmpty(): bool

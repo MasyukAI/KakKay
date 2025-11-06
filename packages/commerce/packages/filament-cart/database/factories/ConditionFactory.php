@@ -86,11 +86,17 @@ final class ConditionFactory extends Factory
         return $this->state(fn () => ['target' => 'item']);
     }
 
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
     public function withAttributes(array $attributes): static
     {
         return $this->state(fn () => ['attributes' => $attributes]);
     }
 
+    /**
+     * @param  array<string, mixed>  $rules
+     */
     public function withRules(array $rules): static
     {
         return $this->state(function () use ($rules) {
@@ -109,9 +115,13 @@ final class ConditionFactory extends Factory
             'percentage' => random_int(1, 50).'%',
             'fixed_positive' => '+'.random_int(100, 10000),
             'fixed_negative' => '-'.random_int(100, 10000),
+            default => '+'.random_int(100, 10000), // fallback
         };
     }
 
+    /**
+     * @param  array<mixed>  $options
+     */
     private function randomFrom(array $options): mixed
     {
         return $options[array_rand($options)];

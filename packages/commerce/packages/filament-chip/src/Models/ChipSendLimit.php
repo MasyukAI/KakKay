@@ -6,6 +6,13 @@ namespace AIArmada\FilamentChip\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
+/**
+ * @property int $amount
+ * @property string $currency
+ * @property int $net_amount
+ * @property int $fee
+ * @property string $status
+ */
 final class ChipSendLimit extends ChipModel
 {
     public $timestamps = false;

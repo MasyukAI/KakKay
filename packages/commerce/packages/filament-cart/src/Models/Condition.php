@@ -108,7 +108,7 @@ final class Condition extends Model
         if (isset($rules['factory_keys']) && is_array($rules['factory_keys'])) {
             $factoryKeys = array_values(array_filter(
                 $rules['factory_keys'],
-                static fn ($key): bool => is_string($key) && $key !== ''
+                static fn (mixed $key): bool => is_string($key) && $key !== '' // @phpstan-ignore function.alreadyNarrowedType
             ));
         }
 

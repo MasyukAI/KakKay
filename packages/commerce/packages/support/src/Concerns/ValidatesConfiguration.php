@@ -13,6 +13,9 @@ use RuntimeException;
  * Provides helper methods for validating configuration values
  * at runtime. Used by integration packages (chip, jnt).
  */
+/**
+ * @phpstan-ignore trait.unused
+ */
 trait ValidatesConfiguration
 {
     /**

@@ -62,7 +62,14 @@ final class VoucherCartStatsWidget extends BaseWidget
      */
     protected function getActiveCartsCount(): int
     {
+        if (! $this->record instanceof Voucher) {
+            return 0;
+        }
+
         try {
+            /** @var Voucher $voucher */
+            $voucher = $this->record;
+
             /** @var class-string<\AIArmada\FilamentCart\Models\Cart> $cartModel */
             $cartModel = \AIArmada\FilamentCart\Models\Cart::class;
 
@@ -70,9 +77,9 @@ final class VoucherCartStatsWidget extends BaseWidget
             // Vouchers are stored as conditions with the voucher code in metadata
             return $cartModel::query()
                 ->whereNotNull('conditions')
-                ->where(function ($query): void {
-                    $query->whereJsonContains('conditions', ['voucher' => $this->record->code])
-                        ->orWhereRaw('conditions::text LIKE ?', ['%"code":"'.$this->record->code.'"%']);
+                ->where(function ($query) use ($voucher): void {
+                    $query->whereJsonContains('conditions', ['voucher' => $voucher->code])
+                        ->orWhereRaw('conditions::text LIKE ?', ['%"code":"'.$voucher->code.'"%']);
                 })
                 ->count();
         } catch (Throwable $exception) {

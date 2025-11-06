@@ -59,7 +59,7 @@ final class ClientInfolist
 
             Section::make('Addresses')
                 ->schema([
-                    Fieldset::make('Billing')->inlineLabelled()
+                    Fieldset::make('Billing')->inlineLabelled() // @phpstan-ignore method.notFound
                         ->schema([
                             TextEntry::make('street_address')
                                 ->label('Street')
@@ -79,7 +79,7 @@ final class ClientInfolist
                                 ->formatStateUsing(fn (?string $state): ?string => $state !== null && $state !== '' && $state !== '0' ? mb_strtoupper($state) : null)
                                 ->placeholder('—'),
                         ]),
-                    Fieldset::make('Shipping')->inlineLabelled()
+                    Fieldset::make('Shipping')->inlineLabelled() // @phpstan-ignore method.notFound
                         ->schema([
                             TextEntry::make('shipping_street_address')
                                 ->label('Street')
@@ -110,7 +110,7 @@ final class ClientInfolist
 
             Section::make('Company & Banking')
                 ->schema([
-                    Fieldset::make('Company Profile')->inlineLabelled()
+                    Fieldset::make('Company Profile')->inlineLabelled() // @phpstan-ignore method.notFound
                         ->schema([
                             TextEntry::make('legal_name')
                                 ->label('Legal Name')
@@ -131,7 +131,7 @@ final class ClientInfolist
                             $record->registration_number,
                             $record->tax_number,
                         ]))),
-                    Fieldset::make('Banking')->inlineLabelled()
+                    Fieldset::make('Banking')->inlineLabelled() // @phpstan-ignore method.notFound
                         ->schema([
                             TextEntry::make('bank_account')
                                 ->label('Bank Account')

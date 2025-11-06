@@ -5,31 +5,7 @@ declare(strict_types=1);
 namespace AIArmada\CommerceSupport\Concerns;
 
 /**
- * Provides Filament badge colors for enum cases.
- *
- * Use this trait in your enums to define colors for status badges
- * and other UI elements in Filament admin panels.
- *
- * Example:
- * ```
- * enum PaymentStatus: string
- * {
- *     use HasColors;
- *
- *     case PENDING = 'pending';
- *     case PAID = 'paid';
- *     case FAILED = 'failed';
- *
- *     public function getColor(): string
- *     {
- *         return match($this) {
- *             self::PENDING => 'warning',
- *             self::PAID => 'success',
- *             self::FAILED => 'danger',
- *         };
- *     }
- * }
- * ```
+ * @phpstan-ignore trait.unused
  */
 trait HasColors
 {

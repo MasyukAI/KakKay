@@ -10,6 +10,10 @@ use AIArmada\Vouchers\Models\Voucher as BaseVoucher;
 use Akaunting\Money\Money;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
+/**
+ * @property float|null $usageProgress
+ * @property string|null $end_date
+ */
 final class Voucher extends BaseVoucher
 {
     /**
@@ -48,6 +52,16 @@ final class Voucher extends BaseVoucher
 
                 return min(100, ($timesUsed / $usageLimit) * 100);
             }
+        );
+    }
+
+    /**
+     * Alias for expires_at for backward compatibility.
+     */
+    protected function endDate(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->expires_at,
         );
     }
 

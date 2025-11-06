@@ -72,7 +72,7 @@ class CommerceApiException extends CommerceException
             'code',
         ]));
 
-        return new static(
+        return new static( // @phpstan-ignore new.static
             message: $message,
             statusCode: $statusCode,
             errorData: $errorData,

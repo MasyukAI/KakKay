@@ -55,7 +55,7 @@ class AddressData
     /**
      * Convert to API request array
      *
-     * @return array<string, string|null>
+     * @return array<string, string>
      */
     public function toApiArray(): array
     {
@@ -73,11 +73,9 @@ class AddressData
         ], fn (?string $value): bool => $value !== null);
     }
 
+    /** @phpstan-ignore missingType.return */
     #[Deprecated(message: 'Use toApiArray() instead')]
-    /**
-     * @return array<string,mixed>
-     */
-    public function toArray(): array
+    public function toArray()
     {
         return $this->toApiArray();
     }

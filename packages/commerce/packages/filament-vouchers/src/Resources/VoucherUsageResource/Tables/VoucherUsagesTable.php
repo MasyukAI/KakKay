@@ -33,7 +33,7 @@ final class VoucherUsagesTable
                         VoucherUsage::CHANNEL_API => 'info',
                         default => 'success',
                     })
-                    ->icon(static fn (string $state): ?Heroicon => match ($state) {
+                    ->icon(static fn (string $state): Heroicon => match ($state) {
                         VoucherUsage::CHANNEL_MANUAL => Heroicon::OutlinedClipboardDocumentCheck,
                         VoucherUsage::CHANNEL_API => Heroicon::OutlinedCommandLine,
                         default => Heroicon::OutlinedBolt,

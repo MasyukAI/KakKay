@@ -25,6 +25,9 @@ abstract class BaseHttpClient
 
     protected int $timeout;
 
+    /**
+     * @var array{attempts: int, delay: int}
+     */
     protected array $retryConfig;
 
     /**

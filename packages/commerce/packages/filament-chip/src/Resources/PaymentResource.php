@@ -79,8 +79,8 @@ final class PaymentResource extends BaseChipResource
                                 ->icon('heroicon-o-receipt-percent')
                                 ->color('warning')
                                 ->placeholder('—'),
-                        ])->carded(),
-                    ])->softShadow(),
+                        ])->carded(), // @phpstan-ignore method.notFound
+                    ])->softShadow(), // @phpstan-ignore method.notFound
                     Stack::make([
                         TextColumn::make('currency')
                             ->label('Currency')
@@ -99,8 +99,8 @@ final class PaymentResource extends BaseChipResource
                             ->boolean()
                             ->trueColor('info')
                             ->falseColor('success'),
-                    ])->carded(),
-                ])->glow(),
+                    ])->carded(), // @phpstan-ignore method.notFound
+                ])->glow(), // @phpstan-ignore method.notFound
             ])
             ->filters([
                 SelectFilter::make('payment_type')

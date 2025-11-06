@@ -78,22 +78,22 @@ class TrackingUpdatedEvent
 
     public function isDelivered(): bool
     {
-        return array_any($this->tracking->details, fn ($detail): bool => $detail instanceof \AIArmada\Jnt\Data\TrackingDetailData && in_array($detail->scanType, ['DELIVER', 'SIGNED'], true));
+        return array_any($this->tracking->details, fn ($detail): bool => in_array($detail->scanType, ['DELIVER', 'SIGNED'], true));
     }
 
     public function isInTransit(): bool
     {
-        return array_any($this->tracking->details, fn ($detail): bool => $detail instanceof \AIArmada\Jnt\Data\TrackingDetailData && in_array($detail->scanType, ['TRANSFER', 'ARRIVAL'], true));
+        return array_any($this->tracking->details, fn ($detail): bool => in_array($detail->scanType, ['TRANSFER', 'ARRIVAL'], true));
     }
 
     public function hasProblems(): bool
     {
-        return array_any($this->tracking->details, fn ($detail): bool => $detail instanceof \AIArmada\Jnt\Data\TrackingDetailData && in_array($detail->scanType, ['RETURN', 'REJECT', 'PROBLEM'], true));
+        return array_any($this->tracking->details, fn ($detail): bool => in_array($detail->scanType, ['RETURN', 'REJECT', 'PROBLEM'], true));
     }
 
     public function isCollected(): bool
     {
-        return array_any($this->tracking->details, fn ($detail): bool => $detail instanceof \AIArmada\Jnt\Data\TrackingDetailData && $detail->scanType === 'COLLECT');
+        return array_any($this->tracking->details, fn ($detail): bool => $detail->scanType === 'COLLECT');
     }
 
     /**

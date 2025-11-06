@@ -9,6 +9,18 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
+/**
+ * @property string $currency
+ * @property int $discount_amount
+ * @property string $channel
+ * @property string $redeemed_by_type
+ * @property string $cart_identifier
+ * @property string $user_identifier
+ * @property string|null $notes
+ * @property string $redeemed_by_id
+ * @property array<string, mixed>|null $cart_snapshot
+ * @property \Carbon\Carbon $used_at
+ */
 class VoucherUsage extends Model
 {
     use HasUuids;

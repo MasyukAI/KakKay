@@ -14,16 +14,22 @@ use AIArmada\Cart\Storage\StorageInterface;
  */
 class InMemoryStorage implements StorageInterface
 {
+    /** @var array<string, array<string, array<array-key, mixed>>> */
     private array $items = [];
 
+    /** @var array<string, array<string, array<array-key, mixed>>> */
     private array $conditions = [];
 
+    /** @var array<string, array<string, array<string, mixed>>> */
     private array $metadata = [];
 
+    /** @var array<string, array<string, array<array-key, mixed>>> */
     private array $instances = [];
 
+    /** @var array<string, array<string, int>> */
     private array $versions = [];
 
+    /** @var array<string, array<string, string>> */
     private array $ids = [];
 
     public function has(string $identifier, string $instance): bool
@@ -105,7 +111,7 @@ class InMemoryStorage implements StorageInterface
 
     public function getInstances(string $identifier): array
     {
-        return $this->instances[$identifier] ?? [];
+        return array_keys($this->instances[$identifier] ?? []);
     }
 
     public function putMetadata(string $identifier, string $instance, string $key, mixed $value): void

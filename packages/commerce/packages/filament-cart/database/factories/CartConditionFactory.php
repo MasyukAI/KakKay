@@ -65,7 +65,7 @@ final class CartConditionFactory extends Factory
             'value' => $this->faker->randomFloat(2, 5, 15).'%',
             'attributes' => [
                 'tax_type' => $this->faker->randomElement(['VAT', 'Sales Tax', 'GST']),
-                'tax_region' => $this->faker->state(),
+                'tax_region' => $this->faker->stateAbbr(), // @phpstan-ignore method.notFound
             ],
         ]);
     }
@@ -164,6 +164,8 @@ final class CartConditionFactory extends Factory
 
     /**
      * Generate attributes based on condition type.
+     *
+     * @return array<string, mixed>
      */
     private function generateAttributes(string $type): array
     {
@@ -174,7 +176,7 @@ final class CartConditionFactory extends Factory
             ],
             'tax' => [
                 'tax_type' => $this->faker->randomElement(['VAT', 'Sales Tax', 'GST']),
-                'tax_region' => $this->faker->state(),
+                'tax_region' => $this->faker->stateAbbr(), // @phpstan-ignore method.notFound
             ],
             'fee' => [
                 'fee_type' => $this->faker->randomElement(['Processing Fee', 'Service Fee']),

@@ -16,7 +16,10 @@ final class OwnerTypeRegistry
 
     public function __construct()
     {
-        $this->definitions = collect(config('filament-vouchers.owners', []))
+        /** @var array<int, mixed> $configData */
+        $configData = config('filament-vouchers.owners', []);
+        /** @var Collection<int, mixed> $definitions */
+        $definitions = collect($configData)
             ->filter(static function (mixed $definition): bool {
                 if (! is_array($definition)) {
                     return false;
@@ -31,6 +34,8 @@ final class OwnerTypeRegistry
                 return class_exists($model) && is_subclass_of($model, Model::class);
             })
             ->values();
+
+        $this->definitions = $definitions;
     }
 
     public function hasDefinitions(): bool
@@ -143,11 +148,7 @@ final class OwnerTypeRegistry
             return (string) $owner->getAttribute('display_name');
         }
 
-        if (method_exists($owner, '__toString')) {
-            return (string) $owner;
-        }
-
-        return sprintf('%s #%s', class_basename($owner), $owner->getKey());
+        return (string) $owner;
     }
 
     /**

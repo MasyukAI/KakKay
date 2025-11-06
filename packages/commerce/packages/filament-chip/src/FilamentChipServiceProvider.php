@@ -47,7 +47,7 @@ final class FilamentChipServiceProvider extends PackageServiceProvider
     private function registerPanelMacros(): void
     {
         if (! Panel::hasMacro('softShadow')) {
-            Panel::macro('softShadow', fn (string $color = 'gray-200'): Panel => $this->extraAttributes([
+            Panel::macro('softShadow', fn (string $color = 'gray-200'): Panel => $this->extraAttributes([ // @phpstan-ignore method.notFound
                 'class' => sprintf('shadow-lg shadow-%s/40 ring-1 ring-black/5', $color),
             ]));
         }
@@ -59,7 +59,7 @@ final class FilamentChipServiceProvider extends PackageServiceProvider
     private function registerSplitMacros(): void
     {
         if (! Split::hasMacro('glow')) {
-            Split::macro('glow', fn (string $glowColor = 'primary'): Split => $this->extraAttributes([
+            Split::macro('glow', fn (string $glowColor = 'primary'): Split => $this->extraAttributes([ // @phpstan-ignore method.notFound
                 'class' => sprintf('after:absolute after:inset-0 after:-z-10 after:rounded-2xl after:bg-gradient-to-r after:from-%s-500/20 after:to-transparent', $glowColor),
             ]));
         }
@@ -71,7 +71,7 @@ final class FilamentChipServiceProvider extends PackageServiceProvider
     private function registerStackMacros(): void
     {
         if (! Stack::hasMacro('carded')) {
-            Stack::macro('carded', fn (): Stack => $this->extraAttributes([
+            Stack::macro('carded', fn (): Stack => $this->extraAttributes([ // @phpstan-ignore method.notFound
                 'class' => 'rounded-2xl border border-white/60 bg-white/80 p-6 shadow-sm backdrop-blur dark:border-white/10 dark:bg-white/5',
             ]));
         }
@@ -83,7 +83,7 @@ final class FilamentChipServiceProvider extends PackageServiceProvider
     private function registerFieldsetMacros(): void
     {
         if (! Fieldset::hasMacro('inlineLabelled')) {
-            Fieldset::macro('inlineLabelled', fn (): Fieldset => $this->columns(2)->extraAttributes([
+            Fieldset::macro('inlineLabelled', fn (): Fieldset => $this->columns(2)->extraAttributes([ // @phpstan-ignore method.notFound
                 'class' => 'gap-x-8',
             ]));
         }

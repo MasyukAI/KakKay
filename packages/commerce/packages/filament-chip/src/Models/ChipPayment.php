@@ -7,6 +7,13 @@ namespace AIArmada\FilamentChip\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $amount
+ * @property string $currency
+ * @property int $net_amount
+ * @property int $fee_amount
+ * @property int $pending_amount
+ */
 final class ChipPayment extends ChipModel
 {
     public $incrementing = false;

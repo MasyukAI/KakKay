@@ -167,7 +167,7 @@ class MoneyHelper
             new Currency($currency);
 
             return true;
-        } catch (InvalidArgumentException) {
+        } catch (InvalidArgumentException) { // @phpstan-ignore catch.neverThrown
             return false;
         }
     }

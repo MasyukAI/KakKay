@@ -47,7 +47,7 @@ class CommerceConfigurationException extends CommerceException
      */
     public static function missing(string $configKey): static
     {
-        return new static(
+        return new static( // @phpstan-ignore new.static
             message: "Missing required configuration: {$configKey}",
             configKey: $configKey,
             errorCode: 'config_missing'
@@ -59,7 +59,7 @@ class CommerceConfigurationException extends CommerceException
      */
     public static function invalid(string $configKey, mixed $value, string $reason): static
     {
-        return new static(
+        return new static( // @phpstan-ignore new.static
             message: "Invalid configuration for '{$configKey}': {$reason}",
             configKey: $configKey,
             configValue: $value,
@@ -76,6 +76,7 @@ class CommerceConfigurationException extends CommerceException
     {
         $keys = implode(', ', array_keys($errors));
 
+        /** @phpstan-ignore-next-line - new.static is safe in static factory methods */
         return new static(
             message: "Configuration validation failed for: {$keys}",
             errorCode: 'config_validation_failed'

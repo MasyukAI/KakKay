@@ -21,7 +21,8 @@ final class VoucherUsageTimelineWidget extends Widget
 {
     public ?Model $record = null;
 
-    protected string $view = 'filament-vouchers::widgets.voucher-usage-timeline';
+    /** @phpstan-ignore-next-line */
+    protected static string $view = 'filament-vouchers::widgets.voucher-usage-timeline';
 
     protected int|string|array $columnSpan = 'full';
 
@@ -37,7 +38,7 @@ final class VoucherUsageTimelineWidget extends Widget
      *     timestamp_human: string,
      *     icon: string,
      *     color: string,
-     *     details: array
+     *     details: array<string, mixed>
      * }>
      */
     public function getTimelineEvents(): Collection
@@ -103,7 +104,7 @@ final class VoucherUsageTimelineWidget extends Widget
      *     timestamp_human: string,
      *     icon: string,
      *     color: string,
-     *     details: array
+     *     details: array<string, mixed>
      * }
      */
     protected function buildTimelineEvent(VoucherUsage $usage): array

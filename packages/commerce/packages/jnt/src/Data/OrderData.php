@@ -49,7 +49,9 @@ class OrderData
     /**
      * Convert to API request array
      *
-     * @return array<string,mixed>
+     * @return array<string, string|array>
+     *
+     * @phpstan-ignore missingType.iterableValue
      */
     public function toApiArray(): array
     {
@@ -63,11 +65,9 @@ class OrderData
         ], fn (string|array|null $value): bool => $value !== null);
     }
 
+    /** @phpstan-ignore missingType.return */
     #[Deprecated(message: 'Use toApiArray() instead')]
-    /**
-     * @return array<string,mixed>
-     */
-    public function toArray(): array
+    public function toArray()
     {
         return $this->toApiArray();
     }

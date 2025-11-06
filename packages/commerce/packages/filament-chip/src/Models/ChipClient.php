@@ -7,6 +7,21 @@ namespace AIArmada\FilamentChip\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Arr;
 
+/**
+ * @property string|null $shipping_street_address
+ * @property string|null $shipping_city
+ * @property string|null $shipping_state
+ * @property string|null $shipping_zip_code
+ * @property string|null $shipping_country
+ * @property string|null $legal_name
+ * @property string|null $brand_name
+ * @property string|null $registration_number
+ * @property string|null $tax_number
+ * @property string|null $bank_account
+ * @property string|null $bank_code
+ * @property array<string>|null $cc
+ * @property array<string>|null $bcc
+ */
 final class ChipClient extends ChipModel
 {
     public $incrementing = false;

@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 
+/**
+ * @property array<string, mixed> $purchase
+ * @property array<string, mixed> $client
+ * @property array<array<string, mixed>> $timeline
+ */
 final class ChipPurchase extends ChipModel
 {
     public $incrementing = false;

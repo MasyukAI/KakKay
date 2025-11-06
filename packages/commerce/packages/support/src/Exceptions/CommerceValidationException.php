@@ -36,7 +36,7 @@ class CommerceValidationException extends CommerceException
      */
     public static function forField(string $field, string $error, ?string $errorCode = null): static
     {
-        return new static(
+        return new static( // @phpstan-ignore new.static
             message: "Validation failed for field: {$field}",
             errors: [$field => [$error]],
             errorCode: $errorCode

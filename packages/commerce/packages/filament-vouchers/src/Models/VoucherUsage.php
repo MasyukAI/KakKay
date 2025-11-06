@@ -10,6 +10,19 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use LogicException;
 
+/**
+ * @property string|null $cart_url
+ * @property string $currency
+ * @property int $discount_amount
+ * @property string $channel
+ * @property string $redeemed_by_type
+ * @property string $cart_identifier
+ * @property string $user_identifier
+ * @property string|null $notes
+ * @property int $redeemed_by_id
+ * @property array<string, mixed> $cart_snapshot
+ * @property \Illuminate\Support\Carbon $used_at
+ */
 final class VoucherUsage extends BaseVoucherUsage
 {
     public function cartSnapshot(): BelongsTo

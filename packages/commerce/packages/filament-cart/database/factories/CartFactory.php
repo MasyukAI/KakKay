@@ -74,10 +74,25 @@ final class CartFactory extends Factory
         });
     }
 
+    public function expensive(): static
+    {
+        return $this->state(function () {
+            [$items, $quantity, $subtotal] = $this->generateItems(null, true);
+
+            return [
+                'items' => $items,
+                'items_count' => count($items),
+                'quantity' => $quantity,
+                'subtotal' => $subtotal,
+                'total' => $subtotal,
+            ];
+        });
+    }
+
     /**
      * @return array{0: array<int, array<string, mixed>>, 1: int, 2: int}
      */
-    private function generateItems(?int $count = null): array
+    private function generateItems(?int $count = null, bool $expensive = false): array
     {
         $count ??= $this->faker->numberBetween(1, 4);
 
@@ -87,7 +102,9 @@ final class CartFactory extends Factory
 
         for ($i = 0; $i < $count; $i++) {
             $lineQuantity = $this->faker->numberBetween(1, 5);
-            $price = $this->faker->numberBetween(500, 5000); // cents
+            $price = $expensive
+                ? $this->faker->numberBetween(5000, 50000) // cents, expensive items
+                : $this->faker->numberBetween(500, 5000); // cents
 
             $items[] = [
                 'id' => 'product_'.$this->faker->unique()->numberBetween(1, 99999),
@@ -107,6 +124,9 @@ final class CartFactory extends Factory
         return [$items, $quantity, $subtotal];
     }
 
+    /**
+     * @return array<array<string, mixed>>
+     */
     private function generateConditions(): array
     {
         if ($this->faker->boolean(70)) {
@@ -122,6 +142,9 @@ final class CartFactory extends Factory
         return [];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function generateMetadata(): array
     {
         return [
