@@ -38,25 +38,24 @@ Installation comes in two flavors, depending on whether you want to bootstrap th
 
 ## Installing the commerce suite
 
-Require the meta-package and run the guided installer:
+Require the meta-package and run the setup wizard:
 
 ```bash
 composer require aiarmada/commerce
 
-php artisan commerce:install --all
+php artisan commerce:setup
+php artisan migrate
 ```
 
 <Aside variant="warning">
     Windows PowerShell ignores `^` characters in version constraints. If Composer errors, run `composer require aiarmada/commerce "~1.0"` instead.
 </Aside>
 
-The installer publishes configuration, scaffolds environment variables, prompts for JSON vs JSONB for database columns, and guides you through optional integrations. You can rerun it at any time:
+The setup wizard helps you configure environment variables for CHIP payments, J&T shipping, and database settings. You can rerun it at any time:
 
 ```bash
-php artisan commerce:install
+php artisan commerce:setup
 ```
-
-When prompted, choose the optional packages you want to enable (CHIP payments, J&T shipping, Filament panels).
 
 ### Create an admin user
 

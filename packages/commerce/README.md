@@ -17,7 +17,8 @@ Stay focused on product logic while Commerce handles pricing rules, concurrency,
 
 ```bash
 composer require aiarmada/commerce
-php artisan commerce:install --all
+php artisan commerce:setup
+php artisan migrate
 ```
 
 ---
