@@ -154,7 +154,7 @@ class InstallCommerceCommand extends Command
     {
         // Create carts table if using database storage
         if (config('cart.storage') === 'database') {
-            $this->call('migrate', ['--path' => 'vendor/masyukai/cart/database/migrations']);
+            $this->call('migrate', ['--path' => 'vendor/aiarmada/cart/database/migrations']);
         }
     }
 

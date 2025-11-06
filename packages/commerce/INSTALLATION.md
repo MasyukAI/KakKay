@@ -203,14 +203,14 @@ To remove a package:
 
 ```bash
 # 1. Remove from composer
-composer remove masyukai/chip
+composer remove aiarmada/chip
 
 # 2. Remove published config
 rm config/chip.php
 
 # 3. Remove migrations (optional)
 # Be careful - this will delete data!
-php artisan migrate:rollback --path=vendor/masyukai/chip/database/migrations
+php artisan migrate:rollback --path=vendor/aiarmada/chip/database/migrations
 ```
 
 ## Getting Help

@@ -6,13 +6,13 @@ Thank you for considering contributing to the Commerce monorepo!
 
 ## Reporting Bugs
 
-If you discover a bug, please [open an issue](https://github.com/masyukai/kakkay/issues/new) on GitHub. Before opening, search [existing issues](https://github.com/masyukai/kakkay/issues) to check if it's already been reported.
+If you discover a bug, please [open an issue](https://github.com/aiarmada/commerce/issues/new) on GitHub. Before opening, search [existing issues](https://github.com/aiarmada/commerce/issues) to check if it's already been reported.
 
 Include as much information as possible: package versions, PHP version, steps to reproduce, and expected vs actual behavior.
 
 ## Proposing New Features
 
-To propose a new feature or improvement, use our [discussion forum](https://github.com/masyukai/kakkay/discussions) on GitHub. If you plan to implement it yourself, please discuss with a maintainer beforehand to avoid wasting time.
+To propose a new feature or improvement, use our [discussion forum](https://github.com/aiarmada/commerce/discussions) on GitHub. If you plan to implement it yourself, please discuss with a maintainer beforehand to avoid wasting time.
 
 ## Pull Requests
 
@@ -38,9 +38,9 @@ Before submitting, ensure:
 
 To test Commerce in a real Laravel app:
 
-1. Fork [the repository](https://github.com/masyukai/kakkay)
+1. Fork [the repository](https://github.com/aiarmada/commerce)
 2. Create a Laravel app locally
-3. Clone your fork into the app's root: `git clone https://github.com/YOUR_USERNAME/kakkay.git`
+3. Clone your fork into the app's root: `git clone https://github.com/YOUR_USERNAME/commerce.git`
 4. Add to your `composer.json`:
 
 ```json
@@ -53,7 +53,7 @@ To test Commerce in a real Laravel app:
     "repositories": [
         {
             "type": "path",
-            "url": "kakkay/packages/commerce/packages/*"
+            "url": "commerce/packages/*"
         }
     ]
 }
@@ -512,8 +512,8 @@ After a successful release:
 
 ## Getting Help
 
-- **Questions?** Open a [Discussion](https://github.com/masyukai/kakkay/discussions)
-- **Bug?** Open an [Issue](https://github.com/masyukai/kakkay/issues)
+- **Questions?** Open a [Discussion](https://github.com/aiarmada/commerce/discussions)
+- **Bug?** Open an [Issue](https://github.com/aiarmada/commerce/issues)
 - **Security?** Email security@example.com
 
 ---

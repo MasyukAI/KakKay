@@ -1,9 +1,6 @@
 parameters:
     paths:
-        - packages/cart/src
-        - packages/docs/src
-        - packages/stock/src
-        - packages/vouchers/src
+        - packages
 
     level: 6
 
