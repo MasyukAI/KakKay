@@ -17,7 +17,7 @@ final class ViewVoucher extends ViewRecord
 
     public function infolist(Schema $schema): Schema
     {
-        return static::getResource()::infolist($schema);
+        return self::getResource()::infolist($schema);
     }
 
     protected function getHeaderActions(): array

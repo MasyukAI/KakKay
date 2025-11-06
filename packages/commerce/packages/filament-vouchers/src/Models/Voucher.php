@@ -64,7 +64,7 @@ final class Voucher extends BaseVoucher
                     // Value is stored as basis points (e.g., 1050 = 10.50%)
                     $percentage = $value / 100;
 
-                    return rtrim(rtrim(number_format($percentage, 2), '0'), '.').' %';
+                    return mb_rtrim(mb_rtrim(number_format($percentage, 2), '0'), '.').' %';
                 }
 
                 // Value is stored as cents

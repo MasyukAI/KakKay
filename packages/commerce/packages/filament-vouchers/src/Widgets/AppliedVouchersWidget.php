@@ -13,22 +13,13 @@ use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Throwable;
 
 final class AppliedVouchersWidget extends BaseWidget
 {
     public ?Model $record = null;
 
     protected int|string|array $columnSpan = 'full';
-
-    protected function getTableHeading(): ?string
-    {
-        return 'Applied Vouchers';
-    }
-
-    protected function getTableDescription(): ?string
-    {
-        return 'Vouchers currently applied to this cart';
-    }
 
     public function table(Table $table): Table
     {
@@ -88,6 +79,16 @@ final class AppliedVouchersWidget extends BaseWidget
             ]);
     }
 
+    protected function getTableHeading(): ?string
+    {
+        return 'Applied Vouchers';
+    }
+
+    protected function getTableDescription(): ?string
+    {
+        return 'Vouchers currently applied to this cart';
+    }
+
     /**
      * Get query builder for applied vouchers
      */
@@ -119,7 +120,7 @@ final class AppliedVouchersWidget extends BaseWidget
                     'description' => $voucher->description ?? '',
                 ];
             });
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             // If voucher package is not properly integrated, return empty collection
             return collect([]);
         }

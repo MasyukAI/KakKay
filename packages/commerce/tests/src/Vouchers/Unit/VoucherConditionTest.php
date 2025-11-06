@@ -8,7 +8,7 @@ use AIArmada\Vouchers\Data\VoucherData;
 use AIArmada\Vouchers\Enums\VoucherStatus;
 use AIArmada\Vouchers\Enums\VoucherType;
 
-it('converts voucher condition to cart condition and back', function () {
+it('converts voucher condition to cart condition and back', function (): void {
     $voucherData = VoucherData::fromArray([
         'id' => 1,
         'code' => 'TEST10',

@@ -7,13 +7,13 @@ use AIArmada\Cart\Events\MetadataRemoved;
 use AIArmada\Cart\Facades\Cart;
 use Illuminate\Support\Facades\Event;
 
-describe('Metadata Events Dispatch', function () {
-    beforeEach(function () {
+describe('Metadata Events Dispatch', function (): void {
+    beforeEach(function (): void {
         Event::fake(); // Fake events BEFORE any cart operations
         Cart::clear();
     });
 
-    it('dispatches MetadataAdded event when adding metadata', function () {
+    it('dispatches MetadataAdded event when adding metadata', function (): void {
         Cart::setMetadata('customer_note', 'Please gift wrap this order');
 
         Event::assertDispatched(MetadataAdded::class, function (MetadataAdded $event) {
@@ -23,7 +23,7 @@ describe('Metadata Events Dispatch', function () {
         });
     });
 
-    it('dispatches MetadataRemoved event when removing metadata', function () {
+    it('dispatches MetadataRemoved event when removing metadata', function (): void {
         Cart::setMetadata('promo_code', 'SAVE20');
 
         Cart::removeMetadata('promo_code');
@@ -34,7 +34,7 @@ describe('Metadata Events Dispatch', function () {
         });
     });
 
-    it('includes comprehensive data in MetadataAdded event', function () {
+    it('includes comprehensive data in MetadataAdded event', function (): void {
         Cart::setMetadata('shipping_preference', 'express');
 
         Event::assertDispatched(MetadataAdded::class, function (MetadataAdded $event) {
@@ -49,7 +49,7 @@ describe('Metadata Events Dispatch', function () {
         });
     });
 
-    it('includes comprehensive data in MetadataRemoved event', function () {
+    it('includes comprehensive data in MetadataRemoved event', function (): void {
         Cart::setMetadata('gift_message', 'Happy Birthday!');
 
         Cart::removeMetadata('gift_message');
@@ -64,7 +64,7 @@ describe('Metadata Events Dispatch', function () {
         });
     });
 
-    it('dispatches multiple MetadataAdded events when adding multiple metadata', function () {
+    it('dispatches multiple MetadataAdded events when adding multiple metadata', function (): void {
         Cart::setMetadata('key1', 'value1');
         Cart::setMetadata('key2', 'value2');
         Cart::setMetadata('key3', 'value3');
@@ -72,14 +72,14 @@ describe('Metadata Events Dispatch', function () {
         Event::assertDispatched(MetadataAdded::class, 3);
     });
 
-    it('dispatches MetadataRemoved when removing non-existent metadata', function () {
+    it('dispatches MetadataRemoved when removing non-existent metadata', function (): void {
         Cart::removeMetadata('non_existent_key');
 
         // Should still dispatch the event
         Event::assertDispatched(MetadataRemoved::class);
     });
 
-    it('dispatches events when metadata is updated', function () {
+    it('dispatches events when metadata is updated', function (): void {
         Cart::setMetadata('counter', 1);
 
         // Updating metadata is essentially adding with same key

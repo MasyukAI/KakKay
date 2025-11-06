@@ -13,7 +13,7 @@ return new class extends Migration
     {
         $tablePrefix = config('chip.database.table_prefix', 'chip_');
 
-        Schema::create($tablePrefix.'purchases', function (Blueprint $table) {
+        Schema::create($tablePrefix.'purchases', function (Blueprint $table): void {
             // Core API fields - exact match with CHIP API
             $table->uuid('id')->primary();
             $table->string('type')->default('purchase');
@@ -124,7 +124,7 @@ return new class extends Migration
             DB::statement("CREATE INDEX IF NOT EXISTS chip_purchases_metadata_gin_index ON \"{$tableName}\" USING GIN (\"metadata\")");
         }
         // Add GIN index for JSONB metadata column for efficient querying
-        Schema::table($tablePrefix.'purchases', function (Blueprint $table) {
+        Schema::table($tablePrefix.'purchases', function (Blueprint $table): void {
             $table->rawIndex('metadata', 'chip_purchases_metadata_gin_index', 'gin');
         });
 

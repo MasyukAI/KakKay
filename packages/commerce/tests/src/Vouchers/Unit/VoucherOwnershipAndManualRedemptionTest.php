@@ -20,11 +20,11 @@ class TestOwner extends EloquentModel
 {
     use HasUuids;
 
+    public $timestamps = false;
+
     protected $table = 'test_owners';
 
     protected $guarded = [];
-
-    public $timestamps = false;
 }
 
 beforeEach(function (): void {
@@ -110,10 +110,9 @@ it('scopes vouchers to the resolved owner', function (): void {
 
     $this->app->forgetInstance(VoucherOwnerResolver::class);
     $this->app->singleton(VoucherOwnerResolver::class, function () use ($owner): VoucherOwnerResolver {
-        return new class($owner) implements VoucherOwnerResolver {
-            public function __construct(private TestOwner $owner)
-            {
-            }
+        return new class($owner) implements VoucherOwnerResolver
+        {
+            public function __construct(private TestOwner $owner) {}
 
             public function resolve(): ?EloquentModel
             {

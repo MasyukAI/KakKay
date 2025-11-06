@@ -11,7 +11,7 @@ use AIArmada\Cart\Storage\SessionStorage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 
-beforeEach(function () {
+beforeEach(function (): void {
     // Ensure events dispatcher is available
     if (! app()->bound('events')) {
         app()->singleton('events', function ($app) {
@@ -51,8 +51,8 @@ beforeEach(function () {
     $this->cart->clear();
 });
 
-describe('Cart instantiation', function () {
-    it('can be instantiated with all required parameters', function () {
+describe('Cart instantiation', function (): void {
+    it('can be instantiated with all required parameters', function (): void {
         expect($this->cart)->toBeInstanceOf(Cart::class);
         expect($this->cart->instance())->toBe('bulletproof_test');
         expect($this->cart->getTotalQuantity())->toBe(0);
@@ -62,14 +62,14 @@ describe('Cart instantiation', function () {
         expect($this->cart->count())->toBe(0);
     });
 
-    it('has empty collections by default', function () {
+    it('has empty collections by default', function (): void {
         expect($this->cart->getItems())->toHaveCount(0);
         expect($this->cart->getConditions())->toHaveCount(0);
         expect($this->cart->getItems())->toBeInstanceOf(AIArmada\Cart\Collections\CartCollection::class);
         expect($this->cart->getConditions())->toBeInstanceOf(AIArmada\Cart\Collections\CartConditionCollection::class);
     });
 
-    it('enforces strict type declarations at runtime', function () {
+    it('enforces strict type declarations at runtime', function (): void {
         // These tests would fail at PHP's type checking level, proving our type safety
         // We test this by ensuring our constructors have proper type hints
 
@@ -99,7 +99,7 @@ describe('Cart instantiation', function () {
         expect($parameters[4]->getType()->getName())->toBe('bool');
     });
 
-    it('works with database storage', function () {
+    it('works with database storage', function (): void {
         // Skip test if database storage not available
         if ($this->databaseStorage === null) {
             expect(true)->toBeTrue(); // Pass the test
@@ -120,7 +120,7 @@ describe('Cart instantiation', function () {
         expect($databaseCart->isEmpty())->toBeTrue();
     });
 
-    it('works without events when disabled', function () {
+    it('works without events when disabled', function (): void {
         // Don't use Event::fake() in basic test environment, create cart without events
         $cartWithoutEvents = new Cart(
             $this->sessionStorage,
@@ -137,8 +137,8 @@ describe('Cart instantiation', function () {
     });
 });
 
-describe('Adding items', function () {
-    it('can add a simple item with validation', function () {
+describe('Adding items', function (): void {
+    it('can add a simple item with validation', function (): void {
 
         // Recreate cart with the fake event dispatcher
         $cart = new Cart(
@@ -172,7 +172,7 @@ describe('Adding items', function () {
         expect($cart->get('product-1'))->toBeInstanceOf(CartItem::class);
     });
 
-    it('can add item with comprehensive attributes', function () {
+    it('can add item with comprehensive attributes', function (): void {
         $attributes = [
             'size' => 'L',
             'color' => 'blue',
@@ -201,7 +201,7 @@ describe('Adding items', function () {
         expect($item->getAttribute('nonexistent', 'default'))->toBe('default');
     });
 
-    it('can add item with multiple conditions', function () {
+    it('can add item with multiple conditions', function (): void {
         $discount = new CartCondition(
             name: 'summer_discount',
             type: 'discount',
@@ -229,7 +229,7 @@ describe('Adding items', function () {
         expect($item->getRawSubtotal())->toBe(102.00);
     });
 
-    it('merges quantities when adding existing items', function () {
+    it('merges quantities when adding existing items', function (): void {
         $initialAttributes = ['size' => 'M', 'color' => 'red'];
         $this->cart->add('product-1', 'Product', 10.00, 2, $initialAttributes);
 
@@ -248,7 +248,7 @@ describe('Adding items', function () {
         expect($item->getAttribute('style'))->toBe('casual');
     });
 
-    it('validates and rejects invalid prices comprehensively', function () {
+    it('validates and rejects invalid prices comprehensively', function (): void {
         // Test negative prices
         expect(fn () => $this->cart->add('product-1', 'Product', -10.00, 1))
             ->toThrow(InvalidCartItemException::class, 'Cart item price must be a positive number');
@@ -257,7 +257,7 @@ describe('Adding items', function () {
             ->toThrow(InvalidCartItemException::class, 'Cart item price must be a positive number');
     });
 
-    it('validates and rejects invalid quantities comprehensively', function () {
+    it('validates and rejects invalid quantities comprehensively', function (): void {
         // Test invalid quantities
         expect(fn () => $this->cart->add('product-1', 'Product', 10.00, 0))
             ->toThrow(InvalidCartItemException::class, 'Cart item quantity must be a positive integer');
@@ -270,17 +270,17 @@ describe('Adding items', function () {
             ->toThrow(InvalidCartItemException::class, 'Cart item quantity must be a positive integer');
     });
 
-    it('validates and rejects invalid item IDs', function () {
+    it('validates and rejects invalid item IDs', function (): void {
         expect(fn () => $this->cart->add('', 'Product', 10.00, 1))
             ->toThrow(InvalidCartItemException::class, 'Cart item ID is required');
     });
 
-    it('validates and rejects invalid item names', function () {
+    it('validates and rejects invalid item names', function (): void {
         expect(fn () => $this->cart->add('product-1', '', 10.00, 1))
             ->toThrow(InvalidCartItemException::class, 'Cart item name is required');
     });
 
-    it('handles large quantities and prices correctly', function () {
+    it('handles large quantities and prices correctly', function (): void {
         // Test with large numbers
         $item = $this->cart->add('product-1', 'Expensive Product', 9999.99, 1000);
 
@@ -290,7 +290,7 @@ describe('Adding items', function () {
         expect($this->cart->total()->getAmount())->toBe(9999990.0);
     });
 
-    it('handles decimal prices with precision', function () {
+    it('handles decimal prices with precision', function (): void {
         $precisionPrices = [0.01, 0.99, 1.234, 99.999, 123.456789];
 
         foreach ($precisionPrices as $index => $price) {
@@ -302,14 +302,14 @@ describe('Adding items', function () {
     });
 });
 
-describe('Cart operations and management', function () {
-    beforeEach(function () {
+describe('Cart operations and management', function (): void {
+    beforeEach(function (): void {
         $this->cart->add('product-1', 'Product 1', 10.00, 2);
         $this->cart->add('product-2', 'Product 2', 15.00, 3);
         $this->cart->add('product-3', 'Product 3', 8.50, 1);
     });
 
-    it('can update existing items', function () {
+    it('can update existing items', function (): void {
 
         // Create cart with fake events
         $cart = new Cart(
@@ -335,7 +335,7 @@ describe('Cart operations and management', function () {
         expect($updatedItem->quantity)->toBe(5);
     });
 
-    it('can update item attributes', function () {
+    it('can update item attributes', function (): void {
         $this->cart->update('product-1', [
             'attributes' => ['size' => 'XL', 'color' => 'blue'],
         ]);
@@ -345,7 +345,7 @@ describe('Cart operations and management', function () {
         expect($item->getAttribute('color'))->toBe('blue');
     });
 
-    it('can remove specific items', function () {
+    it('can remove specific items', function (): void {
 
         // Create cart with fake events
         $cart = new Cart(
@@ -372,7 +372,7 @@ describe('Cart operations and management', function () {
         expect($cart->getItems())->toHaveCount(2);
     });
 
-    it('can clear entire cart', function () {
+    it('can clear entire cart', function (): void {
 
         // Create cart with fake events
         $cart = new Cart(
@@ -402,13 +402,13 @@ describe('Cart operations and management', function () {
         expect($cart->isEmpty())->toBeTrue();
     });
 
-    it('handles non-existent item operations gracefully', function () {
+    it('handles non-existent item operations gracefully', function (): void {
         expect($this->cart->get('nonexistent'))->toBeNull();
         expect($this->cart->update('nonexistent', ['quantity' => 5]))->toBeNull();
         expect($this->cart->remove('nonexistent'))->toBeNull();
     });
 
-    it('can search and filter cart content', function () {
+    it('can search and filter cart content', function (): void {
         // Test search functionality
         $expensiveItems = $this->cart->search(function (CartItem $item) {
             return $item->price > 10.00;
@@ -418,20 +418,20 @@ describe('Cart operations and management', function () {
         expect($expensiveItems->first()->id)->toBe('product-2');
     });
 
-    it('can count items correctly', function () {
+    it('can count items correctly', function (): void {
         expect($this->cart->count())->toBe(6); // Total quantity
         expect($this->cart->getTotalQuantity())->toBe(6);
         expect($this->cart->getItems()->count())->toBe(3); // Unique items
     });
 });
 
-describe('Cart conditions', function () {
-    beforeEach(function () {
+describe('Cart conditions', function (): void {
+    beforeEach(function (): void {
         $this->cart->add('product-1', 'Product 1', 100.00, 1);
         $this->cart->add('product-2', 'Product 2', 50.00, 2);
     });
 
-    it('can add and apply global cart conditions', function () {
+    it('can add and apply global cart conditions', function (): void {
         $tax = new CartCondition('tax', 'tax', 'subtotal', '+10%');
         $shipping = new CartCondition('shipping', 'charge', 'subtotal', '+5.99');
 
@@ -446,7 +446,7 @@ describe('Cart conditions', function () {
         expect($this->cart->total()->getAmount())->toBe(225.99);
     });
 
-    it('can remove specific conditions', function () {
+    it('can remove specific conditions', function (): void {
         $tax = new CartCondition('tax', 'tax', 'subtotal', '+10%');
         $discount = new CartCondition('discount', 'discount', 'subtotal', '-5%');
 
@@ -464,7 +464,7 @@ describe('Cart conditions', function () {
         expect($result)->toBeFalse();
     });
 
-    it('can clear all conditions', function () {
+    it('can clear all conditions', function (): void {
         $tax = new CartCondition('tax', 'tax', 'subtotal', '+10%');
         $discount = new CartCondition('discount', 'discount', 'subtotal', '-5%');
 
@@ -479,7 +479,7 @@ describe('Cart conditions', function () {
         expect($this->cart->total()->getAmount())->toBe(200.00); // Back to original total
     });
 
-    it('calculates totals correctly with multiple condition types', function () {
+    it('calculates totals correctly with multiple condition types', function (): void {
         $discount = new CartCondition('discount', 'discount', 'subtotal', '-10%'); // -20
         $tax = new CartCondition('tax', 'tax', 'total', '+15%'); // Applied to subtotal result
         $shipping = new CartCondition('shipping', 'charge', 'total', '+9.99'); // Applied to total
@@ -493,7 +493,7 @@ describe('Cart conditions', function () {
         expect($this->cart->total()->getAmount())->toBe(216.99);
     });
 
-    it('can add conditions to specific items', function () {
+    it('can add conditions to specific items', function (): void {
         $itemDiscount = new CartCondition('item_discount', 'discount', 'subtotal', '-20%');
 
         $result = $this->cart->addItemCondition('product-1', $itemDiscount);
@@ -508,7 +508,7 @@ describe('Cart conditions', function () {
         expect($result)->toBeFalse();
     });
 
-    it('can remove item-specific conditions', function () {
+    it('can remove item-specific conditions', function (): void {
         $itemDiscount = new CartCondition('item_discount', 'discount', 'subtotal', '-20%');
 
         $this->cart->addItemCondition('product-1', $itemDiscount);
@@ -523,7 +523,7 @@ describe('Cart conditions', function () {
         expect($result)->toBeFalse();
     });
 
-    it('can clear all conditions from specific items', function () {
+    it('can clear all conditions from specific items', function (): void {
         $discount1 = new CartCondition('discount1', 'discount', 'subtotal', '-10%');
         $discount2 = new CartCondition('discount2', 'discount', 'subtotal', '-5%');
 
@@ -538,25 +538,25 @@ describe('Cart conditions', function () {
     });
 });
 
-describe('Cart information and calculations', function () {
-    beforeEach(function () {
+describe('Cart information and calculations', function (): void {
+    beforeEach(function (): void {
         $this->cart->add('product-1', 'Product 1', 10.99, 2);
         $this->cart->add('product-2', 'Product 2', 15.50, 3);
         $this->cart->add('product-3', 'Product 3', 8.25, 1);
     });
 
-    it('returns accurate item counts', function () {
+    it('returns accurate item counts', function (): void {
         expect($this->cart->getTotalQuantity())->toBe(6);
         expect($this->cart->count())->toBe(6);
         expect($this->cart->getItems()->count())->toBe(3); // Unique items
     });
 
-    it('calculates correct subtotals', function () {
+    it('calculates correct subtotals', function (): void {
         // (10.99 * 2) + (15.50 * 3) + (8.25 * 1) = 21.98 + 46.50 + 8.25 = 76.73
         expect($this->cart->subtotal()->getAmount())->toBe(76.73);
     });
 
-    it('can get specific items with all properties', function () {
+    it('can get specific items with all properties', function (): void {
         $item = $this->cart->get('product-1');
 
         expect($item)->toBeInstanceOf(CartItem::class);
@@ -569,7 +569,7 @@ describe('Cart information and calculations', function () {
         expect($this->cart->get('nonexistent'))->toBeNull();
     });
 
-    it('accurately determines empty state', function () {
+    it('accurately determines empty state', function (): void {
         expect($this->cart->isEmpty())->toBeFalse();
 
         $this->cart->clear();
@@ -580,7 +580,7 @@ describe('Cart information and calculations', function () {
         expect($this->cart->total()->getAmount())->toBe(0.0);
     });
 
-    it('provides correct cart state after operations', function () {
+    it('provides correct cart state after operations', function (): void {
         // Initial state
         expect($this->cart->getTotalQuantity())->toBe(6);
         expect($this->cart->subtotal()->getAmount())->toBe(76.73);
@@ -601,7 +601,7 @@ describe('Cart information and calculations', function () {
         expect($this->cart->subtotal()->getAmount())->toBe(83.20);
     });
 
-    it('can convert cart to array format', function () {
+    it('can convert cart to array format', function (): void {
         $cartArray = $this->cart->toArray();
 
         expect($cartArray)->toBeArray();
@@ -614,8 +614,8 @@ describe('Cart information and calculations', function () {
     });
 });
 
-describe('Edge cases and stress tests', function () {
-    it('handles extremely large quantities and prices', function () {
+describe('Edge cases and stress tests', function (): void {
+    it('handles extremely large quantities and prices', function (): void {
         $largePrice = 999999.99;
         $largeQuantity = 10000;
 
@@ -626,7 +626,7 @@ describe('Edge cases and stress tests', function () {
         expect($this->cart->total()->getAmount())->toBe($largePrice * $largeQuantity);
     });
 
-    it('handles many unique items', function () {
+    it('handles many unique items', function (): void {
         // Add 100 unique items
         for ($i = 1; $i <= 100; $i++) {
             $this->cart->add("product-{$i}", "Product {$i}", 10.00 + $i, 1);
@@ -640,7 +640,7 @@ describe('Edge cases and stress tests', function () {
         expect($this->cart->get('product-50')->name)->toBe('Product 50');
     })->skip(fn () => ! env('RUN_STRESS_TESTS', false), 'Stress test skipped by default - set RUN_STRESS_TESTS=true to include');
 
-    it('handles complex condition chains', function () {
+    it('handles complex condition chains', function (): void {
         $this->cart->add('product-1', 'Product', 100.00, 1);
 
         // Add multiple overlapping conditions
@@ -661,7 +661,7 @@ describe('Edge cases and stress tests', function () {
         expect($this->cart->total()->getAmount())->toBeGreaterThan(0);
     });
 
-    it('handles rapid operations sequence', function () {
+    it('handles rapid operations sequence', function (): void {
         // Rapidly add, update, remove items
         for ($i = 1; $i <= 50; $i++) {
             $this->cart->add("temp-{$i}", "Temp {$i}", 5.00, $i);
@@ -683,7 +683,7 @@ describe('Edge cases and stress tests', function () {
         expect($this->cart->isEmpty())->toBeFalse();
     })->skip(fn () => ! env('RUN_STRESS_TESTS', false), 'Stress test skipped by default - set RUN_STRESS_TESTS=true to include');
 
-    it('maintains data integrity during concurrent-like operations', function () {
+    it('maintains data integrity during concurrent-like operations', function (): void {
         $originalItem = $this->cart->add('integrity-test', 'Test Product', 25.99, 3);
         $originalTotal = $this->cart->total()->getAmount();
 
@@ -698,7 +698,7 @@ describe('Edge cases and stress tests', function () {
         expect($this->cart->total()->getAmount())->toBe($originalTotal);
     });
 
-    it('handles special characters in item data', function () {
+    it('handles special characters in item data', function (): void {
         $specialName = 'Product with émojis 🚀 & special chars: àáâãäåæçèéêë';
         $specialId = 'product-with-special-chars-åæø';
         $specialAttributes = [
@@ -716,7 +716,7 @@ describe('Edge cases and stress tests', function () {
         expect($item->getAttribute('unicode'))->toBe($specialAttributes['unicode']);
     });
 
-    it('handles precision and rounding correctly', function () {
+    it('handles precision and rounding correctly', function (): void {
         // Test with prices that might cause rounding issues
         $prices = [0.01, 0.10, 0.33, 1.333333, 9.999999, 10.006];
 
@@ -730,8 +730,8 @@ describe('Edge cases and stress tests', function () {
     });
 });
 
-describe('Storage layer tests', function () {
-    it('persists data correctly with session storage', function () {
+describe('Storage layer tests', function (): void {
+    it('persists data correctly with session storage', function (): void {
         $this->cart->add('session-test', 'Session Product', 10.00, 2);
 
         // Create a new cart instance with same storage to test persistence
@@ -748,7 +748,7 @@ describe('Storage layer tests', function () {
         expect($newCart->getTotalQuantity())->toBe(2);
     });
 
-    it('persists data correctly with database storage', function () {
+    it('persists data correctly with database storage', function (): void {
         // Skip test if database storage not available
         if ($this->databaseStorage === null) {
             expect(true)->toBeTrue(); // Pass the test
@@ -780,7 +780,7 @@ describe('Storage layer tests', function () {
         expect($newDbCart->getTotalQuantity())->toBe(3);
     });
 
-    it('isolates different cart instances', function () {
+    it('isolates different cart instances', function (): void {
         $cart1 = new Cart(
             $this->sessionStorage,
             'isolation_test_1',
@@ -809,8 +809,8 @@ describe('Storage layer tests', function () {
     });
 });
 
-describe('Multiple items and array operations', function () {
-    it('can add multiple items at once using array syntax', function () {
+describe('Multiple items and array operations', function (): void {
+    it('can add multiple items at once using array syntax', function (): void {
         $items = [
             [
                 'id' => 'product-1',
@@ -843,7 +843,7 @@ describe('Multiple items and array operations', function () {
         expect($this->cart->subtotal()->getAmount())->toBe(85.00); // 2*10 + 1*20 + 3*15 = 20 + 20 + 45 = 85
     });
 
-    it('handles multiple items with conditions and associated models', function () {
+    it('handles multiple items with conditions and associated models', function (): void {
         $discount = new CartCondition('discount', 'discount', 'subtotal', '-10%');
 
         $items = [
@@ -879,8 +879,8 @@ describe('Multiple items and array operations', function () {
     });
 });
 
-describe('Cart instance management', function () {
-    it('can switch instances using setInstance', function () {
+describe('Cart instance management', function (): void {
+    it('can switch instances using setInstance', function (): void {
         // Add item to default instance
         $this->cart->add('item-1', 'Item 1', 10.00, 1);
         expect($this->cart->instance())->toBe('bulletproof_test');
@@ -896,7 +896,7 @@ describe('Cart instance management', function () {
         expect($originalCart->getItems())->toHaveCount(1);
     });
 
-    it('provides getCurrentInstance method', function () {
+    it('provides getCurrentInstance method', function (): void {
         expect($this->cart->instance())->toBe('bulletproof_test');
 
         $newCart = $this->cart->setInstance('test_instance', app('events'));
@@ -904,8 +904,8 @@ describe('Cart instance management', function () {
     });
 });
 
-describe('Cart save operations', function () {
-    it('can explicitly store cart data', function () {
+describe('Cart save operations', function (): void {
+    it('can explicitly store cart data', function (): void {
         $this->cart->add('item-1', 'Item 1', 10.00, 1);
 
         // Data should still be accessible
@@ -914,8 +914,8 @@ describe('Cart save operations', function () {
     });
 });
 
-describe('Convenience condition methods', function () {
-    it('can add discount using addDiscount method', function () {
+describe('Convenience condition methods', function (): void {
+    it('can add discount using addDiscount method', function (): void {
         $this->cart->add('item-1', 'Item 1', 100.00, 1);
 
         $result = $this->cart->addDiscount('summer_sale', '20%');
@@ -930,7 +930,7 @@ describe('Convenience condition methods', function () {
         expect($condition->getTarget())->toBe('subtotal');
     });
 
-    it('handles discount values that already have negative sign', function () {
+    it('handles discount values that already have negative sign', function (): void {
         $this->cart->add('item-1', 'Item 1', 100.00, 1);
 
         $this->cart->addDiscount('winter_sale', '-15%');
@@ -939,7 +939,7 @@ describe('Convenience condition methods', function () {
         expect($condition->getValue())->toBe('-15%'); // Should not double the negative sign
     });
 
-    it('can add fee using addFee method', function () {
+    it('can add fee using addFee method', function (): void {
         $this->cart->add('item-1', 'Item 1', 100.00, 1);
 
         $result = $this->cart->addFee('shipping', '10.00');
@@ -954,7 +954,7 @@ describe('Convenience condition methods', function () {
         expect($condition->getTarget())->toBe('total'); // Fees are now applied to total by default
     });
 
-    it('can add tax using addTax method', function () {
+    it('can add tax using addTax method', function (): void {
         $this->cart->add('item-1', 'Item 1', 100.00, 1);
 
         $result = $this->cart->addTax('vat', '21%');
@@ -969,7 +969,7 @@ describe('Convenience condition methods', function () {
         expect($condition->getTarget())->toBe('subtotal');
     });
 
-    it('can add multiple convenience conditions with different targets', function () {
+    it('can add multiple convenience conditions with different targets', function (): void {
         $this->cart->add('item-1', 'Item 1', 100.00, 1);
 
         $this->cart->addDiscount('discount', '10%', 'total');
@@ -983,8 +983,8 @@ describe('Convenience condition methods', function () {
     });
 });
 
-describe('Content alias methods', function () {
-    it('provides subtotal() as alias for getSubtotal()', function () {
+describe('Content alias methods', function (): void {
+    it('provides subtotal() as alias for getSubtotal()', function (): void {
         $this->cart->add('item-1', 'Item 1', 25.50, 2);
 
         $subtotal = $this->cart->subtotal();
@@ -994,7 +994,7 @@ describe('Content alias methods', function () {
         expect($subtotal->getAmount())->toBe(51.0);
     });
 
-    it('provides total() as alias for getTotal()', function () {
+    it('provides total() as alias for getTotal()', function (): void {
         $this->cart->add('item-1', 'Item 1', 100.00, 1);
         $this->cart->addTax('vat', '20%');
 
@@ -1006,20 +1006,20 @@ describe('Content alias methods', function () {
     });
 });
 
-describe('Price normalization', function () {
-    it('handles string prices with commas', function () {
+describe('Price normalization', function (): void {
+    it('handles string prices with commas', function (): void {
         $item = $this->cart->add('item-1', 'Item 1', '1,234.56', 1);
 
         expect($item->price)->toBe(1234.56);
     });
 
-    it('handles null prices', function () {
+    it('handles null prices', function (): void {
         $item = $this->cart->add('item-1', 'Item 1', null, 1);
 
         expect($item->price)->toBe(0);
     });
 
-    it('respects decimal configuration', function () {
+    it('respects decimal configuration', function (): void {
         // Create cart with specific decimal configuration
         $cart = new Cart(
             $this->sessionStorage,
@@ -1036,8 +1036,8 @@ describe('Price normalization', function () {
     });
 });
 
-describe('Advanced update operations', function () {
-    it('handles absolute quantity updates with array syntax', function () {
+describe('Advanced update operations', function (): void {
+    it('handles absolute quantity updates with array syntax', function (): void {
         $this->cart->add('item-1', 'Item 1', 10.00, 5);
 
         $result = $this->cart->update('item-1', ['quantity' => ['value' => 3]]);
@@ -1046,7 +1046,7 @@ describe('Advanced update operations', function () {
         expect($result->quantity)->toBe(3); // Should be set to absolute value, not added
     });
 
-    it('handles absolute quantity updates with missing value', function () {
+    it('handles absolute quantity updates with missing value', function (): void {
         $this->cart->add('item-1', 'Item 1', 10.00, 5);
 
         // When quantity array is empty, it defaults to 0, which should remove the item
@@ -1056,7 +1056,7 @@ describe('Advanced update operations', function () {
         expect($this->cart->getItems()->count())->toBe(0);
     });
 
-    it('removes item when updated quantity becomes zero or negative', function () {
+    it('removes item when updated quantity becomes zero or negative', function (): void {
         $this->cart->add('item-1', 'Item 1', 10.00, 2);
 
         // Test with negative relative quantity that results in <= 0
@@ -1074,7 +1074,7 @@ describe('Advanced update operations', function () {
         expect($this->cart->getItems()->count())->toBe(0);
     });
 
-    it('updates price with string normalization', function () {
+    it('updates price with string normalization', function (): void {
         $this->cart->add('item-1', 'Item 1', 10.00, 1);
 
         $result = $this->cart->update('item-1', ['price' => '25.99']);
@@ -1084,8 +1084,8 @@ describe('Advanced update operations', function () {
     });
 });
 
-describe('Associated model validation', function () {
-    it('validates string associated model class exists', function () {
+describe('Associated model validation', function (): void {
+    it('validates string associated model class exists', function (): void {
         expect(fn () => $this->cart->add(
             'item-1',
             'Item 1',
@@ -1097,7 +1097,7 @@ describe('Associated model validation', function () {
         ))->toThrow(AIArmada\Cart\Exceptions\UnknownModelException::class);
     });
 
-    it('accepts object associated models', function () {
+    it('accepts object associated models', function (): void {
         $model = new stdClass;
         $model->id = 1;
 
@@ -1114,7 +1114,7 @@ describe('Associated model validation', function () {
         expect($item->associatedModel)->toBe($model);
     });
 
-    it('accepts valid class name as string', function () {
+    it('accepts valid class name as string', function (): void {
         $item = $this->cart->add(
             'item-1',
             'Item 1',
@@ -1129,14 +1129,14 @@ describe('Associated model validation', function () {
     });
 });
 
-describe('Edge cases for 100% coverage', function () {
-    it('handles condition validation properly', function () {
+describe('Edge cases for 100% coverage', function (): void {
+    it('handles condition validation properly', function (): void {
         // Test invalid condition type (line 396)
         expect(fn () => $this->cart->addCondition(['invalid_condition']))
             ->toThrow(AIArmada\Cart\Exceptions\InvalidCartConditionException::class);
     });
 
-    it('handles item condition removal for non-existent condition', function () {
+    it('handles item condition removal for non-existent condition', function (): void {
         $this->cart->add('item-1', 'Item 1', 10.00, 1);
 
         // Try to remove condition that doesn't exist (line 480 - condition exists check)
@@ -1144,13 +1144,13 @@ describe('Edge cases for 100% coverage', function () {
         expect($result)->toBeFalse();
     });
 
-    it('handles item condition operations on non-existent items', function () {
+    it('handles item condition operations on non-existent items', function (): void {
         // Try to clear conditions on non-existent item (line 505)
         $result = $this->cart->clearItemConditions('non_existent_item');
         expect($result)->toBeFalse();
     });
 
-    it('tests the actual quantity removal logic in update', function () {
+    it('tests the actual quantity removal logic in update', function (): void {
         $this->cart->add('item-1', 'Item 1', 10.00, 2);
 
         // Update with quantity that results in exactly 1 (should not remove)

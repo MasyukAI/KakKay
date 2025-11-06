@@ -48,7 +48,7 @@ final class VoucherForm
                                 ->helperText('Alphanumeric voucher code shown to customers')
                                 ->afterStateUpdated(static function (?string $state, Set $set): void {
                                     if ($state !== null) {
-                                        $set('code', strtoupper($state));
+                                        $set('code', mb_strtoupper($state));
                                     }
                                 }),
 

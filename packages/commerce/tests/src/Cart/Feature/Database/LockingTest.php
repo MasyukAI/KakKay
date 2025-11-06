@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 use AIArmada\Cart\Facades\Cart;
 
-describe('Database Locking with lockForUpdate', function () {
-    beforeEach(function () {
+describe('Database Locking with lockForUpdate', function (): void {
+    beforeEach(function (): void {
         config(['cart.storage' => 'database']);
         config(['cart.database.lock_for_update' => true]);
         Cart::clear();
     });
 
-    it('prevents race conditions with lockForUpdate enabled', function () {
+    it('prevents race conditions with lockForUpdate enabled', function (): void {
         Cart::add('concurrent-item', 'Concurrent Item', 50.00, 1);
 
         // Simulate concurrent access
@@ -23,7 +23,7 @@ describe('Database Locking with lockForUpdate', function () {
         expect(Cart::get('concurrent-item')->quantity)->toBe(2);
     });
 
-    it('handles concurrent condition updates with lockForUpdate', function () {
+    it('handles concurrent condition updates with lockForUpdate', function (): void {
         Cart::add('item', 'Item', 100.00, 1);
 
         Cart::addTax('VAT', '10%');
@@ -36,7 +36,7 @@ describe('Database Locking with lockForUpdate', function () {
         expect(Cart::getConditions())->toHaveCount(2);
     });
 
-    it('metadata updates work with lockForUpdate', function () {
+    it('metadata updates work with lockForUpdate', function (): void {
         Cart::add('item', 'Item', 50.00, 1);
 
         Cart::setMetadata('customer_note', 'First note');
@@ -46,7 +46,7 @@ describe('Database Locking with lockForUpdate', function () {
         expect(Cart::getMetadata('gift_wrap'))->toBeTrue();
     });
 
-    it('can disable lockForUpdate for maximum performance', function () {
+    it('can disable lockForUpdate for maximum performance', function (): void {
         config(['cart.database.lock_for_update' => false]);
 
         Cart::add('fast-item', 'Fast Item', 25.00, 1);
@@ -56,13 +56,13 @@ describe('Database Locking with lockForUpdate', function () {
     });
 });
 
-describe('Optimistic Locking', function () {
-    beforeEach(function () {
+describe('Optimistic Locking', function (): void {
+    beforeEach(function (): void {
         config(['cart.storage' => 'database']);
         Cart::clear();
     });
 
-    it('uses version numbers for optimistic locking', function () {
+    it('uses version numbers for optimistic locking', function (): void {
         Cart::add('versioned-item', 'Versioned Item', 100.00, 1);
 
         // The cart should have version tracking
@@ -70,7 +70,7 @@ describe('Optimistic Locking', function () {
         expect($cartData)->toBeArray();
     });
 
-    it('handles optimistic lock conflicts gracefully', function () {
+    it('handles optimistic lock conflicts gracefully', function (): void {
         Cart::add('conflict-item', 'Conflict Item', 50.00, 1);
 
         // Try to simulate a conflict scenario
@@ -80,13 +80,13 @@ describe('Optimistic Locking', function () {
     });
 });
 
-describe('Locking Performance', function () {
-    beforeEach(function () {
+describe('Locking Performance', function (): void {
+    beforeEach(function (): void {
         config(['cart.storage' => 'database']);
         Cart::clear();
     });
 
-    it('performs well with locking enabled', function () {
+    it('performs well with locking enabled', function (): void {
         config(['cart.database.lock_for_update' => true]);
 
         $startTime = microtime(true);
@@ -102,7 +102,7 @@ describe('Locking Performance', function () {
         expect(Cart::count())->toBe(10);
     });
 
-    it('performs well with locking disabled', function () {
+    it('performs well with locking disabled', function (): void {
         config(['cart.database.lock_for_update' => false]);
 
         $startTime = microtime(true);
@@ -119,13 +119,13 @@ describe('Locking Performance', function () {
     });
 });
 
-describe('Database Storage Operations', function () {
-    beforeEach(function () {
+describe('Database Storage Operations', function (): void {
+    beforeEach(function (): void {
         config(['cart.storage' => 'database']);
         Cart::clear();
     });
 
-    it('stores items correctly', function () {
+    it('stores items correctly', function (): void {
         Cart::add('db-item', 'Database Item', 75.00, 2);
 
         $item = Cart::get('db-item');
@@ -135,7 +135,7 @@ describe('Database Storage Operations', function () {
         expect($item->quantity)->toBe(2);
     });
 
-    it('stores conditions correctly', function () {
+    it('stores conditions correctly', function (): void {
         Cart::add('item', 'Item', 100.00, 1);
         Cart::addTax('VAT', '10%');
         Cart::addShipping('Shipping', 5.00);
@@ -143,7 +143,7 @@ describe('Database Storage Operations', function () {
         expect(Cart::getConditions())->toHaveCount(2);
     });
 
-    it('stores metadata correctly', function () {
+    it('stores metadata correctly', function (): void {
         Cart::setMetadata('order_note', 'Leave at door');
         Cart::setMetadata('gift', true);
 
@@ -151,7 +151,7 @@ describe('Database Storage Operations', function () {
         expect(Cart::getMetadata('gift'))->toBeTrue();
     });
 
-    it('handles large datasets', function () {
+    it('handles large datasets', function (): void {
         for ($i = 1; $i <= 50; $i++) {
             Cart::add("bulk-item-{$i}", "Bulk Item {$i}", 10.00 + $i, 1);
         }

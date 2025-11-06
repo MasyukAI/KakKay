@@ -310,6 +310,22 @@ final readonly class CacheStorage implements StorageInterface
     }
 
     /**
+     * Get cart creation timestamp (not supported by cache storage)
+     */
+    public function getCreatedAt(string $identifier, string $instance): ?string
+    {
+        return null;
+    }
+
+    /**
+     * Get cart last updated timestamp (not supported by cache storage)
+     */
+    public function getUpdatedAt(string $identifier, string $instance): ?string
+    {
+        return null;
+    }
+
+    /**
      * Store items with locking to prevent concurrent modification
      *
      * @param  array<string, mixed>  $items
@@ -327,7 +343,7 @@ final readonly class CacheStorage implements StorageInterface
 
         $lock = $this->cache->lock("lock.{$key}", $this->lockTimeout);
 
-        $lock->block($this->lockTimeout, function () use ($key, $items) {
+        $lock->block($this->lockTimeout, function () use ($key, $items): void {
             $this->cache->put($key, $items, $this->ttl);
         });
     }
@@ -360,7 +376,7 @@ final readonly class CacheStorage implements StorageInterface
 
         $lock = $this->cache->lock("lock.{$key}", $this->lockTimeout);
 
-        $lock->block($this->lockTimeout, function () use ($key, $conditions) {
+        $lock->block($this->lockTimeout, function () use ($key, $conditions): void {
             $this->cache->put($key, $conditions, $this->ttl);
         });
     }
@@ -388,7 +404,7 @@ final readonly class CacheStorage implements StorageInterface
 
         $lock = $this->cache->lock("lock.{$metadataKey}", $this->lockTimeout);
 
-        $lock->block($this->lockTimeout, function () use ($metadataKey, $value) {
+        $lock->block($this->lockTimeout, function () use ($metadataKey, $value): void {
             $this->cache->put($metadataKey, $value, $this->ttl);
         });
     }
@@ -443,21 +459,5 @@ final readonly class CacheStorage implements StorageInterface
     private function getMetadataKey(string $identifier, string $instance, string $key): string
     {
         return "{$this->keyPrefix}.{$identifier}.{$instance}.metadata.{$key}";
-    }
-
-    /**
-     * Get cart creation timestamp (not supported by cache storage)
-     */
-    public function getCreatedAt(string $identifier, string $instance): ?string
-    {
-        return null;
-    }
-
-    /**
-     * Get cart last updated timestamp (not supported by cache storage)
-     */
-    public function getUpdatedAt(string $identifier, string $instance): ?string
-    {
-        return null;
     }
 }

@@ -6,7 +6,7 @@ use AIArmada\Commerce\Tests\Fixtures\Models\Product;
 use AIArmada\Stock\Models\StockTransaction;
 use AIArmada\Stock\Services\StockService;
 
-test('service can add stock to model', function () {
+test('service can add stock to model', function (): void {
     $service = app(StockService::class);
     $product = Product::create(['name' => 'Test Product']);
 
@@ -20,7 +20,7 @@ test('service can add stock to model', function () {
     expect($transaction->note)->toBe('Supplier delivery');
 });
 
-test('service can remove stock from model', function () {
+test('service can remove stock from model', function (): void {
     $service = app(StockService::class);
     $product = Product::create(['name' => 'Test Product']);
 
@@ -33,7 +33,7 @@ test('service can remove stock from model', function () {
     expect($transaction->reason)->toBe('sale');
 });
 
-test('service can get current stock for model', function () {
+test('service can get current stock for model', function (): void {
     $service = app(StockService::class);
     $product = Product::create(['name' => 'Test Product']);
 
@@ -46,7 +46,7 @@ test('service can get current stock for model', function () {
     expect($service->getCurrentStock($product))->toBe(70);
 });
 
-test('service can adjust stock', function () {
+test('service can adjust stock', function (): void {
     $service = app(StockService::class);
     $product = Product::create(['name' => 'Test Product']);
 
@@ -69,7 +69,7 @@ test('service can adjust stock', function () {
     expect($transaction)->toBeNull();
 });
 
-test('service can check if model has stock', function () {
+test('service can check if model has stock', function (): void {
     $service = app(StockService::class);
     $product = Product::create(['name' => 'Test Product']);
 
@@ -80,7 +80,7 @@ test('service can check if model has stock', function () {
     expect($service->hasStock($product, 51))->toBeFalse();
 });
 
-test('service can check if stock is low', function () {
+test('service can check if stock is low', function (): void {
     $service = app(StockService::class);
     $product = Product::create(['name' => 'Test Product']);
 
@@ -95,7 +95,7 @@ test('service can check if stock is low', function () {
     expect($service->isLowStock($product, 20))->toBeTrue();
 });
 
-test('service can get stock history', function () {
+test('service can get stock history', function (): void {
     $service = app(StockService::class);
     $product = Product::create(['name' => 'Test Product']);
 
@@ -110,7 +110,7 @@ test('service can get stock history', function () {
     expect($history->first()->quantity)->toBe(50);
 });
 
-test('service creates transactions with proper morphable relationship', function () {
+test('service creates transactions with proper morphable relationship', function (): void {
     $service = app(StockService::class);
     $product = Product::create(['name' => 'Test Product']);
 

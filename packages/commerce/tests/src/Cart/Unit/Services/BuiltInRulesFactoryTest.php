@@ -19,8 +19,8 @@ if (! function_exists('makeRulesFactoryCart')) {
     }
 }
 
-describe('BuiltInRulesFactory', function () {
-    it('lists all supported keys', function () {
+describe('BuiltInRulesFactory', function (): void {
+    it('lists all supported keys', function (): void {
         $factory = new BuiltInRulesFactory();
 
         expect($factory->getAvailableKeys())
@@ -30,7 +30,7 @@ describe('BuiltInRulesFactory', function () {
             ->and($factory->canCreateRules('unknown-rule'))->toBeFalse();
     });
 
-    it('evaluates minimum item threshold', function () {
+    it('evaluates minimum item threshold', function (): void {
         $factory = new BuiltInRulesFactory();
         $cart = makeRulesFactoryCart('min-items');
 
@@ -46,7 +46,7 @@ describe('BuiltInRulesFactory', function () {
         expect($rule($cart))->toBeTrue();
     });
 
-    it('uses metadata equality without explicit context wrapper', function () {
+    it('uses metadata equality without explicit context wrapper', function (): void {
         $factory = new BuiltInRulesFactory();
         $cart = makeRulesFactoryCart('metadata');
         $cart->setMetadata('tier', 'vip');
@@ -57,7 +57,7 @@ describe('BuiltInRulesFactory', function () {
         expect($rule($cart))->toBeTrue();
     });
 
-    it('matches item attribute values for cart and individual item scopes', function () {
+    it('matches item attribute values for cart and individual item scopes', function (): void {
         $factory = new BuiltInRulesFactory();
         $cart = makeRulesFactoryCart('attributes');
 
@@ -74,7 +74,7 @@ describe('BuiltInRulesFactory', function () {
             ->and($rule($cart, $item))->toBeTrue();
     });
 
-    it('honours configured time windows including overnight ranges', function () {
+    it('honours configured time windows including overnight ranges', function (): void {
         $factory = new BuiltInRulesFactory();
         $cart = makeRulesFactoryCart('time-window');
 
@@ -89,7 +89,7 @@ describe('BuiltInRulesFactory', function () {
         CarbonImmutable::setTestNow();
     });
 
-    it('accepts day names for the day-of-week rule', function () {
+    it('accepts day names for the day-of-week rule', function (): void {
         $factory = new BuiltInRulesFactory();
         $cart = makeRulesFactoryCart('day-of-week');
 
@@ -100,7 +100,7 @@ describe('BuiltInRulesFactory', function () {
         CarbonImmutable::setTestNow();
     });
 
-    it('detects customer tags stored in metadata', function () {
+    it('detects customer tags stored in metadata', function (): void {
         $factory = new BuiltInRulesFactory();
         $cart = makeRulesFactoryCart('customer-tag');
         $cart->setMetadata('customer_tags', ['vip', 'wholesale']);
@@ -110,7 +110,7 @@ describe('BuiltInRulesFactory', function () {
         expect($rule($cart))->toBeTrue();
     });
 
-    it('recognises cart condition type presence', function () {
+    it('recognises cart condition type presence', function (): void {
         $factory = new BuiltInRulesFactory();
         $cart = makeRulesFactoryCart('condition-type');
 
@@ -129,7 +129,7 @@ describe('BuiltInRulesFactory', function () {
         expect($rule($cart))->toBeTrue();
     });
 
-    it('limits item quantity using item-level scope when provided', function () {
+    it('limits item quantity using item-level scope when provided', function (): void {
         $factory = new BuiltInRulesFactory();
         $cart = makeRulesFactoryCart('quantity');
 

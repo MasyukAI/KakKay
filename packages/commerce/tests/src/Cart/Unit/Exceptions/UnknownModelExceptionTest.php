@@ -42,7 +42,7 @@ it('extends exception class', function (): void {
 it('can be thrown and caught', function (): void {
     $message = 'Test exception throwing';
 
-    expect(function () use ($message) {
+    expect(function () use ($message): void {
         throw new UnknownModelException($message);
     })->toThrow(UnknownModelException::class, $message);
 });

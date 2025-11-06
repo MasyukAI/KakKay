@@ -5,13 +5,13 @@ declare(strict_types=1);
 use AIArmada\Cart\Storage\CacheStorage;
 use Illuminate\Support\Facades\Cache;
 
-beforeEach(function () {
+beforeEach(function (): void {
     Cache::flush();
     $this->storage = new CacheStorage(Cache::store(), 'test_cart', 3600);
 });
 
-describe('CacheStorage', function () {
-    it('stores and retrieves items', function () {
+describe('CacheStorage', function (): void {
+    it('stores and retrieves items', function (): void {
         $items = ['item-1' => ['name' => 'Test Item', 'price' => 10.00]];
 
         $this->storage->putItems('cart-123', 'default', $items);
@@ -20,7 +20,7 @@ describe('CacheStorage', function () {
         expect($retrieved)->toBe($items);
     });
 
-    it('stores and retrieves conditions', function () {
+    it('stores and retrieves conditions', function (): void {
         $conditions = ['tax' => ['type' => 'percentage', 'value' => '10']];
 
         $this->storage->putConditions('cart-123', 'default', $conditions);
@@ -29,7 +29,7 @@ describe('CacheStorage', function () {
         expect($retrieved)->toBe($conditions);
     });
 
-    it('stores both items and conditions at once', function () {
+    it('stores both items and conditions at once', function (): void {
         $items = ['item-1' => ['name' => 'Item']];
         $conditions = ['tax' => ['value' => '10']];
 
@@ -39,7 +39,7 @@ describe('CacheStorage', function () {
         expect($this->storage->getConditions('cart-123', 'default'))->toBe($conditions);
     });
 
-    it('checks if cart exists in storage', function () {
+    it('checks if cart exists in storage', function (): void {
         expect($this->storage->has('cart-123', 'default'))->toBeFalse();
 
         $this->storage->putItems('cart-123', 'default', ['item' => []]);
@@ -47,13 +47,13 @@ describe('CacheStorage', function () {
         expect($this->storage->has('cart-123', 'default'))->toBeTrue();
     });
 
-    it('checks if cart exists with conditions only', function () {
+    it('checks if cart exists with conditions only', function (): void {
         $this->storage->putConditions('cart-123', 'default', ['tax' => []]);
 
         expect($this->storage->has('cart-123', 'default'))->toBeTrue();
     });
 
-    it('forgets specific cart instance', function () {
+    it('forgets specific cart instance', function (): void {
         $this->storage->putItems('cart-123', 'default', ['item' => []]);
         $this->storage->putItems('cart-123', 'wishlist', ['item' => []]);
 
@@ -63,7 +63,7 @@ describe('CacheStorage', function () {
         expect($this->storage->has('cart-123', 'wishlist'))->toBeTrue();
     });
 
-    it('flushes all cart data with prefix', function () {
+    it('flushes all cart data with prefix', function (): void {
         $this->storage->putItems('cart-1', 'default', ['item' => []]);
         $this->storage->putItems('cart-2', 'default', ['item' => []]);
 
@@ -73,7 +73,7 @@ describe('CacheStorage', function () {
         expect($this->storage->has('cart-2', 'default'))->toBeFalse();
     });
 
-    it('returns empty array for getInstances due to cache limitation', function () {
+    it('returns empty array for getInstances due to cache limitation', function (): void {
         // CacheStorage can't list keys, so it always returns empty array
         $this->storage->putItems('cart-123', 'default', ['item' => []]);
         $this->storage->putItems('cart-123', 'wishlist', ['item' => []]);
@@ -83,13 +83,13 @@ describe('CacheStorage', function () {
         expect($instances)->toBe([]);
     });
 
-    it('returns empty array for non-existent identifier instances', function () {
+    it('returns empty array for non-existent identifier instances', function (): void {
         $instances = $this->storage->getInstances('non-existent');
 
         expect($instances)->toBe([]);
     });
 
-    it('forgetIdentifier does nothing due to cache limitation', function () {
+    it('forgetIdentifier does nothing due to cache limitation', function (): void {
         // CacheStorage can't efficiently remove all instances for an identifier
         $this->storage->putItems('cart-123', 'default', ['item' => []]);
         $this->storage->putItems('cart-123', 'wishlist', ['item' => []]);
@@ -103,32 +103,32 @@ describe('CacheStorage', function () {
         expect($this->storage->has('cart-456', 'default'))->toBeTrue();
     });
 
-    it('stores and retrieves metadata', function () {
+    it('stores and retrieves metadata', function (): void {
         $this->storage->putMetadata('cart-123', 'default', 'notes', 'Customer notes here');
         $value = $this->storage->getMetadata('cart-123', 'default', 'notes');
 
         expect($value)->toBe('Customer notes here');
     });
 
-    it('returns null for non-existent metadata', function () {
+    it('returns null for non-existent metadata', function (): void {
         $value = $this->storage->getMetadata('cart-123', 'default', 'non-existent');
 
         expect($value)->toBeNull();
     });
 
-    it('returns empty array when getting items from non-existent cart', function () {
+    it('returns empty array when getting items from non-existent cart', function (): void {
         $items = $this->storage->getItems('non-existent', 'default');
 
         expect($items)->toBe([]);
     });
 
-    it('returns empty array when getting conditions from non-existent cart', function () {
+    it('returns empty array when getting conditions from non-existent cart', function (): void {
         $conditions = $this->storage->getConditions('non-existent', 'default');
 
         expect($conditions)->toBe([]);
     });
 
-    it('swaps identifier successfully', function () {
+    it('swaps identifier successfully', function (): void {
         $items = ['item-1' => ['name' => 'Product']];
         $conditions = ['tax' => ['value' => '10']];
 
@@ -143,13 +143,13 @@ describe('CacheStorage', function () {
         expect($this->storage->getConditions('new-cart', 'default'))->toBe($conditions);
     });
 
-    it('returns false when swapping non-existent identifier', function () {
+    it('returns false when swapping non-existent identifier', function (): void {
         $result = $this->storage->swapIdentifier('non-existent', 'new-cart', 'default');
 
         expect($result)->toBeFalse();
     });
 
-    it('respects TTL when storing items', function () {
+    it('respects TTL when storing items', function (): void {
         $storage = new CacheStorage(Cache::store(), 'test_cart', 1); // 1 second TTL
 
         $storage->putItems('cart-123', 'default', ['item' => []]);
@@ -161,7 +161,7 @@ describe('CacheStorage', function () {
         expect($storage->has('cart-123', 'default'))->toBeFalse();
     });
 
-    it('throws exception when items data size exceeds limit', function () {
+    it('throws exception when items data size exceeds limit', function (): void {
         config()->set('cart.limits.max_data_size_bytes', 100);
 
         $largeItems = [];
@@ -173,7 +173,7 @@ describe('CacheStorage', function () {
             ->toThrow(InvalidArgumentException::class, 'data size');
     });
 
-    it('throws exception when conditions data size exceeds limit', function () {
+    it('throws exception when conditions data size exceeds limit', function (): void {
         config()->set('cart.limits.max_data_size_bytes', 100);
 
         $largeConditions = [];
@@ -185,7 +185,7 @@ describe('CacheStorage', function () {
             ->toThrow(InvalidArgumentException::class, 'data size');
     });
 
-    it('handles multiple instances per identifier correctly', function () {
+    it('handles multiple instances per identifier correctly', function (): void {
         // Create multiple instances for same identifier
         $this->storage->putItems('user-1', 'cart', ['item1' => []]);
         $this->storage->putItems('user-1', 'wishlist', ['item2' => []]);
@@ -205,7 +205,7 @@ describe('CacheStorage', function () {
         expect($this->storage->has('user-2', 'cart'))->toBeTrue();
     });
 
-    it('stores metadata with correct TTL', function () {
+    it('stores metadata with correct TTL', function (): void {
         $storage = new CacheStorage(Cache::store(), 'test_cart', 1); // 1 second TTL
 
         $storage->putMetadata('cart-123', 'default', 'notes', 'Test notes');
@@ -217,7 +217,7 @@ describe('CacheStorage', function () {
         expect($storage->getMetadata('cart-123', 'default', 'notes'))->toBeNull();
     });
 
-    it('handles cache key generation correctly', function () {
+    it('handles cache key generation correctly', function (): void {
         // Test that different identifiers and instances use different cache keys
         $this->storage->putItems('cart-1', 'default', ['a' => 1]);
         $this->storage->putItems('cart-1', 'wishlist', ['b' => 2]);
@@ -228,7 +228,7 @@ describe('CacheStorage', function () {
         expect($this->storage->getItems('cart-2', 'default'))->toBe(['c' => 3]);
     });
 
-    it('handles empty data gracefully', function () {
+    it('handles empty data gracefully', function (): void {
         $this->storage->putItems('cart-123', 'default', []);
         $this->storage->putConditions('cart-123', 'default', []);
 
@@ -236,7 +236,7 @@ describe('CacheStorage', function () {
         expect($this->storage->getConditions('cart-123', 'default'))->toBe([]);
     });
 
-    it('uses locking when enabled', function () {
+    it('uses locking when enabled', function (): void {
         $storageWithLocking = new CacheStorage(Cache::store(), 'test_cart', 3600, true);
 
         $items = ['item-1' => ['name' => 'Product']];
@@ -245,7 +245,7 @@ describe('CacheStorage', function () {
         expect($storageWithLocking->getItems('cart-123', 'default'))->toBe($items);
     });
 
-    it('handles putBoth with locking enabled', function () {
+    it('handles putBoth with locking enabled', function (): void {
         $storageWithLocking = new CacheStorage(Cache::store(), 'test_cart', 3600, true);
 
         $items = ['item-1' => ['name' => 'Product']];
@@ -257,7 +257,7 @@ describe('CacheStorage', function () {
         expect($storageWithLocking->getConditions('cart-123', 'default'))->toBe($conditions);
     });
 
-    it('handles metadata with locking enabled', function () {
+    it('handles metadata with locking enabled', function (): void {
         $storageWithLocking = new CacheStorage(Cache::store(), 'test_cart', 3600, true);
 
         $storageWithLocking->putMetadata('cart-123', 'default', 'notes', 'Test value');
@@ -265,7 +265,7 @@ describe('CacheStorage', function () {
         expect($storageWithLocking->getMetadata('cart-123', 'default', 'notes'))->toBe('Test value');
     });
 
-    it('uses custom lock timeout', function () {
+    it('uses custom lock timeout', function (): void {
         $storage = new CacheStorage(Cache::store(), 'test_cart', 3600, true, 10);
 
         $items = ['item-1' => ['name' => 'Product']];
@@ -274,7 +274,7 @@ describe('CacheStorage', function () {
         expect($storage->getItems('cart-123', 'default'))->toBe($items);
     });
 
-    it('handles concurrent writes with locking', function () {
+    it('handles concurrent writes with locking', function (): void {
         $storageWithLocking = new CacheStorage(Cache::store(), 'test_cart', 3600, true);
 
         // Simulate multiple writes
@@ -286,7 +286,7 @@ describe('CacheStorage', function () {
         expect($items)->toHaveKey('item-2');
     });
 
-    it('stores metadata without locking', function () {
+    it('stores metadata without locking', function (): void {
         // Disable locking
         $storage = new CacheStorage(Cache::store(), 'test_cart', 3600, false);
 
@@ -295,7 +295,7 @@ describe('CacheStorage', function () {
         expect($storage->getMetadata('cart-123', 'default', 'user_id'))->toBe(456);
     });
 
-    it('throws exception when item count exceeds limit', function () {
+    it('throws exception when item count exceeds limit', function (): void {
         config()->set('cart.limits.max_items', 5);
 
         $items = [];
@@ -307,7 +307,7 @@ describe('CacheStorage', function () {
             ->toThrow(InvalidArgumentException::class, 'cannot contain more than');
     });
 
-    it('stores metadata with locking enabled and retrieves it', function () {
+    it('stores metadata with locking enabled and retrieves it', function (): void {
         $storageWithLocking = new CacheStorage(Cache::store(), 'test_cart', 3600, true);
 
         $storageWithLocking->putMetadata('cart-123', 'default', 'session', 'abc123');
@@ -317,7 +317,7 @@ describe('CacheStorage', function () {
         expect($storageWithLocking->getMetadata('cart-123', 'default', 'user_id'))->toBe(789);
     });
 
-    it('stores conditions with locking', function () {
+    it('stores conditions with locking', function (): void {
         $storageWithLocking = new CacheStorage(Cache::store(), 'test_cart', 3600, true);
 
         $conditions = ['discount' => ['type' => 'fixed', 'value' => 5]];
@@ -326,7 +326,7 @@ describe('CacheStorage', function () {
         expect($storageWithLocking->getConditions('cart-123', 'default'))->toEqual($conditions);
     });
 
-    it('handles JSON string data when retrieving items', function () {
+    it('handles JSON string data when retrieving items', function (): void {
         $items = ['item-1' => ['name' => 'Test Item', 'price' => 10.00]];
         $jsonData = json_encode($items);
 
@@ -343,7 +343,7 @@ describe('CacheStorage', function () {
         expect($retrieved['item-1']['name'])->toBe('Test Item');
     });
 
-    it('handles JSON string data when retrieving conditions', function () {
+    it('handles JSON string data when retrieving conditions', function (): void {
         $conditions = ['tax' => ['type' => 'percentage', 'value' => '10']];
         $jsonData = json_encode($conditions);
 
@@ -359,7 +359,7 @@ describe('CacheStorage', function () {
         expect($retrieved)->toBe($conditions);
     });
 
-    it('returns empty array when JSON string is invalid for items', function () {
+    it('returns empty array when JSON string is invalid for items', function (): void {
         // Mock cache to return invalid JSON string
         $mockCache = Mockery::mock(Cache::store());
         $mockCache->shouldReceive('get')
@@ -372,7 +372,7 @@ describe('CacheStorage', function () {
         expect($retrieved)->toBe([]);
     });
 
-    it('returns empty array when JSON string is invalid for conditions', function () {
+    it('returns empty array when JSON string is invalid for conditions', function (): void {
         // Mock cache to return invalid JSON string
         $mockCache = Mockery::mock(Cache::store());
         $mockCache->shouldReceive('get')

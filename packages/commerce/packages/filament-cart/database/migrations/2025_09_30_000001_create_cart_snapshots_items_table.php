@@ -10,7 +10,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('cart_snapshot_items', function (Blueprint $table) {
+        Schema::create('cart_snapshot_items', function (Blueprint $table): void {
             $table->uuid('id')->primary();
             $table->foreignUuid('cart_id')->constrained('cart_snapshots')->onDelete('cascade');
             $table->string('item_id')->index(); // The original cart item ID
@@ -33,7 +33,7 @@ return new class extends Migration
         });
 
         // Add GIN indexes for JSONB columns for efficient querying
-        Schema::table('cart_snapshot_items', function (Blueprint $table) {
+        Schema::table('cart_snapshot_items', function (Blueprint $table): void {
             $table->rawIndex('attributes', 'cart_snapshot_items_attributes_gin_index', 'gin');
             $table->rawIndex('conditions', 'cart_snapshot_items_conditions_gin_index', 'gin');
         });

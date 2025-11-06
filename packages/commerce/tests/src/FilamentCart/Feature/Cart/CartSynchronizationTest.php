@@ -12,7 +12,7 @@ beforeEach(function (): void {
     CartFacade::clear();
 });
 
-describe('cart synchronization', function () {
+describe('cart synchronization', function (): void {
     it('creates a normalized snapshot when the first item is added', function (): void {
         CartFacade::add('sku-001', 'First Product', 1500, 2, ['color' => 'red']);
 

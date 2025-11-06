@@ -202,12 +202,6 @@ class InMemoryStorage implements StorageInterface
         $this->incrementVersion($identifier, $instance);
     }
 
-    private function incrementVersion(string $identifier, string $instance): void
-    {
-        $current = $this->versions[$identifier][$instance] ?? 0;
-        $this->versions[$identifier][$instance] = $current + 1;
-    }
-
     /**
      * Get cart creation timestamp (not supported by in-memory storage)
      */
@@ -222,5 +216,11 @@ class InMemoryStorage implements StorageInterface
     public function getUpdatedAt(string $identifier, string $instance): ?string
     {
         return null;
+    }
+
+    private function incrementVersion(string $identifier, string $instance): void
+    {
+        $current = $this->versions[$identifier][$instance] ?? 0;
+        $this->versions[$identifier][$instance] = $current + 1;
     }
 }

@@ -7,14 +7,14 @@ use Illuminate\Auth\Events\Attempting;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 
-describe('HandleUserLoginAttempt Coverage Tests', function () {
-    beforeEach(function () {
+describe('HandleUserLoginAttempt Coverage Tests', function (): void {
+    beforeEach(function (): void {
         $this->listener = new HandleUserLoginAttempt;
         Cache::flush();
         Auth::logout();
     });
 
-    it('can handle login attempt with email credentials', function () {
+    it('can handle login attempt with email credentials', function (): void {
         // Ensure user is not authenticated
         expect(Auth::check())->toBeFalse();
 
@@ -29,7 +29,7 @@ describe('HandleUserLoginAttempt Coverage Tests', function () {
         expect($cachedValue)->toBe($sessionId);
     });
 
-    it('can handle login attempt with username credentials', function () {
+    it('can handle login attempt with username credentials', function (): void {
         expect(Auth::check())->toBeFalse();
 
         $credentials = ['username' => 'testuser', 'password' => 'password'];
@@ -42,7 +42,7 @@ describe('HandleUserLoginAttempt Coverage Tests', function () {
         expect($cachedValue)->toBe($sessionId);
     });
 
-    it('can handle login attempt with phone credentials', function () {
+    it('can handle login attempt with phone credentials', function (): void {
         expect(Auth::check())->toBeFalse();
 
         $credentials = ['phone' => '+1234567890', 'password' => 'password'];
@@ -55,7 +55,7 @@ describe('HandleUserLoginAttempt Coverage Tests', function () {
         expect($cachedValue)->toBe($sessionId);
     });
 
-    it('does not store session when user is already authenticated', function () {
+    it('does not store session when user is already authenticated', function (): void {
         // Mock authenticated user
         $user = new class
         {
@@ -76,7 +76,7 @@ describe('HandleUserLoginAttempt Coverage Tests', function () {
         expect($cachedValue)->toBeNull();
     });
 
-    it('handles credentials without user identifier gracefully', function () {
+    it('handles credentials without user identifier gracefully', function (): void {
         expect(Auth::check())->toBeFalse();
 
         $credentials = ['password' => 'password']; // No email, username, or phone
@@ -88,7 +88,7 @@ describe('HandleUserLoginAttempt Coverage Tests', function () {
         expect(true)->toBeTrue();
     });
 
-    it('handles empty session ID gracefully', function () {
+    it('handles empty session ID gracefully', function (): void {
         expect(Auth::check())->toBeFalse();
 
         // Mock empty session ID
@@ -103,7 +103,7 @@ describe('HandleUserLoginAttempt Coverage Tests', function () {
         expect(true)->toBeTrue();
     });
 
-    it('sets cache with correct expiration time', function () {
+    it('sets cache with correct expiration time', function (): void {
         expect(Auth::check())->toBeFalse();
 
         $credentials = ['email' => 'test@example.com', 'password' => 'password'];

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 use AIArmada\Cart\Facades\Cart;
 
-describe('Cart Operations', function () {
-    beforeEach(function () {
+describe('Cart Operations', function (): void {
+    beforeEach(function (): void {
         Cart::clear();
     });
 
-    it('can access cart facade and perform basic operations', function () {
+    it('can access cart facade and perform basic operations', function (): void {
         expect(Cart::isEmpty())->toBeTrue();
         expect(Cart::count())->toBe(0);
         expect(Cart::total()->getAmount())->toBe(0.0);
@@ -26,7 +26,7 @@ describe('Cart Operations', function () {
         expect($item->quantity)->toBe(2);
     });
 
-    it('can add multiple items to cart', function () {
+    it('can add multiple items to cart', function (): void {
         Cart::add('product-1', 'Product 1', 15.00, 1);
         Cart::add('product-2', 'Product 2', 25.00, 2);
         Cart::add('product-3', 'Product 3', 35.00, 3);
@@ -36,7 +36,7 @@ describe('Cart Operations', function () {
         expect(Cart::subtotal()->getAmount())->toBe(170.00);
     });
 
-    it('can update item quantities', function () {
+    it('can update item quantities', function (): void {
         Cart::add('product-1', 'Product 1', 15.00, 1);
         Cart::add('product-2', 'Product 2', 25.00, 2);
 
@@ -46,7 +46,7 @@ describe('Cart Operations', function () {
         expect(Cart::subtotal()->getAmount())->toBe(190.00); // 15 + 175
     });
 
-    it('can remove items from cart', function () {
+    it('can remove items from cart', function (): void {
         Cart::add('product-1', 'Product 1', 15.00, 1);
         Cart::add('product-2', 'Product 2', 25.00, 2);
 
@@ -57,7 +57,7 @@ describe('Cart Operations', function () {
         expect(Cart::subtotal()->getAmount())->toBe(50.00);
     });
 
-    it('can clear entire cart', function () {
+    it('can clear entire cart', function (): void {
         Cart::add('product-1', 'Product 1', 15.00, 1);
         Cart::add('product-2', 'Product 2', 25.00, 2);
 
@@ -68,7 +68,7 @@ describe('Cart Operations', function () {
         expect(Cart::getTotalQuantity())->toBe(0);
     });
 
-    it('can search cart items', function () {
+    it('can search cart items', function (): void {
         Cart::add('product-1', 'Cheap Item', 10.00, 1);
         Cart::add('product-2', 'Expensive Item', 100.00, 1);
 
@@ -78,7 +78,7 @@ describe('Cart Operations', function () {
         expect($expensive->first()->name)->toBe('Expensive Item');
     });
 
-    it('merges quantities when adding duplicate items', function () {
+    it('merges quantities when adding duplicate items', function (): void {
         Cart::add('duplicate', 'Duplicate Test', 10.00, 1);
         Cart::add('duplicate', 'Duplicate Test', 10.00, 2);
 
@@ -86,13 +86,13 @@ describe('Cart Operations', function () {
         expect(Cart::get('duplicate')->quantity)->toBe(3);
     });
 
-    it('handles updating non-existent items gracefully', function () {
+    it('handles updating non-existent items gracefully', function (): void {
         $result = Cart::update('non-existent', ['quantity' => 5]);
 
         expect($result)->toBeNull();
     });
 
-    it('handles removing non-existent items gracefully', function () {
+    it('handles removing non-existent items gracefully', function (): void {
         Cart::add('existing', 'Existing Item', 10.00, 1);
 
         Cart::remove('non-existent');
@@ -100,11 +100,11 @@ describe('Cart Operations', function () {
         expect(Cart::getItems())->toHaveCount(1);
     });
 
-    it('returns null when getting non-existent items', function () {
+    it('returns null when getting non-existent items', function (): void {
         expect(Cart::get('non-existent'))->toBeNull();
     });
 
-    it('can add single item as array', function () {
+    it('can add single item as array', function (): void {
         $item = Cart::add([
             'id' => 'item-1',
             'name' => 'Single Item',
@@ -121,7 +121,7 @@ describe('Cart Operations', function () {
         expect(Cart::get('item-1')->attributes->get('color'))->toBe('blue');
     });
 
-    it('can add multiple items as array', function () {
+    it('can add multiple items as array', function (): void {
         $items = Cart::add([
             [
                 'id' => 'item-1',
@@ -151,12 +151,12 @@ describe('Cart Operations', function () {
     });
 });
 
-describe('Cart Conditions', function () {
-    beforeEach(function () {
+describe('Cart Conditions', function (): void {
+    beforeEach(function (): void {
         Cart::clear();
     });
 
-    it('can add and apply cart conditions', function () {
+    it('can add and apply cart conditions', function (): void {
         Cart::add('taxable-item', 'Taxable Item', 100.00, 1);
 
         $taxCondition = new AIArmada\Cart\Conditions\CartCondition(
@@ -172,7 +172,7 @@ describe('Cart Conditions', function () {
         expect(Cart::total()->getAmount())->toBe(110.00);
     });
 
-    it('can remove cart conditions', function () {
+    it('can remove cart conditions', function (): void {
         Cart::add('taxable-item', 'Taxable Item', 100.00, 1);
 
         $taxCondition = new AIArmada\Cart\Conditions\CartCondition(
@@ -189,7 +189,7 @@ describe('Cart Conditions', function () {
         expect(Cart::total()->getAmount())->toBe(100.00);
     });
 
-    it('can add discount conditions', function () {
+    it('can add discount conditions', function (): void {
         Cart::add('item', 'Item', 100.00, 1);
 
         Cart::addDiscount('SAVE10', '10%');
@@ -197,7 +197,7 @@ describe('Cart Conditions', function () {
         expect(Cart::total()->getAmount())->toBe(90.00);
     });
 
-    it('can add fee conditions', function () {
+    it('can add fee conditions', function (): void {
         Cart::add('item', 'Test Item', 100.00, 1);
 
         Cart::addFee('Processing Fee', '10.00');
@@ -206,7 +206,7 @@ describe('Cart Conditions', function () {
         expect($total)->toBeGreaterThan(100.00);
     });
 
-    it('can add tax conditions', function () {
+    it('can add tax conditions', function (): void {
         Cart::add('item', 'Item', 100.00, 1);
 
         Cart::addTax('Sales Tax', '8.5%');
@@ -215,12 +215,12 @@ describe('Cart Conditions', function () {
     });
 });
 
-describe('Cart Data Export', function () {
-    beforeEach(function () {
+describe('Cart Data Export', function (): void {
+    beforeEach(function (): void {
         Cart::clear();
     });
 
-    it('exports cart data to array', function () {
+    it('exports cart data to array', function (): void {
         Cart::add('persistent-item', 'Persistent Item', 50.00, 2);
 
         $cartArray = Cart::toArray();
@@ -231,7 +231,7 @@ describe('Cart Data Export', function () {
         expect($cartArray['subtotal'])->toBe(100.00);
     });
 
-    it('includes conditions in export', function () {
+    it('includes conditions in export', function (): void {
         Cart::add('item', 'Item', 100.00, 1);
         Cart::addTax('VAT', '10%');
 
@@ -243,12 +243,12 @@ describe('Cart Data Export', function () {
     });
 });
 
-describe('Enhanced API', function () {
-    beforeEach(function () {
+describe('Enhanced API', function (): void {
+    beforeEach(function (): void {
         Cart::clear();
     });
 
-    it('provides intuitive method aliases', function () {
+    it('provides intuitive method aliases', function (): void {
         Cart::add('item', 'Item', 50.00, 1);
 
         expect(Cart::subtotal())->toBeInstanceOf(Akaunting\Money\Money::class);
@@ -256,7 +256,7 @@ describe('Enhanced API', function () {
         expect(Cart::subtotal()->getAmount())->toBe(50.00);
     });
 
-    it('can group items by attributes', function () {
+    it('can group items by attributes', function (): void {
         Cart::add('item-1', 'Item 1', 10.00, 1, ['category' => 'electronics']);
         Cart::add('item-2', 'Item 2', 20.00, 1, ['category' => 'electronics']);
         Cart::add('item-3', 'Item 3', 30.00, 1, ['category' => 'books']);
@@ -269,7 +269,7 @@ describe('Enhanced API', function () {
         expect($grouped['books'])->toHaveCount(1);
     });
 
-    it('can filter items by attributes', function () {
+    it('can filter items by attributes', function (): void {
         Cart::add('item-1', 'Item 1', 10.00, 1, ['featured' => true]);
         Cart::add('item-2', 'Item 2', 20.00, 1, ['featured' => false]);
 

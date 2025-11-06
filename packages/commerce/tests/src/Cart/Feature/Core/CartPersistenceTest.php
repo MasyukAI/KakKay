@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 use AIArmada\Cart\Facades\Cart;
 
-describe('Cart Persistence', function () {
-    beforeEach(function () {
+describe('Cart Persistence', function (): void {
+    beforeEach(function (): void {
         Cart::clear();
     });
 
-    it('persists cart data with session storage', function () {
+    it('persists cart data with session storage', function (): void {
         Cart::add('persistent-item', 'Persistent Item', 50.00, 2);
 
         $items = Cart::getItems();
@@ -19,7 +19,7 @@ describe('Cart Persistence', function () {
         expect($items->first()->quantity)->toBe(2);
     });
 
-    it('persists cart data with conditions', function () {
+    it('persists cart data with conditions', function (): void {
         Cart::add('item', 'Item', 100.00, 1);
         Cart::addTax('VAT', '10%');
 
@@ -27,14 +27,14 @@ describe('Cart Persistence', function () {
         expect(Cart::total()->getAmount())->toBe(110.00);
     });
 
-    it('persists metadata across operations', function () {
+    it('persists metadata across operations', function (): void {
         Cart::setMetadata('customer_note', 'Please gift wrap');
         Cart::add('item', 'Item', 50.00, 1);
 
         expect(Cart::getMetadata('customer_note'))->toBe('Please gift wrap');
     });
 
-    it('maintains data integrity after multiple operations', function () {
+    it('maintains data integrity after multiple operations', function (): void {
         Cart::add('item-1', 'Item 1', 10.00, 1);
         Cart::add('item-2', 'Item 2', 20.00, 2);
         Cart::addTax('VAT', '10%');
@@ -49,7 +49,7 @@ describe('Cart Persistence', function () {
         expect(Cart::getMetadata('coupon'))->toBe('SAVE10');
     });
 
-    it('clears all data when clearing cart', function () {
+    it('clears all data when clearing cart', function (): void {
         Cart::add('item', 'Item', 50.00, 1);
         Cart::addTax('VAT', '10%');
         Cart::setMetadata('note', 'test');
@@ -61,7 +61,7 @@ describe('Cart Persistence', function () {
         expect(Cart::getMetadata('note'))->toBeNull();
     });
 
-    it('exports complete cart state', function () {
+    it('exports complete cart state', function (): void {
         Cart::add('item', 'Item', 100.00, 1);
         Cart::addTax('VAT', '10%');
         Cart::setMetadata('customer_id', 123);
@@ -76,8 +76,8 @@ describe('Cart Persistence', function () {
     });
 });
 
-describe('Storage Drivers', function () {
-    it('works with session storage', function () {
+describe('Storage Drivers', function (): void {
+    it('works with session storage', function (): void {
         config(['cart.storage' => 'session']);
 
         Cart::clear();
@@ -87,7 +87,7 @@ describe('Storage Drivers', function () {
         expect(Cart::total()->getAmount())->toBe(25.00);
     });
 
-    it('works with cache storage', function () {
+    it('works with cache storage', function (): void {
         config(['cart.storage' => 'cache']);
 
         Cart::clear();
@@ -97,7 +97,7 @@ describe('Storage Drivers', function () {
         expect(Cart::total()->getAmount())->toBe(35.00);
     });
 
-    it('works with database storage', function () {
+    it('works with database storage', function (): void {
         config(['cart.storage' => 'database']);
 
         Cart::clear();
@@ -108,12 +108,12 @@ describe('Storage Drivers', function () {
     });
 });
 
-describe('Data Integrity', function () {
-    beforeEach(function () {
+describe('Data Integrity', function (): void {
+    beforeEach(function (): void {
         Cart::clear();
     });
 
-    it('maintains item properties after save', function () {
+    it('maintains item properties after save', function (): void {
         $item = Cart::add('test-item', 'Test Item', 50.00, 2, ['color' => 'red']);
 
         // Cart auto-persists, no need to call save()
@@ -126,7 +126,7 @@ describe('Data Integrity', function () {
         expect($retrieved->getAttribute('color'))->toBe('red');
     });
 
-    it('handles special characters in item data', function () {
+    it('handles special characters in item data', function (): void {
         Cart::add('special-item', "Item with 'quotes' and \"double quotes\"", 10.00, 1, [
             'description' => 'Special chars: <>&"\'',
         ]);
@@ -136,14 +136,14 @@ describe('Data Integrity', function () {
         expect($item->getAttribute('description'))->toContain('Special chars');
     });
 
-    it('preserves decimal precision', function () {
+    it('preserves decimal precision', function (): void {
         Cart::add('precise-item', 'Precise Item', 99.99, 1);
         Cart::add('another-item', 'Another Item', 0.01, 1);
 
         expect(Cart::subtotal()->getAmount())->toBe(100.00);
     });
 
-    it('handles large quantities', function () {
+    it('handles large quantities', function (): void {
         Cart::add('bulk-item', 'Bulk Item', 1.00, 10000);
 
         expect(Cart::getTotalQuantity())->toBe(10000);

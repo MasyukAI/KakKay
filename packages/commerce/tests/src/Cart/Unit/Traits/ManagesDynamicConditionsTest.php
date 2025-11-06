@@ -49,14 +49,14 @@ final class RecordingRulesFactory implements RulesFactoryInterface
     }
 }
 
-beforeEach(function () {
+beforeEach(function (): void {
     $connection = DB::connection('testing');
     $this->storage = new DatabaseStorage($connection, 'carts');
     $this->identifier = 'dynamic-user-'.uniqid();
 });
 
-describe('dynamic condition lifecycle', function () {
-    it('persists metadata context across registrations and restores dynamic conditions', function () {
+describe('dynamic condition lifecycle', function (): void {
+    it('persists metadata context across registrations and restores dynamic conditions', function (): void {
         $factory = new RecordingRulesFactory();
 
         $cart = new Cart($this->storage, $this->identifier, events: null);
@@ -108,7 +108,7 @@ describe('dynamic condition lifecycle', function () {
         expect($restoredCart->getConditions()->has('vip_discount'))->toBeTrue();
     });
 
-    it('invokes the failure handler when rule execution throws an exception', function () {
+    it('invokes the failure handler when rule execution throws an exception', function (): void {
         $factory = new RecordingRulesFactory();
         $cart = new Cart($this->storage, $this->identifier, events: null);
         $cart->withRulesFactory($factory);
@@ -136,8 +136,8 @@ describe('dynamic condition lifecycle', function () {
     });
 });
 
-describe('CartCondition helpers', function () {
-    it('caches static clones for dynamic conditions', function () {
+describe('CartCondition helpers', function (): void {
+    it('caches static clones for dynamic conditions', function (): void {
         $condition = new CartCondition(
             name: 'vip_discount',
             type: 'discount',

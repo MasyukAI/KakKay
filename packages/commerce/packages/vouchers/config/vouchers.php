@@ -116,8 +116,8 @@ return [
     */
 
     'owner' => [
-    'enabled' => env('VOUCHERS_OWNER_ENABLED', false),
-    'resolver' => \AIArmada\Vouchers\Support\Resolvers\NullOwnerResolver::class,
+        'enabled' => env('VOUCHERS_OWNER_ENABLED', false),
+        'resolver' => AIArmada\Vouchers\Support\Resolvers\NullOwnerResolver::class,
         'include_global' => env('VOUCHERS_OWNER_INCLUDE_GLOBAL', true),
         'auto_assign_on_create' => env('VOUCHERS_OWNER_AUTO_ASSIGN_ON_CREATE', true),
     ],

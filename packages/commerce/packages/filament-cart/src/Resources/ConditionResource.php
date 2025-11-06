@@ -25,11 +25,6 @@ final class ConditionResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = null;
 
-    public static function getNavigationGroup(): string|UnitEnum|null
-    {
-        return config('filament-cart.navigation_group');
-    }
-
     protected static ?string $recordTitleAttribute = 'name';
 
     protected static ?string $navigationLabel = 'Conditions';
@@ -39,6 +34,11 @@ final class ConditionResource extends Resource
     protected static ?string $pluralModelLabel = 'Conditions';
 
     protected static ?int $navigationSort = 33;
+
+    public static function getNavigationGroup(): string|UnitEnum|null
+    {
+        return config('filament-cart.navigation_group');
+    }
 
     public static function form(Schema $schema): Schema
     {

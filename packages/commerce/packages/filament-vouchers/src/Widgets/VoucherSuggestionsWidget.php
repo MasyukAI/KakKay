@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Lazy;
+use Throwable;
 
 /**
  * Smart widget that suggests eligible vouchers based on cart contents
@@ -25,9 +26,9 @@ use Livewire\Attributes\Lazy;
 #[Lazy]
 final class VoucherSuggestionsWidget extends Widget
 {
-    protected static string $view = 'filament-vouchers::widgets.voucher-suggestions';
-
     public ?Model $record = null;
+
+    protected static string $view = 'filament-vouchers::widgets.voucher-suggestions';
 
     protected int|string|array $columnSpan = 'full';
 
@@ -49,15 +50,15 @@ final class VoucherSuggestionsWidget extends Widget
             // Get active vouchers
             $vouchers = Voucher::query()
                 ->where('status', VoucherStatus::Active)
-                ->where(function ($query) {
+                ->where(function ($query): void {
                     $query->whereNull('start_date')
                         ->orWhere('start_date', '<=', now());
                 })
-                ->where(function ($query) {
+                ->where(function ($query): void {
                     $query->whereNull('end_date')
                         ->orWhere('end_date', '>=', now());
                 })
-                ->where(function ($query) {
+                ->where(function ($query): void {
                     // Has remaining uses or unlimited
                     $query->whereNull('usage_limit')
                         ->orWhereRaw('(SELECT COUNT(*) FROM voucher_usage WHERE voucher_id = vouchers.id) < usage_limit');
@@ -87,7 +88,7 @@ final class VoucherSuggestionsWidget extends Widget
                         if (in_array($voucher->code, $appliedCodes, true)) {
                             return false;
                         }
-                    } catch (\Throwable $exception) {
+                    } catch (Throwable $exception) {
                         // If we can't check, assume it's not applied
                     }
 
@@ -111,13 +112,62 @@ final class VoucherSuggestionsWidget extends Widget
                 ->take(5); // Show top 5 suggestions
 
             return $suggestions;
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             Log::error('Failed to load voucher suggestions', [
                 'cart_id' => $this->record->id ?? null,
                 'error' => $exception->getMessage(),
             ]);
 
             return collect();
+        }
+    }
+
+    /**
+     * Apply a suggested voucher
+     */
+    public function applySuggestion(string $voucherCode): void
+    {
+        if (! $this->record instanceof Cart) {
+            return;
+        }
+
+        try {
+            $cartInstance = app(CartInstanceManager::class)->resolve(
+                $this->record->instance,
+                $this->record->identifier
+            );
+
+            /** @phpstan-ignore-next-line */
+            $cartInstance->applyVoucher($voucherCode);
+
+            Notification::make()
+                ->success()
+                ->title('Voucher Applied!')
+                ->body("Voucher '{$voucherCode}' has been applied.")
+                ->icon(Heroicon::OutlinedCheckCircle)
+                ->send();
+
+            // Refresh the page
+            $this->dispatch('$refresh');
+
+        } catch (VoucherException $exception) {
+            Notification::make()
+                ->danger()
+                ->title('Cannot Apply Voucher')
+                ->body($exception->getMessage())
+                ->send();
+        } catch (Throwable $exception) {
+            Notification::make()
+                ->danger()
+                ->title('Error')
+                ->body('Failed to apply voucher. Please try again.')
+                ->send();
+
+            Log::error('Failed to apply suggested voucher', [
+                'code' => $voucherCode,
+                'cart_id' => $this->record->id,
+                'error' => $exception->getMessage(),
+            ]);
         }
     }
 
@@ -168,54 +218,5 @@ final class VoucherSuggestionsWidget extends Widget
         }
 
         return 'Apply now to save on your order';
-    }
-
-    /**
-     * Apply a suggested voucher
-     */
-    public function applySuggestion(string $voucherCode): void
-    {
-        if (! $this->record instanceof Cart) {
-            return;
-        }
-
-        try {
-            $cartInstance = app(CartInstanceManager::class)->resolve(
-                $this->record->instance,
-                $this->record->identifier
-            );
-
-            /** @phpstan-ignore-next-line */
-            $cartInstance->applyVoucher($voucherCode);
-
-            Notification::make()
-                ->success()
-                ->title('Voucher Applied!')
-                ->body("Voucher '{$voucherCode}' has been applied.")
-                ->icon(Heroicon::OutlinedCheckCircle)
-                ->send();
-
-            // Refresh the page
-            $this->dispatch('$refresh');
-
-        } catch (VoucherException $exception) {
-            Notification::make()
-                ->danger()
-                ->title('Cannot Apply Voucher')
-                ->body($exception->getMessage())
-                ->send();
-        } catch (\Throwable $exception) {
-            Notification::make()
-                ->danger()
-                ->title('Error')
-                ->body('Failed to apply voucher. Please try again.')
-                ->send();
-
-            Log::error('Failed to apply suggested voucher', [
-                'code' => $voucherCode,
-                'cart_id' => $this->record->id,
-                'error' => $exception->getMessage(),
-            ]);
-        }
     }
 }

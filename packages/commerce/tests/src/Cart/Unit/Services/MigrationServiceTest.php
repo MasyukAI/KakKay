@@ -5,19 +5,19 @@ declare(strict_types=1);
 use AIArmada\Cart\Facades\Cart;
 use AIArmada\Cart\Services\CartMigrationService;
 
-describe('CartMigrationService Identifier Management', function () {
-    beforeEach(function () {
+describe('CartMigrationService Identifier Management', function (): void {
+    beforeEach(function (): void {
         Cart::clear();
     });
 
-    it('gets identifier for user', function () {
+    it('gets identifier for user', function (): void {
         $service = app(CartMigrationService::class);
         $identifier = $service->getUserIdentifier(42);
 
         expect($identifier)->toBe('42');
     });
 
-    it('gets identifier for guest session', function () {
+    it('gets identifier for guest session', function (): void {
         $service = app(CartMigrationService::class);
         $sessionId = session()->getId();
         $identifier = $service->getGuestIdentifier($sessionId);
@@ -25,7 +25,7 @@ describe('CartMigrationService Identifier Management', function () {
         expect($identifier)->toBe($sessionId);
     });
 
-    it('gets current identifier based on auth state', function () {
+    it('gets current identifier based on auth state', function (): void {
         $service = app(CartMigrationService::class);
         $identifier = $service->getCurrentIdentifier();
 
@@ -33,12 +33,12 @@ describe('CartMigrationService Identifier Management', function () {
     });
 });
 
-describe('CartMigrationService Swapping', function () {
-    beforeEach(function () {
+describe('CartMigrationService Swapping', function (): void {
+    beforeEach(function (): void {
         Cart::clear();
     });
 
-    it('swaps cart from one identifier to another', function () {
+    it('swaps cart from one identifier to another', function (): void {
         // Add items to guest cart
         Cart::add('item-1', 'Item 1', 10.00, 1);
 
@@ -51,7 +51,7 @@ describe('CartMigrationService Swapping', function () {
         expect($result)->toBeTrue();
     });
 
-    it('swaps guest cart to user on login', function () {
+    it('swaps guest cart to user on login', function (): void {
         Cart::add('guest-item', 'Guest Item', 25.00, 2);
 
         $service = app(CartMigrationService::class);
@@ -61,12 +61,12 @@ describe('CartMigrationService Swapping', function () {
     });
 });
 
-describe('CartMigrationService Migration', function () {
-    beforeEach(function () {
+describe('CartMigrationService Migration', function (): void {
+    beforeEach(function (): void {
         Cart::clear();
     });
 
-    it('migrates guest cart to user cart', function () {
+    it('migrates guest cart to user cart', function (): void {
         $sessionId = session()->getId();
 
         // Add items as guest
@@ -78,7 +78,7 @@ describe('CartMigrationService Migration', function () {
         expect($result)->toBeTrue();
     });
 
-    it('handles empty guest cart migration', function () {
+    it('handles empty guest cart migration', function (): void {
         $sessionId = session()->getId();
 
         $service = app(CartMigrationService::class);

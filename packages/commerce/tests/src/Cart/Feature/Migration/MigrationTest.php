@@ -33,7 +33,7 @@ use Illuminate\Support\Facades\Session;
 
 uses(RefreshDatabase::class);
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->cartMigration = new CartMigrationService;
 
     // Create a test user with email property for identifier
@@ -50,14 +50,14 @@ beforeEach(function () {
     };
 });
 
-it('can migrate guest cart to user cart', function () {
+it('can migrate guest cart to user cart', function (): void {
     // CORRECT APPROACH: Work with 'default' instance only, manage identifiers properly
 
     // Initialize cart with database storage using test database
     // Since we're running from main Laravel app, create the test table first
     $connection = app('db')->connection();
     $connection->getSchemaBuilder()->dropIfExists('carts');
-    $connection->getSchemaBuilder()->create('carts', function ($table) {
+    $connection->getSchemaBuilder()->create('carts', function ($table): void {
         $table->uuid('id')->primary();
         $table->string('identifier')->index();
         $table->string('instance')->default('default')->index();
@@ -107,7 +107,7 @@ it('can migrate guest cart to user cart', function () {
     expect($userItemsAfter['product-1']['quantity'])->toBe(2);
 });
 
-it('can handle merge conflicts with add quantities strategy', function () {
+it('can handle merge conflicts with add quantities strategy', function (): void {
     // CORRECT: Use session simulation for guest, check default instance only
 
     // Setup guest session with items
@@ -140,7 +140,7 @@ it('can handle merge conflicts with add quantities strategy', function () {
     expect($userItems['product-1']['quantity'])->toBe(5); // 2 + 3
 });
 
-it('can handle merge conflicts with keep highest quantity strategy', function () {
+it('can handle merge conflicts with keep highest quantity strategy', function (): void {
     // Setup guest session with items
     session(['id' => 'guest_session_789']);
     Cart::add('product-1', 'Test Product', 10.00, 5);
@@ -171,7 +171,7 @@ it('can handle merge conflicts with keep highest quantity strategy', function ()
     expect($userItems['product-1']['quantity'])->toBe(5); // Keep highest (guest cart)
 });
 
-it('can handle merge conflicts with keep user cart strategy', function () {
+it('can handle merge conflicts with keep user cart strategy', function (): void {
     // Setup guest session with items
     session(['id' => 'guest_session_abc']);
     Cart::add('product-1', 'Test Product', 10.00, 5);
@@ -202,7 +202,7 @@ it('can handle merge conflicts with keep user cart strategy', function () {
     expect($userItems['product-1']['quantity'])->toBe(3); // Keep user cart quantity
 });
 
-it('can handle merge conflicts with replace with guest strategy', function () {
+it('can handle merge conflicts with replace with guest strategy', function (): void {
     // Setup guest session with items
     session(['id' => 'guest_session_def']);
     Cart::add('product-1', 'Test Product', 10.00, 5);
@@ -233,7 +233,7 @@ it('can handle merge conflicts with replace with guest strategy', function () {
     expect($userItems['product-1']['quantity'])->toBe(5); // Replace with guest cart quantity
 });
 
-it('dispatches cart merged event on successful migration', function () {
+it('dispatches cart merged event on successful migration', function (): void {
     Event::fake();
 
     // Setup guest session with items
@@ -250,7 +250,7 @@ it('dispatches cart merged event on successful migration', function () {
     });
 });
 
-it('handles user login event automatically when configured', function () {
+it('handles user login event automatically when configured', function (): void {
     // Initialize cart with database storage
     $connection = app('db')->connection();
     $storage = new AIArmada\Cart\Storage\DatabaseStorage($connection, 'carts');
@@ -304,7 +304,7 @@ it('handles user login event automatically when configured', function () {
     expect(array_sum(array_column($guestItemsAfter, 'quantity')))->toBe(0);
 });
 
-it('returns false when guest cart is empty', function () {
+it('returns false when guest cart is empty', function (): void {
     // Ensure guest cart is empty
     session(['id' => 'empty_guest_session']);
     expect(Cart::count())->toBe(0);
@@ -315,7 +315,7 @@ it('returns false when guest cart is empty', function () {
     expect($result)->toBeFalse();
 });
 
-it('can get instance name for authenticated user', function () {
+it('can get instance name for authenticated user', function (): void {
     // FIXED: Instance names should not be auto-generated based on user ID
     // This test should verify that instance names remain as set by developer
 
@@ -328,7 +328,7 @@ it('can get instance name for authenticated user', function () {
     // This test validates that principle
 });
 
-it('can get instance name for guest session', function () {
+it('can get instance name for guest session', function (): void {
     // FIXED: Instance names should not be auto-generated based on session ID
     // This test should verify that instance names remain as set by developer
 
@@ -341,7 +341,7 @@ it('can get instance name for guest session', function () {
     // This test validates that principle
 });
 
-it('validates merge strategy configuration', function () {
+it('validates merge strategy configuration', function (): void {
     // Test with invalid merge strategy
     config(['cart.migration.merge_strategy' => 'invalid_strategy']);
 
@@ -372,7 +372,7 @@ it('validates merge strategy configuration', function () {
     expect($userItems['product-1']['quantity'])->toBe(5); // Should add quantities as fallback
 });
 
-it('preserves cart item attributes during migration', function () {
+it('preserves cart item attributes during migration', function (): void {
     // Setup guest session with items including attributes
     session(['id' => 'guest_session_attributes']);
     Cart::add('product-1', 'Test Product', 10.00, 1, [

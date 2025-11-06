@@ -129,11 +129,11 @@ function createTestCart(string $instance = 'test'): Cart
     );
 }
 
-beforeEach(function () {
+beforeEach(function (): void {
     config(['cart.money.default_currency' => 'USD']);
 });
 
-it('demonstrates money integration with cart package', function () {
+it('demonstrates money integration with cart package', function (): void {
     $cart = createTestCart('shopping');
 
     // Add items with precise Money prices
@@ -157,7 +157,7 @@ it('demonstrates money integration with cart package', function () {
     expect($cart->count())->toBe(3); // Total quantity: 2 + 1 = 3
 });
 
-it('shows money precision advantages over float arithmetic', function () {
+it('shows money precision advantages over float arithmetic', function (): void {
     $cart = createTestCart('precision_test');
 
     // Add items with prices that cause float precision issues
@@ -174,7 +174,7 @@ it('shows money precision advantages over float arithmetic', function () {
     expect($item->getSubtotal()->getAmount())->toBe(30.0); // Money is always exact (in cents)
 });
 
-it('handles complex cart scenarios with money precision', function () {
+it('handles complex cart scenarios with money precision', function (): void {
     $cart = createTestCart('complex_test');
 
     // Add items with different currencies - Cart uses default currency from config
@@ -196,7 +196,7 @@ it('handles complex cart scenarios with money precision', function () {
     expect($total)->toBe(131796.0); // Cart total() returns cents
 });
 
-it('demonstrates money currency safety', function () {
+it('demonstrates money currency safety', function (): void {
     $cart = createTestCart('currency_test');
 
     // Add items with different currencies - should maintain currency integrity
@@ -210,7 +210,7 @@ it('demonstrates money currency safety', function () {
     expect($item->getSubtotal()->getCurrency()->getName())->toBe('US Dollar');
 });
 
-it('shows item-level money calculations', function () {
+it('shows item-level money calculations', function (): void {
     $cart = createTestCart('item_calculations');
 
     // Add an item with quantity

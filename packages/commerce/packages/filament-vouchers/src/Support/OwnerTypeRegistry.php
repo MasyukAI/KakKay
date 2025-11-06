@@ -79,7 +79,7 @@ final class OwnerTypeRegistry
         /** @var class-string<Model> $modelClass */
         $query = $modelClass::query()->limit($limit);
 
-        $search = $search ? trim($search) : null;
+        $search = $search ? mb_trim($search) : null;
         $searchableColumns = Arr::wrap($definition['search_attributes'] ?? []);
 
         if ($search !== null && $search !== '') {

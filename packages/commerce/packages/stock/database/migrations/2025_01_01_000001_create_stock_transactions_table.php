@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create(config('stock.table_name', 'stock_transactions'), function (Blueprint $table) {
+        Schema::create(config('stock.table_name', 'stock_transactions'), function (Blueprint $table): void {
             $table->uuid('id')->primary();
             $table->uuidMorphs('stockable');
             $table->uuid('user_id')->nullable();

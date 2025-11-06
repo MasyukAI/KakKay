@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 use AIArmada\Cart\Facades\Cart;
 
-describe('Database Storage Driver', function () {
-    beforeEach(function () {
+describe('Database Storage Driver', function (): void {
+    beforeEach(function (): void {
         config(['cart.storage' => 'database']);
         Cart::clear();
     });
 
-    it('stores and retrieves items separately', function () {
+    it('stores and retrieves items separately', function (): void {
         Cart::add('item-1', 'Item 1', 25.00, 1);
         Cart::add('item-2', 'Item 2', 35.00, 2);
 
@@ -20,7 +20,7 @@ describe('Database Storage Driver', function () {
         expect($items->first()->id)->toBe('item-1');
     });
 
-    it('stores and retrieves conditions separately', function () {
+    it('stores and retrieves conditions separately', function (): void {
         Cart::add('item', 'Item', 100.00, 1);
         Cart::addTax('VAT', '10%');
         Cart::addFee('Shipping', '5.00');
@@ -30,14 +30,14 @@ describe('Database Storage Driver', function () {
         expect($conditions)->toHaveCount(2);
     });
 
-    it('uses session ID for guest users', function () {
+    it('uses session ID for guest users', function (): void {
         // Should work without authenticated user
         Cart::add('guest-item', 'Guest Item', 50.00, 1);
 
         expect(Cart::get('guest-item'))->not->toBeNull();
     });
 
-    it('maintains separate storage for different instances', function () {
+    it('maintains separate storage for different instances', function (): void {
         Cart::setInstance('cart1')->add('item-1', 'Item 1', 10.00, 1);
         Cart::setInstance('cart2')->add('item-2', 'Item 2', 20.00, 1);
 
@@ -45,7 +45,7 @@ describe('Database Storage Driver', function () {
         expect(Cart::setInstance('cart2')->count())->toBe(1);
     });
 
-    it('supports new storage interface methods', function () {
+    it('supports new storage interface methods', function (): void {
         Cart::add('interface-item', 'Interface Item', 100.00, 1);
 
         // Test that storage interface is working
@@ -57,13 +57,13 @@ describe('Database Storage Driver', function () {
     });
 });
 
-describe('Database Storage Persistence', function () {
-    beforeEach(function () {
+describe('Database Storage Persistence', function (): void {
+    beforeEach(function (): void {
         config(['cart.storage' => 'database']);
         Cart::clear();
     });
 
-    it('persists cart data across requests', function () {
+    it('persists cart data across requests', function (): void {
         Cart::add('persistent', 'Persistent Item', 75.00, 2);
         $firstTotal = Cart::total()->getAmount();
 
@@ -74,7 +74,7 @@ describe('Database Storage Persistence', function () {
         expect($secondTotal)->toBe(150.00);
     });
 
-    it('handles JSON serialization correctly', function () {
+    it('handles JSON serialization correctly', function (): void {
         Cart::add('json-item', 'JSON Item', 50.00, 1, [
             'metadata' => ['key' => 'value'],
             'nested' => ['deep' => 'data'],
@@ -86,7 +86,7 @@ describe('Database Storage Persistence', function () {
         expect($item->getAttribute('nested')['deep'])->toBe('data');
     });
 
-    it('handles null values correctly', function () {
+    it('handles null values correctly', function (): void {
         Cart::add('null-test', 'Null Test', 25.00, 1);
 
         $item = Cart::get('null-test');
@@ -94,13 +94,13 @@ describe('Database Storage Persistence', function () {
     });
 });
 
-describe('Database Storage with Metadata', function () {
-    beforeEach(function () {
+describe('Database Storage with Metadata', function (): void {
+    beforeEach(function (): void {
         config(['cart.storage' => 'database']);
         Cart::clear();
     });
 
-    it('stores and retrieves metadata', function () {
+    it('stores and retrieves metadata', function (): void {
         Cart::setMetadata('customer_note', 'Special instructions');
         Cart::setMetadata('promo_code', 'SAVE20');
 
@@ -108,21 +108,21 @@ describe('Database Storage with Metadata', function () {
         expect(Cart::getMetadata('promo_code'))->toBe('SAVE20');
     });
 
-    it('updates existing metadata', function () {
+    it('updates existing metadata', function (): void {
         Cart::setMetadata('note', 'First note');
         Cart::setMetadata('note', 'Updated note');
 
         expect(Cart::getMetadata('note'))->toBe('Updated note');
     });
 
-    it('removes metadata', function () {
+    it('removes metadata', function (): void {
         Cart::setMetadata('temporary', 'value');
         Cart::removeMetadata('temporary');
 
         expect(Cart::getMetadata('temporary'))->toBeNull();
     });
 
-    it('handles batch metadata operations', function () {
+    it('handles batch metadata operations', function (): void {
         Cart::setMetadataBatch([
             'key1' => 'value1',
             'key2' => 'value2',
@@ -135,26 +135,26 @@ describe('Database Storage with Metadata', function () {
     });
 });
 
-describe('Database Storage Edge Cases', function () {
-    beforeEach(function () {
+describe('Database Storage Edge Cases', function (): void {
+    beforeEach(function (): void {
         config(['cart.storage' => 'database']);
         Cart::clear();
     });
 
-    it('handles empty cart gracefully', function () {
+    it('handles empty cart gracefully', function (): void {
         expect(Cart::isEmpty())->toBeTrue();
         expect(Cart::getItems())->toHaveCount(0);
         expect(Cart::getConditions())->toHaveCount(0);
     });
 
-    it('handles special characters in item data', function () {
+    it('handles special characters in item data', function (): void {
         Cart::add('special', "Item with 'quotes' & <html>", 10.00, 1);
 
         $item = Cart::get('special');
         expect($item->name)->toContain('quotes');
     });
 
-    it('validates data size limits', function () {
+    it('validates data size limits', function (): void {
         // Add item with reasonable data size
         Cart::add('sized-item', 'Item', 10.00, 1, [
             'description' => str_repeat('a', 1000),
@@ -164,7 +164,7 @@ describe('Database Storage Edge Cases', function () {
         expect(mb_strlen($item->getAttribute('description')))->toBe(1000);
     });
 
-    it('handles concurrent cart operations', function () {
+    it('handles concurrent cart operations', function (): void {
         Cart::add('concurrent', 'Concurrent Item', 10.00, 1);
         Cart::addTax('Tax', '10%');
         Cart::setMetadata('note', 'test');

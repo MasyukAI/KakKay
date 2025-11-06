@@ -19,7 +19,7 @@ final class FilamentVouchersServiceProvider extends PackageServiceProvider
     public function configurePackage(Package $package): void
     {
         $package
-            ->name(static::$name)
+            ->name(self::$name)
             ->hasConfigFile('filament-vouchers')
             ->hasViews('filament-vouchers');
     }
@@ -53,27 +53,27 @@ final class FilamentVouchersServiceProvider extends PackageServiceProvider
         // Class-based components require manual registration
         Livewire::component(
             'a-i-armada.filament-vouchers.widgets.voucher-usage-timeline-widget',
-            \AIArmada\FilamentVouchers\Widgets\VoucherUsageTimelineWidget::class
+            Widgets\VoucherUsageTimelineWidget::class
         );
 
         Livewire::component(
             'a-i-armada.filament-vouchers.widgets.voucher-cart-stats-widget',
-            \AIArmada\FilamentVouchers\Widgets\VoucherCartStatsWidget::class
+            Widgets\VoucherCartStatsWidget::class
         );
 
         Livewire::component(
             'a-i-armada.filament-vouchers.widgets.applied-voucher-badges-widget',
-            \AIArmada\FilamentVouchers\Widgets\AppliedVoucherBadgesWidget::class
+            Widgets\AppliedVoucherBadgesWidget::class
         );
 
         Livewire::component(
             'a-i-armada.filament-vouchers.widgets.quick-apply-voucher-widget',
-            \AIArmada\FilamentVouchers\Widgets\QuickApplyVoucherWidget::class
+            Widgets\QuickApplyVoucherWidget::class
         );
 
         Livewire::component(
             'a-i-armada.filament-vouchers.widgets.voucher-suggestions-widget',
-            \AIArmada\FilamentVouchers\Widgets\VoucherSuggestionsWidget::class
+            Widgets\VoucherSuggestionsWidget::class
         );
     }
 }

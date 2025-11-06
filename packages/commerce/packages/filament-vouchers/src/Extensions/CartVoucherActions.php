@@ -59,7 +59,7 @@ final class CartVoucherActions
                     ->columnSpanFull(),
             ])
             ->action(function (array $data, Cart $record): void {
-                $code = trim($data['voucher_code'] ?? '');
+                $code = mb_trim($data['voucher_code'] ?? '');
 
                 if ($code === '') {
                     Notification::make()
@@ -190,7 +190,7 @@ final class CartVoucherActions
      *
      * @return array<mixed>
      */
-    protected static function getAppliedVouchersInfolist(Cart $record): array
+    private static function getAppliedVouchersInfolist(Cart $record): array
     {
         try {
             $cartInstance = app(CartInstanceManager::class)->resolve(

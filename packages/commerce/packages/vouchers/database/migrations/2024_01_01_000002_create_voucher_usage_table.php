@@ -11,7 +11,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create(config('vouchers.table_names.voucher_usage', 'voucher_usage'), function (Blueprint $table) {
+        Schema::create(config('vouchers.table_names.voucher_usage', 'voucher_usage'), function (Blueprint $table): void {
             $table->uuid('id')->primary();
             $table->foreignUuid('voucher_id')->constrained(
                 config('vouchers.table_names.vouchers', 'vouchers')

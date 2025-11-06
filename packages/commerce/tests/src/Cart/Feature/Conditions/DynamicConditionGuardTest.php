@@ -7,17 +7,17 @@ use AIArmada\Cart\Conditions\CartCondition;
 use AIArmada\Cart\Exceptions\InvalidCartConditionException;
 use AIArmada\Cart\Storage\SessionStorage;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $sessionStore = new Illuminate\Session\Store('testing', new Illuminate\Session\ArraySessionHandler(120));
     $this->storage = new SessionStorage($sessionStore);
     $this->cart = new Cart($this->storage, 'dynamic_guard_test');
 });
 
-afterEach(function () {
+afterEach(function (): void {
     $this->cart->clear();
 });
 
-it('prevents adding dynamic conditions using addCondition', function () {
+it('prevents adding dynamic conditions using addCondition', function (): void {
     // Create a dynamic condition (with rules)
     $dynamicCondition = new CartCondition(
         name: 'dynamic_discount',
@@ -37,7 +37,7 @@ it('prevents adding dynamic conditions using addCondition', function () {
         );
 });
 
-it('allows adding static conditions using addCondition', function () {
+it('allows adding static conditions using addCondition', function (): void {
     // Create a static condition (no rules)
     $staticCondition = new CartCondition(
         name: 'static_discount',
@@ -53,7 +53,7 @@ it('allows adding static conditions using addCondition', function () {
     expect($this->cart->getConditions()->has('static_discount'))->toBeTrue();
 });
 
-it('correctly registers dynamic conditions using registerDynamicCondition', function () {
+it('correctly registers dynamic conditions using registerDynamicCondition', function (): void {
     $this->cart->add('product-1', 'Test Product', 100, 1);
 
     // Create a dynamic condition
@@ -82,7 +82,7 @@ it('correctly registers dynamic conditions using registerDynamicCondition', func
     expect($cartCondition->isDynamic())->toBeFalse();
 });
 
-it('provides helpful error message about using withoutRules', function () {
+it('provides helpful error message about using withoutRules', function (): void {
     $dynamicCondition = new CartCondition(
         name: 'dynamic_fee',
         type: 'fee',
@@ -100,7 +100,7 @@ it('provides helpful error message about using withoutRules', function () {
     }
 });
 
-it('allows adding static copy of dynamic condition via withoutRules', function () {
+it('allows adding static copy of dynamic condition via withoutRules', function (): void {
     // Create a dynamic condition
     $dynamicCondition = new CartCondition(
         name: 'bypass_validation',
@@ -122,7 +122,7 @@ it('allows adding static copy of dynamic condition via withoutRules', function (
     expect($this->cart->getCondition('bypass_validation')->isDynamic())->toBeFalse();
 });
 
-it('handles array of conditions with mixed static and dynamic', function () {
+it('handles array of conditions with mixed static and dynamic', function (): void {
     $staticCondition = new CartCondition(
         name: 'static_tax',
         type: 'tax',
@@ -152,7 +152,7 @@ it('handles array of conditions with mixed static and dynamic', function () {
     expect($this->cart->getConditions()->has('dynamic_discount'))->toBeFalse();
 });
 
-it('works correctly with VoucherCondition pattern', function () {
+it('works correctly with VoucherCondition pattern', function (): void {
     // Simulating VoucherCondition's $dynamic parameter pattern
 
     // Static voucher (simple "$5 off")

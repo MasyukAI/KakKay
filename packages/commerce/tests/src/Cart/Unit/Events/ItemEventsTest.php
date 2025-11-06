@@ -13,8 +13,8 @@ use AIArmada\Cart\Events\MetadataAdded;
 use AIArmada\Cart\Events\MetadataRemoved;
 use AIArmada\Cart\Models\CartItem;
 
-describe('ItemAdded Event', function () {
-    it('creates event with item and cart', function () {
+describe('ItemAdded Event', function (): void {
+    it('creates event with item and cart', function (): void {
         $cart = app(CartManager::class)->getCurrentCart();
         $item = new CartItem('item-1', 'Test Item', 10.00, 1);
 
@@ -25,7 +25,7 @@ describe('ItemAdded Event', function () {
         expect($event->cart)->toBe($cart);
     });
 
-    it('converts to array', function () {
+    it('converts to array', function (): void {
         $cart = app(CartManager::class)->getCurrentCart();
         $item = new CartItem('item-1', 'Test Item', 10.00, 2);
 
@@ -42,8 +42,8 @@ describe('ItemAdded Event', function () {
     });
 });
 
-describe('ItemRemoved Event', function () {
-    it('creates event with item and cart', function () {
+describe('ItemRemoved Event', function (): void {
+    it('creates event with item and cart', function (): void {
         $cart = app(CartManager::class)->getCurrentCart();
         $item = new CartItem('item-1', 'Test Item', 10.00, 1);
 
@@ -54,7 +54,7 @@ describe('ItemRemoved Event', function () {
         expect($event->cart)->toBe($cart);
     });
 
-    it('converts to array', function () {
+    it('converts to array', function (): void {
         $cart = app(CartManager::class)->getCurrentCart();
         $item = new CartItem('item-1', 'Removed Item', 25.00, 3);
 
@@ -71,8 +71,8 @@ describe('ItemRemoved Event', function () {
     });
 });
 
-describe('ItemUpdated Event', function () {
-    it('creates event with item and cart', function () {
+describe('ItemUpdated Event', function (): void {
+    it('creates event with item and cart', function (): void {
         $cart = app(CartManager::class)->getCurrentCart();
         $item = new CartItem('item-1', 'Test Item', 10.00, 1);
 
@@ -83,7 +83,7 @@ describe('ItemUpdated Event', function () {
         expect($event->cart)->toBe($cart);
     });
 
-    it('converts to array', function () {
+    it('converts to array', function (): void {
         $cart = app(CartManager::class)->getCurrentCart();
         $item = new CartItem('item-1', 'Updated Item', 15.00, 5);
 
@@ -100,8 +100,8 @@ describe('ItemUpdated Event', function () {
     });
 });
 
-describe('ItemConditionAdded Event', function () {
-    it('creates event with condition, cart, and item ID', function () {
+describe('ItemConditionAdded Event', function (): void {
+    it('creates event with condition, cart, and item ID', function (): void {
         $cart = app(CartManager::class)->getCurrentCart();
         $cart->add('item-1', 'Test Item', 100.00, 1);
 
@@ -115,7 +115,7 @@ describe('ItemConditionAdded Event', function () {
         expect($event->itemId)->toBe('item-1');
     });
 
-    it('converts to array', function () {
+    it('converts to array', function (): void {
         $cart = app(CartManager::class)->getCurrentCart();
         $cart->add('item-1', 'Test Item', 100.00, 1);
 
@@ -135,7 +135,7 @@ describe('ItemConditionAdded Event', function () {
         expect($array['item']['id'])->toBe('item-1');
     });
 
-    it('calculates condition impact', function () {
+    it('calculates condition impact', function (): void {
         $cart = app(CartManager::class)->getCurrentCart();
         $cart->add('item-1', 'Test Item', 100.00, 2); // subtotal 200
 
@@ -148,8 +148,8 @@ describe('ItemConditionAdded Event', function () {
     });
 });
 
-describe('ItemConditionRemoved Event', function () {
-    it('creates event with condition, cart, and item ID', function () {
+describe('ItemConditionRemoved Event', function (): void {
+    it('creates event with condition, cart, and item ID', function (): void {
         $cart = app(CartManager::class)->getCurrentCart();
         $cart->add('item-1', 'Test Item', 100.00, 1);
 
@@ -164,7 +164,7 @@ describe('ItemConditionRemoved Event', function () {
         expect($event->reason)->toBe('Tax exemption');
     });
 
-    it('converts to array', function () {
+    it('converts to array', function (): void {
         $cart = app(CartManager::class)->getCurrentCart();
         $cart->add('item-1', 'Test Item', 100.00, 1);
 
@@ -181,7 +181,7 @@ describe('ItemConditionRemoved Event', function () {
         expect($array)->toHaveKey('timestamp');
     });
 
-    it('handles optional reason', function () {
+    it('handles optional reason', function (): void {
         $cart = app(CartManager::class)->getCurrentCart();
         $cart->add('item-1', 'Test Item', 50.00, 1);
 
@@ -193,8 +193,8 @@ describe('ItemConditionRemoved Event', function () {
     });
 });
 
-describe('MetadataAdded Event', function () {
-    it('creates event with key, value, and cart', function () {
+describe('MetadataAdded Event', function (): void {
+    it('creates event with key, value, and cart', function (): void {
         $cart = app(CartManager::class)->getCurrentCart();
 
         $event = new MetadataAdded('customer_note', 'Please gift wrap', $cart);
@@ -205,7 +205,7 @@ describe('MetadataAdded Event', function () {
         expect($event->cart)->toBe($cart);
     });
 
-    it('converts to array', function () {
+    it('converts to array', function (): void {
         $cart = app(CartManager::class)->getCurrentCart();
 
         $event = new MetadataAdded('promo_code', 'SAVE20', $cart);
@@ -219,8 +219,8 @@ describe('MetadataAdded Event', function () {
     });
 });
 
-describe('MetadataRemoved Event', function () {
-    it('creates event with key and cart', function () {
+describe('MetadataRemoved Event', function (): void {
+    it('creates event with key and cart', function (): void {
         $cart = app(CartManager::class)->getCurrentCart();
 
         $event = new MetadataRemoved('customer_note', $cart);
@@ -230,7 +230,7 @@ describe('MetadataRemoved Event', function () {
         expect($event->cart)->toBe($cart);
     });
 
-    it('converts to array', function () {
+    it('converts to array', function (): void {
         $cart = app(CartManager::class)->getCurrentCart();
 
         $event = new MetadataRemoved('promo_code', $cart);

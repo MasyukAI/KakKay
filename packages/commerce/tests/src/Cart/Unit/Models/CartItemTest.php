@@ -701,8 +701,8 @@ it('throws exception when attributes exceed max data size', function (): void {
     ))->toThrow(AIArmada\Cart\Exceptions\InvalidCartItemException::class, 'data size');
 });
 
-describe('CartItem Condition Normalization', function () {
-    it('normalizes CartCondition array to collection', function () {
+describe('CartItem Condition Normalization', function (): void {
+    it('normalizes CartCondition array to collection', function (): void {
         $condition1 = new CartCondition(
             name: 'discount',
             type: 'discount',
@@ -730,7 +730,7 @@ describe('CartItem Condition Normalization', function () {
         expect($item->hasCondition('tax'))->toBeTrue();
     });
 
-    it('normalizes array-based condition definition', function () {
+    it('normalizes array-based condition definition', function (): void {
         $item = new CartItem(
             id: 'product-1',
             name: 'Test Product',
@@ -750,7 +750,7 @@ describe('CartItem Condition Normalization', function () {
         expect($item->hasCondition('discount'))->toBeTrue();
     });
 
-    it('normalizes Collection to CartConditionCollection', function () {
+    it('normalizes Collection to CartConditionCollection', function (): void {
         $condition = new CartCondition(
             name: 'discount',
             type: 'discount',
@@ -775,7 +775,7 @@ describe('CartItem Condition Normalization', function () {
         expect($item->hasCondition('discount'))->toBeTrue();
     });
 
-    it('handles CartConditionCollection directly', function () {
+    it('handles CartConditionCollection directly', function (): void {
         $condition = new CartCondition(
             name: 'shipping',
             type: 'shipping',
@@ -798,7 +798,7 @@ describe('CartItem Condition Normalization', function () {
         expect($item->getConditions()->count())->toBe(1);
     });
 
-    it('handles mixed condition formats', function () {
+    it('handles mixed condition formats', function (): void {
         $conditionObj = new CartCondition(
             name: 'discount',
             type: 'discount',
@@ -827,7 +827,7 @@ describe('CartItem Condition Normalization', function () {
         expect($item->hasCondition('tax'))->toBeTrue();
     });
 
-    it('handles empty conditions array', function () {
+    it('handles empty conditions array', function (): void {
         $item = new CartItem(
             id: 'product-1',
             name: 'Test Product',
@@ -840,7 +840,7 @@ describe('CartItem Condition Normalization', function () {
         expect($item->hasConditions())->toBeFalse();
     });
 
-    it('skips invalid condition entries in array', function () {
+    it('skips invalid condition entries in array', function (): void {
         $validCondition = new CartCondition(
             name: 'discount',
             type: 'discount',
@@ -864,7 +864,7 @@ describe('CartItem Condition Normalization', function () {
         expect($item->hasCondition('discount'))->toBeTrue();
     });
 
-    it('handles CartConditionCollection directly without transformation', function () {
+    it('handles CartConditionCollection directly without transformation', function (): void {
         $condition = new CartCondition(
             name: 'premium-discount',
             type: 'discount',
@@ -888,7 +888,7 @@ describe('CartItem Condition Normalization', function () {
         expect($item->hasCondition('premium-discount'))->toBeTrue();
     });
 
-    it('uses condition name as key when normalizing CartCondition objects in array', function () {
+    it('uses condition name as key when normalizing CartCondition objects in array', function (): void {
         $condition = new CartCondition(
             name: 'auto-keyed-discount',
             type: 'discount',
@@ -908,7 +908,7 @@ describe('CartItem Condition Normalization', function () {
         expect($item->getConditions()->has('auto-keyed-discount'))->toBeTrue();
     });
 
-    it('uses condition name as key when normalizing from Collection', function () {
+    it('uses condition name as key when normalizing from Collection', function (): void {
         $condition = new CartCondition(
             name: 'collection-discount',
             type: 'discount',
@@ -932,7 +932,7 @@ describe('CartItem Condition Normalization', function () {
         expect($item->getConditions()->has('collection-discount'))->toBeTrue();
     });
 
-    it('clears all conditions from an item', function () {
+    it('clears all conditions from an item', function (): void {
         $condition1 = new CartCondition(
             name: 'discount-10',
             type: 'discount',
@@ -965,7 +965,7 @@ describe('CartItem Condition Normalization', function () {
         expect($clearedItem)->not->toBe($item); // Should be new instance
     });
 
-    it('checks if item has specific condition by name', function () {
+    it('checks if item has specific condition by name', function (): void {
         $condition = new CartCondition(
             name: 'vip-discount',
             type: 'discount',
@@ -985,7 +985,7 @@ describe('CartItem Condition Normalization', function () {
         expect($item->hasCondition('non-existent'))->toBeFalse();
     });
 
-    it('normalizes array with both CartCondition objects and array definitions', function () {
+    it('normalizes array with both CartCondition objects and array definitions', function (): void {
         $objectCondition = new CartCondition(
             name: 'object-discount',
             type: 'discount',
@@ -1018,7 +1018,7 @@ describe('CartItem Condition Normalization', function () {
         expect($item->getCondition('array')->getName())->toBe('array-discount');
     });
 
-    it('normalizes Collection of CartCondition objects', function () {
+    it('normalizes Collection of CartCondition objects', function (): void {
         $condition1 = new CartCondition(
             name: 'first-discount',
             type: 'discount',

@@ -114,7 +114,7 @@ trait ConditionTrait
                 }
             }
         } elseif ($conditions instanceof Collection) {
-            foreach ($conditions as $key => $condition) {
+            foreach ($conditions as $condition) {
                 if ($condition instanceof CartCondition) {
                     $collection->put($condition->getName(), $condition);
                 }

@@ -133,7 +133,7 @@ final readonly class CartItem implements Arrayable, Jsonable, JsonSerializable
                 }
             }
         } elseif ($conditions instanceof Collection) {
-            foreach ($conditions as $key => $condition) {
+            foreach ($conditions as $condition) {
                 $collection->put($condition->getName(), $condition);
             }
         }

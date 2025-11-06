@@ -6,13 +6,13 @@ use AIArmada\Cart\Events\CartCleared;
 use AIArmada\Cart\Facades\Cart;
 use Illuminate\Support\Facades\Event;
 
-describe('CartCleared Event Dispatch', function () {
-    beforeEach(function () {
+describe('CartCleared Event Dispatch', function (): void {
+    beforeEach(function (): void {
         Event::fake(); // Fake events BEFORE any cart operations
         Cart::clear();
     });
 
-    it('dispatches CartCleared event when clearing the cart', function () {
+    it('dispatches CartCleared event when clearing the cart', function (): void {
         // Add items first
         Cart::add('item-1', 'Item 1', 100.00, 1);
         Cart::add('item-2', 'Item 2', 50.00, 2);
@@ -26,7 +26,7 @@ describe('CartCleared Event Dispatch', function () {
         });
     });
 
-    it('dispatches CartCleared event even when cart is already empty', function () {
+    it('dispatches CartCleared event even when cart is already empty', function (): void {
         // Cart is already empty from beforeEach
 
         // Try to clear again
@@ -36,7 +36,7 @@ describe('CartCleared Event Dispatch', function () {
         Event::assertDispatched(CartCleared::class);
     });
 
-    it('includes correct data in CartCleared event', function () {
+    it('includes correct data in CartCleared event', function (): void {
         Cart::add('item-1', 'Item 1', 100.00, 1);
 
         Cart::clear();
@@ -50,7 +50,7 @@ describe('CartCleared Event Dispatch', function () {
         });
     });
 
-    it('dispatches CartCleared event when events are enabled', function () {
+    it('dispatches CartCleared event when events are enabled', function (): void {
         Cart::add('item-1', 'Item 1', 100.00, 1);
 
         Cart::clear();

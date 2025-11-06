@@ -7,8 +7,8 @@ use AIArmada\Cart\Events\CartCleared;
 use AIArmada\Cart\Events\CartCreated;
 use AIArmada\Cart\Events\CartMerged;
 
-describe('CartCleared Event', function () {
-    it('creates event with cart', function () {
+describe('CartCleared Event', function (): void {
+    it('creates event with cart', function (): void {
         $cart = app(CartManager::class)->getCurrentCart();
         $event = new CartCleared($cart);
 
@@ -16,7 +16,7 @@ describe('CartCleared Event', function () {
         expect($event->cart)->toBe($cart);
     });
 
-    it('converts to array', function () {
+    it('converts to array', function (): void {
         $cart = app(CartManager::class)->getCurrentCart();
         $cart->add('test-item', 'Test Item', 10.00);
 
@@ -31,8 +31,8 @@ describe('CartCleared Event', function () {
     });
 });
 
-describe('CartCreated Event', function () {
-    it('creates event with cart', function () {
+describe('CartCreated Event', function (): void {
+    it('creates event with cart', function (): void {
         $cart = app(CartManager::class)->getCurrentCart();
         $event = new CartCreated($cart);
 
@@ -40,7 +40,7 @@ describe('CartCreated Event', function () {
         expect($event->cart)->toBe($cart);
     });
 
-    it('converts to array', function () {
+    it('converts to array', function (): void {
         $cart = app(CartManager::class)->getCurrentCart();
         $event = new CartCreated($cart);
         $array = $event->toArray();
@@ -52,8 +52,8 @@ describe('CartCreated Event', function () {
     });
 });
 
-describe('CartMerged Event', function () {
-    it('creates event with source and target carts', function () {
+describe('CartMerged Event', function (): void {
+    it('creates event with source and target carts', function (): void {
         $manager = app(CartManager::class);
         $sourceCart = $manager->getCartInstance('source', 'source-id');
         $targetCart = $manager->getCartInstance('target', 'target-id');
@@ -73,7 +73,7 @@ describe('CartMerged Event', function () {
         expect($event->targetCart)->toBe($targetCart);
     });
 
-    it('stores merged items count', function () {
+    it('stores merged items count', function (): void {
         $manager = app(CartManager::class);
         $sourceCart = $manager->getCartInstance('source', 'source-id');
         $targetCart = $manager->getCartInstance('target', 'target-id');
@@ -94,7 +94,7 @@ describe('CartMerged Event', function () {
         expect($event->totalItemsMerged)->toBe(2);
     });
 
-    it('stores merge strategy', function () {
+    it('stores merge strategy', function (): void {
         $manager = app(CartManager::class);
         $sourceCart = $manager->getCartInstance('source', 'source-id');
         $targetCart = $manager->getCartInstance('target', 'target-id');
@@ -113,7 +113,7 @@ describe('CartMerged Event', function () {
         expect($event->hadConflicts)->toBeTrue();
     });
 
-    it('converts to array', function () {
+    it('converts to array', function (): void {
         $manager = app(CartManager::class);
         $sourceCart = $manager->getCartInstance('source', 'source-id');
         $targetCart = $manager->getCartInstance('target', 'target-id');
@@ -138,7 +138,7 @@ describe('CartMerged Event', function () {
         expect($array['merge_details']['strategy'])->toBe('add_quantities');
     });
 
-    it('handles zero merged items', function () {
+    it('handles zero merged items', function (): void {
         $manager = app(CartManager::class);
         $sourceCart = $manager->getCartInstance('source', 'source-id');
         $targetCart = $manager->getCartInstance('target', 'target-id');
@@ -156,7 +156,7 @@ describe('CartMerged Event', function () {
         expect($event->totalItemsMerged)->toBe(0);
     });
 
-    it('handles conflict flag', function () {
+    it('handles conflict flag', function (): void {
         $manager = app(CartManager::class);
         $sourceCart = $manager->getCartInstance('source', 'source-id');
         $targetCart = $manager->getCartInstance('target', 'target-id');

@@ -161,7 +161,7 @@ final class CartItem extends Model
     #[\Illuminate\Database\Eloquent\Attributes\Scope]
     protected function instance(Builder $query, string $instance): void
     {
-        $query->whereHas('cart', function ($q) use ($instance) {
+        $query->whereHas('cart', function ($q) use ($instance): void {
             $q->where('instance', $instance);
         });
     }
@@ -174,7 +174,7 @@ final class CartItem extends Model
     #[\Illuminate\Database\Eloquent\Attributes\Scope]
     protected function byIdentifier(Builder $query, string $identifier): void
     {
-        $query->whereHas('cart', function ($q) use ($identifier) {
+        $query->whereHas('cart', function ($q) use ($identifier): void {
             $q->where('identifier', $identifier);
         });
     }

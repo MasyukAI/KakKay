@@ -27,7 +27,7 @@ final class EditCondition extends EditRecord
                 ->modalDescription('This will immediately remove this condition from all active carts. This action cannot be undone.')
                 ->modalSubmitActionLabel('Yes, Remove from All Carts')
                 ->visible(fn (Condition $record) => $record->is_global)
-                ->action(function (Condition $record) {
+                ->action(function (Condition $record): void {
                     $batchRemoval = app(CartConditionBatchRemoval::class);
                     $result = $batchRemoval->removeConditionFromAllCarts($record->name);
 

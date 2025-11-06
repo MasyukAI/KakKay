@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Lazy;
 use Livewire\Attributes\Validate;
+use Throwable;
 
 /**
  * Quick voucher apply widget with inline input field
@@ -27,14 +28,14 @@ final class QuickApplyVoucherWidget extends Widget implements HasForms
 {
     use InteractsWithForms;
 
-    protected static string $view = 'filament-vouchers::widgets.quick-apply-voucher';
-
     public ?Model $record = null;
-
-    protected int|string|array $columnSpan = 'full';
 
     #[Validate('required|string|max:255')]
     public string $voucherCode = '';
+
+    protected static string $view = 'filament-vouchers::widgets.quick-apply-voucher';
+
+    protected int|string|array $columnSpan = 'full';
 
     public function form(Form $form): Form
     {
@@ -72,7 +73,7 @@ final class QuickApplyVoucherWidget extends Widget implements HasForms
             return;
         }
 
-        $code = trim($this->voucherCode);
+        $code = mb_trim($this->voucherCode);
 
         if ($code === '') {
             Notification::make()
@@ -122,7 +123,7 @@ final class QuickApplyVoucherWidget extends Widget implements HasForms
                 'cart_id' => $this->record->id,
                 'error' => $exception->getMessage(),
             ]);
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             Notification::make()
                 ->danger()
                 ->title('Error')

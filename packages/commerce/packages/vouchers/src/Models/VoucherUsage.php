@@ -12,8 +12,11 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 class VoucherUsage extends Model
 {
     use HasUuids;
+
     public const CHANNEL_AUTOMATIC = 'automatic';
+
     public const CHANNEL_MANUAL = 'manual';
+
     public const CHANNEL_API = 'api';
 
     public $timestamps = false;

@@ -9,8 +9,8 @@ use AIArmada\FilamentVouchers\Resources\VoucherUsageResource\Pages\ListVoucherUs
 use AIArmada\FilamentVouchers\Resources\VoucherUsageResource\Tables\VoucherUsagesTable;
 use BackedEnum;
 use Filament\Resources\Resource;
-use Filament\Tables\Table;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Table;
 use UnitEnum;
 
 final class VoucherUsageResource extends Resource

@@ -10,6 +10,7 @@ use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Model;
 use Livewire\Attributes\Lazy;
+use Throwable;
 
 /**
  * Widget showing cart usage statistics for a voucher
@@ -30,7 +31,7 @@ final class VoucherCartStatsWidget extends BaseWidget
         // Active carts count (if filament-cart is available)
         if (class_exists(\AIArmada\FilamentCart\Models\Cart::class)) {
             $activeCarts = $this->getActiveCartsCount();
-            
+
             $stats[] = Stat::make('Active Carts', $activeCarts)
                 ->description('Carts with this voucher currently applied')
                 ->descriptionIcon(Heroicon::OutlinedShoppingCart)
@@ -69,12 +70,12 @@ final class VoucherCartStatsWidget extends BaseWidget
             // Vouchers are stored as conditions with the voucher code in metadata
             return $cartModel::query()
                 ->whereNotNull('conditions')
-                ->where(function ($query) {
+                ->where(function ($query): void {
                     $query->whereJsonContains('conditions', ['voucher' => $this->record->code])
-                        ->orWhereRaw("conditions::text LIKE ?", ['%"code":"'.$this->record->code.'"%']);
+                        ->orWhereRaw('conditions::text LIKE ?', ['%"code":"'.$this->record->code.'"%']);
                 })
                 ->count();
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             // If query fails, return 0
             return 0;
         }

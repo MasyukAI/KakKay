@@ -51,7 +51,7 @@ beforeEach(function (): void {
     });
 });
 
-it('normalizes rule definitions from user input', function () {
+it('normalizes rule definitions from user input', function (): void {
     $input = [
         'factory_keys' => ['min-items', '', 123, 'total-at-least'],
         'context' => [
@@ -81,7 +81,7 @@ it('normalizes rule definitions from user input', function () {
         ]);
 });
 
-it('builds dynamic cart conditions using built-in rule factories', function () {
+it('builds dynamic cart conditions using built-in rule factories', function (): void {
     $condition = new Condition();
 
     $condition->forceFill([

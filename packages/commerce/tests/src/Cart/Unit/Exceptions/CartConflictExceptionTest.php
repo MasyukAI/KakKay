@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 use AIArmada\Cart\Exceptions\CartConflictException;
 
-describe('CartConflictException', function () {
-    it('creates exception with version info', function () {
+describe('CartConflictException', function (): void {
+    it('creates exception with version info', function (): void {
         $exception = new CartConflictException(
             'Cart conflict detected',
             attemptedVersion: 5,
@@ -19,7 +19,7 @@ describe('CartConflictException', function () {
         expect($exception->getCode())->toBe(409);
     });
 
-    it('calculates version difference', function () {
+    it('calculates version difference', function (): void {
         $exception = new CartConflictException(
             'Version conflict',
             attemptedVersion: 3,
@@ -29,7 +29,7 @@ describe('CartConflictException', function () {
         expect($exception->getVersionDifference())->toBe(5);
     });
 
-    it('identifies minor conflict', function () {
+    it('identifies minor conflict', function (): void {
         $exception = new CartConflictException(
             'Minor conflict',
             attemptedVersion: 9,
@@ -39,7 +39,7 @@ describe('CartConflictException', function () {
         expect($exception->isMinorConflict())->toBeTrue();
     });
 
-    it('identifies major conflict', function () {
+    it('identifies major conflict', function (): void {
         $exception = new CartConflictException(
             'Major conflict',
             attemptedVersion: 5,
@@ -49,7 +49,7 @@ describe('CartConflictException', function () {
         expect($exception->isMinorConflict())->toBeFalse();
     });
 
-    it('stores conflicted cart', function () {
+    it('stores conflicted cart', function (): void {
         $manager = app(AIArmada\Cart\CartManager::class);
         $cart = $manager->getCartInstance('test-cart');
 
@@ -63,7 +63,7 @@ describe('CartConflictException', function () {
         expect($exception->getConflictedCart())->toBe($cart);
     });
 
-    it('stores conflicted data', function () {
+    it('stores conflicted data', function (): void {
         $data = ['items' => [], 'total' => 100.00];
         $exception = new CartConflictException(
             'Conflict',
@@ -75,7 +75,7 @@ describe('CartConflictException', function () {
         expect($exception->getConflictedData())->toBe($data);
     });
 
-    it('provides resolution suggestions for minor conflict', function () {
+    it('provides resolution suggestions for minor conflict', function (): void {
         $exception = new CartConflictException(
             'Minor conflict',
             attemptedVersion: 9,
@@ -88,7 +88,7 @@ describe('CartConflictException', function () {
         expect($suggestions)->toContain('merge_changes');
     });
 
-    it('provides resolution suggestions for major conflict', function () {
+    it('provides resolution suggestions for major conflict', function (): void {
         $exception = new CartConflictException(
             'Major conflict',
             attemptedVersion: 1,
@@ -101,7 +101,7 @@ describe('CartConflictException', function () {
         expect($suggestions)->toContain('manual_resolution_required');
     });
 
-    it('includes cart comparison suggestion when cart is present', function () {
+    it('includes cart comparison suggestion when cart is present', function (): void {
         $manager = app(AIArmada\Cart\CartManager::class);
         $cart = $manager->getCartInstance('test-cart');
 
@@ -117,7 +117,7 @@ describe('CartConflictException', function () {
         expect($suggestions)->toContain('compare_with_current');
     });
 
-    it('converts to array for API responses', function () {
+    it('converts to array for API responses', function (): void {
         $exception = new CartConflictException(
             'Cart conflict',
             attemptedVersion: 5,
@@ -137,7 +137,7 @@ describe('CartConflictException', function () {
         expect($array)->toHaveKey('timestamp');
     });
 
-    it('handles zero version difference', function () {
+    it('handles zero version difference', function (): void {
         $exception = new CartConflictException(
             'Same version',
             attemptedVersion: 5,
@@ -148,7 +148,7 @@ describe('CartConflictException', function () {
         expect($exception->isMinorConflict())->toBeFalse();
     });
 
-    it('handles previous exception', function () {
+    it('handles previous exception', function (): void {
         $previous = new Exception('Previous error');
         $exception = new CartConflictException(
             'Conflict',

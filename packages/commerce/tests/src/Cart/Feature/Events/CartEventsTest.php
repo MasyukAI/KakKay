@@ -15,14 +15,14 @@ use AIArmada\Cart\Storage\SessionStorage;
  * Tests all cart events including the condition events to ensure
  * proper event dispatching, data integrity, and event listener compatibility.
  */
-describe('Cart Events', function () {
-    beforeEach(function () {
+describe('Cart Events', function (): void {
+    beforeEach(function (): void {
         $sessionStore = new Illuminate\Session\Store('testing', new Illuminate\Session\ArraySessionHandler(120));
         $this->events = new Illuminate\Events\Dispatcher;
         $this->dispatchedEvents = [];
 
         // Set up event listeners to capture all dispatched events
-        $this->events->listen('*', function ($eventName, $payload) {
+        $this->events->listen('*', function ($eventName, $payload): void {
             $event = $payload[0] ?? null;
             if ($event) {
                 $this->dispatchedEvents[] = $event;
@@ -38,7 +38,7 @@ describe('Cart Events', function () {
         );
     });
 
-    it('dispatches cart created event', function () {
+    it('dispatches cart created event', function (): void {
         // CartCreated fires when first item is added
         $this->cart->add('product-1', 'Test Product', 10.00, 1);
 
@@ -50,7 +50,7 @@ describe('Cart Events', function () {
         expect($event->cart)->toBeInstanceOf(Cart::class);
     });
 
-    it('dispatches item added event', function () {
+    it('dispatches item added event', function (): void {
         $this->cart->add('product-1', 'Test Product', 10.00, 2);
 
         $itemAddedEvents = array_filter($this->dispatchedEvents, fn ($event) => $event instanceof ItemAdded);
@@ -64,7 +64,7 @@ describe('Cart Events', function () {
         expect($event->item->quantity)->toBe(2);
     });
 
-    it('dispatches condition added event for cart level conditions', function () {
+    it('dispatches condition added event for cart level conditions', function (): void {
         $this->cart->addDiscount('summer_sale', '-20%');
 
         $conditionAddedEvents = array_filter($this->dispatchedEvents, fn ($event) => $event instanceof CartConditionAdded);
@@ -76,7 +76,7 @@ describe('Cart Events', function () {
         expect($event->condition->getType())->toBe('discount');
     });
 
-    it('dispatches condition removed event for cart level conditions', function () {
+    it('dispatches condition removed event for cart level conditions', function (): void {
         $this->cart->addDiscount('summer_sale', '-20%');
 
         // Clear events from add
@@ -92,7 +92,7 @@ describe('Cart Events', function () {
         expect($event->condition()->getName())->toBe('summer_sale');
     });
 
-    it('calculates correct impact for condition added event', function () {
+    it('calculates correct impact for condition added event', function (): void {
         $this->cart->add('product-1', 'Test Product', 100.00, 1);
 
         // Clear events from add
@@ -108,7 +108,7 @@ describe('Cart Events', function () {
         expect($event->getConditionImpact())->toBe(-21.0);
     });
 
-    it('calculates lost savings for condition removed event', function () {
+    it('calculates lost savings for condition removed event', function (): void {
         $this->cart->add('product-1', 'Test Product', 100.00, 1);
         $this->cart->addDiscount('savings_discount', '-25%');
 
@@ -123,7 +123,7 @@ describe('Cart Events', function () {
         expect($event->getLostSavings())->toBe(25.0);
     });
 
-    it('does not dispatch condition events when events are disabled', function () {
+    it('does not dispatch condition events when events are disabled', function (): void {
         $cartWithoutEvents = new Cart(
             identifier: 'no_events_cart',
             storage: new SessionStorage(new Illuminate\Session\Store('testing', new Illuminate\Session\ArraySessionHandler(120))),
@@ -144,13 +144,13 @@ describe('Cart Events', function () {
 });
 
 // Additional standalone tests
-beforeEach(function () {
+beforeEach(function (): void {
     $sessionStore = new Illuminate\Session\Store('testing', new Illuminate\Session\ArraySessionHandler(120));
     $this->events = new Illuminate\Events\Dispatcher;
     $this->dispatchedEvents = [];
 
     // Set up event listeners to capture all dispatched events
-    $this->events->listen('*', function ($eventName, $payload) {
+    $this->events->listen('*', function ($eventName, $payload): void {
         $event = $payload[0] ?? null;
         if ($event) {
             $this->dispatchedEvents[] = $event;
@@ -166,7 +166,7 @@ beforeEach(function () {
     );
 });
 
-it('provides comprehensive data in condition added event', function () {
+it('provides comprehensive data in condition added event', function (): void {
     $this->cart->add('product-1', 'Test Product', 100.00, 1);
 
     // Clear events from add
@@ -193,7 +193,7 @@ it('provides comprehensive data in condition added event', function () {
     expect($data['impact'])->toBe(-12.75);
 });
 
-it('provides comprehensive data in condition removed event', function () {
+it('provides comprehensive data in condition removed event', function (): void {
     $this->cart->add('product-1', 'Test Product', 100.00, 1);
     $this->cart->addDiscount('removal_test', '-20%');
 
@@ -221,7 +221,7 @@ it('provides comprehensive data in condition removed event', function () {
     expect($data['reason'])->toBeNull();
 });
 
-it('shows zero lost savings for non-discount removals', function () {
+it('shows zero lost savings for non-discount removals', function (): void {
     $this->cart->add('product-1', 'Test Product', 100.00, 1);
     $this->cart->addShipping('sales_tax', 8.5);
 
@@ -236,7 +236,7 @@ it('shows zero lost savings for non-discount removals', function () {
     expect($event->getLostSavings())->toBe(0.0);
 });
 
-it('does not dispatch event when removing non-existent condition', function () {
+it('does not dispatch event when removing non-existent condition', function (): void {
     $this->cart->add('product-1', 'Test Product', 100.00, 1);
 
     // Clear events from setup
@@ -249,7 +249,7 @@ it('does not dispatch event when removing non-existent condition', function () {
     expect($conditionRemovedEvents)->toHaveCount(0);
 });
 
-it('works with helper methods for condition events', function () {
+it('works with helper methods for condition events', function (): void {
     $this->cart->add('product-1', 'Test Product', 100.00, 1);
 
     // Clear events from setup

@@ -5,7 +5,7 @@ declare(strict_types=1);
 use AIArmada\Cart\Conditions\CartCondition;
 use AIArmada\Cart\Exceptions\InvalidCartConditionException;
 
-it('parses valid and invalid percent values', function () {
+it('parses valid and invalid percent values', function (): void {
     // Valid percent (charge/fee)
     $condition = new CartCondition(
         name: 'Percent',
@@ -35,7 +35,7 @@ it('parses valid and invalid percent values', function () {
     ))->toThrow(InvalidCartConditionException::class, 'Invalid condition value: 1e309%');
 });
 
-it('throws for non-finite numericValue in parseValue', function () {
+it('throws for non-finite numericValue in parseValue', function (): void {
     // This will trigger the is_finite check and throw at the selected line
     expect(fn () => new CartCondition(
         name: 'TestNonFinite',
@@ -45,7 +45,7 @@ it('throws for non-finite numericValue in parseValue', function () {
     ))->toThrow(InvalidCartConditionException::class, 'Invalid condition value: 1e309');
 });
 
-it('can create a cart condition', function () {
+it('can create a cart condition', function (): void {
     $condition = new CartCondition(
         name: 'VAT 12.5%',
         type: 'tax',
@@ -59,7 +59,7 @@ it('can create a cart condition', function () {
     expect($condition->getValue())->toBe('12.5%');
 });
 
-it('can create condition with attributes and order', function () {
+it('can create condition with attributes and order', function (): void {
     $condition = new CartCondition(
         name: 'Premium Tax',
         type: 'tax',
@@ -77,7 +77,7 @@ it('can create condition with attributes and order', function () {
         ->and($condition->getOrder())->toBe(5);
 });
 
-it('can apply percentage discount to value', function () {
+it('can apply percentage discount to value', function (): void {
     $condition = new CartCondition(
         name: '10% Discount',
         type: 'discount',
@@ -89,7 +89,7 @@ it('can apply percentage discount to value', function () {
     expect($result)->toBe(90.0);
 });
 
-it('can apply fixed amount discount', function () {
+it('can apply fixed amount discount', function (): void {
     $condition = new CartCondition(
         name: '$5 Discount',
         type: 'discount',
@@ -101,7 +101,7 @@ it('can apply fixed amount discount', function () {
     expect($result)->toBe(95.0);
 });
 
-it('can apply percentage charge to value', function () {
+it('can apply percentage charge to value', function (): void {
     $condition = new CartCondition(
         name: '8% Tax',
         type: 'tax',
@@ -113,7 +113,7 @@ it('can apply percentage charge to value', function () {
     expect($result)->toBe(108.0);
 });
 
-it('can apply fixed amount charge', function () {
+it('can apply fixed amount charge', function (): void {
     $condition = new CartCondition(
         name: 'Shipping Fee',
         type: 'shipping',
@@ -125,7 +125,7 @@ it('can apply fixed amount charge', function () {
     expect($result)->toBe(115.0);
 });
 
-it('identifies discount conditions correctly', function () {
+it('identifies discount conditions correctly', function (): void {
     $discount = new CartCondition(
         name: '10% Off',
         type: 'discount',
@@ -147,7 +147,7 @@ it('identifies discount conditions correctly', function () {
     expect($charge->isCharge())->toBeTrue();
 });
 
-it('validates condition properties', function () {
+it('validates condition properties', function (): void {
     expect(fn () => new CartCondition(
         name: '',
         type: 'tax',
@@ -156,7 +156,7 @@ it('validates condition properties', function () {
     ))->toThrow(InvalidCartConditionException::class, 'Condition name cannot be empty');
 });
 
-it('validates condition target', function () {
+it('validates condition target', function (): void {
     expect(fn () => new CartCondition(
         name: 'Invalid Target',
         type: 'tax',
@@ -165,7 +165,7 @@ it('validates condition target', function () {
     ))->toThrow(InvalidCartConditionException::class, 'Condition target must be one of: subtotal, total, item');
 });
 
-it('can create condition from array', function () {
+it('can create condition from array', function (): void {
     $condition = CartCondition::fromArray([
         'name' => 'Test Condition',
         'type' => 'discount',
@@ -181,7 +181,7 @@ it('can create condition from array', function () {
     expect($condition->getOrder())->toBe(1);
 });
 
-it('can convert condition to array', function () {
+it('can convert condition to array', function (): void {
     $condition = new CartCondition(
         name: 'Test Condition',
         type: 'discount',
@@ -203,7 +203,7 @@ it('can convert condition to array', function () {
     expect($array['is_discount'])->toBeTrue();
 });
 
-it('can get calculated value for display', function () {
+it('can get calculated value for display', function (): void {
     $condition = new CartCondition(
         name: '10% Discount',
         type: 'discount',
@@ -216,7 +216,7 @@ it('can get calculated value for display', function () {
     expect($calculatedValue)->toBe(-10.0);
 });
 
-it('identifies percentage-based conditions correctly', function () {
+it('identifies percentage-based conditions correctly', function (): void {
     $percentageCondition = new CartCondition(
         name: 'Percentage Tax',
         type: 'tax',
@@ -235,7 +235,7 @@ it('identifies percentage-based conditions correctly', function () {
         ->and($fixedCondition->isPercentage())->toBeFalse();
 });
 
-it('can create modified copy with with method', function () {
+it('can create modified copy with with method', function (): void {
     $original = new CartCondition(
         name: 'Original',
         type: 'discount',
@@ -251,7 +251,7 @@ it('can create modified copy with with method', function () {
         ->and($original->getName())->toBe('Original'); // original unchanged
 });
 
-it('can convert to JSON', function () {
+it('can convert to JSON', function (): void {
     $condition = new CartCondition(
         name: 'JSON Test',
         type: 'discount',
@@ -266,7 +266,7 @@ it('can convert to JSON', function () {
         ->and($decoded['value'])->toBe('-5%');
 });
 
-it('can be JSON serialized', function () {
+it('can be JSON serialized', function (): void {
     $condition = new CartCondition(
         name: 'Serializable',
         type: 'tax',
@@ -280,7 +280,7 @@ it('can be JSON serialized', function () {
         ->and($serialized['name'])->toBe('Serializable');
 });
 
-it('has string representation', function () {
+it('has string representation', function (): void {
     $condition = new CartCondition(
         name: 'Test Condition',
         type: 'discount',
@@ -293,7 +293,7 @@ it('has string representation', function () {
     expect($string)->toBe('Test Condition (discount): -10%');
 });
 
-it('validates condition properties on creation', function () {
+it('validates condition properties on creation', function (): void {
     expect(fn () => new CartCondition(
         name: '',
         type: 'discount',
@@ -316,7 +316,7 @@ it('validates condition properties on creation', function () {
     ))->toThrow(InvalidCartConditionException::class, 'Condition target cannot be empty');
 });
 
-it('validates condition target values', function () {
+it('validates condition target values', function (): void {
     expect(fn () => new CartCondition(
         name: 'Invalid Target',
         type: 'discount',
@@ -325,7 +325,7 @@ it('validates condition target values', function () {
     ))->toThrow(InvalidCartConditionException::class, 'Condition target must be one of: subtotal, total, item');
 });
 
-it('validates condition value is not empty', function () {
+it('validates condition value is not empty', function (): void {
     expect(fn () => new CartCondition(
         name: 'Empty Value',
         type: 'discount',
@@ -345,7 +345,7 @@ it('validates condition value is not empty', function () {
     // This is a known limitation in the validation logic
 });
 
-it('validates condition values and handles edge cases', function () {
+it('validates condition values and handles edge cases', function (): void {
     // Test that non-numeric strings still work (they cast to 0.0 which is valid)
     expect(new CartCondition(
         name: 'Alpha String',
@@ -363,7 +363,7 @@ it('validates condition values and handles edge cases', function () {
     ))->toBeInstanceOf(CartCondition::class);
 });
 
-it('handles different operators correctly', function () {
+it('handles different operators correctly', function (): void {
     $addition = new CartCondition(
         name: 'Add',
         type: 'fee',
@@ -406,7 +406,7 @@ it('handles different operators correctly', function () {
         ->and($noOperator->apply(100.0))->toBe(125.0); // defaults to addition
 });
 
-it('handles division by zero safely', function () {
+it('handles division by zero safely', function (): void {
     $divisionByZero = new CartCondition(
         name: 'Divide by Zero',
         type: 'modifier',
@@ -418,7 +418,7 @@ it('handles division by zero safely', function () {
     expect($divisionByZero->apply(100.0))->toBe(100.0);
 });
 
-it('creates conditions from array with fromArray method', function () {
+it('creates conditions from array with fromArray method', function (): void {
     $data = [
         'name' => 'Array Condition',
         'type' => 'discount',
@@ -438,7 +438,7 @@ it('creates conditions from array with fromArray method', function () {
         ->and($condition->getOrder())->toBe(3);
 });
 
-it('handles positive and negative percentage charges correctly', function () {
+it('handles positive and negative percentage charges correctly', function (): void {
     $positiveCharge = new CartCondition(
         name: 'Positive Charge',
         type: 'fee',
@@ -459,7 +459,7 @@ it('handles positive and negative percentage charges correctly', function () {
         ->and($negativeDiscount->isCharge())->toBeFalse();
 });
 
-it('throws exception for non-finite condition values', function () {
+it('throws exception for non-finite condition values', function (): void {
     // String 'INF'
     expect(fn () => new CartCondition(
         name: 'InfiniteStr',
@@ -493,7 +493,7 @@ it('throws exception for non-finite condition values', function () {
     ))->toThrow(InvalidCartConditionException::class);
 });
 
-it('can get rules and check isDynamic', function () {
+it('can get rules and check isDynamic', function (): void {
     $static = new CartCondition(
         name: 'Static',
         type: 'fee',
@@ -514,7 +514,7 @@ it('can get rules and check isDynamic', function () {
         ->and($dynamic->isDynamic())->toBeTrue();
 });
 
-it('shouldApply returns true for static and evaluates rules for dynamic', function () {
+it('shouldApply returns true for static and evaluates rules for dynamic', function (): void {
     $static = new CartCondition(
         name: 'Static',
         type: 'fee',

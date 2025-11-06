@@ -10,7 +10,6 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 
 final class VoucherUsagesTable
@@ -44,6 +43,7 @@ final class VoucherUsagesTable
                     ->label('Discount')
                     ->formatStateUsing(static function ($state, VoucherUsage $record): string {
                         $currency = mb_strtoupper((string) ($record->currency ?? config('filament-vouchers.default_currency', 'MYR')));
+
                         // Value is already stored as cents (integer)
                         return (string) Money::{$currency}((int) $state);
                     })

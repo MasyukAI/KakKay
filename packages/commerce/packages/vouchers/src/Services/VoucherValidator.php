@@ -93,7 +93,7 @@ class VoucherValidator
     }
 
     /**
-     * @return Builder<\AIArmada\Vouchers\Models\Voucher>
+     * @return Builder<Voucher>
      */
     protected function query(): Builder
     {

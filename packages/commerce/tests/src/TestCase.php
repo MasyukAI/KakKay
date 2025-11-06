@@ -145,7 +145,7 @@ abstract class TestCase extends Orchestra
     {
         // Cart tables
         Schema::dropIfExists('carts');
-        Schema::create('carts', function (Blueprint $table) {
+        Schema::create('carts', function (Blueprint $table): void {
             $table->uuid('id')->primary();
             $table->string('identifier')->index();
             $table->string('instance')->default('default')->index();
@@ -163,7 +163,7 @@ abstract class TestCase extends Orchestra
         Schema::dropIfExists('doc_histories');
         Schema::dropIfExists('doc_templates');
 
-        Schema::create('doc_templates', function (Blueprint $table) {
+        Schema::create('doc_templates', function (Blueprint $table): void {
             $table->uuid('id')->primary();
             $table->string('name');
             $table->string('slug')->unique();
@@ -175,7 +175,7 @@ abstract class TestCase extends Orchestra
             $table->timestamps();
         });
 
-        Schema::create('docs', function (Blueprint $table) {
+        Schema::create('docs', function (Blueprint $table): void {
             $table->uuid('id')->primary();
             $table->string('doc_number')->unique();
             $table->string('doc_type')->default('invoice');
@@ -200,7 +200,7 @@ abstract class TestCase extends Orchestra
             $table->timestamps();
         });
 
-        Schema::create('doc_histories', function (Blueprint $table) {
+        Schema::create('doc_histories', function (Blueprint $table): void {
             $table->uuid('id')->primary();
             $table->foreignUuid('doc_id')->constrained('docs')->cascadeOnDelete();
             $table->string('action');
@@ -213,7 +213,7 @@ abstract class TestCase extends Orchestra
 
         // Stock tables
         Schema::dropIfExists('stock_transactions');
-        Schema::create('stock_transactions', function (Blueprint $table) {
+        Schema::create('stock_transactions', function (Blueprint $table): void {
             $table->uuid('id')->primary();
             $table->uuidMorphs('stockable');
             $table->uuid('user_id')->nullable();
@@ -227,7 +227,7 @@ abstract class TestCase extends Orchestra
 
         // Test support table for stock testing
         Schema::dropIfExists('test_products');
-        Schema::create('test_products', function (Blueprint $table) {
+        Schema::create('test_products', function (Blueprint $table): void {
             $table->uuid('id')->primary();
             $table->string('name');
             $table->timestamps();

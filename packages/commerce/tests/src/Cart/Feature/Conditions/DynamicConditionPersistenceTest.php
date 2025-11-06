@@ -8,13 +8,13 @@ use AIArmada\Cart\Examples\ExampleRulesFactory;
 use AIArmada\Cart\Storage\CacheStorage;
 use Illuminate\Support\Facades\Cache;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->storage = new CacheStorage(Cache::store('array'));
     $this->cart = new Cart($this->storage, 'test-identifier');
     $this->rulesFactory = new ExampleRulesFactory();
 });
 
-it('can set and get rules factory', function () {
+it('can set and get rules factory', function (): void {
     expect($this->cart->getRulesFactory())->toBeNull();
 
     $this->cart->setRulesFactory($this->rulesFactory);
@@ -22,7 +22,7 @@ it('can set and get rules factory', function () {
     expect($this->cart->getRulesFactory())->toBe($this->rulesFactory);
 });
 
-it('can register dynamic condition with persistence', function () {
+it('can register dynamic condition with persistence', function (): void {
     $this->cart->setRulesFactory($this->rulesFactory);
 
     $condition = new CartCondition(
@@ -47,7 +47,7 @@ it('can register dynamic condition with persistence', function () {
     expect($metadata['test_discount']['value'])->toBe('-10%');
 });
 
-it('can register dynamic condition without persistence', function () {
+it('can register dynamic condition without persistence', function (): void {
     $condition = new CartCondition(
         name: 'temp_discount',
         type: 'discount',
@@ -65,7 +65,7 @@ it('can register dynamic condition without persistence', function () {
     expect($metadata)->toBeEmpty();
 });
 
-it('can restore dynamic conditions from metadata', function () {
+it('can restore dynamic conditions from metadata', function (): void {
     $this->cart->setRulesFactory($this->rulesFactory);
 
     // First register and persist a condition
@@ -98,7 +98,7 @@ it('can restore dynamic conditions from metadata', function () {
     expect($restoredCondition->isDynamic())->toBeTrue();
 });
 
-it('withRulesFactory automatically restores conditions', function () {
+it('withRulesFactory automatically restores conditions', function (): void {
     // First cart: register persistent condition
     $cart1 = new Cart($this->storage, 'test-identifier');
     $cart1->setRulesFactory($this->rulesFactory);
@@ -121,7 +121,7 @@ it('withRulesFactory automatically restores conditions', function () {
     expect($cart2->getDynamicConditions()->has('auto_restore_discount'))->toBeTrue();
 });
 
-it('can remove dynamic condition and its metadata', function () {
+it('can remove dynamic condition and its metadata', function (): void {
     $this->cart->setRulesFactory($this->rulesFactory);
 
     $condition = new CartCondition(
@@ -143,7 +143,7 @@ it('can remove dynamic condition and its metadata', function () {
     expect($this->cart->getDynamicConditionMetadata())->not->toHaveKey('removable_discount');
 });
 
-it('can clear all dynamic conditions and metadata', function () {
+it('can clear all dynamic conditions and metadata', function (): void {
     $this->cart->setRulesFactory($this->rulesFactory);
 
     // Register multiple conditions
@@ -168,7 +168,7 @@ it('can clear all dynamic conditions and metadata', function () {
     expect($this->cart->getDynamicConditionMetadata())->toHaveCount(0);
 });
 
-it('skips conditions without rule factory during restoration', function () {
+it('skips conditions without rule factory during restoration', function (): void {
     $this->cart->setRulesFactory($this->rulesFactory);
 
     // Manually insert metadata with invalid rule factory key
@@ -194,7 +194,7 @@ it('skips conditions without rule factory during restoration', function () {
     expect($newCart->getDynamicConditions())->toHaveCount(0);
 });
 
-it('skips restoration when no rules factory is set', function () {
+it('skips restoration when no rules factory is set', function (): void {
     // Manually insert metadata
     $this->storage->putMetadata(
         'test-identifier',
@@ -218,7 +218,7 @@ it('skips restoration when no rules factory is set', function () {
     expect($cart->getDynamicConditions())->toHaveCount(0);
 });
 
-it('handles metadata with missing rule factory key gracefully', function () {
+it('handles metadata with missing rule factory key gracefully', function (): void {
     $this->cart->setRulesFactory($this->rulesFactory);
 
     // Manually insert metadata without rule factory key
@@ -244,7 +244,7 @@ it('handles metadata with missing rule factory key gracefully', function () {
     expect($newCart->getDynamicConditions())->toHaveCount(0);
 });
 
-it('restores conditions with custom metadata values', function () {
+it('restores conditions with custom metadata values', function (): void {
     $this->cart->setRulesFactory($this->rulesFactory);
 
     // Register condition with custom attributes and order
@@ -274,7 +274,7 @@ it('restores conditions with custom metadata values', function () {
     expect($restoredCondition->getValue())->toBe('-25%');
 });
 
-it('throws exception when registering non-dynamic condition with factory key', function () {
+it('throws exception when registering non-dynamic condition with factory key', function (): void {
     $this->cart->setRulesFactory($this->rulesFactory);
 
     $staticCondition = new CartCondition(

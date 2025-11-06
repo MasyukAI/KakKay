@@ -6,13 +6,13 @@ use AIArmada\Cart\Cart;
 use AIArmada\Cart\Conditions\CartCondition;
 use AIArmada\Cart\Storage\SessionStorage;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $sessionStore = new Illuminate\Session\Store('testing', new Illuminate\Session\ArraySessionHandler(120));
     $this->storage = new SessionStorage($sessionStore);
     $this->cart = new Cart($this->storage, 'dynamic_conditions_test');
 });
 
-it('can register a dynamic condition with rules', function () {
+it('can register a dynamic condition with rules', function (): void {
     $condition = new CartCondition(
         name: 'Big Spender Discount',
         type: 'discount',
@@ -29,7 +29,7 @@ it('can register a dynamic condition with rules', function () {
     expect($this->cart->getDynamicConditions()->first()->getName())->toBe('Big Spender Discount');
 });
 
-it('applies dynamic condition when rules are met', function () {
+it('applies dynamic condition when rules are met', function (): void {
     // Register dynamic condition for orders over $100
     $condition = new CartCondition(
         name: 'Big Spender Discount',
@@ -52,7 +52,7 @@ it('applies dynamic condition when rules are met', function () {
     expect($this->cart->total()->getAmount())->toBe(135.0); // 150 - 15 (10%)
 });
 
-it('prevents registering static conditions as dynamic', function () {
+it('prevents registering static conditions as dynamic', function (): void {
     $condition = new CartCondition(
         name: 'Static Discount',
         type: 'discount',
@@ -65,7 +65,7 @@ it('prevents registering static conditions as dynamic', function () {
         ->toThrow(InvalidArgumentException::class, 'Only dynamic conditions (with rules) can be registered.');
 });
 
-it('can register multiple dynamic conditions with different rules', function () {
+it('can register multiple dynamic conditions with different rules', function (): void {
     $volumeDiscount = new CartCondition(
         name: 'Volume Discount',
         type: 'discount',
@@ -92,7 +92,7 @@ it('can register multiple dynamic conditions with different rules', function () 
     expect($this->cart->getDynamicConditions())->toHaveCount(2);
 });
 
-it('requires ALL rules to be met before applying condition', function () {
+it('requires ALL rules to be met before applying condition', function (): void {
     $strictDiscount = new CartCondition(
         name: 'Strict VIP Discount',
         type: 'discount',
@@ -131,7 +131,7 @@ it('requires ALL rules to be met before applying condition', function () {
     expect($this->cart->total()->getAmount())->toBe(204.0); // 240 - 36 (15%)
 });
 
-it('applies condition when adding items triggers rules', function () {
+it('applies condition when adding items triggers rules', function (): void {
     $volumeDiscount = new CartCondition(
         name: 'Volume Discount',
         type: 'discount',
@@ -158,7 +158,7 @@ it('applies condition when adding items triggers rules', function () {
     expect($this->cart->total()->getAmount())->toBe(142.5); // 150 - 7.5 (5%)
 });
 
-it('removes condition when removing items breaks rules', function () {
+it('removes condition when removing items breaks rules', function (): void {
     $volumeDiscount = new CartCondition(
         name: 'Volume Discount',
         type: 'discount',
@@ -186,7 +186,7 @@ it('removes condition when removing items breaks rules', function () {
     expect($this->cart->total()->getAmount())->toBe(100.0);
 });
 
-it('updates condition when updating quantities affects rules', function () {
+it('updates condition when updating quantities affects rules', function (): void {
     $bigOrderDiscount = new CartCondition(
         name: 'Big Order Discount',
         type: 'discount',
@@ -219,7 +219,7 @@ it('updates condition when updating quantities affects rules', function () {
     expect($this->cart->total()->getAmount())->toBe(150.0); // 2*25 + 4*25 = 150
 });
 
-it('handles multiple dynamic conditions being applied simultaneously', function () {
+it('handles multiple dynamic conditions being applied simultaneously', function (): void {
     $volumeDiscount = new CartCondition(
         name: 'Volume Discount',
         type: 'discount',
@@ -261,7 +261,7 @@ it('handles multiple dynamic conditions being applied simultaneously', function 
     expect($this->cart->total()->getAmount())->toBe(213.75);
 });
 
-it('works with item-level dynamic conditions', function () {
+it('works with item-level dynamic conditions', function (): void {
     $bulkItemDiscount = new CartCondition(
         name: 'Bulk Item Discount',
         type: 'discount',
@@ -290,7 +290,7 @@ it('works with item-level dynamic conditions', function () {
     expect($item->getSubtotal()->getAmount())->toBe(80.0); // 5 * 20 * 0.8
 });
 
-it('removes dynamic condition from registry', function () {
+it('removes dynamic condition from registry', function (): void {
     $discount = new CartCondition(
         name: 'Test Discount',
         type: 'discount',
@@ -315,7 +315,7 @@ it('removes dynamic condition from registry', function () {
     expect($this->cart->getConditions())->toHaveCount(0); // Should also remove from active conditions
 });
 
-it('handles complex business logic rules', function () {
+it('handles complex business logic rules', function (): void {
     // VIP customer discount: 15% off for orders > $100 with 3+ items and premium category
     $vipDiscount = new CartCondition(
         name: 'VIP Customer Discount',
@@ -347,7 +347,7 @@ it('handles complex business logic rules', function () {
     expect($this->cart->total()->getAmount())->toBe(170.0); // 200 - 30 (15%)
 });
 
-it('handles edge case with removing item triggers conditions update', function () {
+it('handles edge case with removing item triggers conditions update', function (): void {
     $volumeDiscount = new CartCondition(
         name: 'Volume Discount',
         type: 'discount',
@@ -375,7 +375,7 @@ it('handles edge case with removing item triggers conditions update', function (
     expect($this->cart->total()->getAmount())->toBe(50.0);
 });
 
-it('maintains dynamic conditions after clearing and re-adding items', function () {
+it('maintains dynamic conditions after clearing and re-adding items', function (): void {
     $volumeDiscount = new CartCondition(
         name: 'Volume Discount',
         type: 'discount',
@@ -410,7 +410,7 @@ it('maintains dynamic conditions after clearing and re-adding items', function (
     expect($this->cart->total()->getAmount())->toBe(142.5); // 150 - 5%
 });
 
-it('handles conditions with attribute-based rules', function () {
+it('handles conditions with attribute-based rules', function (): void {
     $electronicsDiscount = new CartCondition(
         name: 'Electronics Discount',
         type: 'discount',

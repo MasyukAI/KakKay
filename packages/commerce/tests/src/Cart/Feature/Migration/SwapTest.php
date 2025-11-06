@@ -15,11 +15,11 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
  */
 uses(RefreshDatabase::class);
 
-beforeEach(function () {
+beforeEach(function (): void {
     // Create database storage for testing
     $connection = app('db')->connection();
     $connection->getSchemaBuilder()->dropIfExists('carts_swap_test');
-    $connection->getSchemaBuilder()->create('carts_swap_test', function ($table) {
+    $connection->getSchemaBuilder()->create('carts_swap_test', function ($table): void {
         $table->uuid('id')->primary();
         $table->string('identifier')->index();
         $table->string('instance')->default('default')->index();
@@ -35,13 +35,13 @@ beforeEach(function () {
     $this->cartMigration = new CartMigrationService([], $this->storage);
 });
 
-afterEach(function () {
+afterEach(function (): void {
     // Clean up the test table
     $connection = app('db')->connection();
     $connection->getSchemaBuilder()->dropIfExists('carts_swap_test');
 });
 
-it('transfers source cart to target identifier even when target exists', function () {
+it('transfers source cart to target identifier even when target exists', function (): void {
     $storage = $this->storage;
 
     // Add items to guest cart (the source cart to transfer)
@@ -108,7 +108,7 @@ it('transfers source cart to target identifier even when target exists', functio
     expect($userItemsAfter)->not->toHaveKey('user-product-1');
 });
 
-it('transfers source cart when target cart does not exist', function () {
+it('transfers source cart when target cart does not exist', function (): void {
     $storage = $this->storage;
 
     // Add items to guest cart only (no user cart exists)
@@ -170,7 +170,7 @@ it('transfers source cart when target cart does not exist', function () {
     expect($userConditionsAfter['discount'])->toEqual($guestConditions['discount']);
 });
 
-it('swaps even when source cart is empty', function () {
+it('swaps even when source cart is empty', function (): void {
     $storage = $this->storage;
 
     // Create an empty guest cart (cart exists but has no items)
@@ -190,11 +190,11 @@ it('swaps even when source cart is empty', function () {
     expect($storage->getItems('user_empty', 'default'))->toBeEmpty();
 });
 
-it('returns false when swapping non-existent cart', function () {
+it('returns false when swapping non-existent cart', function (): void {
     // Create database storage for testing
     $connection = app('db')->connection();
     $connection->getSchemaBuilder()->dropIfExists('carts_swap_test_3');
-    $connection->getSchemaBuilder()->create('carts_swap_test_3', function ($table) {
+    $connection->getSchemaBuilder()->create('carts_swap_test_3', function ($table): void {
         $table->uuid('id')->primary();
         $table->string('identifier')->index();
         $table->string('instance')->default('default')->index();
@@ -213,7 +213,7 @@ it('returns false when swapping non-existent cart', function () {
     expect($result)->toBeFalse();
 });
 
-it('can swap cart ownership for specific instances', function () {
+it('can swap cart ownership for specific instances', function (): void {
     $storage = $this->storage;
 
     // Add items to guest wishlist cart
@@ -250,7 +250,7 @@ it('can swap cart ownership for specific instances', function () {
     expect($userWishlistAfter['product-1'])->toEqual($wishlistItems['product-1']);
 });
 
-it('can swap through cart facade', function () {
+it('can swap through cart facade', function (): void {
     $storage = $this->storage;
 
     // Add items to guest cart
@@ -283,7 +283,7 @@ it('can swap through cart facade', function () {
     expect($storage->getItems('user_facade', 'default'))->toHaveCount(1);
 });
 
-it('can swap guest cart using convenience method', function () {
+it('can swap guest cart using convenience method', function (): void {
     $storage = $this->storage;
 
     // Add items to guest cart

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 use AIArmada\Cart\Facades\Cart;
 
-describe('Shipping Conditions', function () {
-    beforeEach(function () {
+describe('Shipping Conditions', function (): void {
+    beforeEach(function (): void {
         Cart::clear();
     });
 
-    it('can add shipping using addShipping method', function () {
+    it('can add shipping using addShipping method', function (): void {
         Cart::add('item', 'Item', 50.00, 1);
 
         Cart::addShipping('Standard Shipping', 10.00);
@@ -22,7 +22,7 @@ describe('Shipping Conditions', function () {
         expect($shipping->getType())->toBe('shipping');
     });
 
-    it('can remove shipping using removeShipping method', function () {
+    it('can remove shipping using removeShipping method', function (): void {
         Cart::add('item', 'Item', 50.00, 1);
         Cart::addShipping('Express Shipping', 20.00);
 
@@ -32,7 +32,7 @@ describe('Shipping Conditions', function () {
         expect(Cart::total()->getAmount())->toBe(50.00);
     });
 
-    it('replaces existing shipping when adding new shipping', function () {
+    it('replaces existing shipping when adding new shipping', function (): void {
         Cart::add('item', 'Item', 50.00, 1);
         Cart::addShipping('Standard', 10.00);
         Cart::addShipping('Express', 25.00);
@@ -44,7 +44,7 @@ describe('Shipping Conditions', function () {
         expect(Cart::total()->getAmount())->toBe(75.00);
     });
 
-    it('handles string shipping values', function () {
+    it('handles string shipping values', function (): void {
         Cart::add('item', 'Item', 100.00, 1);
 
         Cart::addShipping('Shipping', '15.00');
@@ -52,7 +52,7 @@ describe('Shipping Conditions', function () {
         expect(Cart::total()->getAmount())->toBe(115.00);
     });
 
-    it('handles numeric shipping values', function () {
+    it('handles numeric shipping values', function (): void {
         Cart::add('item', 'Item', 100.00, 1);
 
         Cart::addShipping('Shipping', 20);
@@ -60,7 +60,7 @@ describe('Shipping Conditions', function () {
         expect(Cart::total()->getAmount())->toBe(120.00);
     });
 
-    it('can add percentage-based shipping', function () {
+    it('can add percentage-based shipping', function (): void {
         Cart::add('item', 'Item', 100.00, 1);
 
         Cart::addShipping('Calculated Shipping', '10%');
@@ -68,7 +68,7 @@ describe('Shipping Conditions', function () {
         expect(Cart::total()->getAmount())->toBe(110.00);
     });
 
-    it('works with Cart facade', function () {
+    it('works with Cart facade', function (): void {
         Cart::add('item', 'Item', 50.00, 1);
 
         Cart::addShipping('Facade Shipping', 5.00);
@@ -77,12 +77,12 @@ describe('Shipping Conditions', function () {
     });
 });
 
-describe('Multiple Shipping Scenarios', function () {
-    beforeEach(function () {
+describe('Multiple Shipping Scenarios', function (): void {
+    beforeEach(function (): void {
         Cart::clear();
     });
 
-    it('applies shipping after item conditions', function () {
+    it('applies shipping after item conditions', function (): void {
         Cart::add('item', 'Item', 100.00, 1);
         Cart::addDiscount('SAVE10', '-10%');
         Cart::addShipping('Shipping', 15.00);
@@ -91,7 +91,7 @@ describe('Multiple Shipping Scenarios', function () {
         expect(Cart::total()->getAmount())->toBe(105.00);
     });
 
-    it('applies shipping after tax (shipping targets total)', function () {
+    it('applies shipping after tax (shipping targets total)', function (): void {
         Cart::add('item', 'Item', 100.00, 1);
         Cart::addShipping('Shipping', 10.00);
         Cart::addTax('VAT', '10%');
@@ -101,7 +101,7 @@ describe('Multiple Shipping Scenarios', function () {
         expect(Cart::total()->getAmount())->toBe(120.00);
     });
 
-    it('calculates free shipping correctly', function () {
+    it('calculates free shipping correctly', function (): void {
         Cart::add('item', 'Item', 100.00, 1);
 
         Cart::addShipping('Free Shipping', 0.00);
@@ -110,12 +110,12 @@ describe('Multiple Shipping Scenarios', function () {
     });
 });
 
-describe('Shipping Methods', function () {
-    beforeEach(function () {
+describe('Shipping Methods', function (): void {
+    beforeEach(function (): void {
         Cart::clear();
     });
 
-    it('supports different shipping methods', function () {
+    it('supports different shipping methods', function (): void {
         $methods = [
             ['name' => 'Standard', 'cost' => 5.00],
             ['name' => 'Express', 'cost' => 15.00],
@@ -133,7 +133,7 @@ describe('Shipping Methods', function () {
         }
     });
 
-    it('can query current shipping method', function () {
+    it('can query current shipping method', function (): void {
         Cart::add('item', 'Item', 50.00, 1);
         Cart::addShipping('Express Shipping', 25.00);
 

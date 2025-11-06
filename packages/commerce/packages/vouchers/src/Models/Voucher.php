@@ -9,10 +9,10 @@ use AIArmada\Vouchers\Enums\VoucherType;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Model as EloquentModel;
 
 /**
  * @property string $id
@@ -40,10 +40,10 @@ use Illuminate\Database\Eloquent\Model as EloquentModel;
  */
 class Voucher extends Model
 {
-     use HasUuids;
-     use SoftDeletes;
+    use HasUuids;
+    use SoftDeletes;
 
-     protected $fillable = [
+    protected $fillable = [
         'code',
         'name',
         'description',
@@ -74,7 +74,7 @@ class Voucher extends Model
 
     public function usages(): HasMany
     {
-        /** @var HasMany<\AIArmada\Vouchers\Models\VoucherUsage, \AIArmada\Vouchers\Models\Voucher> $relation */
+        /** @var HasMany<VoucherUsage, Voucher> $relation */
         $relation = $this->hasMany(VoucherUsage::class);
 
         return $relation;

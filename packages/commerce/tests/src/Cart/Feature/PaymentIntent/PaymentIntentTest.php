@@ -7,7 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-test('cart payment intent metadata storage and retrieval works', function () {
+test('cart payment intent metadata storage and retrieval works', function (): void {
     // Clear any existing cart
     CartFacade::clear();
 

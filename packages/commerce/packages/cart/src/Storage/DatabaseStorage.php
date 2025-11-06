@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AIArmada\Cart\Storage;
 
 use AIArmada\Cart\Exceptions\CartConflictException;
+use DateTimeInterface;
 use Illuminate\Database\ConnectionInterface as Database;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
@@ -146,7 +147,7 @@ final readonly class DatabaseStorage implements StorageInterface
      */
     public function putMetadata(string $identifier, string $instance, string $key, mixed $value): void
     {
-        $this->database->transaction(function () use ($identifier, $instance, $key, $value) {
+        $this->database->transaction(function () use ($identifier, $instance, $key, $value): void {
             // Get existing metadata
             $existing = $this->database->table($this->table)
                 ->where('identifier', $identifier)
@@ -178,7 +179,7 @@ final readonly class DatabaseStorage implements StorageInterface
             return;
         }
 
-        $this->database->transaction(function () use ($identifier, $instance, $metadata) {
+        $this->database->transaction(function () use ($identifier, $instance, $metadata): void {
             // Get existing metadata
             $existing = $this->database->table($this->table)
                 ->where('identifier', $identifier)
@@ -244,7 +245,7 @@ final readonly class DatabaseStorage implements StorageInterface
      */
     public function clearMetadata(string $identifier, string $instance): void
     {
-        $this->database->transaction(function () use ($identifier, $instance) {
+        $this->database->transaction(function () use ($identifier, $instance): void {
             $this->performCasUpdate($identifier, $instance, [
                 'metadata' => null,
             ], 'metadata clear');
@@ -307,6 +308,48 @@ final readonly class DatabaseStorage implements StorageInterface
 
             return $updated > 0;
         });
+    }
+
+    /**
+     * Get cart creation timestamp
+     */
+    public function getCreatedAt(string $identifier, string $instance): ?string
+    {
+        /** @var stdClass|null $cart */
+        $cart = $this->database->table($this->table)
+            ->where('identifier', $identifier)
+            ->where('instance', $instance)
+            ->first(['created_at']);
+
+        if (! $cart || ! $cart->created_at) {
+            return null;
+        }
+
+        // Handle both Carbon objects and string timestamps
+        return $cart->created_at instanceof DateTimeInterface
+            ? $cart->created_at->format('c')
+            : (string) $cart->created_at;
+    }
+
+    /**
+     * Get cart last updated timestamp
+     */
+    public function getUpdatedAt(string $identifier, string $instance): ?string
+    {
+        /** @var stdClass|null $cart */
+        $cart = $this->database->table($this->table)
+            ->where('identifier', $identifier)
+            ->where('instance', $instance)
+            ->first(['updated_at']);
+
+        if (! $cart || ! $cart->updated_at) {
+            return null;
+        }
+
+        // Handle both Carbon objects and string timestamps
+        return $cart->updated_at instanceof DateTimeInterface
+            ? $cart->updated_at->format('c')
+            : (string) $cart->updated_at;
     }
 
     /**
@@ -426,7 +469,7 @@ final readonly class DatabaseStorage implements StorageInterface
      */
     private function performCasUpdate(string $identifier, string $instance, array $data, string $operationName): void
     {
-        $this->database->transaction(function () use ($identifier, $instance, $data, $operationName) {
+        $this->database->transaction(function () use ($identifier, $instance, $data, $operationName): void {
             /** @var stdClass|null $current */
             $current = $this->applyLockForUpdate(
                 $this->database->table($this->table)
@@ -483,47 +526,5 @@ final readonly class DatabaseStorage implements StorageInterface
             $expectedVersion,
             $currentVersion
         );
-    }
-
-    /**
-     * Get cart creation timestamp
-     */
-    public function getCreatedAt(string $identifier, string $instance): ?string
-    {
-        /** @var stdClass|null $cart */
-        $cart = $this->database->table($this->table)
-            ->where('identifier', $identifier)
-            ->where('instance', $instance)
-            ->first(['created_at']);
-
-        if (! $cart || ! $cart->created_at) {
-            return null;
-        }
-
-        // Handle both Carbon objects and string timestamps
-        return $cart->created_at instanceof \DateTimeInterface
-            ? $cart->created_at->format('c')
-            : (string) $cart->created_at;
-    }
-
-    /**
-     * Get cart last updated timestamp
-     */
-    public function getUpdatedAt(string $identifier, string $instance): ?string
-    {
-        /** @var stdClass|null $cart */
-        $cart = $this->database->table($this->table)
-            ->where('identifier', $identifier)
-            ->where('instance', $instance)
-            ->first(['updated_at']);
-
-        if (! $cart || ! $cart->updated_at) {
-            return null;
-        }
-
-        // Handle both Carbon objects and string timestamps
-        return $cart->updated_at instanceof \DateTimeInterface
-            ? $cart->updated_at->format('c')
-            : (string) $cart->updated_at;
     }
 }

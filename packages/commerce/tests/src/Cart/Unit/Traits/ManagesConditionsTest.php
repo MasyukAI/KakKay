@@ -7,14 +7,14 @@ use AIArmada\Cart\Conditions\CartCondition;
 use AIArmada\Cart\Storage\CacheStorage;
 use Illuminate\Support\Facades\Cache;
 
-beforeEach(function () {
+beforeEach(function (): void {
     Cache::flush();
     $storage = new CacheStorage(Cache::store(), 'test_cart', 3600);
     $this->cart = new Cart($storage, 'test-user', null, 'default');
 });
 
-describe('ManagesConditions Trait', function () {
-    it('removes conditions by type successfully', function () {
+describe('ManagesConditions Trait', function (): void {
+    it('removes conditions by type successfully', function (): void {
         // Add multiple conditions of different types
         $this->cart->addCondition(new CartCondition(
             name: 'tax1',
@@ -49,7 +49,7 @@ describe('ManagesConditions Trait', function () {
         expect($this->cart->getCondition('tax2'))->toBeNull();
     });
 
-    it('returns false when removing conditions by non-existent type', function () {
+    it('returns false when removing conditions by non-existent type', function (): void {
         $this->cart->addCondition(new CartCondition(
             name: 'tax',
             type: 'tax',
@@ -63,7 +63,7 @@ describe('ManagesConditions Trait', function () {
         expect($this->cart->getConditions())->toHaveCount(1);
     });
 
-    it('returns false when removing item condition that does not exist', function () {
+    it('returns false when removing item condition that does not exist', function (): void {
         $this->cart->add(
             id: 'prod-1',
             name: 'Product',
@@ -76,13 +76,13 @@ describe('ManagesConditions Trait', function () {
         expect($result)->toBeFalse();
     });
 
-    it('returns false when removing condition from non-existent item', function () {
+    it('returns false when removing condition from non-existent item', function (): void {
         $result = $this->cart->removeItemCondition('nonexistent-item', 'some-condition');
 
         expect($result)->toBeFalse();
     });
 
-    it('gets shipping condition', function () {
+    it('gets shipping condition', function (): void {
         $this->cart->addCondition(new CartCondition(
             name: 'standard_shipping',
             type: 'shipping',
@@ -98,7 +98,7 @@ describe('ManagesConditions Trait', function () {
         expect($shipping->getType())->toBe('shipping');
     });
 
-    it('returns null when no shipping condition exists', function () {
+    it('returns null when no shipping condition exists', function (): void {
         $this->cart->addCondition(new CartCondition(
             name: 'tax',
             type: 'tax',
@@ -111,7 +111,7 @@ describe('ManagesConditions Trait', function () {
         expect($shipping)->toBeNull();
     });
 
-    it('gets shipping method from condition attributes', function () {
+    it('gets shipping method from condition attributes', function (): void {
         $this->cart->addCondition(new CartCondition(
             name: 'express_shipping',
             type: 'shipping',
@@ -125,7 +125,7 @@ describe('ManagesConditions Trait', function () {
         expect($method)->toBe('express');
     });
 
-    it('returns null when shipping condition has no method attribute', function () {
+    it('returns null when shipping condition has no method attribute', function (): void {
         $this->cart->addCondition(new CartCondition(
             name: 'shipping',
             type: 'shipping',
@@ -138,13 +138,13 @@ describe('ManagesConditions Trait', function () {
         expect($method)->toBeNull();
     });
 
-    it('returns null for shipping method when no shipping condition exists', function () {
+    it('returns null for shipping method when no shipping condition exists', function (): void {
         $method = $this->cart->getShippingMethod();
 
         expect($method)->toBeNull();
     });
 
-    it('gets shipping value as float from positive operator', function () {
+    it('gets shipping value as float from positive operator', function (): void {
         $this->cart->addCondition(new CartCondition(
             name: 'shipping',
             type: 'shipping',
@@ -157,7 +157,7 @@ describe('ManagesConditions Trait', function () {
         expect($value)->toBe(15.50);
     });
 
-    it('gets shipping value as negative float from minus operator', function () {
+    it('gets shipping value as negative float from minus operator', function (): void {
         $this->cart->addCondition(new CartCondition(
             name: 'shipping',
             type: 'shipping',
@@ -170,7 +170,7 @@ describe('ManagesConditions Trait', function () {
         expect($value)->toBe(-10.00);
     });
 
-    it('gets shipping value from numeric string without operator', function () {
+    it('gets shipping value from numeric string without operator', function (): void {
         $this->cart->addCondition(new CartCondition(
             name: 'shipping',
             type: 'shipping',
@@ -183,7 +183,7 @@ describe('ManagesConditions Trait', function () {
         expect($value)->toBe(25.99);
     });
 
-    it('gets shipping value from integer', function () {
+    it('gets shipping value from integer', function (): void {
         $this->cart->addCondition(new CartCondition(
             name: 'shipping',
             type: 'shipping',
@@ -196,13 +196,13 @@ describe('ManagesConditions Trait', function () {
         expect($value)->toBe(20.0);
     });
 
-    it('returns null for shipping value when no shipping condition exists', function () {
+    it('returns null for shipping value when no shipping condition exists', function (): void {
         $value = $this->cart->getShippingValue();
 
         expect($value)->toBeNull();
     });
 
-    it('handles multiplication operator in shipping value', function () {
+    it('handles multiplication operator in shipping value', function (): void {
         $this->cart->addCondition(new CartCondition(
             name: 'shipping',
             type: 'shipping',
@@ -216,7 +216,7 @@ describe('ManagesConditions Trait', function () {
         expect($value)->toBe(1.5);
     });
 
-    it('handles percentage operator in shipping value', function () {
+    it('handles percentage operator in shipping value', function (): void {
         $this->cart->addCondition(new CartCondition(
             name: 'shipping',
             type: 'shipping',

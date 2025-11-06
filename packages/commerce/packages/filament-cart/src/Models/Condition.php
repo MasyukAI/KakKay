@@ -384,7 +384,7 @@ final class Condition extends Model
      */
     protected static function booted(): void
     {
-        self::saving(function (Condition $condition) {
+        self::saving(function (Condition $condition): void {
             $condition->computeDerivedFields();
 
             // Normalize rules after is_dynamic is computed

@@ -156,7 +156,7 @@ final class CartConditionsTable
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['value'] ?? null,
-                            fn (Builder $query, $instance): Builder => $query->whereHas('cart', function ($q) use ($instance) {
+                            fn (Builder $query, $instance): Builder => $query->whereHas('cart', function ($q) use ($instance): void {
                                 $q->where('instance', $instance);
                             })
                         );

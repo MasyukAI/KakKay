@@ -51,7 +51,7 @@ final class CartConditionBatchRemoval
             // Find all cart snapshots that might have this condition
             // We check both cart conditions and item conditions
             $affectedSnapshots = CartModel::query()
-                ->where(function ($query) use ($conditionName) {
+                ->where(function ($query) use ($conditionName): void {
                     // Check in normalized_data->conditions
                     $query->whereJsonContains('normalized_data->conditions', [['name' => $conditionName]])
                         // Or check in normalized_data->items->*->conditions

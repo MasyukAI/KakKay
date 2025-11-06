@@ -13,8 +13,8 @@ use Illuminate\Support\Facades\Event;
 
 uses(RefreshDatabase::class);
 
-describe('CartMerged Event Updates', function () {
-    it('updates guest cart snapshot identifier when user has no existing cart', function () {
+describe('CartMerged Event Updates', function (): void {
+    it('updates guest cart snapshot identifier when user has no existing cart', function (): void {
         // Create guest cart snapshot
         $guestSnapshot = CartSnapshot::create([
             'identifier' => 'guest_session_123',
@@ -61,7 +61,7 @@ describe('CartMerged Event Updates', function () {
         expect($updatedSnapshot->quantity)->toBe(2);
     });
 
-    it('transfers items and conditions when user has existing cart snapshot', function () {
+    it('transfers items and conditions when user has existing cart snapshot', function (): void {
         // Create guest cart snapshot with items and conditions
         $guestSnapshot = CartSnapshot::create([
             'identifier' => 'guest_session_456',
@@ -153,7 +153,7 @@ describe('CartMerged Event Updates', function () {
         expect(CartCondition::where('name', 'user-tax')->first()->cart_id)->toBe($userSnapshot->id);
     });
 
-    it('handles updates for multiple instances separately', function () {
+    it('handles updates for multiple instances separately', function (): void {
         // Create guest snapshots for different instances
         $defaultSnapshot = CartSnapshot::create([
             'identifier' => 'guest_session_789',
@@ -206,7 +206,7 @@ describe('CartMerged Event Updates', function () {
             ->exists())->toBeTrue();
     });
 
-    it('does not fail if snapshot does not exist', function () {
+    it('does not fail if snapshot does not exist', function (): void {
         // No snapshot exists for this identifier
         expect(CartSnapshot::where('identifier', 'non_existent_session')->exists())->toBeFalse();
 
@@ -232,8 +232,8 @@ describe('CartMerged Event Updates', function () {
     });
 });
 
-describe('Integration with Cart Migration', function () {
-    it('updates guest snapshot during actual cart migration when user has no cart', function () {
+describe('Integration with Cart Migration', function (): void {
+    it('updates guest snapshot during actual cart migration when user has no cart', function (): void {
         // Create guest cart by directly using storage
         $storage = Cart::storage();
         $guestIdentifier = 'guest_789';
@@ -292,7 +292,7 @@ describe('Integration with Cart Migration', function () {
         expect($updatedSnapshot->quantity)->toBe(2);
     });
 
-    it('transfers items when user already has a cart snapshot on login', function () {
+    it('transfers items when user already has a cart snapshot on login', function (): void {
         // Create guest cart via storage
         $storage = Cart::storage();
         $guestIdentifier = 'session_abc';
@@ -399,8 +399,8 @@ describe('Integration with Cart Migration', function () {
     });
 });
 
-describe('Normalized Data Transfer', function () {
-    it('transfers cart items and conditions to existing user snapshot', function () {
+describe('Normalized Data Transfer', function (): void {
+    it('transfers cart items and conditions to existing user snapshot', function (): void {
         $guestIdentifier = 'guest_with_normalized_data';
 
         // Create guest snapshot with items and conditions
@@ -505,8 +505,8 @@ describe('Normalized Data Transfer', function () {
     });
 });
 
-describe('Edge Cases', function () {
-    it('updates empty guest cart snapshot identifier', function () {
+describe('Edge Cases', function (): void {
+    it('updates empty guest cart snapshot identifier', function (): void {
         // Create an empty guest snapshot
         $guestSnapshot = CartSnapshot::create([
             'identifier' => 'empty_session',
@@ -542,7 +542,7 @@ describe('Edge Cases', function () {
         expect($updatedSnapshot->id)->toBe($guestSnapshot->id);
     });
 
-    it('preserves other user snapshots during updates', function () {
+    it('preserves other user snapshots during updates', function (): void {
         // Create multiple user snapshots
         CartSnapshot::create(['identifier' => '100', 'instance' => 'default', 'currency' => 'MYR']);
         CartSnapshot::create(['identifier' => '101', 'instance' => 'default', 'currency' => 'MYR']);

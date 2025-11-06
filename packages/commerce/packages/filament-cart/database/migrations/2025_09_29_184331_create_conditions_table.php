@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('conditions', function (Blueprint $table) {
+        Schema::create('conditions', function (Blueprint $table): void {
             $table->uuid('id')->primary();
 
             // Core identification
@@ -57,7 +57,7 @@ return new class extends Migration
         });
 
         // Add GIN indexes for JSONB columns for efficient querying
-        Schema::table('conditions', function (Blueprint $table) {
+        Schema::table('conditions', function (Blueprint $table): void {
             $table->rawIndex('attributes', 'conditions_attributes_gin_index', 'gin');
             $table->rawIndex('rules', 'conditions_rules_gin_index', 'gin');
         });

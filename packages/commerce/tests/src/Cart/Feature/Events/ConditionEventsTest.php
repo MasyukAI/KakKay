@@ -9,13 +9,13 @@ use AIArmada\Cart\Events\ItemConditionRemoved;
 use AIArmada\Cart\Facades\Cart;
 use Illuminate\Support\Facades\Event;
 
-describe('Condition Added Events', function () {
-    beforeEach(function () {
+describe('Condition Added Events', function (): void {
+    beforeEach(function (): void {
         Event::fake(); // Fake events BEFORE any cart operations
         Cart::clear();
     });
 
-    it('dispatches CartConditionAdded event when adding cart-level condition', function () {
+    it('dispatches CartConditionAdded event when adding cart-level condition', function (): void {
         Cart::add('item', 'Item', 100.00, 1);
         Cart::addTax('VAT', '10%');
 
@@ -25,7 +25,7 @@ describe('Condition Added Events', function () {
         });
     });
 
-    it('includes comprehensive data in condition added event', function () {
+    it('includes comprehensive data in condition added event', function (): void {
         Cart::add('item', 'Item', 100.00, 1);
         Cart::addDiscount('SAVE20', '-20%');
 
@@ -36,7 +36,7 @@ describe('Condition Added Events', function () {
         });
     });
 
-    it('calculates correct impact for condition added', function () {
+    it('calculates correct impact for condition added', function (): void {
         Cart::add('item', 'Item', 100.00, 1);
 
         Cart::addTax('VAT', '10%');
@@ -45,13 +45,13 @@ describe('Condition Added Events', function () {
     });
 });
 
-describe('Condition Removed Events', function () {
-    beforeEach(function () {
+describe('Condition Removed Events', function (): void {
+    beforeEach(function (): void {
         Event::fake(); // Fake events BEFORE any cart operations
         Cart::clear();
     });
 
-    it('dispatches CartConditionRemoved event when removing cart-level condition', function () {
+    it('dispatches CartConditionRemoved event when removing cart-level condition', function (): void {
         Cart::add('item', 'Item', 100.00, 1);
         Cart::addTax('VAT', '10%');
 
@@ -62,7 +62,7 @@ describe('Condition Removed Events', function () {
         });
     });
 
-    it('calculates lost savings when removing discount', function () {
+    it('calculates lost savings when removing discount', function (): void {
         Cart::add('item', 'Item', 100.00, 1);
         Cart::addDiscount('SAVE20', '-20%');
 
@@ -75,7 +75,7 @@ describe('Condition Removed Events', function () {
         });
     });
 
-    it('shows zero lost savings for non-discount removals', function () {
+    it('shows zero lost savings for non-discount removals', function (): void {
         Cart::add('item', 'Item', 100.00, 1);
         Cart::addTax('VAT', '10%');
 
@@ -86,7 +86,7 @@ describe('Condition Removed Events', function () {
         });
     });
 
-    it('does not dispatch event when removing non-existent condition', function () {
+    it('does not dispatch event when removing non-existent condition', function (): void {
         Cart::add('item', 'Item', 100.00, 1);
 
         Event::fake();
@@ -97,13 +97,13 @@ describe('Condition Removed Events', function () {
     });
 });
 
-describe('Item Condition Events', function () {
-    beforeEach(function () {
+describe('Item Condition Events', function (): void {
+    beforeEach(function (): void {
         Event::fake(); // Fake events BEFORE any cart operations
         Cart::clear();
     });
 
-    it('dispatches events for item-level condition additions', function () {
+    it('dispatches events for item-level condition additions', function (): void {
         Cart::add('item', 'Item', 100.00, 1);
         Cart::addItemCondition('item', new AIArmada\Cart\Conditions\CartCondition(
             name: 'Item Discount',
@@ -117,7 +117,7 @@ describe('Item Condition Events', function () {
         });
     });
 
-    it('dispatches events for item-level condition removals', function () {
+    it('dispatches events for item-level condition removals', function (): void {
         Cart::add('item', 'Item', 100.00, 1);
         Cart::addItemCondition('item', new AIArmada\Cart\Conditions\CartCondition(
             name: 'Item Discount',
@@ -134,8 +134,8 @@ describe('Item Condition Events', function () {
     });
 });
 
-describe('Condition Event Configuration', function () {
-    it('does not dispatch events when disabled in config', function () {
+describe('Condition Event Configuration', function (): void {
+    it('does not dispatch events when disabled in config', function (): void {
         config(['cart.events' => false]); // Disable all cart events
         Event::fake(); // Fake FIRST
         Cart::clear();
@@ -146,7 +146,7 @@ describe('Condition Event Configuration', function () {
         Event::assertNotDispatched(CartConditionAdded::class);
     });
 
-    it('works with helper methods for condition events', function () {
+    it('works with helper methods for condition events', function (): void {
         Event::fake(); // Fake FIRST
         Cart::clear();
 

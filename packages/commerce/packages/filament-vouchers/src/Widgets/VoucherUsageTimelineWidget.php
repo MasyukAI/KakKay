@@ -19,9 +19,9 @@ use Livewire\Attributes\Lazy;
 #[Lazy]
 final class VoucherUsageTimelineWidget extends Widget
 {
-    protected string $view = 'filament-vouchers::widgets.voucher-usage-timeline';
-
     public ?Model $record = null;
+
+    protected string $view = 'filament-vouchers::widgets.voucher-usage-timeline';
 
     protected int|string|array $columnSpan = 'full';
 
@@ -59,6 +59,36 @@ final class VoucherUsageTimelineWidget extends Widget
 
             return $event;
         });
+    }
+
+    /**
+     * Get summary statistics
+     *
+     * @return array{total_redemptions: int, total_savings: string, unique_customers: int}
+     */
+    public function getSummaryStats(): array
+    {
+        if (! $this->record instanceof Voucher) {
+            return [
+                'total_redemptions' => 0,
+                'total_savings' => 'RM0.00',
+                'unique_customers' => 0,
+            ];
+        }
+
+        $usages = VoucherUsage::query()
+            ->where('voucher_id', $this->record->id)
+            ->get();
+
+        $totalSavings = $usages->sum('discount_amount');
+        $currency = $usages->first()->currency ?? 'MYR';
+        $uniqueCustomers = $usages->pluck('user_identifier')->unique()->count();
+
+        return [
+            'total_redemptions' => $usages->count(),
+            'total_savings' => Money::{$currency}($totalSavings)->format(),
+            'unique_customers' => $uniqueCustomers,
+        ];
     }
 
     /**
@@ -178,35 +208,5 @@ final class VoucherUsageTimelineWidget extends Widget
         }
 
         return 'primary';
-    }
-
-    /**
-     * Get summary statistics
-     *
-     * @return array{total_redemptions: int, total_savings: string, unique_customers: int}
-     */
-    public function getSummaryStats(): array
-    {
-        if (! $this->record instanceof Voucher) {
-            return [
-                'total_redemptions' => 0,
-                'total_savings' => 'RM0.00',
-                'unique_customers' => 0,
-            ];
-        }
-
-        $usages = VoucherUsage::query()
-            ->where('voucher_id', $this->record->id)
-            ->get();
-
-        $totalSavings = $usages->sum('discount_amount');
-        $currency = $usages->first()->currency ?? 'MYR';
-        $uniqueCustomers = $usages->pluck('user_identifier')->unique()->count();
-
-        return [
-            'total_redemptions' => $usages->count(),
-            'total_savings' => Money::{$currency}($totalSavings)->format(),
-            'unique_customers' => $uniqueCustomers,
-        ];
     }
 }

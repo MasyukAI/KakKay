@@ -6,12 +6,12 @@ use AIArmada\Cart\CartServiceProvider;
 use AIArmada\Cart\Services\CartMigrationService;
 use Illuminate\Foundation\Application;
 
-describe('CartServiceProvider', function () {
-    afterEach(function () {
+describe('CartServiceProvider', function (): void {
+    afterEach(function (): void {
         Mockery::close();
     });
 
-    it('provides correct services', function () {
+    it('provides correct services', function (): void {
         $app = mock(Application::class);
         $provider = new CartServiceProvider($app);
         $provides = $provider->provides();
@@ -26,7 +26,7 @@ describe('CartServiceProvider', function () {
         expect($provides)->toContain('cart.storage.database');
     });
 
-    it('registers storage drivers correctly', function () {
+    it('registers storage drivers correctly', function (): void {
         $app = mock(Application::class);
 
         // Mock all bind calls for storage drivers + StorageInterface binding
@@ -42,7 +42,7 @@ describe('CartServiceProvider', function () {
         expect(true)->toBeTrue();
     });
 
-    it('tests database storage scenarios without complex mocking', function () {
+    it('tests database storage scenarios without complex mocking', function (): void {
         // This test just covers that the methods exist and can be called without error
         $app = mock(Application::class);
         $app->shouldReceive('bind')->withAnyArgs()->times(4);
@@ -57,7 +57,7 @@ describe('CartServiceProvider', function () {
         expect(true)->toBeTrue();
     });
 
-    it('registers cart manager correctly', function () {
+    it('registers cart manager correctly', function (): void {
         $app = mock(Application::class);
         $app->shouldReceive('singleton')->withArgs(['cart', Mockery::type('callable')])->once();
         $app->shouldReceive('alias')->withArgs(['cart', AIArmada\Cart\CartManager::class])->once();
@@ -72,7 +72,7 @@ describe('CartServiceProvider', function () {
         expect(true)->toBeTrue();
     });
 
-    it('can call publish methods without errors', function () {
+    it('can call publish methods without errors', function (): void {
         $app = mock(Application::class);
         $provider = new CartServiceProvider($app);
 
@@ -80,7 +80,7 @@ describe('CartServiceProvider', function () {
         expect($provider)->toBeInstanceOf(Spatie\LaravelPackageTools\PackageServiceProvider::class);
     });
 
-    it('registers migration service correctly', function () {
+    it('registers migration service correctly', function (): void {
         $app = mock(Application::class);
         $app->shouldReceive('singleton')->withArgs([Mockery::type('callable')])->once();
 
@@ -94,7 +94,7 @@ describe('CartServiceProvider', function () {
         expect(true)->toBeTrue();
     });
 
-    it('can call event listeners method without errors', function () {
+    it('can call event listeners method without errors', function (): void {
         $app = mock(Application::class);
         $provider = new CartServiceProvider($app);
 
@@ -105,7 +105,7 @@ describe('CartServiceProvider', function () {
         expect($reflection->hasMethod('registerEventListeners'))->toBeTrue();
     });
 
-    it('has all expected protected methods', function () {
+    it('has all expected protected methods', function (): void {
         $app = mock(Application::class);
         $provider = new CartServiceProvider($app);
 
@@ -126,7 +126,7 @@ describe('CartServiceProvider', function () {
         }
     });
 
-    it('can call spatie package tools methods', function () {
+    it('can call spatie package tools methods', function (): void {
         $app = mock(Application::class);
         $provider = new CartServiceProvider($app);
 
@@ -153,12 +153,12 @@ use AIArmada\Cart\Storage\SessionStorage;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
 
-beforeEach(function () {
+beforeEach(function (): void {
     Config::set('cart.storage', 'session');
     Config::set('cart.migration.auto_migrate_on_login', true);
 });
 
-it('integration: registers all storage drivers', function () {
+it('integration: registers all storage drivers', function (): void {
     $app = app();
     $provider = new CartServiceProvider($app);
     $provider->register();
@@ -170,7 +170,7 @@ it('integration: registers all storage drivers', function () {
     }
 });
 
-it('integration: registers cart manager and aliases', function () {
+it('integration: registers cart manager and aliases', function (): void {
     $app = app();
     $provider = new CartServiceProvider($app);
     $provider->register();
@@ -179,7 +179,7 @@ it('integration: registers cart manager and aliases', function () {
     expect($app->make(AIArmada\Cart\CartManager::class))->toBeInstanceOf(AIArmada\Cart\CartManager::class);
 });
 
-it('integration: registers migration service', function () {
+it('integration: registers migration service', function (): void {
     $app = app();
     $provider = new CartServiceProvider($app);
     $provider->register();
@@ -187,7 +187,7 @@ it('integration: registers migration service', function () {
     expect($app->make(CartMigrationService::class))->toBeInstanceOf(CartMigrationService::class);
 });
 
-it('integration: publishes config, migrations, and views', function () {
+it('integration: publishes config, migrations, and views', function (): void {
     $provider = new CartServiceProvider(app());
     $package = new Spatie\LaravelPackageTools\Package;
     $provider->configurePackage($package);
@@ -197,7 +197,7 @@ it('integration: publishes config, migrations, and views', function () {
     expect(true)->toBeTrue(); // Package was configured successfully
 });
 
-it('integration: registers event listeners based on config', function () {
+it('integration: registers event listeners based on config', function (): void {
     $app = app();
     $provider = new CartServiceProvider($app);
     Event::fake();

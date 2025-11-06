@@ -11,7 +11,7 @@ use AIArmada\Vouchers\Enums\VoucherStatus;
 use AIArmada\Vouchers\Enums\VoucherType;
 use AIArmada\Vouchers\Support\CartWithVouchers;
 
-it('retrieves applied vouchers from cart conditions', function () {
+it('retrieves applied vouchers from cart conditions', function (): void {
     $storage = new class implements StorageInterface
     {
         private array $items = [];

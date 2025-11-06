@@ -37,11 +37,11 @@ final class FilamentCartBridge
     {
         // When Filament Cart is available, we can add runtime integration hooks here.
         // For now, the integration is handled via manual inclusion of actions in CartResource.
-        
+
         if (! $this->available) {
             return;
         }
-        
+
         // Future: Automatically inject voucher actions into CartResource
         // Future: Register voucher-related cart events
         // Future: Add voucher widgets to cart dashboard

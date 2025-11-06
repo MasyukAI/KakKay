@@ -73,7 +73,7 @@ final class ClearAbandonedCartsCommand extends Command
         progress(
             label: $dryRun ? 'Simulating deletion...' : 'Deleting carts...',
             steps: $query->clone()->pluck('id')->chunk($batchSize),
-            callback: function ($chunk) use (&$deletedCount, $dryRun, $table) {
+            callback: function ($chunk) use (&$deletedCount, $dryRun, $table): void {
                 if (! $dryRun) {
                     $deleted = DB::table($table)->whereIn('id', $chunk->toArray())->delete();
                     $deletedCount += $deleted;

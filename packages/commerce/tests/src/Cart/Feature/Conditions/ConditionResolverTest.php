@@ -11,7 +11,7 @@ use AIArmada\Cart\Storage\SessionStorage;
 use Illuminate\Session\ArraySessionHandler;
 use Illuminate\Session\Store;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $sessionStore = new Store('testing', new ArraySessionHandler(120));
     $this->storage = new SessionStorage($sessionStore);
     $this->resolver = app(CartConditionResolver::class);
@@ -19,12 +19,12 @@ beforeEach(function () {
     $this->cart = new Cart($this->storage, 'condition_resolver_test', conditionResolver: $this->resolver);
 });
 
-afterEach(function () {
+afterEach(function (): void {
     $this->cart->clear();
     $this->resolver->clear();
 });
 
-it('accepts conditions implementing CartConditionConvertible', function () {
+it('accepts conditions implementing CartConditionConvertible', function (): void {
     $convertible = new class implements CartConditionConvertible
     {
         public function toCartCondition(): CartCondition
@@ -43,7 +43,7 @@ it('accepts conditions implementing CartConditionConvertible', function () {
     expect($this->cart->getConditions()->has('convertible_discount'))->toBeTrue();
 });
 
-it('resolves conditions using registered resolver callbacks', function () {
+it('resolves conditions using registered resolver callbacks', function (): void {
     $this->resolver->register(function ($condition) {
         if (! $condition instanceof stdClass) {
             return null;
@@ -62,7 +62,7 @@ it('resolves conditions using registered resolver callbacks', function () {
     expect($this->cart->getConditions()->has('resolved_discount'))->toBeTrue();
 });
 
-it('throws when the condition cannot be converted', function () {
+it('throws when the condition cannot be converted', function (): void {
     expect(fn () => $this->cart->addCondition('invalid'))
         ->toThrow(InvalidCartConditionException::class, 'Condition of type string cannot be converted to CartCondition');
 });

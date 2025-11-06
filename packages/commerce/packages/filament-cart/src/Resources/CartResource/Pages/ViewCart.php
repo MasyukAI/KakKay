@@ -100,7 +100,7 @@ final class ViewCart extends ViewRecord
                     ['Content-Type' => 'application/json']
                 );
             })
-            ->before(function () {
+            ->before(function (): void {
                 // Create the export file
                 /** @var Cart $record */
                 $record = $this->record;

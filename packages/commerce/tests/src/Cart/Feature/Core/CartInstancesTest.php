@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 use AIArmada\Cart\Facades\Cart;
 
-describe('Cart Instance Management', function () {
-    beforeEach(function () {
+describe('Cart Instance Management', function (): void {
+    beforeEach(function (): void {
         Cart::setInstance('default')->clear();
         Cart::setInstance('wishlist')->clear();
         Cart::setInstance('comparison')->clear();
         Cart::setInstance('default'); // Reset to default
     });
 
-    it('can switch between cart instances', function () {
+    it('can switch between cart instances', function (): void {
         // Add items to default instance
         Cart::setInstance('default')->add('item-1', 'Item 1', 10.00, 1);
 
@@ -26,7 +26,7 @@ describe('Cart Instance Management', function () {
         expect(Cart::setInstance('wishlist')->get('item-1'))->toBeNull();
     });
 
-    it('maintains separate totals for each instance', function () {
+    it('maintains separate totals for each instance', function (): void {
         Cart::setInstance('default')->add('item-1', 'Item 1', 10.00, 2);
         Cart::setInstance('wishlist')->add('item-2', 'Item 2', 50.00, 1);
 
@@ -34,7 +34,7 @@ describe('Cart Instance Management', function () {
         expect(Cart::setInstance('wishlist')->total()->getAmount())->toBe(50.00);
     });
 
-    it('maintains separate conditions for each instance', function () {
+    it('maintains separate conditions for each instance', function (): void {
         Cart::setInstance('default')->add('item', 'Item', 100.00, 1);
         Cart::setInstance('wishlist')->add('item', 'Item', 100.00, 1);
 
@@ -44,13 +44,13 @@ describe('Cart Instance Management', function () {
         expect(Cart::setInstance('wishlist')->total()->getAmount())->toBe(100.00);
     });
 
-    it('returns current instance name', function () {
+    it('returns current instance name', function (): void {
         Cart::setInstance('custom-instance');
 
         expect(Cart::instance())->toBe('custom-instance');
     });
 
-    it('can clear specific instance without affecting others', function () {
+    it('can clear specific instance without affecting others', function (): void {
         Cart::setInstance('default')->add('item-1', 'Item 1', 10.00, 1);
         Cart::setInstance('wishlist')->add('item-2', 'Item 2', 20.00, 1);
 
@@ -60,7 +60,7 @@ describe('Cart Instance Management', function () {
         expect(Cart::setInstance('wishlist')->isEmpty())->toBeFalse();
     });
 
-    it('handles chaining with instance switching', function () {
+    it('handles chaining with instance switching', function (): void {
         Cart::setInstance('default')->add('item-1', 'Item 1', 10.00, 1);
         Cart::setInstance('default')->addTax('VAT', '10%');
 
@@ -68,13 +68,13 @@ describe('Cart Instance Management', function () {
     });
 });
 
-describe('Instance Isolation', function () {
-    beforeEach(function () {
+describe('Instance Isolation', function (): void {
+    beforeEach(function (): void {
         Cart::setInstance('default')->clear();
         Cart::setInstance('other')->clear();
     });
 
-    it('isolates items between instances', function () {
+    it('isolates items between instances', function (): void {
         Cart::setInstance('default')->add('shared-id', 'Default Item', 10.00, 5);
         Cart::setInstance('other')->add('shared-id', 'Other Item', 20.00, 3);
 
@@ -87,7 +87,7 @@ describe('Instance Isolation', function () {
         expect($otherItem->price)->toBe(20.00);
     });
 
-    it('isolates metadata between instances', function () {
+    it('isolates metadata between instances', function (): void {
         Cart::setInstance('default')->setMetadata('customer_note', 'Default note');
         Cart::setInstance('other')->setMetadata('customer_note', 'Other note');
 
@@ -95,7 +95,7 @@ describe('Instance Isolation', function () {
         expect(Cart::setInstance('other')->getMetadata('customer_note'))->toBe('Other note');
     });
 
-    it('handles multiple instance operations in sequence', function () {
+    it('handles multiple instance operations in sequence', function (): void {
         $instances = ['cart1', 'cart2', 'cart3'];
 
         foreach ($instances as $index => $instance) {
@@ -108,12 +108,12 @@ describe('Instance Isolation', function () {
     });
 });
 
-describe('Cart Identifier Management', function () {
-    beforeEach(function () {
+describe('Cart Identifier Management', function (): void {
+    beforeEach(function (): void {
         Cart::setInstance('default')->clear();
     });
 
-    it('can set custom identifier for current cart', function () {
+    it('can set custom identifier for current cart', function (): void {
         // Add item with default identifier
         Cart::add('item-1', 'Item 1', 10.00, 1);
         $originalIdentifier = Cart::getIdentifier();
@@ -129,7 +129,7 @@ describe('Cart Identifier Management', function () {
         expect(Cart::isEmpty())->toBeTrue();
     });
 
-    it('maintains instance name when changing identifier', function () {
+    it('maintains instance name when changing identifier', function (): void {
         Cart::setInstance('wishlist');
         Cart::setIdentifier('custom-id');
 
@@ -137,7 +137,7 @@ describe('Cart Identifier Management', function () {
         expect(Cart::getIdentifier())->toBe('custom-id');
     });
 
-    it('handles chaining with identifier setting', function () {
+    it('handles chaining with identifier setting', function (): void {
         $result = Cart::setIdentifier('test-id')->add('item-1', 'Test Item', 15.00, 1);
 
         expect(Cart::getIdentifier())->toBe('test-id');
@@ -145,14 +145,14 @@ describe('Cart Identifier Management', function () {
         expect($result)->toBeInstanceOf(AIArmada\Cart\Models\CartItem::class);
     });
 
-    it('can get current identifier', function () {
+    it('can get current identifier', function (): void {
         $identifier = Cart::getIdentifier();
 
         expect($identifier)->toBeString();
         expect($identifier)->not()->toBeEmpty();
     });
 
-    it('can reset identifier to default with forgetIdentifier', function () {
+    it('can reset identifier to default with forgetIdentifier', function (): void {
         $originalIdentifier = Cart::getIdentifier();
 
         // Set custom identifier
@@ -165,7 +165,7 @@ describe('Cart Identifier Management', function () {
         expect(Cart::getIdentifier())->not()->toBe('custom-cart-id');
     });
 
-    it('forgetIdentifier restores session/user identifier', function () {
+    it('forgetIdentifier restores session/user identifier', function (): void {
         $defaultIdentifier = Cart::getIdentifier();
 
         // Add item to default cart
@@ -183,7 +183,7 @@ describe('Cart Identifier Management', function () {
         expect(Cart::get('item-1'))->not()->toBeNull();
     });
 
-    it('forgetIdentifier supports method chaining', function () {
+    it('forgetIdentifier supports method chaining', function (): void {
         Cart::setIdentifier('custom-id');
         $result = Cart::forgetIdentifier()->add('item-1', 'Item 1', 10.00, 1);
 
@@ -192,12 +192,12 @@ describe('Cart Identifier Management', function () {
     });
 });
 
-describe('Cart Storage Operations', function () {
-    beforeEach(function () {
+describe('Cart Storage Operations', function (): void {
+    beforeEach(function (): void {
         Cart::setInstance('default')->clear();
     });
 
-    it('can check if cart exists', function () {
+    it('can check if cart exists', function (): void {
         // Initially no cart exists (empty)
         expect(Cart::exists())->toBeFalse();
 
@@ -208,7 +208,7 @@ describe('Cart Storage Operations', function () {
         expect(Cart::exists())->toBeTrue();
     });
 
-    it('can check if cart exists for specific identifier and instance', function () {
+    it('can check if cart exists for specific identifier and instance', function (): void {
         // Add items to different instances
         Cart::setInstance('default')->add('item-1', 'Item 1', 10.00, 1);
         Cart::setInstance('wishlist')->add('item-2', 'Item 2', 20.00, 1);
@@ -223,7 +223,7 @@ describe('Cart Storage Operations', function () {
         expect(Cart::exists($identifier, 'nonexistent'))->toBeFalse();
     });
 
-    it('can destroy cart completely', function () {
+    it('can destroy cart completely', function (): void {
         Cart::add('item-1', 'Item 1', 10.00, 1);
         expect(Cart::exists())->toBeTrue();
 
@@ -234,7 +234,7 @@ describe('Cart Storage Operations', function () {
         expect(Cart::isEmpty())->toBeTrue();
     });
 
-    it('can destroy specific cart instance', function () {
+    it('can destroy specific cart instance', function (): void {
         $identifier = Cart::getIdentifier();
 
         Cart::setInstance('default')->add('item-1', 'Item 1', 10.00, 1);
@@ -247,7 +247,7 @@ describe('Cart Storage Operations', function () {
         expect(Cart::exists($identifier, 'wishlist'))->toBeTrue();
     });
 
-    it('can list all instances for identifier', function () {
+    it('can list all instances for identifier', function (): void {
         Cart::setInstance('default')->add('item-1', 'Item 1', 10.00, 1);
         Cart::setInstance('wishlist')->add('item-2', 'Item 2', 20.00, 1);
         Cart::setInstance('compare')->add('item-3', 'Item 3', 30.00, 1);
@@ -260,14 +260,14 @@ describe('Cart Storage Operations', function () {
         expect($instances)->toContain('compare');
     });
 
-    it('returns empty array when no instances exist', function () {
+    it('returns empty array when no instances exist', function (): void {
         $instances = Cart::instances();
 
         expect($instances)->toBeArray();
         expect($instances)->toBeEmpty();
     });
 
-    it('distinguishes between clear and destroy', function () {
+    it('distinguishes between clear and destroy', function (): void {
         Cart::add('item-1', 'Item 1', 10.00, 1);
 
         // Clear empties the cart but it still exists

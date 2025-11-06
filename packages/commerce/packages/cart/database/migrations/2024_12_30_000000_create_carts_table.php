@@ -14,7 +14,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create(config('cart.database.table', 'carts'), function (Blueprint $table) {
+        Schema::create(config('cart.database.table', 'carts'), function (Blueprint $table): void {
             $table->uuid('id')->primary();
             $table->string('identifier')->index();
             $table->string('instance')->default('default')->index();

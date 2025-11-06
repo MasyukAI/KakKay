@@ -13,6 +13,6 @@ final class CreateVoucher extends CreateRecord
 
     protected function getRedirectUrl(): string
     {
-        return static::getResource()::getUrl('view', ['record' => $this->getRecord()]);
+        return self::getResource()::getUrl('view', ['record' => $this->getRecord()]);
     }
 }

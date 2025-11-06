@@ -20,7 +20,6 @@ final class SupportServiceProvider extends PackageServiceProvider
         $package
             ->name('commerce-support')
             ->hasCommands([
-                Commands\ConfigureDatabaseCommand::class,
                 Commands\SetupCommand::class,
             ]);
     }

@@ -213,7 +213,7 @@ final readonly class SessionStorage implements StorageInterface
 
         foreach ($allKeys as $key => $value) {
             if (str_starts_with((string) $key, $metadataPrefix)) {
-                $metadataKey = substr((string) $key, strlen($metadataPrefix));
+                $metadataKey = mb_substr((string) $key, mb_strlen($metadataPrefix));
                 $metadata[$metadataKey] = $value;
             }
         }
@@ -279,6 +279,22 @@ final readonly class SessionStorage implements StorageInterface
     }
 
     /**
+     * Get cart creation timestamp (not supported by session storage)
+     */
+    public function getCreatedAt(string $identifier, string $instance): ?string
+    {
+        return null;
+    }
+
+    /**
+     * Get cart last updated timestamp (not supported by session storage)
+     */
+    public function getUpdatedAt(string $identifier, string $instance): ?string
+    {
+        return null;
+    }
+
+    /**
      * Validate data size to prevent memory issues and DoS attacks
      *
      * @param  array<string, mixed>  $data
@@ -328,21 +344,5 @@ final readonly class SessionStorage implements StorageInterface
     private function getMetadataKey(string $identifier, string $instance, string $key): string
     {
         return "{$this->keyPrefix}.{$identifier}.{$instance}.metadata.{$key}";
-    }
-
-    /**
-     * Get cart creation timestamp (not supported by session storage)
-     */
-    public function getCreatedAt(string $identifier, string $instance): ?string
-    {
-        return null;
-    }
-
-    /**
-     * Get cart last updated timestamp (not supported by session storage)
-     */
-    public function getUpdatedAt(string $identifier, string $instance): ?string
-    {
-        return null;
     }
 }

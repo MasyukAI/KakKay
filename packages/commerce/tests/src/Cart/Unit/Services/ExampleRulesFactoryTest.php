@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 use AIArmada\Cart\Examples\ExampleRulesFactory;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->factory = new ExampleRulesFactory();
 });
 
-it('can create rules for min order discount', function () {
+it('can create rules for min order discount', function (): void {
     $rules = $this->factory->createRules('min_order_discount', ['min_amount' => 150]);
 
     expect($rules)->toBeArray();
@@ -16,7 +16,7 @@ it('can create rules for min order discount', function () {
     expect($rules[0])->toBeCallable();
 });
 
-it('can create rules for bulk quantity discount', function () {
+it('can create rules for bulk quantity discount', function (): void {
     $rules = $this->factory->createRules('bulk_quantity_discount', ['min_quantity' => 5]);
 
     expect($rules)->toBeArray();
@@ -24,7 +24,7 @@ it('can create rules for bulk quantity discount', function () {
     expect($rules[0])->toBeCallable();
 });
 
-it('can create rules for time based discount', function () {
+it('can create rules for time based discount', function (): void {
     $rules = $this->factory->createRules('time_based_discount', [
         'start_time' => '10:00',
         'end_time' => '16:00',
@@ -35,7 +35,7 @@ it('can create rules for time based discount', function () {
     expect($rules[0])->toBeCallable();
 });
 
-it('can create rules for category discount', function () {
+it('can create rules for category discount', function (): void {
     $rules = $this->factory->createRules('category_discount', ['category' => 'books']);
 
     expect($rules)->toBeArray();
@@ -43,7 +43,7 @@ it('can create rules for category discount', function () {
     expect($rules[0])->toBeCallable();
 });
 
-it('can create rules for seasonal discount', function () {
+it('can create rules for seasonal discount', function (): void {
     $rules = $this->factory->createRules('seasonal_discount', ['season' => 'summer']);
 
     expect($rules)->toBeArray();
@@ -51,18 +51,18 @@ it('can create rules for seasonal discount', function () {
     expect($rules[0])->toBeCallable();
 });
 
-it('throws exception for unknown rule factory key', function () {
+it('throws exception for unknown rule factory key', function (): void {
     expect(fn () => $this->factory->createRules('unknown_key'))
         ->toThrow(InvalidArgumentException::class, 'Unknown rule factory key: unknown_key');
 });
 
-it('can check if factory can create rules', function () {
+it('can check if factory can create rules', function (): void {
     expect($this->factory->canCreateRules('min_order_discount'))->toBeTrue();
     expect($this->factory->canCreateRules('bulk_quantity_discount'))->toBeTrue();
     expect($this->factory->canCreateRules('unknown_key'))->toBeFalse();
 });
 
-it('returns all available keys', function () {
+it('returns all available keys', function (): void {
     $keys = $this->factory->getAvailableKeys();
 
     expect($keys)->toBeArray();
@@ -78,7 +78,7 @@ it('returns all available keys', function () {
     expect($keys)->toContain('free_shipping_threshold');
 });
 
-it('available keys match can create rules check', function () {
+it('available keys match can create rules check', function (): void {
     $keys = $this->factory->getAvailableKeys();
 
     foreach ($keys as $key) {
@@ -86,7 +86,7 @@ it('available keys match can create rules check', function () {
     }
 });
 
-it('uses default metadata values when not provided', function () {
+it('uses default metadata values when not provided', function (): void {
     // Test min_order_discount with default min_amount of 100
     $rules = $this->factory->createRules('min_order_discount');
     expect($rules)->toHaveCount(1);
@@ -103,7 +103,7 @@ it('uses default metadata values when not provided', function () {
     expect($rules[0])->toBeCallable();
 });
 
-it('respects custom metadata values', function () {
+it('respects custom metadata values', function (): void {
     // The actual rule logic testing would require a full cart setup,
     // but we can at least verify the rules are created with custom metadata
     $rules = $this->factory->createRules('min_order_discount', ['min_amount' => 200]);
