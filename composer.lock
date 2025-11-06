@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "511da4e663971e01462e3b5bf74bd229",
+    "content-hash": "e0c9f580420c3b396078fe7d8869f4f5",
     "packages": [
         {
             "name": "aiarmada/cart",
@@ -253,12 +253,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/AIArmada/filament-cart.git",
-                "reference": "997d52c12e2112c3f0240ceff964b976fccc2712"
+                "reference": "3880805cec0cb97013ee394a7fb2813ed23763fb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/AIArmada/filament-cart/zipball/997d52c12e2112c3f0240ceff964b976fccc2712",
-                "reference": "997d52c12e2112c3f0240ceff964b976fccc2712",
+                "url": "https://api.github.com/repos/AIArmada/filament-cart/zipball/3880805cec0cb97013ee394a7fb2813ed23763fb",
+                "reference": "3880805cec0cb97013ee394a7fb2813ed23763fb",
                 "shasum": ""
             },
             "require": {
@@ -279,11 +279,10 @@
             "autoload": {
                 "psr-4": {
                     "AIArmada\\FilamentCart\\": "src/",
-                    "AIArmada\\FilamentCart\\Database\\Seeders\\": "database/seeders/",
-                    "AIArmada\\FilamentCart\\Database\\Factories\\": "database/factories/"
+                    "AIArmada\\FilamentCart\\Database\\Factories\\": "database/factories/",
+                    "AIArmada\\FilamentCart\\Database\\Seeders\\": "database/seeders/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -293,7 +292,7 @@
                 "issues": "https://github.com/aiarmada/commerce/issues",
                 "source": "https://github.com/aiarmada/commerce"
             },
-            "time": "2025-11-06T09:11:55+00:00"
+            "time": "2025-11-06T11:02:28+00:00"
         },
         {
             "name": "aiarmada/filament-chip",
@@ -398,12 +397,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/AIArmada/jnt.git",
-                "reference": "af95734b96ed9eca8131844bc845bb3adaed19d4"
+                "reference": "34a36be9780c93a09fcfa83bc0d03c2e2fd5dc2e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/AIArmada/jnt/zipball/af95734b96ed9eca8131844bc845bb3adaed19d4",
-                "reference": "af95734b96ed9eca8131844bc845bb3adaed19d4",
+                "url": "https://api.github.com/repos/AIArmada/jnt/zipball/34a36be9780c93a09fcfa83bc0d03c2e2fd5dc2e",
+                "reference": "34a36be9780c93a09fcfa83bc0d03c2e2fd5dc2e",
                 "shasum": ""
             },
             "require": {
@@ -437,7 +436,7 @@
                 "issues": "https://github.com/aiarmada/commerce/issues",
                 "source": "https://github.com/aiarmada/commerce"
             },
-            "time": "2025-11-06T10:33:28+00:00"
+            "time": "2025-11-06T11:02:26+00:00"
         },
         {
             "name": "aiarmada/stock",
@@ -14262,7 +14261,7 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "aiarmada/commerce": 20,
-        "aiarmada/docs": 20
+        "aiarmada/filament-cart": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

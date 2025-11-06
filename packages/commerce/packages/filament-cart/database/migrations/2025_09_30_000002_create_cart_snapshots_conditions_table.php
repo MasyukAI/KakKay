@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -47,11 +48,13 @@ return new class extends Migration
             $table->index('updated_at');
         });
 
-        // Add GIN indexes for JSONB columns for efficient querying
-        Schema::table('cart_snapshot_conditions', function (Blueprint $table): void {
-            $table->rawIndex('rules', 'cart_snapshot_conditions_rules_gin_index');
-            $table->rawIndex('attributes', 'cart_snapshot_conditions_attributes_gin_index');
-        });
+        // GIN indexes only work with jsonb in PostgreSQL
+        if (commerce_json_column_type('cart', 'json') === 'jsonb') {
+            Schema::table('cart_snapshot_conditions', function (Blueprint $table): void {
+                DB::statement('CREATE INDEX cart_snapshot_conditions_rules_gin_index ON cart_snapshot_conditions USING GIN (rules)');
+                DB::statement('CREATE INDEX cart_snapshot_conditions_attributes_gin_index ON cart_snapshot_conditions USING GIN (attributes)');
+            });
+        }
     }
 
     public function down(): void
