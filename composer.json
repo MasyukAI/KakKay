@@ -41,47 +41,47 @@
     "repositories": [
         {
             "type": "path",
-            "url": "../commerce/packages/csuite"
+            "url": "./packages/commerce/packages/csuite"
         },
         {
             "type": "path",
-            "url": "../commerce/packages/support"
+            "url": "./packages/commerce/packages/support"
         },
         {
             "type": "path",
-            "url": "../commerce/packages/cart"
+            "url": "./packages/commerce/packages/cart"
         },
         {
             "type": "path",
-            "url": "../commerce/packages/chip"
+            "url": "./packages/commerce/packages/chip"
         },
         {
             "type": "path",
-            "url": "../commerce/packages/docs"
+            "url": "./packages/commerce/packages/docs"
         },
         {
             "type": "path",
-            "url": "../commerce/packages/stock"
+            "url": "./packages/commerce/packages/stock"
         },
         {
             "type": "path",
-            "url": "../commerce/packages/vouchers"
+            "url": "./packages/commerce/packages/vouchers"
         },
         {
             "type": "path",
-            "url": "../commerce/packages/jnt"
+            "url": "./packages/commerce/packages/jnt"
         },
         {
             "type": "path",
-            "url": "../commerce/packages/filament-cart"
+            "url": "./packages/commerce/packages/filament-cart"
         },
         {
             "type": "path",
-            "url": "../commerce/packages/filament-chip"
+            "url": "./packages/commerce/packages/filament-chip"
         },
         {
             "type": "path",
-            "url": "../commerce/packages/filament-vouchers"
+            "url": "./packages/commerce/packages/filament-vouchers"
         }
     ],
     "autoload": {

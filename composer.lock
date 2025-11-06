@@ -4,14 +4,14 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e92b6b994c99070a23872b0a517f5bea",
+    "content-hash": "78e8aa1a7cb4d71df52c614fa689fe35",
     "packages": [
         {
             "name": "aiarmada/cart",
             "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "../commerce/packages/cart",
+                "url": "./packages/commerce/packages/cart",
                 "reference": "925df56f827cb2f1153b86dc8f235fc1fb474446"
             },
             "require": {
@@ -53,7 +53,7 @@
             "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "../commerce/packages/chip",
+                "url": "./packages/commerce/packages/chip",
                 "reference": "75d9e89872d63a95810c035e4e193070dd3553b8"
             },
             "require": {
@@ -99,7 +99,7 @@
             "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "../commerce/packages/csuite",
+                "url": "./packages/commerce/packages/csuite",
                 "reference": "39eea56ed7b0001b4f67fe0819ba49b491961ecc"
             },
             "require": {
@@ -134,7 +134,7 @@
             "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "../commerce/packages/support",
+                "url": "./packages/commerce/packages/support",
                 "reference": "8e9f449fe60bf25ed1beb7bc5eaca493d32f9528"
             },
             "require": {
@@ -180,7 +180,7 @@
             "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "../commerce/packages/docs",
+                "url": "./packages/commerce/packages/docs",
                 "reference": "7868f670b9761a24f70c6f7133aec0618f79bc12"
             },
             "require": {
@@ -222,13 +222,13 @@
             "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "../commerce/packages/filament-cart",
-                "reference": "4ddc4ce84693fe218d51fa1523d6599da1e21933"
+                "url": "./packages/commerce/packages/filament-cart",
+                "reference": "afb21a196a250d2731ce936cbfb38f3ecfa700f6"
             },
             "require": {
                 "aiarmada/cart": "self.version",
                 "aiarmada/commerce-support": "self.version",
-                "filament/filament": "^4.2|^5.0",
+                "filament/filament": "^4.2 || ^5.0",
                 "php": "^8.4"
             },
             "type": "library",
@@ -264,13 +264,13 @@
             "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "../commerce/packages/filament-chip",
-                "reference": "8ffc8b77611216baf427aa23b3d99bf064516e73"
+                "url": "./packages/commerce/packages/filament-chip",
+                "reference": "a2054aa7f2dd057e2dd0301c59f1a444a9f3131b"
             },
             "require": {
                 "aiarmada/chip": "self.version",
                 "aiarmada/commerce-support": "self.version",
-                "filament/filament": "^4.2|^5.0",
+                "filament/filament": "^4.2 || ^5.0",
                 "php": "^8.4"
             },
             "type": "library",
@@ -304,13 +304,13 @@
             "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "../commerce/packages/filament-vouchers",
-                "reference": "30c3dfff45cd718b24c088eead8ae47f52e9f421"
+                "url": "./packages/commerce/packages/filament-vouchers",
+                "reference": "4a86a7e69b2d2cea1d8bc7903d5b72bb97e567ef"
             },
             "require": {
                 "aiarmada/commerce-support": "self.version",
                 "aiarmada/vouchers": "self.version",
-                "filament/filament": "^4.2|^5.0",
+                "filament/filament": "^4.2 || ^5.0",
                 "php": "^8.4"
             },
             "suggest": {
@@ -349,7 +349,7 @@
             "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "../commerce/packages/jnt",
+                "url": "./packages/commerce/packages/jnt",
                 "reference": "02af28997b9bc2be5a05981759b3e87b380d6035"
             },
             "require": {
@@ -390,7 +390,7 @@
             "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "../commerce/packages/stock",
+                "url": "./packages/commerce/packages/stock",
                 "reference": "402fdc2647b95213efc1933e14466793cf86a12a"
             },
             "require": {
@@ -428,7 +428,7 @@
             "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "../commerce/packages/vouchers",
+                "url": "./packages/commerce/packages/vouchers",
                 "reference": "265a536c6fd50d5a21cdac051ab53e87e8e1bb79"
             },
             "require": {
