@@ -36,8 +36,9 @@ return new class extends Migration
 
             // Configuration
             $table->integer('order')->default(0);
-            $table->jsonb('attributes')->nullable();
-            $table->jsonb('rules')->nullable(); // Dynamic condition rules (if any)
+            $jsonType = (string) commerce_json_column_type('cart', 'json');
+            $table->{$jsonType}('attributes')->nullable();
+            $table->{$jsonType}('rules')->nullable(); // Dynamic condition rules (if any)
 
             // Status
             $table->boolean('is_global')->default(false); // Added from separate migration

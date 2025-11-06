@@ -17,6 +17,7 @@ return new class extends Migration
         $orderItemsTable = $tables['order_items'] ?? $prefix.'order_items';
 
         Schema::create($orderItemsTable, function (Blueprint $table) use ($ordersTable): void {
+            $jsonType = (string) commerce_json_column_type('jnt', 'json');
             $table->uuid('id')->primary();
             $table->foreignUuid('order_id')->constrained($ordersTable)->cascadeOnDelete();
             $table->string('name', 200);
@@ -26,7 +27,7 @@ return new class extends Migration
             $table->unsignedInteger('weight_grams');
             $table->decimal('unit_price', 12, 2);
             $table->string('currency', 3)->default('MYR');
-            $table->jsonb('metadata')->nullable();
+            $table->{$jsonType}('metadata')->nullable();
             $table->timestamps();
 
             $table->index(['order_id', 'name']);

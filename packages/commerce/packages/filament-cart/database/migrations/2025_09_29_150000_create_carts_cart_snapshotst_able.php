@@ -11,6 +11,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('cart_snapshots', function (Blueprint $table): void {
+            $jsonType = (string) commerce_json_column_type('cart', 'json');
             $table->uuid('id')->primary();
             $table->string('identifier');
             $table->string('instance')->default('default');
@@ -20,9 +21,9 @@ return new class extends Migration
             $table->unsignedBigInteger('total')->default(0);
             $table->unsignedBigInteger('savings')->default(0);
             $table->string('currency', 3)->default('USD');
-            $table->jsonb('items')->nullable();
-            $table->jsonb('conditions')->nullable();
-            $table->jsonb('metadata')->nullable();
+            $table->{$jsonType}('items')->nullable();
+            $table->{$jsonType}('conditions')->nullable();
+            $table->{$jsonType}('metadata')->nullable();
             $table->timestamps();
 
             $table->unique(['identifier', 'instance']);

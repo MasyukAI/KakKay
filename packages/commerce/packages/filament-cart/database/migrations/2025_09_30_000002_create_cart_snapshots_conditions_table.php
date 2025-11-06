@@ -11,6 +11,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('cart_snapshot_conditions', function (Blueprint $table): void {
+            $jsonType = (string) commerce_json_column_type('cart', 'json');
             $table->uuid('id')->primary();
             $table->foreignUuid('cart_id')->constrained('cart_snapshots')->onDelete('cascade');
             $table->foreignUuid('cart_item_id')->nullable()->constrained('cart_snapshot_items')->onDelete('cascade');
@@ -25,9 +26,9 @@ return new class extends Migration
             $table->boolean('is_percentage')->default(false);
             $table->boolean('is_global')->default(false);
             $table->string('parsed_value')->nullable(); // Calculated value
-            $table->jsonb('rules')->nullable(); // Additional rules
+            $table->{$jsonType}('rules')->nullable(); // Additional rules
             $table->integer('order')->default(0);
-            $table->jsonb('attributes')->nullable();
+            $table->{$jsonType}('attributes')->nullable();
             $table->string('item_id')->nullable()->index(); // Cart item ID this applies to (if item-level)
             $table->timestamps();
 

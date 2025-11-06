@@ -17,6 +17,7 @@ return new class extends Migration
         $orderParcelsTable = $tables['order_parcels'] ?? $prefix.'order_parcels';
 
         Schema::create($orderParcelsTable, function (Blueprint $table) use ($ordersTable): void {
+            $jsonType = (string) commerce_json_column_type('jnt', 'json');
             $table->uuid('id')->primary();
             $table->foreignUuid('order_id')->constrained($ordersTable)->cascadeOnDelete();
             $table->unsignedInteger('sequence')->default(0);
@@ -25,7 +26,7 @@ return new class extends Migration
             $table->decimal('length', 8, 2)->nullable();
             $table->decimal('width', 8, 2)->nullable();
             $table->decimal('height', 8, 2)->nullable();
-            $table->jsonb('metadata')->nullable();
+            $table->{$jsonType}('metadata')->nullable();
             $table->timestamps();
 
             $table->unique(['order_id', 'tracking_number']);

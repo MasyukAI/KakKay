@@ -11,6 +11,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('doc_templates', function (Blueprint $table): void {
+            $jsonType = (string) commerce_json_column_type('docs', 'json');
             $table->uuid('id')->primary();
             $table->string('name');
             $table->string('slug')->unique();
@@ -18,7 +19,7 @@ return new class extends Migration
             $table->string('view_name');
             $table->string('doc_type')->default('invoice');
             $table->boolean('is_default')->default(false);
-            $table->jsonb('settings')->nullable();
+            $table->{$jsonType}('settings')->nullable();
             $table->timestamps();
 
             $table->index('is_default');
@@ -26,6 +27,7 @@ return new class extends Migration
         });
 
         Schema::create('docs', function (Blueprint $table): void {
+            $jsonType = (string) commerce_json_column_type('docs', 'json');
             $table->uuid('id')->primary();
             $table->string('doc_number')->unique();
             $table->string('doc_type')->default('invoice');
@@ -42,10 +44,10 @@ return new class extends Migration
             $table->string('currency', 3)->default('MYR');
             $table->text('notes')->nullable();
             $table->text('terms')->nullable();
-            $table->jsonb('customer_data')->nullable();
-            $table->jsonb('company_data')->nullable();
-            $table->jsonb('items')->nullable();
-            $table->jsonb('metadata')->nullable();
+            $table->{$jsonType}('customer_data')->nullable();
+            $table->{$jsonType}('company_data')->nullable();
+            $table->{$jsonType}('items')->nullable();
+            $table->{$jsonType}('metadata')->nullable();
             $table->string('pdf_path')->nullable();
             $table->timestamps();
 

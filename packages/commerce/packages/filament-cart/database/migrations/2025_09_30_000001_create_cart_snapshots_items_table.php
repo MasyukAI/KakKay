@@ -11,14 +11,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('cart_snapshot_items', function (Blueprint $table): void {
+            $jsonType = (string) commerce_json_column_type('cart', 'json');
             $table->uuid('id')->primary();
             $table->foreignUuid('cart_id')->constrained('cart_snapshots')->onDelete('cascade');
             $table->string('item_id')->index(); // The original cart item ID
             $table->string('name');
             $table->unsignedInteger('price'); // Price in cents (from Money object)
             $table->unsignedInteger('quantity');
-            $table->jsonb('attributes')->nullable();
-            $table->jsonb('conditions')->nullable();
+            $table->{$jsonType}('attributes')->nullable();
+            $table->{$jsonType}('conditions')->nullable();
             $table->string('associated_model')->nullable();
             $table->timestamps();
 

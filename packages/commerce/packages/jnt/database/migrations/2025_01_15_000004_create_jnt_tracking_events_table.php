@@ -55,7 +55,8 @@ return new class extends Migration
             $table->string('signature_picture_url', 500)->nullable();
             $table->string('sign_url', 500)->nullable();
             $table->string('electronic_signature_pic_url', 500)->nullable();
-            $table->jsonb('payload')->nullable();
+            $jsonType = (string) commerce_json_column_type('jnt', 'json');
+            $table->{$jsonType}('payload')->nullable();
             $table->timestamps();
         });
 

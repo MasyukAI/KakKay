@@ -17,13 +17,14 @@ return new class extends Migration
         $webhookLogsTable = $tables['webhook_logs'] ?? $prefix.'webhook_logs';
 
         Schema::create($webhookLogsTable, function (Blueprint $table) use ($ordersTable): void {
+            $jsonType = (string) commerce_json_column_type('jnt', 'json');
             $table->uuid('id')->primary();
             $table->foreignUuid('order_id')->nullable()->constrained($ordersTable)->nullOnDelete();
             $table->string('tracking_number', 30)->nullable()->index();
             $table->string('order_reference', 50)->nullable()->index();
             $table->string('digest', 255)->nullable();
-            $table->jsonb('headers')->nullable();
-            $table->jsonb('payload')->nullable();
+            $table->{$jsonType}('headers')->nullable();
+            $table->{$jsonType}('payload')->nullable();
             $table->string('processing_status', 32)->default('pending')->index();
             $table->text('processing_error')->nullable();
             $table->timestampTz('processed_at')->nullable();

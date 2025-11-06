@@ -13,6 +13,7 @@ return new class extends Migration
         $tableName = config('jnt.database.tables.orders', config('jnt.database.table_prefix', 'jnt_').'orders');
 
         Schema::create($tableName, function (Blueprint $table): void {
+            $jsonType = (string) commerce_json_column_type('jnt', 'json');
             $table->uuid('id')->primary();
             $table->string('order_id', 50)->unique();
             $table->string('tracking_number', 30)->nullable()->unique();
@@ -46,14 +47,14 @@ return new class extends Migration
             $table->string('last_status', 128)->nullable();
             $table->boolean('has_problem')->default(false);
             $table->text('remark')->nullable();
-            $table->jsonb('sender')->nullable();
-            $table->jsonb('receiver')->nullable();
-            $table->jsonb('return_info')->nullable();
-            $table->jsonb('offer_fee_info')->nullable();
-            $table->jsonb('customs_info')->nullable();
-            $table->jsonb('request_payload')->nullable();
-            $table->jsonb('response_payload')->nullable();
-            $table->jsonb('metadata')->nullable();
+            $table->{$jsonType}('sender')->nullable();
+            $table->{$jsonType}('receiver')->nullable();
+            $table->{$jsonType}('return_info')->nullable();
+            $table->{$jsonType}('offer_fee_info')->nullable();
+            $table->{$jsonType}('customs_info')->nullable();
+            $table->{$jsonType}('request_payload')->nullable();
+            $table->{$jsonType}('response_payload')->nullable();
+            $table->{$jsonType}('metadata')->nullable();
             $table->timestamps();
         });
 
