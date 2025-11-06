@@ -3,12 +3,12 @@
 declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
-use RectorLaravel\Set\LaravelSetProvider;
 
 return RectorConfig::configure()
     ->withPaths([
-        __DIR__.'/packages',
-        __DIR__.'/tests',
+        __DIR__ . '/packages',
+        __DIR__ . '/tests',
     ])
-    ->withSetProviders(LaravelSetProvider::class)
-    ->withComposerBased(laravel: true);
+    ->withTypeCoverageLevel(0)
+    ->withDeadCodeLevel(0)
+    ->withCodeQualityLevel(0);
