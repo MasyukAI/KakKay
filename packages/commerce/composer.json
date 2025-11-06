@@ -1,6 +1,6 @@
 {
     "name": "aiarmada/commerce",
-    "description": "A comprehensive commerce ecosystem for Laravel 12 with cart, payments, vouchers, shipping, and inventory management",
+    "description": "A powerful collection of commerce components for Laravel - build and ship e-commerce features fast.",
     "license": "MIT",
     "require": {
         "php": "^8.4",

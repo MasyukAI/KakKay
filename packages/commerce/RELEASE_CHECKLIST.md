@@ -184,6 +184,7 @@ Pre-publication validation checklist for AIArmada Commerce v0.1.0.
 ### Packagist Registration
 
 - [ ] Register **aiarmada/commerce** on Packagist
+- [ ] Register **aiarmada/csuite** on Packagist
 - [ ] Register **aiarmada/cart** on Packagist
 - [ ] Register **aiarmada/chip** on Packagist
 - [ ] Register **aiarmada/vouchers** on Packagist
