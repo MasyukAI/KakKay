@@ -4,35 +4,105 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "082e16276a3147fba350e6eec419a954",
+    "content-hash": "e92b6b994c99070a23872b0a517f5bea",
     "packages": [
+        {
+            "name": "aiarmada/cart",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "../commerce/packages/cart",
+                "reference": "925df56f827cb2f1153b86dc8f235fc1fb474446"
+            },
+            "require": {
+                "aiarmada/commerce-support": "self.version",
+                "akaunting/laravel-money": "^6.0",
+                "php": "^8.4"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "AIArmada\\Cart\\CartServiceProvider"
+                    ],
+                    "aliases": {
+                        "Cart": "AIArmada\\Cart\\Facades\\Cart"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "AIArmada\\Cart\\": "src"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "A comprehensive commerce ecosystem for Laravel with cart, payments, vouchers, shipping, and inventory management.",
+            "homepage": "https://github.com/aiarmada/commerce",
+            "support": {
+                "issues": "https://github.com/aiarmada/commerce/issues",
+                "source": "https://github.com/aiarmada/commerce"
+            },
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "aiarmada/chip",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "../commerce/packages/chip",
+                "reference": "75d9e89872d63a95810c035e4e193070dd3553b8"
+            },
+            "require": {
+                "aiarmada/commerce-support": "self.version",
+                "ext-curl": "*",
+                "illuminate/http": "^12.0",
+                "illuminate/queue": "^12.0",
+                "illuminate/validation": "^12.0",
+                "php": "^8.4"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "AIArmada\\Chip\\ChipServiceProvider"
+                    ],
+                    "aliases": {
+                        "Chip": "AIArmada\\Chip\\Facades\\Chip",
+                        "ChipSend": "AIArmada\\Chip\\Facades\\ChipSend"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "AIArmada\\Chip\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Modern Laravel integration for CHIP payment gateway - Collect & Send APIs",
+            "homepage": "https://github.com/aiarmada/commerce",
+            "support": {
+                "issues": "https://github.com/aiarmada/commerce/issues",
+                "source": "https://github.com/aiarmada/commerce"
+            },
+            "transport-options": {
+                "relative": true
+            }
+        },
         {
             "name": "aiarmada/commerce",
             "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "./packages/commerce",
-                "reference": "731f45d13f9623f206106fdc9702bd0ed60c82c6"
+                "url": "../commerce/packages/csuite",
+                "reference": "39eea56ed7b0001b4f67fe0819ba49b491961ecc"
             },
             "require": {
-                "akaunting/laravel-money": "^6.0",
-                "ext-curl": "*",
-                "ext-json": "*",
-                "filament/filament": "^4.0",
-                "guzzlehttp/guzzle": "^7.0",
-                "illuminate/contracts": "^12.0",
-                "illuminate/database": "^12.0",
-                "illuminate/http": "^12.0",
-                "illuminate/queue": "^12.0",
-                "illuminate/support": "^12.0",
-                "illuminate/validation": "^12.0",
-                "laravel/framework": "^12.0",
-                "livewire/livewire": "^3.0",
-                "php": "^8.4",
-                "spatie/laravel-package-tools": "^1.92",
-                "spatie/laravel-pdf": "^1.5"
-            },
-            "replace": {
                 "aiarmada/cart": "self.version",
                 "aiarmada/chip": "self.version",
                 "aiarmada/commerce-support": "self.version",
@@ -42,162 +112,356 @@
                 "aiarmada/filament-vouchers": "self.version",
                 "aiarmada/jnt": "self.version",
                 "aiarmada/stock": "self.version",
-                "aiarmada/vouchers": "self.version"
+                "aiarmada/vouchers": "self.version",
+                "php": "^8.4"
             },
-            "require-dev": {
-                "driftingly/rector-laravel": "^2.0",
-                "larastan/larastan": "^3.0",
-                "laravel/pint": "^1.18",
-                "mockery/mockery": "^1.6",
-                "nunomaduro/collision": "^8.6",
-                "orchestra/testbench": "^10.0",
-                "pestphp/pest": "^4.0",
-                "pestphp/pest-plugin-browser": "^4.0",
-                "pestphp/pest-plugin-laravel": "^4.0",
-                "pestphp/pest-plugin-type-coverage": "^4.0",
-                "phpstan/extension-installer": "^1.4",
-                "phpstan/phpstan": "^2.1",
-                "phpunit/phpunit": "^12.3",
-                "rector/rector": "^2.2",
-                "symplify/monorepo-builder": "^11.0"
+            "type": "library",
+            "license": [
+                "MIT"
+            ],
+            "description": "A powerful collection of commerce components for Laravel - build and ship e-commerce features fast.",
+            "homepage": "https://github.com/aiarmada/commerce",
+            "support": {
+                "issues": "https://github.com/aiarmada/commerce/issues",
+                "source": "https://github.com/aiarmada/commerce"
+            },
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "aiarmada/commerce-support",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "../commerce/packages/support",
+                "reference": "8e9f449fe60bf25ed1beb7bc5eaca493d32f9528"
+            },
+            "require": {
+                "ext-json": "*",
+                "guzzlehttp/guzzle": "^7.0",
+                "illuminate/contracts": "^12.0",
+                "illuminate/database": "^12.0",
+                "illuminate/support": "^12.0",
+                "php": "^8.4",
+                "spatie/laravel-package-tools": "^1.92"
             },
             "type": "library",
             "extra": {
                 "laravel": {
-                    "aliases": {
-                        "Cart": "AIArmada\\Cart\\Facades\\Cart",
-                        "Chip": "AIArmada\\Chip\\Facades\\Chip",
-                        "Doc": "AIArmada\\Docs\\Facades\\Doc",
-                        "JntExpress": "AIArmada\\Jnt\\Facades\\JntExpress",
-                        "Stock": "AIArmada\\Stock\\Facades\\Stock",
-                        "Voucher": "AIArmada\\Vouchers\\Facades\\Voucher"
-                    },
                     "providers": [
-                        "AIArmada\\Cart\\CartServiceProvider",
-                        "AIArmada\\Chip\\ChipServiceProvider",
-                        "AIArmada\\CommerceSupport\\SupportServiceProvider",
-                        "AIArmada\\Docs\\DocsServiceProvider",
-                        "AIArmada\\FilamentCart\\FilamentCartServiceProvider",
-                        "AIArmada\\FilamentChip\\FilamentChipServiceProvider",
-                        "AIArmada\\FilamentVouchers\\FilamentVouchersServiceProvider",
-                        "AIArmada\\Jnt\\JntServiceProvider",
-                        "AIArmada\\Stock\\StockServiceProvider",
-                        "AIArmada\\Vouchers\\VoucherServiceProvider"
+                        "AIArmada\\CommerceSupport\\SupportServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
+                "psr-4": {
+                    "AIArmada\\CommerceSupport\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Core helper methods and foundation code for all AIArmada Commerce packages.",
+            "homepage": "https://github.com/aiarmada/commerce",
+            "support": {
+                "issues": "https://github.com/aiarmada/commerce/issues",
+                "source": "https://github.com/aiarmada/commerce"
+            },
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "aiarmada/docs",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "../commerce/packages/docs",
+                "reference": "7868f670b9761a24f70c6f7133aec0618f79bc12"
+            },
+            "require": {
+                "aiarmada/commerce-support": "self.version",
+                "php": "^8.4",
+                "spatie/laravel-pdf": "^1.5"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "AIArmada\\Docs\\DocsServiceProvider"
+                    ],
+                    "aliases": {
+                        "Doc": "AIArmada\\Docs\\Facades\\Doc"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "AIArmada\\Docs\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Doc generation package for Laravel with PDF support for invoices, receipts, shipping labels, and customizable templates",
+            "homepage": "https://github.com/aiarmada/commerce",
+            "support": {
+                "issues": "https://github.com/aiarmada/commerce/issues",
+                "source": "https://github.com/aiarmada/commerce"
+            },
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "aiarmada/filament-cart",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "../commerce/packages/filament-cart",
+                "reference": "4ddc4ce84693fe218d51fa1523d6599da1e21933"
+            },
+            "require": {
+                "aiarmada/cart": "self.version",
+                "aiarmada/commerce-support": "self.version",
+                "filament/filament": "^4.2|^5.0",
+                "php": "^8.4"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "AIArmada\\FilamentCart\\FilamentCartServiceProvider"
                     ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "AIArmada\\Cart\\": "packages/cart/src",
-                    "AIArmada\\Chip\\": "packages/chip/src",
-                    "AIArmada\\CommerceSupport\\": "packages/support/src",
-                    "AIArmada\\Docs\\": "packages/docs/src",
-                    "AIArmada\\FilamentCart\\": "packages/filament-cart/src",
-                    "AIArmada\\FilamentCart\\Database\\Factories\\": "packages/filament-cart/database/factories/",
-                    "AIArmada\\FilamentCart\\Database\\Seeders\\": "packages/filament-cart/database/seeders/",
-                    "AIArmada\\FilamentChip\\": "packages/filament-chip/src",
-                    "AIArmada\\FilamentVouchers\\": "packages/filament-vouchers/src",
-                    "AIArmada\\FilamentVouchers\\Database\\Factories\\": "packages/filament-vouchers/database/factories/",
-                    "AIArmada\\FilamentVouchers\\Database\\Seeders\\": "packages/filament-vouchers/database/seeders/",
-                    "AIArmada\\Jnt\\": "packages/jnt/src",
-                    "AIArmada\\Stock\\": "packages/stock/src",
-                    "AIArmada\\Vouchers\\": "packages/vouchers/src"
-                },
-                "files": [
-                    "packages/support/src/helpers.php"
-                ]
-            },
-            "autoload-dev": {
-                "psr-4": {
-                    "AIArmada\\Cart\\Tests\\": "packages/cart/tests/",
-                    "AIArmada\\Chip\\Tests\\": "packages/chip/tests/",
-                    "AIArmada\\CommerceSupport\\Tests\\": "packages/support/tests/",
-                    "AIArmada\\Commerce\\Tests\\": "tests/src",
-                    "AIArmada\\Docs\\Tests\\": "packages/docs/tests/",
-                    "AIArmada\\FilamentCart\\Tests\\": "packages/filament-cart/tests/",
-                    "AIArmada\\FilamentChip\\Tests\\": "packages/filament-chip/tests/",
-                    "AIArmada\\FilamentVouchers\\Tests\\": "packages/filament-vouchers/tests/",
-                    "AIArmada\\Jnt\\Tests\\": "packages/jnt/tests/",
-                    "AIArmada\\Stock\\Tests\\": "packages/stock/tests/",
-                    "AIArmada\\Vouchers\\Tests\\": "packages/vouchers/tests/",
-                    "Tests\\": "tests/"
+                    "AIArmada\\FilamentCart\\": "src/",
+                    "AIArmada\\FilamentCart\\Database\\Factories\\": "database/factories/",
+                    "AIArmada\\FilamentCart\\Database\\Seeders\\": "database/seeders/"
                 }
-            },
-            "scripts": {
-                "test": [
-                    "php -d memory_limit=512M vendor/bin/pest"
-                ],
-                "test-coverage": [
-                    "php -d memory_limit=512M vendor/bin/pest --coverage"
-                ],
-                "format": [
-                    "php -d memory_limit=512M vendor/bin/pint"
-                ],
-                "format-test": [
-                    "php -d memory_limit=512M vendor/bin/pint --test"
-                ],
-                "phpstan": [
-                    "vendor/bin/phpstan analyse --memory-limit=1G"
-                ],
-                "rector": [
-                    "vendor/bin/rector"
-                ],
-                "rector-dry": [
-                    "vendor/bin/rector --dry-run"
-                ],
-                "ci": [
-                    "@phpstan",
-                    "@rector-dry",
-                    "@format-test",
-                    "@test"
-                ],
-                "monorepo:merge": [
-                    "vendor/bin/monorepo-builder merge"
-                ],
-                "monorepo:validate": [
-                    "vendor/bin/monorepo-builder validate"
-                ],
-                "monorepo:bump-interdependency": [
-                    "vendor/bin/monorepo-builder bump-interdependency"
-                ],
-                "monorepo:release": [
-                    "vendor/bin/monorepo-builder release"
-                ]
             },
             "license": [
                 "MIT"
             ],
-            "authors": [
-                {
-                    "name": "AIArmada",
-                    "email": "info@aiarmada.com"
-                }
-            ],
-            "description": "A comprehensive commerce ecosystem for Laravel 12 with cart, payments, vouchers, shipping, and inventory management",
+            "description": "A comprehensive Filament admin interface for managing shopping carts created by the AIArmada Cart package",
             "homepage": "https://github.com/aiarmada/commerce",
-            "keywords": [
-                "cart",
-                "chip",
-                "commerce",
-                "documents",
-                "e-commerce",
-                "filament",
-                "filament-plugin",
-                "inventory",
-                "jnt",
-                "laravel",
-                "laravel-12",
-                "livewire",
-                "payment-gateway",
-                "shipping",
-                "shopping-cart",
-                "stock-management",
-                "vouchers"
-            ],
             "support": {
                 "issues": "https://github.com/aiarmada/commerce/issues",
-                "source": "https://github.com/aiarmada/commerce",
-                "docs": "https://github.com/aiarmada/commerce/blob/main/README.md"
+                "source": "https://github.com/aiarmada/commerce"
+            },
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "aiarmada/filament-chip",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "../commerce/packages/filament-chip",
+                "reference": "8ffc8b77611216baf427aa23b3d99bf064516e73"
+            },
+            "require": {
+                "aiarmada/chip": "self.version",
+                "aiarmada/commerce-support": "self.version",
+                "filament/filament": "^4.2|^5.0",
+                "php": "^8.4"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "AIArmada\\FilamentChip\\FilamentChipServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "AIArmada\\FilamentChip\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "A Filament admin plugin to explore CHIP data ingested by the aiarmada/chip package.",
+            "homepage": "https://github.com/aiarmada/commerce",
+            "support": {
+                "issues": "https://github.com/aiarmada/commerce/issues",
+                "source": "https://github.com/aiarmada/commerce"
+            },
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "aiarmada/filament-vouchers",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "../commerce/packages/filament-vouchers",
+                "reference": "30c3dfff45cd718b24c088eead8ae47f52e9f421"
+            },
+            "require": {
+                "aiarmada/commerce-support": "self.version",
+                "aiarmada/vouchers": "self.version",
+                "filament/filament": "^4.2|^5.0",
+                "php": "^8.4"
+            },
+            "suggest": {
+                "aiarmada/filament-cart": "Enables deep linking from voucher usage records to cart snapshots"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "AIArmada\\FilamentVouchers\\FilamentVouchersServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "AIArmada\\FilamentVouchers\\": "src/",
+                    "AIArmada\\FilamentVouchers\\Database\\Factories\\": "database/factories/",
+                    "AIArmada\\FilamentVouchers\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "A Filament v5 plugin for administering vouchers provided by the AIArmada vouchers package",
+            "homepage": "https://github.com/aiarmada/commerce",
+            "support": {
+                "issues": "https://github.com/aiarmada/commerce/issues",
+                "source": "https://github.com/aiarmada/commerce"
+            },
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "aiarmada/jnt",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "../commerce/packages/jnt",
+                "reference": "02af28997b9bc2be5a05981759b3e87b380d6035"
+            },
+            "require": {
+                "aiarmada/commerce-support": "self.version",
+                "php": "^8.4"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "AIArmada\\Jnt\\JntServiceProvider"
+                    ],
+                    "aliases": {
+                        "JntExpress": "AIArmada\\Jnt\\Facades\\JntExpress"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "AIArmada\\Jnt\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "J&T Express Malaysia API Integration Package",
+            "homepage": "https://github.com/aiarmada/commerce",
+            "support": {
+                "issues": "https://github.com/aiarmada/commerce/issues",
+                "source": "https://github.com/aiarmada/commerce"
+            },
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "aiarmada/stock",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "../commerce/packages/stock",
+                "reference": "402fdc2647b95213efc1933e14466793cf86a12a"
+            },
+            "require": {
+                "aiarmada/commerce-support": "self.version",
+                "php": "^8.4"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "AIArmada\\Stock\\StockServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "AIArmada\\Stock\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Comprehensive stock and inventory management system for Laravel with UUID support, movement tracking, and reservation capabilities",
+            "homepage": "https://github.com/aiarmada/commerce",
+            "support": {
+                "issues": "https://github.com/aiarmada/commerce/issues",
+                "source": "https://github.com/aiarmada/commerce"
+            },
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "aiarmada/vouchers",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "../commerce/packages/vouchers",
+                "reference": "265a536c6fd50d5a21cdac051ab53e87e8e1bb79"
+            },
+            "require": {
+                "aiarmada/cart": "self.version",
+                "aiarmada/commerce-support": "self.version",
+                "akaunting/laravel-money": "^6.0",
+                "illuminate/database": "^12.0",
+                "php": "^8.4"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "AIArmada\\Vouchers\\VoucherServiceProvider"
+                    ],
+                    "aliases": {
+                        "Voucher": "AIArmada\\Vouchers\\Facades\\Voucher"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "AIArmada\\Vouchers\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Flexible voucher and coupon system for Laravel with support for multiple redemption types, usage limits, expiry dates, and cart integration",
+            "homepage": "https://github.com/aiarmada/commerce",
+            "support": {
+                "issues": "https://github.com/aiarmada/commerce/issues",
+                "source": "https://github.com/aiarmada/commerce"
             },
             "transport-options": {
                 "relative": true
@@ -2793,16 +3057,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v12.36.1",
+            "version": "v12.37.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "cad110d7685fbab990a6bb8184d0cfd847d7c4d8"
+                "reference": "3c3c4ad30f5b528b164a7c09aa4ad03118c4c125"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/cad110d7685fbab990a6bb8184d0cfd847d7c4d8",
-                "reference": "cad110d7685fbab990a6bb8184d0cfd847d7c4d8",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/3c3c4ad30f5b528b164a7c09aa4ad03118c4c125",
+                "reference": "3c3c4ad30f5b528b164a7c09aa4ad03118c4c125",
                 "shasum": ""
             },
             "require": {
@@ -3008,7 +3272,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2025-10-29T14:20:57+00:00"
+            "time": "2025-11-04T15:39:33+00:00"
         },
         {
             "name": "laravel/octane",
@@ -4154,16 +4418,16 @@
         },
         {
             "name": "livewire/volt",
-            "version": "v1.8.0",
+            "version": "v1.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/livewire/volt.git",
-                "reference": "2d9783a340d612d32f4ffd38070780ca7d7e9205"
+                "reference": "4b289eef2f15398987a923d9f813cad6a6a19ea4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/livewire/volt/zipball/2d9783a340d612d32f4ffd38070780ca7d7e9205",
-                "reference": "2d9783a340d612d32f4ffd38070780ca7d7e9205",
+                "url": "https://api.github.com/repos/livewire/volt/zipball/4b289eef2f15398987a923d9f813cad6a6a19ea4",
+                "reference": "4b289eef2f15398987a923d9f813cad6a6a19ea4",
                 "shasum": ""
             },
             "require": {
@@ -4222,7 +4486,7 @@
                 "issues": "https://github.com/livewire/volt/issues",
                 "source": "https://github.com/livewire/volt"
             },
-            "time": "2025-10-29T15:52:35+00:00"
+            "time": "2025-10-30T02:46:00+00:00"
         },
         {
             "name": "maennchen/zipstream-php",
@@ -10049,21 +10313,22 @@
         },
         {
             "name": "driftingly/rector-laravel",
-            "version": "2.1.2",
+            "version": "2.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/driftingly/rector-laravel.git",
-                "reference": "d7cd932cff9e398a43393f1a1a63b27d574e35ef"
+                "reference": "2f1e9c3997bf45592d58916f0cedd775e844b9c6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/driftingly/rector-laravel/zipball/d7cd932cff9e398a43393f1a1a63b27d574e35ef",
-                "reference": "d7cd932cff9e398a43393f1a1a63b27d574e35ef",
+                "url": "https://api.github.com/repos/driftingly/rector-laravel/zipball/2f1e9c3997bf45592d58916f0cedd775e844b9c6",
+                "reference": "2f1e9c3997bf45592d58916f0cedd775e844b9c6",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.4 || ^8.0",
-                "rector/rector": "^2.2.7"
+                "rector/rector": "^2.2.7",
+                "webmozart/assert": "^1.11"
             },
             "type": "rector-extension",
             "autoload": {
@@ -10078,9 +10343,9 @@
             "description": "Rector upgrades rules for Laravel Framework",
             "support": {
                 "issues": "https://github.com/driftingly/rector-laravel/issues",
-                "source": "https://github.com/driftingly/rector-laravel/tree/2.1.2"
+                "source": "https://github.com/driftingly/rector-laravel/tree/2.1.3"
             },
-            "time": "2025-10-31T21:56:58+00:00"
+            "time": "2025-11-04T18:32:57+00:00"
         },
         {
             "name": "fidry/cpu-core-counter",
@@ -13930,13 +14195,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "aiarmada/chip": 20,
-        "aiarmada/commerce": 20,
-        "aiarmada/docs": 20,
-        "aiarmada/filament-cart": 20,
-        "aiarmada/filament-chip": 20,
-        "aiarmada/filament-vouchers": 20,
-        "aiarmada/jnt": 20
+        "aiarmada/commerce": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

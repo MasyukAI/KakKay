@@ -7,18 +7,12 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
-        "aiarmada/chip": "@dev",
         "aiarmada/commerce": "@dev",
-        "aiarmada/docs": "@dev",
-        "aiarmada/filament-cart": "@dev",
-        "aiarmada/filament-chip": "@dev",
-        "aiarmada/filament-vouchers": "@dev",
-        "aiarmada/jnt": "@dev",
         "akaunting/laravel-money": "^6.0",
         "asmit/resized-column": "^1.1",
         "calebporzio/sushi": "^2.5",
         "fakerphp/faker": "^1.24",
-        "filament/filament": "^4.0",
+        "filament/filament": "^4.2",
         "filament/spatie-laravel-media-library-plugin": "^4.0",
         "laravel/framework": "^12.0",
         "laravel/octane": "^2.12",
@@ -47,43 +41,47 @@
     "repositories": [
         {
             "type": "path",
-            "url": "./packages/commerce"
+            "url": "../commerce/packages/csuite"
         },
         {
             "type": "path",
-            "url": "./packages/commerce/packages/cart"
+            "url": "../commerce/packages/support"
         },
         {
             "type": "path",
-            "url": "./packages/commerce/packages/chip"
+            "url": "../commerce/packages/cart"
         },
         {
             "type": "path",
-            "url": "./packages/commerce/packages/docs"
+            "url": "../commerce/packages/chip"
         },
         {
             "type": "path",
-            "url": "./packages/commerce/packages/filament-cart"
+            "url": "../commerce/packages/docs"
         },
         {
             "type": "path",
-            "url": "./packages/commerce/packages/filament-chip"
+            "url": "../commerce/packages/stock"
         },
         {
             "type": "path",
-            "url": "./packages/commerce/packages/filament-vouchers"
+            "url": "../commerce/packages/vouchers"
         },
         {
             "type": "path",
-            "url": "./packages/commerce/packages/jnt"
+            "url": "../commerce/packages/jnt"
         },
         {
             "type": "path",
-            "url": "./packages/commerce/packages/stock"
+            "url": "../commerce/packages/filament-cart"
         },
         {
             "type": "path",
-            "url": "./packages/commerce/packages/vouchers"
+            "url": "../commerce/packages/filament-chip"
+        },
+        {
+            "type": "path",
+            "url": "../commerce/packages/filament-vouchers"
         }
     ],
     "autoload": {
