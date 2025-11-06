@@ -39,9 +39,9 @@ return new class extends Migration
 
         // Add GIN indexes for JSONB columns for efficient querying
         Schema::table('cart_snapshots', function (Blueprint $table): void {
-            $table->rawIndex('items', 'cart_snapshots_items_gin_index', 'gin');
-            $table->rawIndex('conditions', 'cart_snapshots_conditions_gin_index', 'gin');
-            $table->rawIndex('metadata', 'cart_snapshots_metadata_gin_index', 'gin');
+            $table->rawIndex('items', 'cart_snapshots_items_gin_index');
+            $table->rawIndex('conditions', 'cart_snapshots_conditions_gin_index');
+            $table->rawIndex('metadata', 'cart_snapshots_metadata_gin_index');
         });
     }
 

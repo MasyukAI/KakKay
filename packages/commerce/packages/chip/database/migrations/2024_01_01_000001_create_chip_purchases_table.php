@@ -123,10 +123,6 @@ return new class extends Migration
             $tableName = $tablePrefix.'purchases';
             DB::statement("CREATE INDEX IF NOT EXISTS chip_purchases_metadata_gin_index ON \"{$tableName}\" USING GIN (\"metadata\")");
         }
-        // Add GIN index for JSONB metadata column for efficient querying
-        Schema::table($tablePrefix.'purchases', function (Blueprint $table): void {
-            $table->rawIndex('metadata', 'chip_purchases_metadata_gin_index', 'gin');
-        });
 
         // Add optimized expression indexes for cart_id lookups (faster than GIN for equality)
         DB::statement("

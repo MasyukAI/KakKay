@@ -60,7 +60,7 @@ return new class extends Migration
         });
 
         Schema::table($trackingEventsTable, function (Blueprint $table): void {
-            $table->rawIndex('payload', 'jnt_tracking_events_payload_gin_index', 'gin');
+            $table->rawIndex('payload', 'jnt_tracking_events_payload_gin_index');
         });
     }
 

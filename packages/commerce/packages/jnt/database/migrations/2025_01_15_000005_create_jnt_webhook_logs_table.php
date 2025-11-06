@@ -31,7 +31,7 @@ return new class extends Migration
         });
 
         Schema::table($webhookLogsTable, function (Blueprint $table): void {
-            $table->rawIndex('payload', 'jnt_webhook_logs_payload_gin_index', 'gin');
+            $table->rawIndex('payload', 'jnt_webhook_logs_payload_gin_index');
         });
     }
 

@@ -33,7 +33,7 @@ return new class extends Migration
         });
 
         Schema::table($orderItemsTable, function (Blueprint $table): void {
-            $table->rawIndex('metadata', 'jnt_order_items_metadata_gin_index', 'gin');
+            $table->rawIndex('metadata', 'jnt_order_items_metadata_gin_index');
         });
     }
 

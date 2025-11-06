@@ -58,9 +58,9 @@ return new class extends Migration
         });
 
         Schema::table($tableName, function (Blueprint $table): void {
-            $table->rawIndex('sender', 'jnt_orders_sender_gin_index', 'gin');
-            $table->rawIndex('receiver', 'jnt_orders_receiver_gin_index', 'gin');
-            $table->rawIndex('metadata', 'jnt_orders_metadata_gin_index', 'gin');
+            $table->rawIndex('sender', 'jnt_orders_sender_gin_index');
+            $table->rawIndex('receiver', 'jnt_orders_receiver_gin_index');
+            $table->rawIndex('metadata', 'jnt_orders_metadata_gin_index');
         });
     }
 

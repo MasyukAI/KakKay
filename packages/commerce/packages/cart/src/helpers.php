@@ -8,6 +8,12 @@ if (! function_exists('cart')) {
      */
     function cart(?string $instance = null): AIArmada\Cart\Cart
     {
-        return app('cart')->instance($instance);
+        $manager = app('cart');
+        
+        if ($instance === null) {
+            return $manager->getCurrentCart();
+        }
+        
+        return $manager->getCartInstance($instance);
     }
 }
