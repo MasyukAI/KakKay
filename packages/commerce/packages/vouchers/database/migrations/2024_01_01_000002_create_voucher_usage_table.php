@@ -26,9 +26,11 @@ return new class extends Migration
             $table->timestamp('used_at');
 
             // Indexes
-            $table->index('voucher_id');
-            $table->index('channel');
-            $table->index('used_at');
+            $table->index('voucher_id'); // For querying usage by voucher
+            // Note: nullableUuidMorphs('redeemed_by') already creates index on ['redeemed_by_type', 'redeemed_by_id']
+            $table->index('channel'); // For filtering by redemption channel
+            $table->index('used_at'); // For sorting by usage date
+            $table->index(['voucher_id', 'used_at']); // For voucher usage history
         });
 
         // Optional: create GIN index when using jsonb on PostgreSQL

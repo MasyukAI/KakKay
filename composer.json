@@ -8,7 +8,6 @@
     "require": {
         "php": "^8.3",
         "aiarmada/commerce": "dev-main",
-        "aiarmada/filament-cart": "dev-main#3880805cec0cb97013ee394a7fb2813ed23763fb",
         "akaunting/laravel-money": "^6.0",
         "asmit/resized-column": "^1.1",
         "calebporzio/sushi": "^2.5",
@@ -104,8 +103,18 @@
     "prefer-stable": true,
     "repositories": [
         {
-            "type": "vcs",
-            "url": "https://github.com/AIArmada/filament-cart"
+            "type": "path",
+            "url": "./packages/commerce/packages/csuite",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "./packages/commerce/packages/*",
+            "options": {
+                "symlink": true
+            }
         }
     ]
 }
