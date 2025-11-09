@@ -313,7 +313,7 @@
             "dist": {
                 "type": "path",
                 "url": "./packages/commerce/packages/filament-permissions",
-                "reference": "78c363721ff43bd31e536804de8780eb3819a110"
+                "reference": "728381e92fcb8f174c11f08b1bcb431e0ff8d60d"
             },
             "require": {
                 "filament/filament": "^4.2 || ^5.0",
@@ -332,7 +332,7 @@
             "autoload": {
                 "psr-4": {
                     "AIArmada\\FilamentPermissions\\": "src/",
-                    "AIArmada\\FilamentPermissions\\Database\\Factories\\": "database/factories/",
+                    "AIArmada\\c\\Database\\Factories\\": "database/factories/",
                     "AIArmada\\FilamentPermissions\\Database\\Seeders\\": "database/seeders/"
                 }
             },
@@ -9454,16 +9454,16 @@
         },
         {
             "name": "symfony/service-contracts",
-            "version": "v3.6.0",
+            "version": "v3.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/service-contracts.git",
-                "reference": "f021b05a130d35510bd6b25fe9053c2a8a15d5d4"
+                "reference": "45112560a3ba2d715666a509a0bc9521d10b6c43"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/service-contracts/zipball/f021b05a130d35510bd6b25fe9053c2a8a15d5d4",
-                "reference": "f021b05a130d35510bd6b25fe9053c2a8a15d5d4",
+                "url": "https://api.github.com/repos/symfony/service-contracts/zipball/45112560a3ba2d715666a509a0bc9521d10b6c43",
+                "reference": "45112560a3ba2d715666a509a0bc9521d10b6c43",
                 "shasum": ""
             },
             "require": {
@@ -9517,7 +9517,7 @@
                 "standards"
             ],
             "support": {
-                "source": "https://github.com/symfony/service-contracts/tree/v3.6.0"
+                "source": "https://github.com/symfony/service-contracts/tree/v3.6.1"
             },
             "funding": [
                 {
@@ -9529,11 +9529,15 @@
                     "type": "github"
                 },
                 {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
                     "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-04-25T09:37:31+00:00"
+            "time": "2025-07-15T11:30:57+00:00"
         },
         {
             "name": "symfony/string",
