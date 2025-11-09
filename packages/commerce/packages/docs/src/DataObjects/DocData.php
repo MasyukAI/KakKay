@@ -35,6 +35,7 @@ class DocData
         public readonly ?array $customerData = null,
         public readonly ?array $companyData = null,
         public readonly ?array $metadata = null,
+        public readonly ?array $pdfOptions = null,
         public readonly ?bool $generatePdf = false,
     ) {}
 
@@ -63,6 +64,7 @@ class DocData
             customerData: $data['customer_data'] ?? null,
             companyData: $data['company_data'] ?? null,
             metadata: $data['metadata'] ?? null,
+            pdfOptions: $data['pdf_options'] ?? $data['pdf'] ?? null,
             generatePdf: $data['generate_pdf'] ?? false,
         );
     }
