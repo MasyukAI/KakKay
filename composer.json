@@ -7,7 +7,17 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
-        "aiarmada/commerce": "dev-main",
+        "aiarmada/cart": "dev-main",
+        "aiarmada/chip": "dev-main",
+        "aiarmada/commerce-support": "dev-main",
+        "aiarmada/docs": "dev-main",
+        "aiarmada/filament-cart": "dev-main",
+        "aiarmada/filament-chip": "dev-main",
+        "aiarmada/filament-permissions": "dev-main",
+        "aiarmada/filament-vouchers": "dev-main",
+        "aiarmada/jnt": "dev-main",
+        "aiarmada/stock": "dev-main",
+        "aiarmada/vouchers": "dev-main",
         "akaunting/laravel-money": "^6.0",
         "asmit/resized-column": "^1.1",
         "calebporzio/sushi": "^2.5",
@@ -102,19 +112,126 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "repositories": [
-        {
+                {
             "type": "path",
-            "url": "./packages/commerce/packages/csuite",
+            "url": "/Users/Saiffil/Herd/commerce/packages/cart",
             "options": {
                 "symlink": true
             }
         },
         {
             "type": "path",
-            "url": "./packages/commerce/packages/*",
+            "url": "/Users/Saiffil/Herd/commerce/packages/chip",
             "options": {
                 "symlink": true
             }
+        },
+        {
+            "type": "path",
+            "url": "/Users/Saiffil/Herd/commerce/packages/commerce-support",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "/Users/Saiffil/Herd/commerce/packages/docs",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "/Users/Saiffil/Herd/commerce/packages/filament-cart",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "/Users/Saiffil/Herd/commerce/packages/filament-chip",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "/Users/Saiffil/Herd/commerce/packages/filament-permissions",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "/Users/Saiffil/Herd/commerce/packages/filament-vouchers",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "/Users/Saiffil/Herd/commerce/packages/jnt",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "/Users/Saiffil/Herd/commerce/packages/stock",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "/Users/Saiffil/Herd/commerce/packages/vouchers",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/aiarmada/cart"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/aiarmada/chip"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/aiarmada/commerce-support"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/aiarmada/docs"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/aiarmada/filament-cart"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/aiarmada/filament-chip"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/aiarmada/filament-permissions"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/aiarmada/filament-vouchers"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/aiarmada/jnt"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/aiarmada/stock"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/aiarmada/vouchers"
         }
     ]
 }
