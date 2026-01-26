@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Services;
 
 use AIArmada\Cart\Facades\Cart;
+use AIArmada\Products\Models\Product;
 use App\Models\Address;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\Product;
 use App\Models\User;
 use Exception;
 use Illuminate\Database\QueryException;

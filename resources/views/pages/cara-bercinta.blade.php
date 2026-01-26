@@ -2,7 +2,7 @@
 
 use Livewire\Attributes\{Layout, Title};
 use Livewire\Volt\Component;
-use App\Models\Product;
+use AIArmada\Products\Models\Product;
 use AIArmada\Cart\Facades\Cart;
 use Filament\Notifications\Notification;
 
@@ -34,7 +34,7 @@ class extends Component {
             1,
             [
                 'slug' => $product->slug,
-                'category' => $product->category_id ? $product->category->name : 'books',
+                'category' => $product->categories->first()?->name ?? 'books',
             ]
         );
 

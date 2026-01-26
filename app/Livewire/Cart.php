@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace App\Livewire;
 
 use AIArmada\Cart\Facades\Cart as CartFacade;
+use AIArmada\Products\Enums\ProductStatus;
 use App\Models\Product;
 use Exception;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Log;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
+#[Layout('components.layouts.app')]
 final class Cart extends Component
 {
     /** @var array<array<string, mixed>> */
@@ -64,7 +67,7 @@ final class Cart extends Component
     public function loadSuggestedProducts(): void
     {
         $cartProductIds = collect($this->cartItems)->pluck('id')->toArray();
-        $this->suggestedProducts = Product::where('is_active', true)
+        $this->suggestedProducts = Product::where('status', ProductStatus::Active)
             ->whereNotIn('id', $cartProductIds)
             ->inRandomOrder()
             ->limit(3)

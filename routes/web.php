@@ -6,13 +6,14 @@ use Akaunting\Money\Money;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ChipController;
 use App\Http\Controllers\PageController;
+use App\Livewire\Cart;
 use App\Livewire\Home;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
 Route::get('/', Home::class)->name('home');
 
-Volt::route('/cart', 'cart')->name('cart');
+Route::get('/cart', Cart::class)->name('cart');
 
 Route::get('/checkout', App\Livewire\Checkout::class)->name('checkout');
 

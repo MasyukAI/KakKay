@@ -7,7 +7,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -16,32 +15,61 @@ final class Product extends Model implements HasMedia
     /** @phpstan-ignore-next-line */
     use HasFactory, HasUuids, InteractsWithMedia;
 
+    /**
+     * Cast attributes to native types - aligned with commerce package schema.
+     *
+     * @var array<string, string>
+     */
     protected $casts = [
-        'is_active' => 'boolean',
         'is_featured' => 'boolean',
+        'is_taxable' => 'boolean',
+        'requires_shipping' => 'boolean',
         'price' => 'integer',
-        'weight' => 'integer',
-        'length' => 'integer',
-        'width' => 'integer',
-        'height' => 'integer',
-        'is_digital' => 'boolean',
-        'free_shipping' => 'boolean',
+        'compare_price' => 'integer',
+        'cost' => 'integer',
+        'weight' => 'float',
+        'length' => 'float',
+        'width' => 'float',
+        'height' => 'float',
+        'metadata' => 'array',
+        'published_at' => 'datetime',
     ];
 
+    /**
+     * Fillable attributes - aligned with commerce package schema.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
+        'owner_type',
+        'owner_id',
         'name',
         'slug',
         'description',
-        'category_id',
+        'short_description',
+        'sku',
+        'barcode',
+        'type',
+        'status',
+        'visibility',
         'price',
+        'compare_price',
+        'cost',
+        'currency',
         'weight',
         'length',
         'width',
         'height',
-        'is_digital',
-        'free_shipping',
+        'weight_unit',
+        'dimension_unit',
         'is_featured',
-        'is_active',
+        'is_taxable',
+        'requires_shipping',
+        'meta_title',
+        'meta_description',
+        'tax_class',
+        'metadata',
+        'published_at',
     ];
 
     public function getRouteKeyName(): string
@@ -49,40 +77,15 @@ final class Product extends Model implements HasMedia
         return 'slug';
     }
 
-    /** @phpstan-ignore-next-line */
-    public function category(): BelongsTo
-    {
-        return $this->belongsTo(Category::class);
-    }
-
-    // public function getFormattedPriceAttribute(): string
-    // {
-    //     return 'RM ' . number_format($this->price / 100, 2);
-    // }
-
-    // public function getPriceInDollarsAttribute(): float
-    // {
-    //     return $this->price / 100;
-    // }
-
-    public function primaryImage(): mixed
-    {
-        return $this->images()->where('is_primary', true)->first();
-    }
-
-    // Shipping-related methods
     public function getVolumetricWeight(): float
     {
-        // Calculate volumetric weight using mm and convert to grams
-        // Formula: (length x width x height in mm) / 5000000 = kg, then * 1000 = grams
         if (! $this->length || ! $this->width || ! $this->height) {
-            return (float) $this->weight;
+            return (float) ($this->weight ?? 0);
         }
 
         $volumetricWeightGrams = ($this->length * $this->width * $this->height) / 5000;
 
-        // Return the higher of actual weight or volumetric weight
-        return max((float) $this->weight, $volumetricWeightGrams);
+        return max((float) ($this->weight ?? 0), $volumetricWeightGrams);
     }
 
     public function getShippingWeight(): float
@@ -92,10 +95,12 @@ final class Product extends Model implements HasMedia
 
     public function getWeightInKg(): float
     {
-        return $this->weight / 1000;
+        return ($this->weight ?? 0) / 1000;
     }
 
-    /** @phpstan-ignore-next-line */
+    /**
+     * @return array<string, float|null>
+     */
     public function getDimensionsInCm(): array
     {
         return [
@@ -107,27 +112,24 @@ final class Product extends Model implements HasMedia
 
     public function isDigital(): bool
     {
-        return $this->is_digital;
+        return ! $this->requires_shipping;
     }
 
     public function requiresShipping(): bool
     {
-        return ! $this->is_digital;
+        return (bool) ($this->requires_shipping ?? true);
     }
 
-    public function hasFreeShipping(): bool
-    {
-        return $this->free_shipping;
-    }
-
-    /** @phpstan-ignore-next-line */
+    /**
+     * @return array<string, float|null>
+     */
     public function getDimensions(): array
     {
         return [
-            'length' => $this->length, // in mm
-            'width' => $this->width,   // in mm
-            'height' => $this->height, // in mm
-            'weight' => $this->weight, // in grams
+            'length' => $this->length,
+            'width' => $this->width,
+            'height' => $this->height,
+            'weight' => $this->weight,
         ];
     }
 }

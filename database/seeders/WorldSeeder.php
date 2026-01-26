@@ -9,7 +9,7 @@ use Nnjeim\World\Actions\SeedAction;
 
 class WorldSeeder extends Seeder
 {
-    public function run(): void
+    public function run()
     {
         $this->call([
             SeedAction::class,

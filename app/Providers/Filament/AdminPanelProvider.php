@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Providers\Filament;
 
+use AIArmada\FilamentAuthz\FilamentAuthzPlugin;
 use AIArmada\FilamentCart\FilamentCartPlugin;
 use AIArmada\FilamentChip\FilamentChipPlugin;
-use AIArmada\FilamentPermissions\FilamentPermissionsPlugin;
+use AIArmada\FilamentProducts\FilamentProductsPlugin;
 use AIArmada\FilamentVouchers\FilamentVouchersPlugin;
 use App\Filament\Pages\Auth\Login;
 use Asmit\ResizedColumn\ResizedColumnPlugin;
@@ -74,7 +75,8 @@ final class AdminPanelProvider extends PanelProvider
                 FilamentCartPlugin::make(),
                 FilamentChipPlugin::make(),
                 FilamentVouchersPlugin::make(),
-                FilamentPermissionsPlugin::make(),
+                FilamentAuthzPlugin::make(),
+                FilamentProductsPlugin::make(),
             ])
             ->spa(hasPrefetching: true)
             ->authMiddleware([

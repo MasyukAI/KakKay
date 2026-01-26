@@ -42,8 +42,8 @@ final class Login extends PagesLogin
             $this->throwFailureValidationException();
         }
 
-        // Check if user is admin
-        if (! $user->is_admin) {
+        // Check if user has super_admin role
+        if (! $user->hasRole('super_admin')) {
             $this->userUndertakingMultiFactorAuthentication = null;
             $this->fireFailedEvent($authGuard, $user, $credentials);
             $this->throwFailureValidationException();

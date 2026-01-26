@@ -16,9 +16,13 @@ return [
     | of their individual configuration, which simply provides a single
     | and convenient way to enable or disable Telescope data storage.
     |
+    | By default, Telescope is only enabled in local environment for
+    | performance reasons. Set TELESCOPE_ENABLED=true in production
+    | only when actively debugging.
+    |
     */
 
-    'enabled' => env('TELESCOPE_ENABLED', true),
+    'enabled' => env('TELESCOPE_ENABLED', env('APP_ENV') === 'local'),
 
     /*
     |--------------------------------------------------------------------------

@@ -1,3 +1,210 @@
 @import 'tailwindcss';
 
 @source '../views/livewire/pages/cara-bercinta.blade.php';
+
+/* Custom theme for pages layout */
+@theme {
+    /* Colors */
+    --color-ruby: #8b0000;
+    --color-maroon: #5c0a14;
+    --color-rose: #d1264f;
+    --color-blush: #ec4899;
+    --color-orchid: #6d28d9;
+    --color-mulberry: #581c54;
+    --color-champagne: #f7e7ce;
+    --color-cream: #fef9f3;
+    --color-midnight: #1e1b4b;
+    --color-pearl: #f8fafc;
+
+    /* Font families */
+    --font-sans: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Playfair Display', ui-serif, Georgia, serif;
+
+    /* Box shadows */
+    --shadow-glow: 0 20px 60px rgba(139, 0, 0, 0.4), 0 8px 25px rgba(139, 0, 0, 0.25);
+    --shadow-soft: 0 16px 48px rgba(109, 40, 217, 0.2), 0 6px 20px rgba(109, 40, 217, 0.15);
+    --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 0 rgba(0, 0, 0, 0.08);
+    --shadow-luxury: 0 25px 75px rgba(88, 28, 84, 0.3), 0 10px 30px rgba(88, 28, 84, 0.2);
+    --shadow-elegant: 0 12px 40px rgba(92, 10, 20, 0.18), 0 4px 15px rgba(92, 10, 20, 0.12);
+    --shadow-dreamy: 0 20px 65px rgba(236, 72, 153, 0.25), 0 8px 25px rgba(236, 72, 153, 0.15);
+}
+
+/* Logo styles */
+.logo {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    flex: none;
+    background: linear-gradient(135deg, #E0115F, #6A00F4);
+    box-shadow: 0 6px 16px rgba(224, 17, 95, 0.4);
+    position: relative;
+    isolation: isolate;
+}
+
+.logo::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    border-radius: 10px;
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.35), transparent 45%);
+    mix-blend-mode: screen;
+}
+
+/* Brand styles */
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand h1 {
+    margin: 0;
+    letter-spacing: 0.3px;
+    font-size: clamp(1rem, 2vw + 0.4rem, 1.4rem);
+    font-family: 'Montserrat', system-ui, sans-serif;
+    font-weight: 900;
+}
+
+.tagline {
+    color: #f7e9f4;
+    opacity: 0.9;
+    font-family: 'Poppins', 'Montserrat', system-ui, sans-serif;
+}
+
+/* Enhanced Background Patterns */
+.bg-velvet {
+    background:
+        radial-gradient(1400px 700px at 20% 10%, rgba(236, 72, 153, 0.12), transparent 65%),
+        radial-gradient(1200px 800px at 80% 5%, rgba(109, 40, 217, 0.15), transparent 70%),
+        radial-gradient(1000px 650px at 50% 95%, rgba(139, 0, 0, 0.18), transparent 75%),
+        linear-gradient(180deg, #fef9f3 0%, #f8fafc 15%, #ffffff 30%, #f7e7ce 65%, #fef9f3 100%);
+}
+
+.hero {
+    background:
+        radial-gradient(ellipse 1200px 600px at 0% 0%, rgba(109, 40, 217, 0.25), transparent 50%),
+        radial-gradient(ellipse 1000px 500px at 100% 0%, rgba(236, 72, 153, 0.2), transparent 50%),
+        linear-gradient(135deg, #1e1b4b 0%, #581c54 25%, #5c0a14 50%, #8b0000 75%, #d1264f 100%);
+    position: relative;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle 800px at 25% 25%, rgba(236, 72, 153, 0.15), transparent 60%),
+        radial-gradient(circle 600px at 75% 75%, rgba(109, 40, 217, 0.12), transparent 50%);
+    pointer-events: none;
+}
+
+/* Glass & Material Effects */
+.glass {
+    backdrop-filter: blur(20px) saturate(180%);
+    background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.95) 0%,
+        rgba(255, 255, 255, 0.85) 50%,
+        rgba(248, 250, 252, 0.9) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.glass-dark {
+    backdrop-filter: blur(16px) saturate(150%);
+    background: linear-gradient(135deg,
+        rgba(30, 27, 75, 0.85) 0%,
+        rgba(88, 28, 84, 0.8) 50%,
+        rgba(92, 10, 20, 0.85) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Enhanced Buttons */
+.btn-cta {
+    background: linear-gradient(90deg, #5c0a14 0%, #8b0000 25%, #d1264f 50%, #ec4899 75%, #6d28d9 100%);
+    background-size: 300% 100%;
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+}
+
+.btn-cta:hover {
+    background-position: 100% 0;
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 25px 50px rgba(139, 0, 0, 0.4), 0 10px 30px rgba(139, 0, 0, 0.3);
+}
+
+.btn-cta:hover::before {
+    transform: translateX(100%);
+}
+
+/* Premium Cards */
+.badge {
+    background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.95) 0%,
+        rgba(247, 231, 206, 0.9) 50%,
+        rgba(255, 255, 255, 0.85) 100%);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 25px rgba(92, 10, 20, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.rad-card {
+    background:
+        radial-gradient(600px 300px at 0% 0%, rgba(236, 72, 153, 0.06), transparent 60%),
+        radial-gradient(500px 250px at 100% 100%, rgba(109, 40, 217, 0.06), transparent 60%),
+        linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid rgba(209, 38, 79, 0.08);
+    box-shadow: 0 12px 40px rgba(88, 28, 84, 0.08), 0 4px 15px rgba(88, 28, 84, 0.05);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.rad-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 60px rgba(88, 28, 84, 0.15), 0 8px 25px rgba(88, 28, 84, 0.1);
+    border-color: rgba(209, 38, 79, 0.15);
+}
+
+/* Luxury Borders */
+.luxury-border {
+    border: 2px solid transparent;
+    background: linear-gradient(white, white) padding-box,
+        linear-gradient(135deg, #ec4899, #6d28d9, #5c0a14) border-box;
+}
+
+/* Text Enhancements */
+.text-gradient {
+    background: linear-gradient(135deg, #5c0a14 0%, #8b0000 50%, #d1264f 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Smooth Animations */
+.fade-in-up {
+    animation: fadeInUp 0.8s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Enhanced Selection */
+::selection {
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.3), rgba(109, 40, 217, 0.3));
+    color: #5c0a14;
+}

@@ -8,8 +8,8 @@ use AIArmada\Cart\Facades\Cart as CartFacade;
 use AIArmada\Chip\DataObjects\ClientDetails;
 use AIArmada\Chip\DataObjects\Product as ChipProduct;
 use AIArmada\Chip\Services\ChipCollectService;
+use AIArmada\Products\Models\Product;
 use App\Contracts\PaymentGatewayInterface;
-use App\Models\Product;
 use Exception;
 use Illuminate\Support\Facades\Log;
 
@@ -185,10 +185,8 @@ final class ChipPaymentGateway implements PaymentGatewayInterface
             // If not, try to look up the product and get its category
             elseif (isset($item['id'])) {
                 $product = Product::find($item['id']);
-                if ($product && $product->category) {
-                    /** @var \App\Models\Category $categoryModel */
-                    $categoryModel = $product->category;
-                    $category = $categoryModel->name;
+                if ($product && $product->categories->isNotEmpty()) {
+                    $category = $product->categories->first()->name;
                 }
             }
 

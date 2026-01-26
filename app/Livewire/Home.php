@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Livewire;
 
 use AIArmada\Cart\Facades\Cart as CartFacade;
-use App\Models\Product;
+use AIArmada\Products\Enums\ProductStatus;
+use AIArmada\Products\Models\Product;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -15,8 +16,10 @@ final class Home extends Component
     public function render(): \Illuminate\Contracts\View\View
     {
         $allProducts = Product::query()
-            ->where('is_active', true)
-            ->orWhere('is_featured', true)
+            ->where(function ($query) {
+                $query->where('status', ProductStatus::Active)
+                    ->orWhere('is_featured', true);
+            })
             ->orderByDesc('is_featured')
             ->get();
 

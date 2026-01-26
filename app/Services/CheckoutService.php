@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use AIArmada\Cart\Cart;
-use AIArmada\Cart\CartManager;
+use AIArmada\Cart\Contracts\CartManagerInterface;
 use AIArmada\Cart\Facades\Cart as CartFacade;
 use AIArmada\FilamentCart\Services\CartConditionValidator;
 use App\Events\OrderPaid;
@@ -30,7 +30,7 @@ final class CheckoutService
         private ChipDataRecorder $chipDataRecorder,
         private CartConditionValidator $conditionValidator,
         /** @phpstan-ignore-next-line property.onlyWritten */
-        private CartManager $cartManager
+        private CartManagerInterface $cartManager
     ) {}
 
     /**

@@ -18,16 +18,14 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('phone')->nullable();
-            $table->boolean('is_admin')->default(false);
-            $table->boolean('is_guest')->default(false);
             $table->timestamp('email_verified_at')->nullable();
+            $table->timestamp('phone_verified_at')->nullable();
             $table->string('password')->nullable();
+            // Guest checkout support
+            $table->boolean('is_guest')->default(false);
+            $table->string('guest_token')->nullable();
             $table->rememberToken();
             $table->timestamps();
-
-            // Indexes
-            $table->index('is_guest');
-            $table->index(['email', 'is_guest']);
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
