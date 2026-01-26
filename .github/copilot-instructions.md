@@ -17,7 +17,7 @@ These guidelines ensure packages are reliable and modern, with no backward compa
 These rules support AI-assisted development inside the `MasyukAI\Cart` package within the `commerce` monorepo. Follow them before editing source, tests, or docs.
 
 ## Technology Baseline
-- PHP 8.4, Laravel 12, Livewire v3, Filament v4, Octane v2, Pest v4, PHPUnit 12, Tailwind 4.
+- PHP 8.4, Laravel 12, Livewire v4, Filament v5, Octane v2, Pest v4, PHPUnit 12, Tailwind 4.
 - Storage drivers: session, cache, database (with optimistic locking). Akaunting\Money handles currency.
 - Traits organise cart behaviour (items, conditions, totals, metadata, storage, instances).
 

@@ -28,6 +28,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'webhooks/chip/*',
             'webhooks/*',
         ]);
+
+        // Set default Filament timezone for every request (fixes Octane state persistence)
+        $middleware->append(\App\Http\Middleware\SetFilamentTimezone::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

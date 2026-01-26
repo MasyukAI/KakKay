@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
+use Filament\Support\Facades\FilamentTimezone;
 
 final class AppServiceProvider extends ServiceProvider
 {
@@ -35,6 +36,8 @@ final class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Model::unguard();
+
+        FilamentTimezone::set('Asia/Kuala_Lumpur');
 
         // Register CHIP payment success listener
         Event::listen(
