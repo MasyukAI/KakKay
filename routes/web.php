@@ -3,13 +3,10 @@
 declare(strict_types=1);
 
 use Akaunting\Money\Money;
-use App\Http\Controllers\CheckoutController;
-use App\Http\Controllers\ChipController;
 use App\Http\Controllers\PageController;
 use App\Livewire\Cart;
 use App\Livewire\Home;
 use Illuminate\Support\Facades\Route;
-use Livewire\Volt\Volt;
 
 Route::get('/', Home::class)->name('home');
 
@@ -17,13 +14,14 @@ Route::get('/cart', Cart::class)->name('cart');
 
 Route::get('/checkout', App\Livewire\Checkout::class)->name('checkout');
 
-// Checkout success/failure/cancel routes with cart reference
-Route::get('/checkout/success/{reference}', [CheckoutController::class, 'success'])->name('checkout.success');
-Route::get('/checkout/failure/{reference}', [CheckoutController::class, 'failure'])->name('checkout.failure');
-Route::get('/checkout/cancel/{reference}', [CheckoutController::class, 'cancel'])->name('checkout.cancel');
-
-// CHIP callbacks (success + webhooks)
-Route::post('/webhooks/chip/{webhook?}', [ChipController::class, 'handle'])->name('webhooks.chip');
+// These routes display the final result pages AFTER package processes payment callbacks
+// Payment flow: CHIP → /checkout/payment/success (package) → /checkout/success (app view)
+Route::get('/checkout/success/{session}', [App\Http\Controllers\CheckoutController::class, 'success'])
+    ->name('checkout.success');
+Route::get('/checkout/failure/{session}', [App\Http\Controllers\CheckoutController::class, 'failure'])
+    ->name('checkout.failure');
+Route::get('/checkout/cancel/{session}', [App\Http\Controllers\CheckoutController::class, 'cancel'])
+    ->name('checkout.cancel');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
@@ -38,29 +36,21 @@ Route::get('/orders/{order}', function () {
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 
-    /** @phpstan-ignore-next-line */
-    Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
-    /** @phpstan-ignore-next-line */
-    Volt::route('settings/password', 'settings.password')->name('settings.password');
-    /** @phpstan-ignore-next-line */
-    Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
+    Route::livewire('settings/profile', 'pages::settings.profile')->name('settings.profile');
+    Route::livewire('settings/password', 'pages::settings.password')->name('settings.password');
+    Route::livewire('settings/appearance', 'pages::settings.appearance')->name('settings.appearance');
 });
 
 require __DIR__.'/auth.php';
 
-// Product pages - Volt routes
-/** @phpstan-ignore-next-line */
-Volt::route('/cara-bercinta', 'cara-bercinta')->name('pages.cara-bercinta');
+// Product pages
+Route::livewire('/cara-bercinta', 'pages::cara-bercinta')->name('pages.cara-bercinta');
 
 // Policy pages - must be before catch-all route
-/** @phpstan-ignore-next-line */
-Volt::route('/privacy-policy', 'privacy-policy');
-/** @phpstan-ignore-next-line */
-Volt::route('/refund-policy', 'refund-policy');
-/** @phpstan-ignore-next-line */
-Volt::route('/shipping-policy', 'shipping-policy');
-/** @phpstan-ignore-next-line */
-Volt::route('/terms-of-service', 'terms-of-service');
+Route::livewire('/privacy-policy', 'pages::privacy-policy');
+Route::livewire('/refund-policy', 'pages::refund-policy');
+Route::livewire('/shipping-policy', 'pages::shipping-policy');
+Route::livewire('/terms-of-service', 'pages::terms-of-service');
 
 // Catch-all route for dynamic pages - must be last
 Route::get('/{slug}', [PageController::class, 'show'])

@@ -14,9 +14,6 @@ test('checkout route exists and is accessible', function () {
 });
 
 test('checkout redirects to cart when no items', function () {
-    // Clear any existing cart session
-    session()->forget('cart_session_id');
-
     $response = $this->get('/checkout');
 
     $response->assertRedirect('/cart');

@@ -51,14 +51,18 @@
 </head>
 <body class="min-h-screen overflow-x-hidden bg-[#0f0218] text-white">
     <!-- Enhanced Background Effects -->
-    <div class="pointer-events-none fixed -top-48 -left-32 h-[520px] w-[520px] rounded-full bg-gradient-to-br from-pink-500/40 via-purple-500/25 to-rose-500/35 blur-3xl"></div>
-    <div class="pointer-events-none fixed top-1/4 -right-36 h-[540px] w-[540px] rounded-full bg-gradient-to-br from-fuchsia-500/25 via-rose-500/25 to-orange-400/35 blur-3xl"></div>
-    <div class="pointer-events-none fixed bottom-0 left-1/2 h-[320px] w-[520px] -translate-x-1/2 rounded-full bg-gradient-to-br from-purple-600/30 via-indigo-500/20 to-pink-400/30 blur-3xl"></div>
+    <div class="pointer-events-none fixed inset-0 overflow-hidden">
+        <div class="absolute -top-48 -left-32 h-[520px] w-[520px] rounded-full bg-gradient-to-br from-pink-500/40 via-purple-500/25 to-rose-500/35 blur-3xl"></div>
+        <div class="absolute top-1/4 -right-36 h-[540px] w-[540px] rounded-full bg-gradient-to-br from-fuchsia-500/25 via-rose-500/25 to-orange-400/35 blur-3xl"></div>
+        <div class="absolute bottom-0 left-1/2 h-[320px] w-[520px] -translate-x-1/2 rounded-full bg-gradient-to-br from-purple-600/30 via-indigo-500/20 to-pink-400/30 blur-3xl"></div>
+    </div>
     <div class="fixed inset-0 -z-40 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.05\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM36 6V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
     
     <div class="relative min-h-screen flex items-center justify-center px-4 py-16 overflow-y-auto">
-        <div class="pointer-events-none absolute -top-40 right-[-6rem] h-72 w-72 rounded-full bg-gradient-to-br from-pink-500/35 via-fuchsia-500/20 to-purple-500/30 blur-3xl"></div>
-        <div class="pointer-events-none absolute bottom-[-12rem] left-[-4rem] h-80 w-80 rounded-full bg-gradient-to-br from-purple-500/25 via-indigo-500/20 to-pink-500/20 blur-3xl"></div>
+        <div class="pointer-events-none absolute inset-0 overflow-hidden">
+            <div class="absolute -top-40 -right-24 h-72 w-72 rounded-full bg-gradient-to-br from-pink-500/35 via-fuchsia-500/20 to-purple-500/30 blur-3xl"></div>
+            <div class="absolute -bottom-48 -left-16 h-80 w-80 rounded-full bg-gradient-to-br from-purple-500/25 via-indigo-500/20 to-pink-500/20 blur-3xl"></div>
+        </div>
 
         <div class="relative w-full max-w-6xl animate-slide-up px-4 sm:px-6 lg:px-8">
             <div class="relative overflow-hidden rounded-[36px] border border-white/15 bg-white/10 shadow-[0_30px_90px_rgba(12,5,24,0.45)] backdrop-blur-[28px]">
@@ -177,7 +181,7 @@
                                                     Kaedah Pembayaran
                                                 </p>
                                                 <p class="text-base font-bold capitalize text-white">
-                                                    {{ $payment->method }}
+                                                    {{ str($payment->gateway)->headline() }}
                                                 </p>
                                             </div>
                                         </div>
@@ -202,7 +206,7 @@
                                                 ID Pembayaran CHIP
                                             </p>
                                             <p class="font-mono text-sm text-white/80 break-all rounded-lg border border-white/12 bg-white/5 px-3 py-2">
-                                                {{ $payment->gateway_payment_id }}
+                                                {{ $payment->transaction_id }}
                                             </p>
                                         </div>
                                         @if($trackingNumber)
@@ -318,12 +322,12 @@
                                         <ul class="space-y-3 text-left">
                                             @foreach($displayItems as $item)
                                                 @php
-                                                    $isModel = $item instanceof \App\Models\OrderItem;
-                                                    $name = $isModel ? ($item->product->name ?? 'Item Tanpa Nama') : ($item['name'] ?? 'Item Tanpa Nama');
+                                                    $isModel = $item instanceof \AIArmada\Orders\Models\OrderItem || $item instanceof \App\Models\OrderItem;
+                                                    $name = $isModel ? ($item->name ?? 'Item Tanpa Nama') : ($item['name'] ?? 'Item Tanpa Nama');
                                                     $quantity = $isModel ? $item->quantity : ($item['quantity'] ?? 1);
                                                     $unitPriceCents = $isModel ? $item->unit_price : ($item['price'] ?? 0);
                                                     $unitPrice = 'RM '.number_format($unitPriceCents / 100, 2);
-                                                    $totalPriceCents = $isModel ? $item->total_price : ($item['price'] ?? 0) * $quantity;
+                                                    $totalPriceCents = $isModel ? $item->total : (($item['price'] ?? 0) * $quantity);
                                                     $totalPrice = 'RM '.number_format($totalPriceCents / 100, 2);
                                                 @endphp
                                                 <li class="group/item relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-4 transition-all duration-300 hover:border-white/20 hover:shadow-[0_20px_50px_rgba(236,72,153,0.2)]">
@@ -424,7 +428,7 @@
                     <!-- Footer Section - Enhanced -->
                     <div class="mt-16 flex flex-col gap-8 sm:flex-row sm:items-center sm:justify-between">
                         <div class="slide-up flex flex-col gap-3 sm:flex-row sm:items-center" style="animation-delay: 0.1s;">
-                            <a href="{{ route('home') }}" class="cart-button-primary flex items-center gap-3 rounded-full px-8 py-3 text-base font-semibold"
+                            <a href="{{ route('home') }}" wire:navigate class="cart-button-primary flex items-center gap-3 rounded-full px-8 py-3 text-base font-semibold"
                                style="transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); transform: translateY(0px) scale(1); filter: brightness(1);"
                                onmouseover="this.style.transform='translateY(-3px) scale(1.05)'; this.style.boxShadow='0 15px 35px rgba(255,105,180,0.4), 0 5px 15px rgba(0,0,0,0.3)'; this.style.filter='brightness(1.1)';"
                                onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow=''; this.style.filter='brightness(1)';">

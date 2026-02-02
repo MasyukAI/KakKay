@@ -4,219 +4,57 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Services\CodeGeneratorService;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use AIArmada\Orders\Models\Order as BaseOrder;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
-final class Order extends Model
+/**
+ * App Order model - extends the package model for demo purposes.
+ *
+ * This alias allows existing code to reference App\Models\Order
+ * while using the full-featured package implementation.
+ */
+final class Order extends BaseOrder
 {
-    /** @phpstan-ignore-next-line */
-    use HasFactory, HasUuids;
-
-    protected $fillable = [
-        'order_number',
-        'user_id',
-        'address_id',
-        'cart_items',
-        'delivery_method',
-        'checkout_form_data',
-        'status',
-        'total',
-        'invoice_path',
-        'invoice_generated_at',
-    ];
-
-    protected $casts = [
-        'cart_items' => 'array',
-        'checkout_form_data' => 'array',
-        'total' => 'integer',
-        'invoice_generated_at' => 'datetime',
-    ];
-
     /**
-     * Generate order number
+     * @return MorphMany<Shipment, $this>
      */
-    public static function generateOrderNumber(): string
+    public function shipments(): MorphMany
     {
-        return CodeGeneratorService::generateOrderCode();
+        return $this->morphMany(Shipment::class, 'shippable');
     }
 
     /**
-     * Get the user that owns this order
-     *
-     * @return BelongsTo<User>
+     * @return \Illuminate\Database\Eloquent\Collection<int, \AIArmada\Orders\Models\OrderItem>
      */
-    /** @phpstan-ignore-next-line */
-    public function user(): BelongsTo
+    public function getOrderItemsAttribute(): \Illuminate\Database\Eloquent\Collection
     {
-        return $this->belongsTo(User::class);
+        return $this->items;
     }
 
-    /**
-     * Get the address for this order
-     *
-     * @return BelongsTo<Address>
-     */
-    /** @phpstan-ignore-next-line */
-    public function address(): BelongsTo
+    public function getAddressAttribute(): ?\AIArmada\Orders\Models\OrderAddress
     {
-        return $this->belongsTo(Address::class);
+        return $this->shippingAddress ?? $this->billingAddress;
     }
 
-    /**
-     * Get payments for this order
-     *
-     * @return HasMany<Payment>
-     */
-    /** @phpstan-ignore-next-line */
-    public function payments(): HasMany
-    {
-        return $this->hasMany(Payment::class);
-    }
-
-    /**
-     * Get order items for this order
-     *
-     * @return HasMany<OrderItem>
-     */
-    /** @phpstan-ignore-next-line */
-    public function orderItems(): HasMany
-    {
-        return $this->hasMany(OrderItem::class);
-    }
-
-    /**
-     * @return HasMany<Shipment>
-     */
-    /** @phpstan-ignore-next-line */
-    public function shipments(): HasMany
-    {
-        return $this->hasMany(Shipment::class);
-    }
-
-    /**
-     * Get invoices/docs for this order
-     *
-     * @return MorphMany<\AIArmada\Docs\Models\Doc>
-     */
-    /** @phpstan-ignore-next-line */
-    public function docs(): MorphMany
-    {
-        return $this->morphMany(\AIArmada\Docs\Models\Doc::class, 'docable');
-    }
-
-    /**
-     * Get invoices for this order
-     *
-     * @return MorphMany<\AIArmada\Docs\Models\Doc>
-     */
-    /** @phpstan-ignore-next-line */
-    public function invoices(): MorphMany
-    {
-        return $this->docs()->where('doc_type', 'invoice');
-    }
-
-    /**
-     * Get order status histories
-     *
-     * @return HasMany<OrderStatusHistory>
-     */
-    /** @phpstan-ignore-next-line */
-    public function statusHistories(): HasMany
-    {
-        return $this->hasMany(OrderStatusHistory::class);
-    }
-
-    /**
-     * Get formatted total amount
-     */
     public function getFormattedTotalAttribute(): string
     {
-        return 'RM '.number_format($this->total / 100, 2);
+        return $this->formatMoney($this->grand_total);
     }
 
     /**
-     * Get the latest payment
+     * @return array<string, mixed>|null
      */
-    public function latestPayment(): ?Payment
+    public function getCheckoutFormDataAttribute(): ?array
     {
-        /** @var Payment|null $payment */
-        $payment = $this->payments()->latest()->first();
+        $metadata = is_array($this->metadata) ? $this->metadata : [];
 
-        return $payment;
+        return $metadata['checkout_form_data'] ?? null;
     }
 
-    /**
-     * Check if order is paid
-     */
-    public function isPaid(): bool
+    public function getDeliveryMethodAttribute(): ?string
     {
-        return $this->latestPayment()?->status === 'completed';
-    }
+        $metadata = is_array($this->metadata) ? $this->metadata : [];
 
-    /**
-     * Check if order is pending
-     */
-    public function isPending(): bool
-    {
-        return $this->status === 'pending';
-    }
-
-    /**
-     * Check if order has failed payments
-     */
-    public function hasFailedPayments(): bool
-    {
-        return $this->payments()->where('status', 'failed')->exists();
-    }
-
-    /**
-     * Get total weight of all items in the order
-     */
-    public function getTotalWeightAttribute(): float
-    {
-        return $this->orderItems->sum('total_weight');
-    }
-
-    /**
-     * Get total quantity of all items in the order
-     */
-    public function getTotalQuantityAttribute(): int
-    {
-        return $this->orderItems->sum('quantity');
-    }
-
-    /**
-     * Check if order requires shipping
-     */
-    public function requiresShipping(): bool
-    {
-        /** @var \Illuminate\Database\Eloquent\Collection<int, OrderItem> $orderItems */
-        $orderItems = $this->orderItems;
-
-        return $orderItems->some(fn ($item) => $item->requiresShipping());
-    }
-
-    /**
-     * Get subtotal from order items (without shipping/tax)
-     */
-    public function getSubtotalAttribute(): int
-    {
-        return $this->orderItems->sum('total_price');
-    }
-
-    public function latestShipment(): ?Shipment
-    {
-        /** @var Shipment|null $shipment */
-        $shipment = $this->shipments()
-            ->orderByDesc('shipped_at')
-            ->orderByDesc('created_at')
-            ->first();
-
-        return $shipment;
+        return $metadata['delivery_method'] ?? null;
     }
 }

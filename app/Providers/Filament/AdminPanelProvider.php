@@ -6,8 +6,11 @@ namespace App\Providers\Filament;
 
 use AIArmada\FilamentAuthz\FilamentAuthzPlugin;
 use AIArmada\FilamentCart\FilamentCartPlugin;
-use AIArmada\FilamentChip\FilamentChipPlugin;
+use AIArmada\FilamentInventory\FilamentInventoryPlugin;
+use AIArmada\FilamentOrders\FilamentOrdersPlugin;
+use AIArmada\FilamentPricing\FilamentPricingPlugin;
 use AIArmada\FilamentProducts\FilamentProductsPlugin;
+use AIArmada\FilamentPromotions\FilamentPromotionsPlugin;
 use AIArmada\FilamentVouchers\FilamentVouchersPlugin;
 use App\Filament\Pages\Auth\Login;
 use Asmit\ResizedColumn\ResizedColumnPlugin;
@@ -46,10 +49,9 @@ final class AdminPanelProvider extends PanelProvider
                 'info' => Color::hex('#D100D1'),     // Magenta
             ])
             ->brandName('Kak Kay')
-            ->topNavigation()
             ->maxContentWidth(Width::Full)
             ->font('Poppins')
-            ->viteTheme('resources/css/filament/admin/theme.css')
+            // ->viteTheme('resources/css/filament/admin/theme.css')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
@@ -73,10 +75,13 @@ final class AdminPanelProvider extends PanelProvider
             ->plugins([
                 ResizedColumnPlugin::make(),
                 FilamentCartPlugin::make(),
-                FilamentChipPlugin::make(),
                 FilamentVouchersPlugin::make(),
                 FilamentAuthzPlugin::make(),
                 FilamentProductsPlugin::make(),
+                FilamentInventoryPlugin::make(),
+                FilamentOrdersPlugin::make(),
+                FilamentPricingPlugin::make(),
+                FilamentPromotionsPlugin::make(),
             ])
             ->spa(hasPrefetching: true)
             ->authMiddleware([

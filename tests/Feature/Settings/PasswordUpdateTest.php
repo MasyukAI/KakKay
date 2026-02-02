@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use Livewire\Volt\Volt;
+use Livewire\Livewire;
 
 uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
 
@@ -15,7 +15,7 @@ test('password can be updated', function () {
 
     $this->actingAs($user);
 
-    $response = Volt::test('settings.password')
+    $response = Livewire::test('pages::settings.password')
         ->set('current_password', 'password')
         ->set('password', 'new-password')
         ->set('password_confirmation', 'new-password')
@@ -33,7 +33,7 @@ test('correct password must be provided to update password', function () {
 
     $this->actingAs($user);
 
-    $response = Volt::test('settings.password')
+    $response = Livewire::test('pages::settings.password')
         ->set('current_password', 'wrong-password')
         ->set('password', 'new-password')
         ->set('password_confirmation', 'new-password')

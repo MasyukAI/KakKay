@@ -1,7 +1,7 @@
 <?php
 
 use Livewire\Attributes\{Layout, Title};
-use Livewire\Volt\Component;
+use Livewire\Component;
 
 new
 #[Layout('components.layouts.pages')]

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Livewire\Volt\Volt;
+use Livewire\Livewire;
 
 uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
 
@@ -18,7 +18,7 @@ test('new users can register', function () {
     $dummyEmail = 'test@example.com';
     Illuminate\Support\Facades\Cache::put("cart_migration_{$dummyEmail}", $dummySessionId);
 
-    $response = Volt::test('auth.register')
+    $response = Livewire::test('pages::auth.register')
         ->set('name', 'Test User')
         ->set('email', $dummyEmail)
         ->set('password', 'password')

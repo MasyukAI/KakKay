@@ -81,10 +81,8 @@
     }
     
     /* Header & Navigation */
-    header{ 
-      display:flex; 
-      align-items:center; 
-      justify-content:space-between; 
+    .brand-header{ 
+      padding-bottom: 18px;
       position: relative;
       z-index: 10;
     }

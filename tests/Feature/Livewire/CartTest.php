@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use AIArmada\Cart\Facades\Cart as CartFacade;
 use App\Livewire\Cart;
-use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -33,11 +32,9 @@ beforeEach(function () {
 });
 
 it('can render', function () {
-    // Create test category and products
-    $category = Category::factory()->create();
+    // Create test products
     Product::factory()->count(3)->create([
-        'is_active' => true,
-        'category_id' => $category->id,
+        'status' => 'active',
     ]);
 
     $component = Livewire::test(Cart::class);
@@ -46,11 +43,9 @@ it('can render', function () {
 });
 
 it('can add product to cart', function () {
-    $category = Category::factory()->create();
     $product = Product::factory()->create([
         'name' => 'Test Book',
         'price' => 1999, // RM19.99 in cents
-        'category_id' => $category->id,
     ]);
 
     Livewire::test(Cart::class)
@@ -70,11 +65,9 @@ it('can add product to cart', function () {
 });
 
 it('can display cart items with correct prices', function () {
-    $category = Category::factory()->create();
     $product = Product::factory()->create([
         'name' => 'Test Book',
         'price' => 2499, // RM24.99 in cents
-        'category_id' => $category->id,
     ]);
 
     $cart = Livewire::test(Cart::class);
@@ -91,14 +84,11 @@ it('can display cart items with correct prices', function () {
 });
 
 it('can calculate subtotal correctly', function () {
-    $category = Category::factory()->create();
     $product1 = Product::factory()->create([
         'price' => 1999, // RM19.99
-        'category_id' => $category->id,
     ]);
     $product2 = Product::factory()->create([
         'price' => 2499, // RM24.99
-        'category_id' => $category->id,
     ]);
 
     $cart = Livewire::test(Cart::class);
@@ -115,10 +105,8 @@ it('can calculate subtotal correctly', function () {
 });
 
 it('can format prices correctly', function () {
-    $category = Category::factory()->create();
     $product = Product::factory()->create([
         'price' => 1999, // RM19.99
-        'category_id' => $category->id,
     ]);
 
     $cart = Livewire::test(Cart::class);
@@ -138,10 +126,8 @@ it('can format prices correctly', function () {
 });
 
 it('can update item quantity', function () {
-    $category = Category::factory()->create();
     $product = Product::factory()->create([
         'price' => 1999,
-        'category_id' => $category->id,
     ]);
 
     $cart = Livewire::test(Cart::class);
@@ -157,10 +143,8 @@ it('can update item quantity', function () {
 });
 
 it('can remove items from cart', function () {
-    $category = Category::factory()->create();
     $product = Product::factory()->create([
         'price' => 1999,
-        'category_id' => $category->id,
     ]);
 
     $cart = Livewire::test(Cart::class);

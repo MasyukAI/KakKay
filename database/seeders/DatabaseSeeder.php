@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 
 final class DatabaseSeeder extends Seeder
@@ -36,17 +36,23 @@ final class DatabaseSeeder extends Seeder
 
         // Ensure admin is verified and not a guest
         if (! $admin->email_verified_at) {
-            $admin->email_verified_at = now();
+            $admin->email_verified_at = now()->toDateTimeString();
             $admin->is_guest = false;
             $admin->save();
         }
 
         // Assign role (without team context for global admin)
         // syncWithoutDetaching prevents errors if already assigned
-        $admin->roles()->syncWithoutDetaching([$superAdminRole->id]);
+        $admin->roles()->syncWithoutDetaching([$superAdminRole->getKey()]);
 
         // Clear permission cache
         app(PermissionRegistrar::class)->forgetCachedPermissions();
+
+        // Seed settings
+        $this->call([
+            PricingSettingsSeeder::class,
+            CartRecoverySettingsSeeder::class,
+        ]);
 
         // Seed books and products
         $this->call([

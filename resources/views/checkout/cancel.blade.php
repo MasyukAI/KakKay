@@ -30,17 +30,17 @@
                 </div>
 
                 <div class="space-y-3">
-                    <a href="{{ route('checkout') }}" 
+                          <a href="{{ route('checkout') }}" wire:navigate
                        class="block w-full bg-pink-500 hover:bg-pink-600 text-white font-medium py-3 px-4 rounded-lg transition-colors">
                         Cuba Lagi
                     </a>
                     
-                    <a href="{{ route('cart') }}" 
+                          <a href="{{ route('cart') }}" wire:navigate
                        class="block w-full bg-gray-600 hover:bg-gray-700 text-white font-medium py-3 px-4 rounded-lg transition-colors">
                         Kembali ke Keranjang
                     </a>
                     
-                    <a href="{{ route('home') }}" 
+                          <a href="{{ route('home') }}" wire:navigate
                        class="block w-full text-gray-400 hover:text-white py-2 transition-colors">
                         Kembali ke Laman Utama
                     </a>

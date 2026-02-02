@@ -12,6 +12,8 @@
         "php": "^8.4",
         "aiarmada/cart": "dev-develop",
         "aiarmada/cashier": "dev-develop",
+        "aiarmada/checkout": "dev-develop",
+        "aiarmada/chip": "dev-develop",
         "aiarmada/commerce-support": "dev-develop",
         "aiarmada/customers": "dev-develop",
         "aiarmada/docs": "dev-develop",
@@ -47,16 +49,16 @@
         "laravel/octane": "^2.12",
         "laravel/tinker": "^2.10.1",
         "livewire/flux": "^2.1.1",
-        "livewire/volt": "^1.7",
         "nnjeim/world": "^1.1",
         "propaganistas/laravel-phone": "^6.0",
-        "ysfkaya/filament-phone-input": "dev-main"
+        "ysfkaya/filament-phone-input": "^4.1"
     },
     "require-dev": {
         "driftingly/rector-laravel": "^2.0",
+        "filament/blueprint": "*",
         "laradumps/laradumps": "^4.0",
         "larastan/larastan": "^3.0",
-        "laravel/boost": "^1.0",
+        "laravel/boost": "^2.0",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.18",
         "laravel/sail": "^1.41",
@@ -134,18 +136,15 @@
     "prefer-stable": true,
     "repositories": [
         {
-            "type": "vcs",
-            "url": "https://github.com/sairiz/filament-phone-input"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/sairiz/resized-column"
+            "name": "filament",
+            "type": "composer",
+            "url": "https://packages.filamentphp.com/composer"
         },
         {
             "type": "path",
             "url": "/Users/Saiffil/Herd/commerce/packages/*",
             "options": {
-                "symlink": true
+                "symlink": false
             }
         }
     ]

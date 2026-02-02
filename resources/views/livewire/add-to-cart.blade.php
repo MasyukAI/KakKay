@@ -1,7 +1,7 @@
 <?php
 
 use AIArmada\Products\Models\Product;
-use Livewire\Volt\Component;
+use Livewire\Component;
 use AIArmada\Cart\Facades\Cart;
 
 new class extends Component {

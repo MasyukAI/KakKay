@@ -4,118 +4,74 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use AIArmada\Cart\CartManager;
-use App\Models\Payment;
-use App\Services\CheckoutService;
-use App\Services\Traits\ManagesCartIdentifiers;
+use AIArmada\Checkout\Actions\BuildCheckoutSessionViewData;
+use AIArmada\Checkout\Models\CheckoutSession;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
+/**
+ * Renders checkout result pages (success/failure/cancel).
+ *
+ * All payment processing and status updates are handled by the
+ * aiarmada/checkout package's PaymentCallbackController and
+ * PaymentWebhookController. This controller only renders views.
+ *
+ * Uses the package's view data action for consistent data structure.
+ */
 final class CheckoutController extends Controller
 {
-    use ManagesCartIdentifiers;
-
-    public function __construct(
-        private readonly CheckoutService $checkoutService,
-        /** @phpstan-ignore property.onlyWritten */
-        private readonly CartManager $cartManager
-    ) {}
-
     /**
-     * Show checkout success page
+     * Display checkout success page.
      *
-     * Uses cart reference from URL to locate the cart:
-     * 1. Try to create order immediately from cart metadata (better UX)
-     * 2. If webhook already created it, use existing order
-     * 3. Webhook serves as fallback and verification
+     * Payment verification and order creation already handled by package callback.
      */
-    public function success(Request $request, string $reference): View
+    public function success(Request $request, string $session): View
     {
-        Log::debug('Checkout success redirect hit', ['reference' => $reference]);
+        $checkoutSession = CheckoutSession::find($session);
 
-        $payload = $this->checkoutService->prepareSuccessView($reference);
+        $viewData = $checkoutSession ? BuildCheckoutSessionViewData::run($checkoutSession) : ['reference' => $session];
 
-        return view('checkout.success', $payload);
+        // Add app-specific Order model with relationships if needed
+        if ($checkoutSession?->order_id) {
+            $viewData['order'] = \App\Models\Order::with([
+                'items',
+                'billingAddress',
+                'shippingAddress',
+                'payments',
+                'shipments',
+            ])->find($checkoutSession->order_id);
+        }
+
+        return view('checkout.success', $viewData);
     }
 
     /**
-     * Show checkout failure page
+     * Display checkout failure page.
+     *
+     * Payment status already updated by package callback.
      */
-    public function failure(Request $request, string $reference): View
+    public function failure(Request $request, string $session): View
     {
-        // Get error info from query parameters (if CHIP provides it)
-        $error = $request->get('error', 'Masalah teknikal dengan pembayaran');
+        $checkoutSession = CheckoutSession::find($session);
 
-        $order = null;
-        $payment = null;
+        $viewData = $checkoutSession ? BuildCheckoutSessionViewData::run($checkoutSession) : ['reference' => $session];
+        $viewData['error'] = session('error', $request->get('error', 'Masalah teknikal dengan pembayaran'));
 
-        // Try to find cart by reference to get purchase ID
-        $cart = $this->findCartByReference($reference);
-
-        if ($cart) {
-            $paymentIntent = $cart->getMetadata('payment_intent');
-            $purchaseId = $paymentIntent['purchase_id'] ?? null;
-
-            if ($purchaseId) {
-                // Find payment by CHIP purchase ID
-                $payment = Payment::where('gateway_payment_id', $purchaseId)->first();
-                $order = $payment?->order;
-
-                // Update payment status if found
-                if ($payment && $payment->status === 'pending') {
-                    $payment->update([
-                        'status' => 'failed',
-                        'failed_at' => now(),
-                        'note' => $error,
-                    ]);
-                }
-            }
-        }
-
-        return view('checkout.failure', [
-            'order' => $order,
-            'payment' => $payment,
-            'error' => $error,
-            'reference' => $reference,
-        ]);
+        return view('checkout.failure', $viewData);
     }
 
     /**
-     * Show checkout cancel page
+     * Display checkout cancel page.
+     *
+     * Session already marked cancelled by package callback.
      */
-    public function cancel(Request $request, string $reference): View
+    public function cancel(Request $request, string $session): View
     {
-        $order = null;
-        $payment = null;
+        $checkoutSession = CheckoutSession::find($session);
 
-        // Try to find cart by reference to get purchase ID
-        $cart = $this->findCartByReference($reference);
+        $viewData = $checkoutSession ? BuildCheckoutSessionViewData::run($checkoutSession) : ['reference' => $session];
+        $viewData['message'] = 'Pembayaran dibatalkan';
 
-        if ($cart) {
-            $paymentIntent = $cart->getMetadata('payment_intent');
-            $purchaseId = $paymentIntent['purchase_id'] ?? null;
-
-            if ($purchaseId) {
-                // Find payment by CHIP purchase ID
-                $payment = Payment::where('gateway_payment_id', $purchaseId)->first();
-                $order = $payment?->order;
-
-                // Update payment status if found
-                if ($payment && $payment->status === 'pending') {
-                    $payment->update([
-                        'status' => 'cancelled',
-                        'failed_at' => now(),
-                        'note' => 'Payment cancelled by user',
-                    ]);
-                }
-            }
-        }
-
-        return view('checkout.cancel', [
-            'order' => $order,
-            'payment' => $payment,
-            'reference' => $reference,
-        ]);
+        return view('checkout.cancel', $viewData);
     }
 }

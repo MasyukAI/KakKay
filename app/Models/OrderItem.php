@@ -4,70 +4,15 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use AIArmada\Orders\Models\OrderItem as BaseOrderItem;
 
-final class OrderItem extends Model
+/**
+ * App OrderItem model - extends the package model for demo purposes.
+ *
+ * This alias allows existing code to reference App\Models\OrderItem
+ * while using the full-featured package implementation.
+ */
+final class OrderItem extends BaseOrderItem
 {
-    /** @phpstan-ignore-next-line */
-    use HasFactory, HasUuids;
-
-    protected $fillable = [
-        'order_id',
-        'product_id',
-        'quantity',
-        'unit_price',
-    ];
-
-    protected $casts = [
-        'quantity' => 'integer',
-        'unit_price' => 'integer',
-    ];
-
-    /**
-     * @return BelongsTo<Order>
-     */
-    /** @phpstan-ignore-next-line */
-    public function order(): BelongsTo
-    {
-        return $this->belongsTo(Order::class);
-    }
-
-    /**
-     * @return BelongsTo<Product>
-     */
-    /** @phpstan-ignore-next-line */
-    public function product(): BelongsTo
-    {
-        return $this->belongsTo(Product::class);
-    }
-
-    public function getTotalPriceAttribute(): int
-    {
-        return $this->unit_price * $this->quantity;
-    }
-
-    public function getFormattedUnitPriceAttribute(): string
-    {
-        return 'RM '.number_format($this->unit_price / 100, 2);
-    }
-
-    public function getFormattedTotalPriceAttribute(): string
-    {
-        return 'RM '.number_format($this->total_price / 100, 2);
-    }
-
-    public function getTotalWeightAttribute(): float
-    {
-        /** @phpstan-ignore-next-line */
-        return $this->product ? ($this->product->weight * $this->quantity) : 0;
-    }
-
-    public function requiresShipping(): bool
-    {
-        /** @phpstan-ignore-next-line */
-        return $this->product ? $this->product->requiresShipping() : true;
-    }
+    //
 }

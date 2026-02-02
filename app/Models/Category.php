@@ -4,26 +4,15 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use AIArmada\Products\Models\Category as BaseCategory;
 
-final class Category extends Model
+/**
+ * App Category model - extends the package model for demo purposes.
+ *
+ * This alias allows existing code to reference App\Models\Category
+ * while using the full-featured package implementation.
+ */
+final class Category extends BaseCategory
 {
-    /** @phpstan-ignore-next-line */
-    use HasFactory, HasUuids;
-
-    protected $fillable = [
-        'name',
-    ];
-
-    /**
-     * @return HasMany<Product>
-     */
-    /** @phpstan-ignore-next-line */
-    public function products(): HasMany
-    {
-        return $this->hasMany(Product::class);
-    }
+    //
 }

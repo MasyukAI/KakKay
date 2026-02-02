@@ -1,7 +1,7 @@
 <?php
 
 use Livewire\Attributes\{Layout, Title};
-use Livewire\Volt\Component;
+use Livewire\Component;
 use AIArmada\Products\Models\Product;
 use AIArmada\Cart\Facades\Cart;
 use Filament\Notifications\Notification;
@@ -54,14 +54,15 @@ class extends Component {
 } ?>
 
 <div class="relative isolate overflow-hidden bg-[#0f0218] text-white">
-  <div class="absolute -top-40 -left-32 h-[480px] w-[480px] rounded-full bg-gradient-to-br from-pink-500/40 via-purple-500/30 to-rose-500/40 blur-3xl"></div>
-  <div class="absolute top-1/3 -right-24 h-[520px] w-[520px] rounded-full bg-gradient-to-br from-fuchsia-500/30 via-rose-500/20 to-orange-400/30 blur-3xl"></div>
-  <div class="absolute bottom-[-240px] left-1/2 h-[460px] w-[460px] -translate-x-1/2 rounded-full bg-gradient-to-br from-purple-600/30 via-indigo-500/20 to-pink-400/40 blur-3xl"></div>
+  <div class="pointer-events-none absolute -top-40 -left-32 h-[480px] w-[480px] rounded-full bg-gradient-to-br from-pink-500/40 via-purple-500/30 to-rose-500/40 blur-3xl"></div>
+  <div class="pointer-events-none absolute top-1/3 -right-24 h-[520px] w-[520px] rounded-full bg-gradient-to-br from-fuchsia-500/30 via-rose-500/20 to-orange-400/30 blur-3xl"></div>
+  <div class="pointer-events-none absolute bottom-[-240px] left-1/2 h-[460px] w-[460px] -translate-x-1/2 rounded-full bg-gradient-to-br from-purple-600/30 via-indigo-500/20 to-pink-400/40 blur-3xl"></div>
 
   @php
       $cartQuantity = Cart::getTotalQuantity();
   @endphp
 
+  <div class="relative z-10">
   <x-brand-header :cart-quantity="$cartQuantity" />
 
   <main class="relative">
@@ -362,4 +363,5 @@ class extends Component {
       </div>
     </section>
   </main>
+  </div>
 </div>

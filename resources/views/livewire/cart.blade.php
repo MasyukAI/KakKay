@@ -6,7 +6,7 @@
 
     <div class="relative z-10">
         <x-brand-header>
-            <a href="{{ route('home') }}" class="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.32em] text-white/70 transition hover:border-white/50 hover:text-white">
+            <a href="{{ route('home') }}" wire:navigate class="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.32em] text-white/70 transition hover:border-white/50 hover:text-white">
                 <flux:icon.arrow-left class="h-4 w-4" />
                 <span class="hidden md:inline">Sambung pilih buku</span>
             </a>
@@ -48,7 +48,7 @@
                             <h1 class="mt-6 font-display text-4xl leading-tight sm:text-5xl">Troli awak masih sunyi 💫</h1>
                             <p class="mt-4 text-base leading-relaxed text-white/80 sm:text-lg">Belum terlambat nak cari buku manja. Pilih satu yang buat hati senyum, cuba aktiviti malam ini, dan tengok macam mana vibe rumah terus hangat.</p>
                             <div class="mt-8 flex flex-wrap justify-center gap-4">
-                                <flux:button variant="primary" href="{{ route('home') }}" class="cart-button-primary flex items-center justify-center gap-2 px-8 py-4 text-lg">
+                                <flux:button variant="primary" href="{{ route('home') }}" wire:navigate class="cart-button-primary flex items-center justify-center gap-2 px-8 py-4 text-lg">
                                     <flux:icon.sparkles class="h-5 w-5" />
                                     Jom pilih buku
                                 </flux:button>
@@ -74,19 +74,19 @@
                                             </div>
                                             <div class="relative flex flex-1 flex-col justify-between gap-6">
                                                 <div class="space-y-4">
-                                                    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                                                        <div class="flex flex-col flex-1">
-                                                            <a href="/{{ $item['slug'] }}" target="_blank" rel="noopener" class="text-xl font-semibold text-white transition hover:text-pink-200">
-                                                                {{ $item['name'] }}
-                                                            </a>
-                                                            
-                                                        </div>
-                                                        <span class="text-sm font-semibold text-white/80 ml-auto text-right block">{{ $item['price'] }}</span>
-                                                    </div>
-                                                    <div>
-                                                                <div class="text-sm text-white/80">by Kak Kay</div>
-                                                                <div class="text-xs text-green-400">In Stock</div>
+                                                    <div class="flex flex-col gap-2">
+                                                        <a href="/{{ $item['slug'] }}" target="_blank" rel="noopener" class="text-xl font-semibold text-white transition hover:text-pink-200">
+                                                            {{ $item['name'] }}
+                                                        </a>
+                                                        <div class="flex items-center justify-between gap-4">
+                                                            <div class="text-sm text-white/80">by Kak Kay</div>
+                                                            <div class="flex items-center gap-2 text-sm">
+                                                                <span class="text-white/70">Harga seunit:</span>
+                                                                <span class="font-semibold text-white">{{ $item['price'] }}</span>
                                                             </div>
+                                                        </div>
+                                                        <div class="text-xs text-green-400">In Stock</div>
+                                                    </div>
                                                     {{-- <p class="text-sm leading-relaxed text-white/70">
                                                         Modul Kak Kay ni siap dengan skrip mesra dan ritual harian. Selak satu bab, terus boleh praktik malam ini.
                                                     </p> --}}
@@ -132,9 +132,16 @@
                                             </div>
                                         </div>
                                         <hr class="my-6 border-white/15">
-                                        <div class="flex items-center justify-end gap-2">
-                                            <span class="text-xs uppercase">Jumlah</span>
-                                            <span class="text-sm font-semibold text-white">{{ $item['subtotal'] }}</span>
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-baseline gap-2 text-white/70">
+                                                <span class="text-sm">{{ $item['price'] }}</span>
+                                                <flux:icon.x-mark class="h-3 w-3" />
+                                                <span class="text-sm font-semibold">{{ $item['quantity'] }}</span>
+                                            </div>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-xs uppercase tracking-wider text-white/60">Jumlah Item</span>
+                                                <span class="text-lg font-bold text-white bg-gradient-to-r from-pink-400 via-rose-400 to-purple-400 bg-clip-text text-transparent">{{ $item['subtotal'] }}</span>
+                                            </div>
                                         </div>
                                     </div>
                                     {{-- Removed extra divider between cards --}}
@@ -152,6 +159,68 @@
                                             <h3 class="font-display text-3xl text-white">Ringkasan Pesanan</h3>
                                             {{-- <p class="mt-2 text-sm leading-relaxed text-white/70">Semak jumlah dan klik terus untuk secure ritual pilihan awak. Penghantaran disusun rapi — tinggal tunggu stok sampai.</p> --}}
                                         </div>
+
+                                        {{-- Voucher Section --}}
+                                        <div class="space-y-3">
+                                            <h4 class="text-sm font-semibold text-white/80 flex items-center gap-2">
+                                                <flux:icon.ticket class="h-4 w-4 text-pink-400" />
+                                                Kod Voucher
+                                            </h4>
+
+                                            @if($appliedVoucher)
+                                                {{-- Applied Voucher Display --}}
+                                                <div class="flex items-center justify-between rounded-xl border border-green-500/30 bg-green-500/10 px-4 py-3">
+                                                    <div class="flex items-center gap-3">
+                                                        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-green-500/20">
+                                                            <flux:icon.check-circle class="h-5 w-5 text-green-400" />
+                                                        </div>
+                                                        <div>
+                                                            <p class="text-sm font-semibold text-green-300">{{ $appliedVoucher['code'] }}</p>
+                                                            <p class="text-xs text-green-400/70">{{ $appliedVoucher['description'] ?? 'Diskaun digunakan' }}</p>
+                                                        </div>
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        wire:click="removeVoucher"
+                                                        wire:loading.attr="disabled"
+                                                        class="rounded-lg p-1.5 text-green-400/70 transition hover:bg-red-500/20 hover:text-red-400"
+                                                    >
+                                                        <flux:icon.x-mark class="h-4 w-4" />
+                                                    </button>
+                                                </div>
+                                            @else
+                                                {{-- Voucher Input Form --}}
+                                                <div class="space-y-2">
+                                                    <div class="flex gap-2">
+                                                        <input
+                                                            type="text"
+                                                            wire:model="voucherCode"
+                                                            wire:keydown.enter="applyVoucher"
+                                                            placeholder="Masukkan kod voucher"
+                                                            class="flex-1 rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-white placeholder-white/40 transition focus:border-pink-400/50 focus:bg-white/10 focus:outline-none focus:ring-2 focus:ring-pink-400/20"
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            wire:click="applyVoucher"
+                                                            wire:loading.attr="disabled"
+                                                            wire:target="applyVoucher"
+                                                            class="rounded-xl border border-pink-400/40 bg-pink-500/20 px-4 py-3 text-sm font-semibold text-pink-300 transition hover:bg-pink-500/30 hover:text-pink-200 disabled:cursor-not-allowed disabled:opacity-50"
+                                                        >
+                                                            <span wire:loading.remove wire:target="applyVoucher">Guna</span>
+                                                            <svg wire:loading wire:target="applyVoucher" class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                                <path class="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                    @if($voucherError)
+                                                        <p class="text-xs text-red-400">{{ $voucherError }}</p>
+                                                    @endif
+                                                </div>
+                                            @endif
+                                        </div>
+
+                                        <hr class="border-white/10">
 
                                         <div class="space-y-4 text-sm text-white/80">
                                             <div class="flex justify-between">
@@ -181,7 +250,7 @@
                                         <flux:button
                                             x-ref="checkoutBtn"
                                             variant="primary"
-                                            href="{{ route('checkout') }}"
+                                            href="{{ route('checkout') }}" wire:navigate
                                             class="cart-button-primary flex w-full items-center justify-center gap-2 px-6 py-4 text-lg font-semibold">
                                             <flux:icon.credit-card class="h-5 w-5" />
                                             Terus ke bayaran
@@ -196,7 +265,7 @@
             @endif
         </main>
 
-        @if($suggestedProducts && $suggestedProducts->count() > 0)
+        @if($this->suggestedProducts && $this->suggestedProducts->count() > 0)
             <section id="recommended" class="mt-8 pb-20">
                 <div class="mx-auto max-w-7xl px-6 sm:px-8">
                     <div class="mx-auto max-w-3xl text-center">
@@ -204,9 +273,9 @@
                         <p class="mt-3 text-lg leading-relaxed text-white/80">Tambah satu lagi judul untuk lebih lengkap. Semua ni antara pilihan feveret geng Kak Kay.</p>
                     </div>
                     <div class="mt-10 flex flex-wrap justify-center gap-6">
-                        @foreach($suggestedProducts as $product)
+                        @foreach($this->suggestedProducts as $product)
                             <div wire:key="suggested-product-{{ $product->id }}" class="group relative flex h-full flex-col overflow-hidden rounded-[30px] border border-white/15 bg-white/5 p-5 text-left text-white/80 shadow-[0_25px_70px_rgba(12,5,24,0.4)] transition duration-300 hover:-translate-y-2 hover:shadow-[0_35px_90px_rgba(236,72,153,0.3)]" style="min-width:280px;max-width:340px;flex:1 1 320px;">
-                                <a href="/{{ $product->slug }}" class="block">
+                                <a href="/{{ $product->slug }}" wire:navigate class="block">
                                     <div class="relative overflow-hidden rounded-[22px]">
                                         <img src="{{ asset('storage/images/cover/' . $product->slug . '.webp') }}" alt="{{ $product->name }}" class="w-full rounded-[22px] border border-white/20 object-cover shadow-[0_20px_60px_rgba(17,0,34,0.45)]">
                                         <div class="absolute inset-0 bg-gradient-to-t from-[#0f0218]/80 via-transparent to-transparent opacity-0 transition group-hover:opacity-100"></div>
@@ -288,7 +357,7 @@
                     x-show="showFooter"
                     style="display: none;"
                 >
-                    <flux:button variant="primary" href="{{ route('checkout') }}" class="cart-button-primary flex items-center justify-center gap-2 px-8 py-4 text-lg font-semibold w-full max-w-md">
+                    <flux:button variant="primary" href="{{ route('checkout') }}" wire:navigate class="cart-button-primary flex items-center justify-center gap-2 px-8 py-4 text-lg font-semibold w-full max-w-md">
                         <flux:icon.credit-card class="h-5 w-5" />
                         Terus ke bayaran
                     </flux:button>

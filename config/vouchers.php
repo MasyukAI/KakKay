@@ -2,29 +2,39 @@
 
 declare(strict_types=1);
 
+$tablePrefix = env('VOUCHERS_TABLE_PREFIX', env('COMMERCE_TABLE_PREFIX', ''));
+
+$tables = [
+    'vouchers' => $tablePrefix.'vouchers',
+    'voucher_usage' => $tablePrefix.'voucher_usage',
+    'voucher_wallets' => $tablePrefix.'voucher_wallets',
+    'voucher_assignments' => $tablePrefix.'voucher_assignments',
+    'voucher_transactions' => $tablePrefix.'voucher_transactions',
+];
+
 return [
     /*
     |--------------------------------------------------------------------------
-    | Voucher System Configuration
+    | Database
     |--------------------------------------------------------------------------
-    |
-    | Configure how vouchers behave in your application.
-    |
     */
-
-    'enabled' => env('VOUCHERS_ENABLED', true),
+    'database' => [
+        'table_prefix' => $tablePrefix,
+        'json_column_type' => env('VOUCHERS_JSON_COLUMN_TYPE', env('COMMERCE_JSON_COLUMN_TYPE', 'json')),
+        'tables' => $tables,
+    ],
 
     /*
     |--------------------------------------------------------------------------
-    | Voucher Code Settings
+    | Defaults
     |--------------------------------------------------------------------------
     */
+    'default_currency' => 'MYR',
 
     'code' => [
-        'case_sensitive' => env('VOUCHERS_CASE_SENSITIVE', false),
-        'auto_uppercase' => env('VOUCHERS_AUTO_UPPERCASE', true),
-        'min_length' => env('VOUCHERS_MIN_LENGTH', 4),
-        'max_length' => env('VOUCHERS_MAX_LENGTH', 32),
+        'prefix' => env('VOUCHERS_CODE_PREFIX', ''),
+        'length' => (int) env('VOUCHERS_CODE_LENGTH', 8),
+        'auto_uppercase' => true,
     ],
 
     /*
@@ -32,12 +42,41 @@ return [
     | Cart Integration
     |--------------------------------------------------------------------------
     */
-
     'cart' => [
-        'max_vouchers_per_cart' => env('VOUCHERS_MAX_PER_CART', 1),
-        'auto_apply_best' => env('VOUCHERS_AUTO_APPLY_BEST', false),
-        'condition_order' => env('VOUCHERS_CONDITION_ORDER', 50),
-        'allow_stacking' => env('VOUCHERS_ALLOW_STACKING', false),
+        'max_vouchers_per_cart' => (int) env('VOUCHERS_MAX_PER_CART', 1),
+        'replace_when_max_reached' => true,
+        'condition_order' => 50,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Stacking Policies
+    |--------------------------------------------------------------------------
+    */
+    'stacking' => [
+        'mode' => env('VOUCHERS_STACKING_MODE', 'sequential'),
+
+        'rules' => [
+            [
+                'type' => 'max_vouchers',
+                'value' => (int) env('VOUCHERS_MAX_PER_CART', 1),
+            ],
+            [
+                'type' => 'max_discount_percentage',
+                'value' => 50,
+            ],
+            [
+                'type' => 'type_restriction',
+                'max_per_type' => [
+                    'percentage' => 1,
+                    'fixed' => 2,
+                    'free_shipping' => 1,
+                ],
+            ],
+        ],
+
+        'auto_optimize' => false,
+        'auto_replace' => true,
     ],
 
     /*
@@ -45,82 +84,60 @@ return [
     | Validation
     |--------------------------------------------------------------------------
     */
-
     'validation' => [
-        'check_user_limit' => env('VOUCHERS_CHECK_USER_LIMIT', true),
-        'check_global_limit' => env('VOUCHERS_CHECK_GLOBAL_LIMIT', true),
-        'check_date_range' => env('VOUCHERS_CHECK_DATE_RANGE', true),
-        'check_min_cart_value' => env('VOUCHERS_CHECK_MIN_CART_VALUE', true),
+        'check_user_limit' => true,
+        'check_global_limit' => true,
+        'check_min_cart_value' => true,
+        'check_targeting' => true,
     ],
 
     /*
     |--------------------------------------------------------------------------
-    | Usage Tracking
+    | Tracking
     |--------------------------------------------------------------------------
     */
-
     'tracking' => [
-        'enabled' => env('VOUCHERS_TRACKING_ENABLED', true),
-        'store_cart_snapshot' => env('VOUCHERS_STORE_CART_SNAPSHOT', true),
-        'cleanup_after_days' => env('VOUCHERS_CLEANUP_AFTER_DAYS', 90),
+        'track_applications' => true,
     ],
 
     /*
     |--------------------------------------------------------------------------
-    | Events
+    | Ownership (Multi-Tenancy)
     |--------------------------------------------------------------------------
     */
-
-    'events' => [
-        'dispatch' => env('VOUCHERS_DISPATCH_EVENTS', true),
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Database Tables
-    |--------------------------------------------------------------------------
-    */
-
-    'table_names' => [
-        'vouchers' => 'vouchers',
-        'voucher_usage' => 'voucher_usage',
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Voucher Ownership
-    |--------------------------------------------------------------------------
-    |
-    | Configure how vouchers are associated with a specific owner / tenant.
-    | When disabled, all vouchers are treated as global. When enabled, the
-    | resolver should return the current owner model so lookups can be scoped.
-    |
-    */
-
     'owner' => [
-        'enabled' => env('VOUCHERS_OWNER_ENABLED', true),
-        'resolver' => App\Support\Vouchers\CurrentOwnerResolver::class,
-        'include_global' => env('VOUCHERS_OWNER_INCLUDE_GLOBAL', true),
-        'auto_assign_on_create' => env('VOUCHERS_OWNER_AUTO_ASSIGN_ON_CREATE', true),
+        'enabled' => env('VOUCHERS_OWNER_ENABLED', false),
+        'include_global' => false,
+        'auto_assign_on_create' => true,
     ],
 
     /*
     |--------------------------------------------------------------------------
-    | Redemption Channels
+    | Redemption
     |--------------------------------------------------------------------------
-    |
-    | Configure manual redemption policies and channel names that are used
-    | when tracking voucher usage. Manual redemption can be toggled per
-    | voucher by setting the allows_manual_redemption flag.
-    |
     */
-
     'redemption' => [
-        'manual_requires_flag' => env('VOUCHERS_MANUAL_REQUIRES_FLAG', true),
-        'channels' => [
-            'automatic' => 'automatic',
-            'manual' => 'manual',
-            'api' => 'api',
+        'manual_requires_flag' => true,
+        'manual_channel' => 'manual',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Affiliates Integration (aiarmada/affiliates)
+    |--------------------------------------------------------------------------
+    */
+    'affiliates' => [
+        'enabled' => env('VOUCHERS_AFFILIATES_ENABLED', true),
+        'auto_create_voucher' => false,
+        'create_on_activation' => true,
+        'set_default_voucher_code' => true,
+        'code_format' => 'prefix_code',
+        'code_prefix' => 'REF',
+        'voucher_defaults' => [
+            'type' => 'percentage',
+            'value' => 1000,
+            'currency' => null,
+            'status' => 'active',
         ],
     ],
 ];

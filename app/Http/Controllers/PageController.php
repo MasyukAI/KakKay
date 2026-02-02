@@ -4,23 +4,26 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Models\Page;
+use App\Models\Product;
 
 final class PageController extends Controller
 {
     /**
-     * Display the specified page by slug.
+     * Display the specified product page by slug.
+     *
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function show(string $slug): \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
+    public function show(string $slug)
     {
-        $page = Page::where('slug', $slug)
-            // ->where('is_published', true)
-            ->first();
+        $product = Product::where('slug', $slug)->first();
 
-        if (! $page) {
+        if (! $product) {
             abort(404);
         }
 
-        return view('pages.'.$slug, compact('page'));
+        /** @var view-string $view */
+        $view = 'products.show';
+
+        return view($view, compact('product'));
     }
 }

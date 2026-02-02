@@ -1,11 +1,20 @@
 {
     "agents": [
         "codex",
-        "copilot"
+        "copilot",
+        "opencode"
     ],
-    "editors": [
-        "phpstorm",
-        "vscode"
+    "guidelines": true,
+    "herd_mcp": true,
+    "mcp": true,
+    "packages": [
+        "filament/filament",
+        "filament/blueprint"
     ],
-    "guidelines": []
+    "sail": false,
+    "skills": [
+        "fluxui-development",
+        "pest-testing",
+        "tailwindcss-development"
+    ]
 }

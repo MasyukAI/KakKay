@@ -21,7 +21,7 @@ it('can add product to cart using product ID (Tambah button functionality)', fun
         'name' => 'Test Product',
         'slug' => 'test-product',
         'price' => 2499, // RM24.99 in cents
-        'is_active' => true,
+        'status' => 'active',
     ]);
 
     $cart = Livewire::actingAs($user)
@@ -46,7 +46,7 @@ it('can add product to cart using Product object (backward compatibility)', func
         'name' => 'Test Product',
         'slug' => 'test-product',
         'price' => 2499,
-        'is_active' => true,
+        'status' => 'active',
     ]);
 
     $cart = Livewire::actingAs($user)

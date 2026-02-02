@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use AIArmada\Chip\DataObjects\Purchase;
+use AIArmada\Chip\Data\PurchaseData as Purchase;
 use App\Services\Chip\ChipDataRecorder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;

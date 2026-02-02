@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Listeners;
 
-use App\Events\OrderPaid;
+use AIArmada\Orders\Events\OrderPaid;
+use App\Models\Order;
+use App\Models\Payment;
 use App\Notifications\OrderConfirmation;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
@@ -25,27 +27,46 @@ final class SendOrderConfirmationEmail implements ShouldQueue
      */
     public function handle(OrderPaid $event): void
     {
+        /** @var Order $order */
+        $order = $event->order;
+
         Log::info('Sending order confirmation email', [
-            'order_id' => $event->order->id,
-            'order_number' => $event->order->order_number,
-            'customer_email' => $event->order->user->email ?? 'unknown',
+            'order_id' => $order->id,
+            'order_number' => $order->order_number,
+            'customer_email' => $order->user->email ?? 'unknown',
+            'transaction_id' => $event->transactionId,
         ]);
 
         try {
+            // Look up the payment by transaction_id or get the latest payment
+            /** @var Payment|null $payment */
+            $payment = $order->payments()
+                ->where('transaction_id', $event->transactionId)
+                ->first() ?? $order->payments()->latest()->first();
+
+            if (! $payment) {
+                Log::warning('No payment found for order confirmation email', [
+                    'order_id' => $order->id,
+                    'transaction_id' => $event->transactionId,
+                ]);
+
+                return;
+            }
+
             // Send confirmation email to customer
             /** @var \App\Models\User $user */
-            $user = $event->order->user;
+            $user = $order->user;
             Notification::route('mail', $user->email)
-                ->notify(new OrderConfirmation($event->order, $event->payment));
+                ->notify(new OrderConfirmation($order, $payment));
 
             Log::info('Order confirmation email sent successfully', [
-                'order_id' => $event->order->id,
-                'order_number' => $event->order->order_number,
+                'order_id' => $order->id,
+                'order_number' => $order->order_number,
             ]);
         } catch (Throwable $throwable) {
             Log::error('Failed to send order confirmation email', [
-                'order_id' => $event->order->id,
-                'order_number' => $event->order->order_number,
+                'order_id' => $order->id,
+                'order_number' => $order->order_number,
                 'error' => $throwable->getMessage(),
             ]);
 

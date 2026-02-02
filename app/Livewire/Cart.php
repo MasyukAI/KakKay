@@ -6,6 +6,7 @@ namespace App\Livewire;
 
 use AIArmada\Cart\Facades\Cart as CartFacade;
 use AIArmada\Products\Enums\ProductStatus;
+use AIArmada\Vouchers\Facades\Voucher;
 use App\Models\Product;
 use Exception;
 use Filament\Notifications\Notification;
@@ -22,24 +23,40 @@ final class Cart extends Component
 
     public string $voucherCode = '';
 
-    /**
-     * Suggested products based on cart items.
-     *
-     * @var \Illuminate\Support\Collection<int, Product>
-     */
-    public $suggestedProducts;
+    public string $voucherError = '';
+
+    public bool $isApplyingVoucher = false;
+
+    /** @var array<string, mixed>|null */
+    public ?array $appliedVoucher = null;
 
     public function mount(): void
     {
         $this->loadCartItems();
-        $this->loadSuggestedProducts();
+        $this->loadAppliedVoucher();
     }
 
     #[On('cart-updated')]
     public function refreshCart(): void
     {
         $this->loadCartItems();
-        $this->loadSuggestedProducts();
+        $this->loadAppliedVoucher();
+    }
+
+    /**
+     * Get suggested products (lazy-loaded computed property).
+     *
+     * @return \Illuminate\Support\Collection<int, Product>
+     */
+    public function getSuggestedProductsProperty()
+    {
+        $cartProductIds = collect($this->cartItems)->pluck('id')->toArray();
+
+        return Product::where('status', ProductStatus::Active)
+            ->whereNotIn('id', $cartProductIds)
+            ->inRandomOrder()
+            ->limit(3)
+            ->get();
     }
 
     public function loadCartItems(): void
@@ -64,14 +81,32 @@ final class Cart extends Component
         }
     }
 
-    public function loadSuggestedProducts(): void
+    public function loadAppliedVoucher(): void
     {
-        $cartProductIds = collect($this->cartItems)->pluck('id')->toArray();
-        $this->suggestedProducts = Product::where('status', ProductStatus::Active)
-            ->whereNotIn('id', $cartProductIds)
-            ->inRandomOrder()
-            ->limit(3)
-            ->get();
+        try {
+            $cart = CartFacade::getCurrentCart();
+            /** @var array<string> $voucherCodes */
+            $voucherCodes = $cart->getMetadata('voucher_codes', []);
+
+            if (! empty($voucherCodes)) {
+                $code = $voucherCodes[0];
+                $voucher = Voucher::find($code);
+
+                if ($voucher) {
+                    $this->appliedVoucher = [
+                        'code' => $voucher->code,
+                        'description' => $voucher->description,
+                        'type' => $voucher->type->value,
+                        'value' => $voucher->value,
+                    ];
+                }
+            } else {
+                $this->appliedVoucher = null;
+            }
+        } catch (Exception $e) {
+            $this->appliedVoucher = null;
+            Log::error('Failed to load applied voucher: '.$e->getMessage());
+        }
     }
 
     public function updateQuantity(string $itemId, int $quantity): void
@@ -90,8 +125,7 @@ final class Cart extends Component
             CartFacade::clear();
         }
 
-        $this->loadCartItems();
-        $this->dispatch('cart-updated');
+        $this->dispatch('cart-updated'); // Event handler will reload cart items
     }
 
     /**
@@ -103,15 +137,7 @@ final class Cart extends Component
         if ($item) {
             $newQuantity = $item->quantity + 1;
             CartFacade::update($itemId, ['quantity' => ['value' => $newQuantity]]);
-            $this->loadCartItems();
-            $this->dispatch('cart-updated');
-            Notification::make()
-                ->title('Buku Ditambah')
-                ->body("Kuantiti '{$item->name}' telah ditambah.")
-                ->info()
-                ->icon('heroicon-o-plus-circle')
-                ->iconColor('info')
-                ->send();
+            $this->dispatch('cart-updated'); // Event handler will reload cart items
         }
     }
 
@@ -135,15 +161,7 @@ final class Cart extends Component
                 CartFacade::clear();
             }
 
-            $this->loadCartItems();
-            $this->dispatch('cart-updated');
-            Notification::make()
-                ->title('Buku Dikurangkan')
-                ->body("Kuantiti '{$item->name}' telah dikurangkan.")
-                ->info()
-                ->icon('heroicon-o-minus-circle')
-                ->iconColor('info')
-                ->send();
+            $this->dispatch('cart-updated'); // Event handler will reload cart items
         }
     }
 
@@ -158,9 +176,7 @@ final class Cart extends Component
             CartFacade::clear();
         }
 
-        $this->loadCartItems();
-        $this->loadSuggestedProducts();
-        $this->dispatch('cart-updated'); // Refresh cart counter
+        $this->dispatch('cart-updated'); // Event handler will reload cart items
         Notification::make()
             ->title('Buku Dikeluarkan!')
             ->body("'{$itemName}' telah dikeluarkan.")
@@ -172,16 +188,91 @@ final class Cart extends Component
 
     public function applyVoucher(): void
     {
-        if (! empty($this->voucherCode)) {
+        $this->voucherError = '';
+
+        if (empty($this->voucherCode)) {
+            $this->voucherError = 'Sila masukkan kod voucher.';
+
+            return;
+        }
+
+        try {
+            $code = mb_strtoupper(mb_trim($this->voucherCode));
+            $cart = CartFacade::getCurrentCart();
+
+            // Check if already applied
+            /** @var array<string> $existingCodes */
+            $existingCodes = $cart->getMetadata('voucher_codes', []);
+            if (in_array($code, $existingCodes)) {
+                $this->voucherError = 'Voucher ini sudah digunakan.';
+
+                return;
+            }
+
+            // Validate voucher
+            $validationResult = Voucher::validate($code, $cart);
+
+            if (! $validationResult->isValid) {
+                $this->voucherError = $validationResult->message ?? 'Kod voucher tidak sah.';
+
+                return;
+            }
+
+            // Store voucher code in cart metadata (auto-persists)
+            $cart->setMetadata('voucher_codes', [$code]);
+
+            $voucher = Voucher::find($code);
+
+            $this->appliedVoucher = [
+                'code' => $voucher->code ?? $code,
+                'description' => $voucher->description ?? 'Diskaun',
+                'type' => $voucher->type->value ?? 'fixed',
+                'value' => $voucher->value ?? 0,
+            ];
+
+            $this->voucherCode = '';
+            $this->dispatch('cart-updated'); // Event handler will reload cart items and applied voucher
+
             Notification::make()
                 ->title('Voucher Berjaya!')
-                ->body("Kod voucher '{$this->voucherCode}' telah digunakan.")
+                ->body("Kod voucher '{$code}' telah digunakan.")
                 ->success()
                 ->icon('heroicon-o-ticket')
                 ->iconColor('success')
                 ->duration(4000)
                 ->send();
-            $this->voucherCode = '';
+
+        } catch (Exception $e) {
+            Log::error('Voucher application error: '.$e->getMessage());
+            $this->voucherError = 'Gagal memproses voucher. Sila cuba lagi.';
+        }
+    }
+
+    public function removeVoucher(): void
+    {
+        try {
+            $cart = CartFacade::getCurrentCart();
+            $cart->setMetadata('voucher_codes', []);
+
+            $removedCode = $this->appliedVoucher['code'] ?? 'Voucher';
+            $this->appliedVoucher = null;
+            $this->dispatch('cart-updated'); // Event handler will reload cart items and applied voucher
+
+            Notification::make()
+                ->title('Voucher Dikeluarkan')
+                ->body("Kod voucher '{$removedCode}' telah dikeluarkan.")
+                ->info()
+                ->icon('heroicon-o-x-circle')
+                ->iconColor('info')
+                ->send();
+
+        } catch (Exception $e) {
+            Log::error('Voucher removal error: '.$e->getMessage());
+            Notification::make()
+                ->title('Ralat')
+                ->body('Gagal mengeluarkan voucher.')
+                ->danger()
+                ->send();
         }
     }
 
@@ -207,10 +298,7 @@ final class Cart extends Component
             ]
         );
 
-        $this->loadCartItems();
-        $this->loadSuggestedProducts();
-
-        // Dispatch consistent event for UI feedback
+        // Dispatch consistent event for UI feedback (event handler will reload cart items)
         $this->dispatch('cart-updated', [
             'product' => $product->name,
             'quantity' => $quantity,

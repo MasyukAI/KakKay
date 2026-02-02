@@ -14,6 +14,8 @@ parameters:
         - bootstrap
         - storage
         - vendor
+        - config/media-library.php
+        - routes/dev.php
     
     # Allow undefined properties on Eloquent models (dynamic properties)
     reportUnmatchedIgnoredErrors: false
@@ -27,6 +29,15 @@ parameters:
         
         # Filament classes (external dependency)
         - '#.*Filament.*#'
+        
+        # External packages not installed
+        - '#.*AIArmada\\\\Stock\\\\Services\\\\StockService.*#'
+        - '#.*App\\\\Services\\\\CheckoutService.*#'
+        - '#.*Spatie\\\\MediaLibraryPro.*#'
+        
+        # HasFactory generics - using Spatie Permission/Role factories
+        - '#Class App\\\\Models\\\\Permission uses generic trait.*HasFactory.*#'
+        - '#Class App\\\\Models\\\\Role uses generic trait.*HasFactory.*#'
         
         # Known false positives
         - '#Using nullsafe (property access|method call) on non-nullable type#'

@@ -20,7 +20,7 @@ it('can increment and decrement quantities correctly', function () {
     $product = Product::factory()->create([
         'name' => 'Test Product',
         'price' => 2499, // RM24.99 in cents
-        'is_active' => true,
+        'status' => 'active',
     ]);
 
     $cart = Livewire::actingAs($user)
@@ -58,7 +58,7 @@ it('dispatches proper events for cart counter updates', function () {
     $product = Product::factory()->create([
         'name' => 'Test Product',
         'price' => 2499,
-        'is_active' => true,
+        'status' => 'active',
     ]);
 
     $cart = Livewire::actingAs($user)

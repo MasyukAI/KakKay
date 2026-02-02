@@ -15,6 +15,9 @@
       {{-- Defer decorative fonts --}}
       <link href="https://fonts.googleapis.com/css2?family=Caveat+Brush&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Shadows+Into+Light&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
       @vite('resources/css/cart.css')
+      {{-- Filament core CSS for standalone schema/form usage --}}
+      <link rel="stylesheet" href="{{ asset('css/filament/filament/app.css') }}">
+      <link rel="stylesheet" href="{{ asset('css/ysfkaya/filament-phone-input/filament-phone-input.css') }}">
       @filamentStyles
     </head>
     <body class="h-full bg-[#1a0d1a] bg-[image:var(--grad-hero)] text-white font-serif leading-[1.5] antialiased">
@@ -22,6 +25,11 @@
             {{ $slot }}
             @livewire('notifications')
         </div>
+        {{-- Load Filament scripts in correct order for standalone form/schema usage --}}
+        <script src="{{ asset('js/filament/support/support.js') }}"></script>
+        <script src="{{ asset('js/filament/schemas/schemas.js') }}"></script>
+        <script src="{{ asset('js/filament/forms/components/select.js') }}"></script>
+        <script src="{{ asset('js/ysfkaya/filament-phone-input/components/filament-phone-input.js') }}"></script>
         @filamentScripts
     </body>
 </html>

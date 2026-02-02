@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Models\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Product>
@@ -19,21 +19,32 @@ final class ProductFactory extends Factory
      */
     public function definition(): array
     {
-        $isDigital = fake()->boolean(20); // 20% chance of being digital
+        $name = fake()->words(3, true);
+        $requiresShipping = fake()->boolean(80); // 80% chance of physical product
 
         return [
-            'name' => fake()->words(3, true),
-            'category_id' => Category::factory(),
-            'price' => fake()->numberBetween(1000, 10000), // RM 10.00 to RM 100.00 in cents
-            'is_active' => true,
-
-            // Physical properties
-            'weight' => $isDigital ? 0 : fake()->numberBetween(100, 5000), // 100g to 5kg
-            'length' => $isDigital ? null : fake()->numberBetween(100, 500), // 100mm to 500mm
-            'width' => $isDigital ? null : fake()->numberBetween(100, 300), // 100mm to 300mm
-            'height' => $isDigital ? null : fake()->numberBetween(20, 200), // 20mm to 200mm
-            'is_digital' => $isDigital,
-            'free_shipping' => fake()->boolean(15), // 15% chance of free shipping
+            'name' => $name,
+            'slug' => Str::slug($name).'-'.fake()->unique()->randomNumber(5),
+            'description' => fake()->paragraph(),
+            'short_description' => fake()->sentence(),
+            'sku' => mb_strtoupper(fake()->unique()->bothify('???-#####')),
+            'type' => 'simple',
+            'status' => 'active',
+            'visibility' => 'visible',
+            'price' => fake()->numberBetween(1000, 10000),
+            'compare_price' => fake()->optional(0.3)->numberBetween(10000, 15000),
+            'cost' => fake()->numberBetween(500, 8000),
+            'currency' => 'MYR',
+            'weight' => $requiresShipping ? fake()->numberBetween(100, 5000) : null,
+            'length' => $requiresShipping ? fake()->numberBetween(100, 500) : null,
+            'width' => $requiresShipping ? fake()->numberBetween(100, 300) : null,
+            'height' => $requiresShipping ? fake()->numberBetween(20, 200) : null,
+            'weight_unit' => 'g',
+            'dimension_unit' => 'mm',
+            'is_featured' => fake()->boolean(20),
+            'is_taxable' => fake()->boolean(80),
+            'requires_shipping' => $requiresShipping,
+            'published_at' => now(),
         ];
     }
 
@@ -44,7 +55,7 @@ final class ProductFactory extends Factory
     public function inactive(): Factory
     {
         return $this->state(fn (array $attributes) => [
-            'is_active' => false,
+            'status' => 'inactive',
         ]);
     }
 
@@ -55,12 +66,11 @@ final class ProductFactory extends Factory
     public function digital(): Factory
     {
         return $this->state(fn (array $attributes) => [
-            'weight' => 0,
+            'weight' => null,
             'length' => null,
             'width' => null,
             'height' => null,
-            'is_digital' => true,
-            'free_shipping' => false,
+            'requires_shipping' => false,
         ]);
     }
 
@@ -71,7 +81,8 @@ final class ProductFactory extends Factory
     public function freeShipping(): Factory
     {
         return $this->state(fn (array $attributes) => [
-            'free_shipping' => true,
+            'requires_shipping' => true,
+            'metadata' => ['free_shipping' => true],
         ]);
     }
 
@@ -82,12 +93,11 @@ final class ProductFactory extends Factory
     public function heavy(): Factory
     {
         return $this->state(fn (array $attributes) => [
-            'weight' => fake()->numberBetween(10000, 50000), // 10kg to 50kg
-            'length' => fake()->numberBetween(500, 1000), // 500mm to 1000mm
-            'width' => fake()->numberBetween(400, 800), // 400mm to 800mm
-            'height' => fake()->numberBetween(300, 600), // 300mm to 600mm
-            'is_digital' => false,
-            'free_shipping' => false,
+            'weight' => fake()->numberBetween(10000, 50000),
+            'length' => fake()->numberBetween(500, 1000),
+            'width' => fake()->numberBetween(400, 800),
+            'height' => fake()->numberBetween(300, 600),
+            'requires_shipping' => true,
         ]);
     }
 }

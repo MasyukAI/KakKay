@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use AIArmada\Customers\Models\Customer;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -75,6 +77,14 @@ final class User extends Authenticatable
     public function addresses(): MorphMany
     {
         return $this->morphMany(Address::class, 'addressable');
+    }
+
+    /**
+     * Get the customer profile for this user (aiarmada/customers integration)
+     */
+    public function customer(): HasOne
+    {
+        return $this->hasOne(Customer::class, 'user_id');
     }
 
     /**

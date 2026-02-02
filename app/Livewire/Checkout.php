@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Livewire;
 
 use AIArmada\Cart\Facades\Cart as CartFacade;
+use AIArmada\Checkout\Facades\Checkout as CheckoutFacade;
+use AIArmada\Checkout\Models\CheckoutSession;
+use AIArmada\Checkout\States\Completed;
 use Akaunting\Money\Money;
 use App\Data\StateData;
-use App\Services\CheckoutService;
 use Exception;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -33,56 +35,29 @@ final class Checkout extends Component implements HasSchemas
 
     public string $selectedCountryCode = '+60';
 
-    // public array $availablePaymentMethods = [];
-
     public string $selectedPaymentGroup = 'card';
 
-    // Cart-Intent validation properties
-    public bool $cartChangedSinceIntent = false;
+    public ?string $checkoutSessionId = null;
 
-    /** @var array<string, mixed>|null */
-    public ?array $activePaymentIntent = null;
-
-    public bool $showCartChangeWarning = false;
+    public bool $hasActiveSession = false;
 
     public function mount(): void
     {
         try {
-            // Clear any old session data if cart has changed
             $cartItems = CartFacade::getItems();
 
-            // Check if cart is empty and redirect
             if ($cartItems->isEmpty()) {
                 $this->redirect(route('cart'));
 
                 return;
             }
 
-            // Get current cart version from database for change detection
-            $currentCartVersion = CartFacade::getCurrentCart()->getVersion();
-            $sessionCartVersion = session('cart_version');
-
-            // Check for cart changes and active payment intents
-            $checkoutService = app(CheckoutService::class);
-            $cartStatus = $checkoutService->getCartChangeStatus();
-
-            $this->activePaymentIntent = $cartStatus['intent'];
-            $this->cartChangedSinceIntent = $cartStatus['cart_changed'];
-            $this->showCartChangeWarning = $cartStatus['cart_changed'] && $cartStatus['has_active_intent'];
-
-            // Store current cart version in session
-            session(['cart_version' => $currentCartVersion]);
-
-            if ($sessionCartVersion && $sessionCartVersion !== $currentCartVersion) {
-                // Cart has changed, clear old cart version from session
-                session()->forget('cart_version');
-            }
+            $this->checkoutSessionId = session('checkout_session_id');
+            $this->hasActiveSession = $this->checkoutSessionId !== null
+                && $this->getActiveCheckoutSession() !== null;
 
             $this->loadCartItems();
-            // $this->loadPaymentMethods();
 
-            // Initialize form data with default values to prevent Livewire entangle errors
-            // This ensures nested properties like data.phone and data.state exist before Alpine tries to bind
             $this->data = [
                 'name' => '',
                 'company' => '',
@@ -93,19 +68,26 @@ final class Checkout extends Component implements HasSchemas
                 'state' => '',
                 'city' => '',
                 'postcode' => '',
-                'street1' => '',
-                'street2' => '',
+                'line1' => '',
+                'line2' => '',
             ];
 
-            // Initialize form with the pre-populated data
+            if ($this->hasActiveSession) {
+                $session = $this->getActiveCheckoutSession();
+                if ($session !== null) {
+                    $billingData = $session->billing_data ?? [];
+                    $shippingData = $session->shipping_data ?? [];
+                    $addressData = array_merge($billingData, $shippingData);
+
+                    $this->data = array_merge($this->data, array_filter($addressData));
+                }
+            }
+
             $this->form->fill($this->data); /** @phpstan-ignore-line property.notFound */
         } catch (Exception $e) {
-            // Log error but don't crash - might be in testing environment
             Log::warning('Checkout mount error: '.$e->getMessage());
 
-            // Initialize with minimal data
             $this->cartItems = [];
-            // $this->availablePaymentMethods = [];
             $this->data = [
                 'name' => '',
                 'company' => '',
@@ -116,8 +98,8 @@ final class Checkout extends Component implements HasSchemas
                 'state' => '',
                 'city' => '',
                 'postcode' => '',
-                'street1' => '',
-                'street2' => '',
+                'line1' => '',
+                'line2' => '',
             ];
         }
     }
@@ -173,14 +155,17 @@ final class Checkout extends Component implements HasSchemas
                                     ->placeholder('Nombor telefon')
                                     ->extraAttributes(['class' => 'checkout-sm']),
 
-                                Select::make('country')
+                                TextInput::make('country')
                                     ->label('Negara')
-                                    ->options(['Malaysia' => 'Malaysia'])
                                     ->default('Malaysia')
                                     ->columnStart(1)
-                                    ->required()
                                     ->disabled()
-                                    ->dehydrated(), // Include disabled field in form data
+                                    ->dehydrated()
+                                    ->formatStateUsing(fn (?string $state): string => match ($state) {
+                                        'MY', 'Malaysia', null => 'Malaysia',
+                                        default => $state,
+                                    })
+                                    ->extraAttributes(['class' => 'checkout-sm']),
 
                                 Select::make('state')
                                     ->label('Negeri')
@@ -209,7 +194,7 @@ final class Checkout extends Component implements HasSchemas
 
                             ]),
 
-                        TextInput::make('street1')
+                        TextInput::make('line1')
                             ->label('Alamat Baris 1')
                             ->required()
                             ->placeholder('Nombor rumah, nama jalan')
@@ -217,7 +202,7 @@ final class Checkout extends Component implements HasSchemas
                             ->columnSpanFull()
                             ->extraAttributes(['class' => 'checkout-sm']),
 
-                        TextInput::make('street2')
+                        TextInput::make('line2')
                             ->label('Alamat Baris 2')
                             ->placeholder('Taman, kawasan, dll')
                             ->maxLength(255)
@@ -423,48 +408,92 @@ final class Checkout extends Component implements HasSchemas
 
     public function submitCheckout(): void
     {
+        $this->form->validate(); /** @phpstan-ignore-line property.notFound */
         $formData = $this->form->getState(); /** @phpstan-ignore-line property.notFound */
         try {
-            $checkoutService = app(CheckoutService::class);
+            $cart = CartFacade::getCurrentCart();
+            $cartId = (string) $cart->getId();
 
-            // Prepare customer data - send only required email to CHIP
-            $customerData = [
-                // Required for CHIP API
+            $billingData = [
                 'email' => $formData['email'],
-
-                // Required for User creation/lookup
                 'name' => $formData['name'],
                 'phone' => $formData['phone'],
-
-                // Required for Address creation (following database schema)
-                'street1' => $formData['street1'],
-                'street2' => $formData['street2'] ?? null,
-                'city' => $formData['city'] ?? null,
-                'state' => $formData['state'],
-                'country' => $formData['country'],
-                'postcode' => (string) $formData['postcode'], // Ensure string for leading zeros
                 'company' => $formData['company'] ?? null,
-
-                // Optional fields - only include if provided
-                'type' => 'shipping', // Address type for database
             ];
 
-            // Process checkout using cart metadata-based payment intents
-            $result = $checkoutService->processCheckout($customerData);
+            // Convert country name to ISO code for database storage
+            $countryCode = match ($formData['country']) {
+                'Malaysia' => 'MY',
+                default => 'MY',
+            };
 
-            if ($result['success']) {
-                // Redirect to CHIP checkout
-                $this->redirect($result['checkout_url']);
+            $shippingData = [
+                'name' => $formData['name'],
+                'phone' => $formData['phone'],
+                'line1' => $formData['line1'],
+                'line2' => $formData['line2'] ?? null,
+                'city' => $formData['city'] ?? null,
+                'state' => $formData['state'],
+                'country' => $countryCode,
+                'postcode' => (string) $formData['postcode'],
+                'company' => $formData['company'] ?? null,
+            ];
+
+            $session = CheckoutFacade::startCheckout($cartId);
+
+            // Transfer voucher codes from cart to checkout session
+            /** @var array<string> $voucherCodes */
+            $voucherCodes = $cart->getMetadata('voucher_codes', []);
+
+            // Calculate totals with proper discount extraction
+            $originalSubtotal = (int) $cart->subtotalWithoutConditions()->getAmount();
+            $subtotalAfterDiscount = (int) $cart->subtotal()->getAmount();
+            $discountTotal = max(0, $originalSubtotal - $subtotalAfterDiscount);
+            $shippingTotal = 0; // Free shipping for now
+            $grandTotal = $originalSubtotal - $discountTotal + $shippingTotal;
+
+            $session->update([
+                'billing_data' => $billingData,
+                'shipping_data' => $shippingData,
+                'subtotal' => $originalSubtotal,
+                'discount_total' => $discountTotal,
+                'shipping_total' => $shippingTotal,
+                'grand_total' => $grandTotal,
+                'discount_data' => [
+                    'voucher_codes' => $voucherCodes,
+                ],
+            ]);
+
+            session(['checkout_session_id' => $session->id]);
+
+            $result = CheckoutFacade::processCheckout($session);
+
+            if ($result->success) {
+                $this->redirect(route('checkout.success', ['session' => $session->id]));
 
                 return;
             }
-            session()->flash('error', 'Gagal memproses pembayaran: '.$result['error']);
+
+            if ($result->requiresRedirect()) {
+                $this->redirect($result->redirectUrl);
+
+                return;
+            }
+
+            $errorMessage = $result->message ?? 'Gagal memproses pembayaran';
+            session()->flash('error', $errorMessage);
+
+            Log::warning('Checkout failed', [
+                'session_id' => $session->id,
+                'errors' => $result->errors,
+                'message' => $result->message,
+            ]);
 
         } catch (Exception $e) {
             Log::error('Checkout processing failed', [
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
                 'form_data' => $formData ?? [],
-                'cart_items' => $this->cartItems,
             ]);
 
             session()->flash('error', 'Terjadi ralat semasa memproses pesanan. Sila cuba lagi.');
@@ -475,8 +504,7 @@ final class Checkout extends Component implements HasSchemas
     {
         return view('livewire.checkout', [
             'cartQuantity' => CartFacade::getTotalQuantity(),
-            'showCartChangeWarning' => $this->showCartChangeWarning,
-            'activePaymentIntent' => $this->activePaymentIntent,
+            'hasActiveSession' => $this->hasActiveSession,
         ])->layout('components.layouts.app');
     }
 
@@ -545,5 +573,28 @@ final class Checkout extends Component implements HasSchemas
         $methods = $this->getPaymentMethodsByGroup()[$group] ?? [];
 
         return $methods[0]['id'] ?? null;
+    }
+
+    private function getActiveCheckoutSession(): ?CheckoutSession
+    {
+        if ($this->checkoutSessionId === null) {
+            return null;
+        }
+
+        try {
+            $session = CheckoutFacade::resumeCheckout($this->checkoutSessionId);
+
+            if ($session->status instanceof Completed || $session->isExpired()) {
+                session()->forget('checkout_session_id');
+
+                return null;
+            }
+
+            return $session;
+        } catch (Exception) {
+            session()->forget('checkout_session_id');
+
+            return null;
+        }
     }
 }

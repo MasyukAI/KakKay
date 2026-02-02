@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use AIArmada\Pricing\Contracts\Priceable;
+use AIArmada\Pricing\Models\Price;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
-final class Product extends Model implements HasMedia
+final class Product extends Model implements HasMedia, Priceable
 {
     /** @phpstan-ignore-next-line */
     use HasFactory, HasUuids, InteractsWithMedia;
@@ -38,7 +41,7 @@ final class Product extends Model implements HasMedia
     /**
      * Fillable attributes - aligned with commerce package schema.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'owner_type',
@@ -131,5 +134,96 @@ final class Product extends Model implements HasMedia
             'height' => $this->height,
             'weight' => $this->weight,
         ];
+    }
+
+    /**
+     * Prices from the pricing package (morphMany relationship).
+     *
+     * @return MorphMany<Price, $this>
+     */
+    public function prices(): MorphMany
+    {
+        return $this->morphMany(Price::class, 'priceable');
+    }
+
+    /**
+     * Priceable: Get the unique identifier for the priceable item.
+     */
+    public function getBuyableIdentifier(): string
+    {
+        return (string) $this->id;
+    }
+
+    /**
+     * Priceable: Get the base price in cents from prices table.
+     * Falls back to Product.price if no price record exists.
+     */
+    public function getBasePrice(): int
+    {
+        $priceRecord = $this->getActivePriceRecord();
+
+        if ($priceRecord) {
+            return (int) $priceRecord->amount;
+        }
+
+        return (int) ($this->price ?? 0);
+    }
+
+    /**
+     * Priceable: Get the compare price (original/MSRP) in cents from prices table.
+     * Falls back to Product.compare_price if no price record exists.
+     */
+    public function getComparePrice(): ?int
+    {
+        $priceRecord = $this->getActivePriceRecord();
+
+        if ($priceRecord && $priceRecord->compare_amount) {
+            return (int) $priceRecord->compare_amount;
+        }
+
+        return $this->compare_price ? (int) $this->compare_price : null;
+    }
+
+    /**
+     * Priceable: Check if the item is on sale.
+     */
+    public function isOnSale(): bool
+    {
+        $comparePrice = $this->getComparePrice();
+        $basePrice = $this->getBasePrice();
+
+        return $comparePrice !== null && $comparePrice > $basePrice;
+    }
+
+    /**
+     * Priceable: Get the discount percentage if on sale.
+     */
+    public function getDiscountPercentage(): ?float
+    {
+        if (! $this->isOnSale()) {
+            return null;
+        }
+
+        $comparePrice = $this->getComparePrice();
+        $basePrice = $this->getBasePrice();
+
+        if (! $comparePrice || $comparePrice <= 0) {
+            return null;
+        }
+
+        return round((($comparePrice - $basePrice) / $comparePrice) * 100, 2);
+    }
+
+    /**
+     * Get the active price record from the default price list.
+     */
+    protected function getActivePriceRecord(): ?Price
+    {
+        return $this->prices()
+            ->whereHas('priceList', fn ($q) => $q->where('is_default', true)->where('is_active', true))
+            ->active()
+            ->forQuantity(1)
+            ->orderBy('min_quantity', 'desc')
+            ->first();
     }
 }

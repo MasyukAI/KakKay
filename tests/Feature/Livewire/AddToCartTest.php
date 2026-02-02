@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use Livewire\Volt\Volt;
+use Livewire\Livewire;
 
 it('can render', function () {
-    $component = Volt::test('add-to-cart');
+    $component = Livewire::test('add-to-cart');
 
     $component->assertSee('');
 });

@@ -89,10 +89,13 @@ if (app()->environment('local')) {
          * View cart metadata for debugging
          */
         Route::get('/cart/metadata', function () {
+            $sessionId = session()->getId();
             $cart = AIArmada\Cart\Facades\Cart::getCurrentCart();
 
             return response()->json([
                 'identifier' => $cart->getIdentifier(),
+                'session_id' => $sessionId,
+                'same_as_session' => $sessionId === $cart->getIdentifier(),
                 'instance' => $cart->instance(),
                 'payment_intent' => $cart->getMetadata('payment_intent'),
                 'items' => $cart->getItems()->toArray(),
