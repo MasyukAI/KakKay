@@ -121,7 +121,7 @@ class extends Component {
                     <span class="policy-chip">Rujuk Dasar Pemulangan</span>
                 </div>
                 <p class="text-base leading-relaxed text-white/80">
-                    Untuk garis panduan lengkap mengenai pemulangan, pertukaran, dan tindakan ketika parcel rosak, sila rujuk <a href="/refund-policy" wire:navigate class="text-pink-200 underline">Dasar Pemulangan</a>. Kami himpunkan semua langkah, syarat, dan borang sokongan di sana supaya prosesnya kekal jelas dan mudah.
+                    Untuk garis panduan lengkap mengenai pemulangan, pertukaran, dan tindakan ketika parcel rosak, sila rujuk <a href="/refund-policy" wire:navigate.hover class="text-pink-200 underline">Dasar Pemulangan</a>. Kami himpunkan semua langkah, syarat, dan borang sokongan di sana supaya prosesnya kekal jelas dan mudah.
                 </p>
             </div>
         </section>

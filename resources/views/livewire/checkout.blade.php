@@ -16,7 +16,7 @@
                     <div class="absolute left-6 right-6 top-6 block h-px bg-white/15"></div>
                     <ol class="relative flex items-center justify-between gap-6 text-xs font-semibold uppercase tracking-[0.28em] text-white/60">
                         <li class="flex flex-col items-center gap-3">
-                            <a href="{{ route('cart') }}" wire:navigate class="group flex h-12 w-12 items-center justify-center rounded-full border border-white/25 bg-white/10 text-pink-200 shadow-[0_8px_20px_rgba(236,72,153,0.28)] transition hover:border-white/50 hover:text-white">
+                            <a href="{{ route('cart') }}" wire:navigate.hover class="group flex h-12 w-12 items-center justify-center rounded-full border border-white/25 bg-white/10 text-pink-200 shadow-[0_8px_20px_rgba(236,72,153,0.28)] transition hover:border-white/50 hover:text-white">
                                 <flux:icon.check-circle class="h-5 w-5" />
                             </a>
                             <span>Troli</span>

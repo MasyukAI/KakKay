@@ -161,7 +161,7 @@
                                 <div class="text-xs uppercase tracking-[0.3em] text-white/60">Harga manja</div>
                                 <div class="text-3xl font-semibold text-white">{{ \Akaunting\Money\Money::MYR($featuredProduct->price)->format() }}</div>
                             </div>
-                            <a href="/{{ $featuredProduct->slug }}" wire:navigate class="btn primary cart-button-primary flex items-center gap-3 rounded-full px-8 py-3 text-base font-semibold"
+                            <a href="/{{ $featuredProduct->slug }}" wire:navigate.hover class="btn primary cart-button-primary flex items-center gap-3 rounded-full px-8 py-3 text-base font-semibold"
                                style="transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease; transform: translateY(0px) scale(1); filter: brightness(1);" onmouseover="this.style.transform='translateY(-3px) scale(1.05)'; this.style.boxShadow='0 15px 35px rgba(255,105,180,0.4), 0 5px 15px rgba(0,0,0,0.3)'; this.style.filter='brightness(1.1)';" onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow=''; this.style.filter='brightness(1)';"
                             >
                                 <flux:icon.arrow-right class="h-5 w-5" />
@@ -191,7 +191,7 @@
                     </div>
                     <div class="mt-10 flex flex-wrap justify-center gap-6 max-w-6xl mx-auto">
                         @foreach ($products as $product)
-                            <a wire:key="product-{{ $product->id }}" href="/{{ $product->slug }}" wire:navigate class="group relative flex h-full flex-col overflow-hidden rounded-[30px] border border-white/15 bg-white/5 p-5 text-left text-white/80 shadow-[0_16px_40px_rgba(12,5,24,0.4)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_14px_32px_rgba(236,72,153,0.3)] w-full max-w-sm sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+                            <a wire:key="product-{{ $product->id }}" href="/{{ $product->slug }}" wire:navigate.hover class="group relative flex h-full flex-col overflow-hidden rounded-[30px] border border-white/15 bg-white/5 p-5 text-left text-white/80 shadow-[0_16px_40px_rgba(12,5,24,0.4)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_14px_32px_rgba(236,72,153,0.3)] w-full max-w-sm sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                                 <div class="relative overflow-hidden rounded-[22px]">
                                     <img src="{{ asset('storage/images/cover/' . $product->slug . '.webp') }}" alt="{{ $product->name }}" loading="lazy" class="w-full rounded-[22px] border border-white/20 object-cover shadow-[0_14px_32px_rgba(17,0,34,0.45)]">
                                     {{-- <div class="absolute inset-0 bg-gradient-to-t from-[#0f0218]/80 via-transparent to-transparent opacity-0 transition group-hover:opacity-100"></div> --}}
@@ -212,7 +212,7 @@
                         @endforeach
                     </div>
                     {{-- <div class="mt-10 flex justify-center">
-                        <a href="{{ route('cart') }}" wire:navigate class="rounded-full border border-white/25 px-8 py-3 text-sm font-semibold uppercase tracking-[0.28em] text-white/70 transition hover:border-white/60 hover:text-white">Masuk troli & plan date night</a>
+                        <a href="{{ route('cart') }}" wire:navigate.hover class="rounded-full border border-white/25 px-8 py-3 text-sm font-semibold uppercase tracking-[0.28em] text-white/70 transition hover:border-white/60 hover:text-white">Masuk troli & plan date night</a>
                     </div> --}}
                 </div>
             </section>
@@ -260,10 +260,10 @@
                     <h2 class="font-display text-3xl text-white sm:text-4xl">Jom mula ritual malam ni.</h2>
                     <p class="text-lg text-white/80">Pilih satu teknik, baca 5 minit, dan rasa perubahan lembut dalam rumah. Bahagia bukan nasib — kita usahakan sama-sama dengan Kak Kay.</p>
                     <div class="flex flex-wrap items-center justify-center gap-4">
-                        <a href="/{{ $featuredProduct->slug }}" wire:navigate class="cart-button-primary flex items-center gap-3 rounded-full px-8 py-3 text-base font-semibold">
+                        <a href="/{{ $featuredProduct->slug }}" wire:navigate.hover class="cart-button-primary flex items-center gap-3 rounded-full px-8 py-3 text-base font-semibold">
                             <flux:icon.book-open class="h-5 w-5" />
                             Grab buku</a>
-                        <a href="{{ route('checkout') }}" wire:navigate class="rounded-full border border-white/30 px-8 py-3 text-base font-semibold text-white/80 backdrop-blur-sm transition hover:border-white/60 hover:text-white">
+                        <a href="{{ route('checkout') }}" wire:navigate.hover class="rounded-full border border-white/30 px-8 py-3 text-base font-semibold text-white/80 backdrop-blur-sm transition hover:border-white/60 hover:text-white">
                             Join KKDI Circle
                         </a>
                     </div>

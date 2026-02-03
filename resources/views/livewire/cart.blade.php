@@ -6,7 +6,7 @@
 
     <div class="relative z-10">
         <x-brand-header>
-            <a href="{{ route('home') }}" wire:navigate class="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.32em] text-white/70 transition hover:border-white/50 hover:text-white">
+            <a href="{{ route('home') }}" wire:navigate.hover class="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.32em] text-white/70 transition hover:border-white/50 hover:text-white">
                 <flux:icon.arrow-left class="h-4 w-4" />
                 <span class="hidden md:inline">Sambung pilih buku</span>
             </a>
@@ -48,7 +48,7 @@
                             <h1 class="mt-6 font-display text-4xl leading-tight sm:text-5xl">Troli awak masih sunyi 💫</h1>
                             <p class="mt-4 text-base leading-relaxed text-white/80 sm:text-lg">Belum terlambat nak cari buku manja. Pilih satu yang buat hati senyum, cuba aktiviti malam ini, dan tengok macam mana vibe rumah terus hangat.</p>
                             <div class="mt-8 flex flex-wrap justify-center gap-4">
-                                <flux:button variant="primary" href="{{ route('home') }}" wire:navigate class="cart-button-primary flex items-center justify-center gap-2 px-8 py-4 text-lg">
+                                <flux:button variant="primary" href="{{ route('home') }}" wire:navigate.hover class="cart-button-primary flex items-center justify-center gap-2 px-8 py-4 text-lg">
                                     <flux:icon.sparkles class="h-5 w-5" />
                                     Jom pilih buku
                                 </flux:button>
@@ -250,7 +250,7 @@
                                         <flux:button
                                             x-ref="checkoutBtn"
                                             variant="primary"
-                                            href="{{ route('checkout') }}" wire:navigate
+                                            href="{{ route('checkout') }}" wire:navigate.hover
                                             class="cart-button-primary flex w-full items-center justify-center gap-2 px-6 py-4 text-lg font-semibold">
                                             <flux:icon.credit-card class="h-5 w-5" />
                                             Terus ke bayaran
@@ -265,52 +265,78 @@
             @endif
         </main>
 
-        @if($this->suggestedProducts && $this->suggestedProducts->count() > 0)
-            <section id="recommended" class="mt-8 pb-20">
-                <div class="mx-auto max-w-7xl px-6 sm:px-8">
-                    <div class="mx-auto max-w-3xl text-center">
-                        <h3 class="font-display text-3xl text-white sm:text-4xl">Orang lain beli ni juga</h3>
-                        <p class="mt-3 text-lg leading-relaxed text-white/80">Tambah satu lagi judul untuk lebih lengkap. Semua ni antara pilihan feveret geng Kak Kay.</p>
-                    </div>
-                    <div class="mt-10 flex flex-wrap justify-center gap-6">
-                        @foreach($this->suggestedProducts as $product)
-                            <div wire:key="suggested-product-{{ $product->id }}" class="group relative flex h-full flex-col overflow-hidden rounded-[30px] border border-white/15 bg-white/5 p-5 text-left text-white/80 shadow-[0_16px_40px_rgba(12,5,24,0.4)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_14px_32px_rgba(236,72,153,0.3)]" style="min-width:280px;max-width:340px;flex:1 1 320px;">
-                                <a href="/{{ $product->slug }}" wire:navigate class="block">
-                                    <div class="relative overflow-hidden rounded-[22px]">
-                                        <img src="{{ asset('storage/images/cover/' . $product->slug . '.webp') }}" alt="{{ $product->name }}" class="w-full rounded-[22px] border border-white/20 object-cover shadow-[0_14px_32px_rgba(17,0,34,0.45)]">
-                                        <div class="absolute inset-0 bg-gradient-to-t from-[#0f0218]/80 via-transparent to-transparent opacity-0 transition group-hover:opacity-100"></div>
-                                        <div class="absolute bottom-4 left-4 right-4 flex justify-end text-xs uppercase tracking-[0.28em] text-white/80">
-                                            {{-- <span>Buku Kak Kay</span> --}}
-                                            <span>{{ \Akaunting\Money\Money::MYR($product->price)->format() }}</span>
-                                        </div>
-                                    </div>
+        @island(lazy: true)
+            @placeholder
+                <section id="recommended" class="mt-8 pb-20">
+                    <div class="mx-auto max-w-7xl px-6 sm:px-8">
+                        <div class="mx-auto max-w-3xl text-center">
+                            <h3 class="font-display text-3xl text-white sm:text-4xl">Orang lain beli ni juga</h3>
+                            <p class="mt-3 text-lg leading-relaxed text-white/70">Memuat cadangan untuk anda…</p>
+                        </div>
+                        <div class="mt-10 flex flex-wrap justify-center gap-6">
+                            @foreach(range(1, 3) as $skeleton)
+                                <div class="h-[360px] w-full max-w-sm animate-pulse rounded-[30px] border border-white/10 bg-white/5 p-5 sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+                                    <div class="h-44 w-full rounded-[22px] bg-white/10"></div>
                                     <div class="mt-5 space-y-3">
-                                        <h4 class="text-xl font-semibold text-white">{{ $product->name }}</h4>
-                                        <p class="line-clamp-3 text-sm text-white/70">{{ $product->description }}</p>
-                                        <div class="inline-flex items-center gap-2 text-sm font-semibold text-pink-200">
-                                            Selak detail
-                                            <flux:icon.arrow-right class="h-4 w-4" />
-                                        </div>
+                                        <div class="h-5 w-3/4 rounded-full bg-white/10"></div>
+                                        <div class="h-4 w-full rounded-full bg-white/10"></div>
+                                        <div class="h-4 w-5/6 rounded-full bg-white/10"></div>
+                                        <div class="h-9 w-32 rounded-full bg-white/10"></div>
                                     </div>
-                                </a>
-                                <button type="button" wire:click="addToCart('{{ $product->id }}')" wire:loading.attr="disabled" wire:target="addToCart('{{ $product->id }}')" class="group mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 px-6 py-3 text-sm font-semibold text-white shadow-[0_16px_36px_rgba(236,72,153,0.45)] ring-1 ring-white/20 transition-all duration-300 ease-out hover:scale-[1.02] hover:shadow-[0_28px_64px_rgba(236,72,153,0.6)] hover:ring-2 hover:ring-pink-300/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f0218] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100">
-                                    <span wire:loading.remove wire:target="addToCart('{{ $product->id }}')" class="flex items-center gap-2 transition-all duration-200">
-                                        <flux:icon.shopping-cart class="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
-                                        <span class="tracking-wide">Tambah</span>
-                                    </span>
-                                    <span wire:loading wire:target="addToCart('{{ $product->id }}')" class="flex items-center justify-center gap-2">
-                                        <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                            <path class="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 0 1 4 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>
-                                    </span>
-                                </button>
-                            </div>
-                        @endforeach
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
-                </div>
+                </section>
+            @endplaceholder
+
+            <section id="recommended" class="mt-8 pb-20">
+                @if($this->suggestedProducts && $this->suggestedProducts->count() > 0)
+                    <div class="mx-auto max-w-7xl px-6 sm:px-8">
+                        <div class="mx-auto max-w-3xl text-center">
+                            <h3 class="font-display text-3xl text-white sm:text-4xl">Orang lain beli ni juga</h3>
+                            <p class="mt-3 text-lg leading-relaxed text-white/80">Tambah satu lagi judul untuk lebih lengkap. Semua ni antara pilihan feveret geng Kak Kay.</p>
+                        </div>
+                        <div class="mt-10 flex flex-wrap justify-center gap-6">
+                            @foreach($this->suggestedProducts as $product)
+                                <div wire:key="suggested-product-{{ $product->id }}" class="group relative flex h-full flex-col overflow-hidden rounded-[30px] border border-white/15 bg-white/5 p-5 text-left text-white/80 shadow-[0_16px_40px_rgba(12,5,24,0.4)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_14px_32px_rgba(236,72,153,0.3)]" style="min-width:280px;max-width:340px;flex:1 1 320px;">
+                                    <a href="/{{ $product->slug }}" wire:navigate.hover class="block">
+                                        <div class="relative overflow-hidden rounded-[22px]">
+                                            <img src="{{ asset('storage/images/cover/' . $product->slug . '.webp') }}" alt="{{ $product->name }}" class="w-full rounded-[22px] border border-white/20 object-cover shadow-[0_14px_32px_rgba(17,0,34,0.45)]">
+                                            <div class="absolute inset-0 bg-gradient-to-t from-[#0f0218]/80 via-transparent to-transparent opacity-0 transition group-hover:opacity-100"></div>
+                                            <div class="absolute bottom-4 left-4 right-4 flex justify-end text-xs uppercase tracking-[0.28em] text-white/80">
+                                                {{-- <span>Buku Kak Kay</span> --}}
+                                                <span>{{ \Akaunting\Money\Money::MYR($product->price)->format() }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="mt-5 space-y-3">
+                                            <h4 class="text-xl font-semibold text-white">{{ $product->name }}</h4>
+                                            <p class="line-clamp-3 text-sm text-white/70">{{ $product->description }}</p>
+                                            <div class="inline-flex items-center gap-2 text-sm font-semibold text-pink-200">
+                                                Selak detail
+                                                <flux:icon.arrow-right class="h-4 w-4" />
+                                            </div>
+                                        </div>
+                                    </a>
+                                    <button type="button" wire:click="addToCart('{{ $product->id }}')" wire:loading.attr="disabled" wire:target="addToCart('{{ $product->id }}')" class="group mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 px-6 py-3 text-sm font-semibold text-white shadow-[0_16px_36px_rgba(236,72,153,0.45)] ring-1 ring-white/20 transition-all duration-300 ease-out hover:scale-[1.02] hover:shadow-[0_28px_64px_rgba(236,72,153,0.6)] hover:ring-2 hover:ring-pink-300/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f0218] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100">
+                                        <span wire:loading.remove wire:target="addToCart('{{ $product->id }}')" class="flex items-center gap-2 transition-all duration-200">
+                                            <flux:icon.shopping-cart class="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
+                                            <span class="tracking-wide">Tambah</span>
+                                        </span>
+                                        <span wire:loading wire:target="addToCart('{{ $product->id }}')" class="flex items-center justify-center gap-2">
+                                            <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 0 1 4 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                        </span>
+                                    </button>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
             </section>
-        @endif
+        @endisland
 
 
         <div x-data="{ showFooterBtn: false }"
@@ -357,7 +383,7 @@
                     x-show="showFooter"
                     style="display: none;"
                 >
-                    <flux:button variant="primary" href="{{ route('checkout') }}" wire:navigate class="cart-button-primary flex items-center justify-center gap-2 px-8 py-4 text-lg font-semibold w-full max-w-md">
+                    <flux:button variant="primary" href="{{ route('checkout') }}" wire:navigate.hover class="cart-button-primary flex items-center justify-center gap-2 px-8 py-4 text-lg font-semibold w-full max-w-md">
                         <flux:icon.credit-card class="h-5 w-5" />
                         Terus ke bayaran
                     </flux:button>

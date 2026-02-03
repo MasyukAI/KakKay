@@ -27,19 +27,19 @@ final class CheckoutController extends Controller
      */
     public function success(Request $request, string $session): View
     {
-        $checkoutSession = CheckoutSession::find($session);
+        $checkoutSession = CheckoutSession::with([
+            'order.items',
+            'order.billingAddress',
+            'order.shippingAddress',
+            'order.payments',
+            'order.shipments',
+        ])->find($session);
 
         $viewData = $checkoutSession ? BuildCheckoutSessionViewData::run($checkoutSession) : ['reference' => $session];
 
         // Add app-specific Order model with relationships if needed
-        if ($checkoutSession?->order_id) {
-            $viewData['order'] = \App\Models\Order::with([
-                'items',
-                'billingAddress',
-                'shippingAddress',
-                'payments',
-                'shipments',
-            ])->find($checkoutSession->order_id);
+        if ($checkoutSession?->order) {
+            $viewData['order'] = $checkoutSession->order;
         }
 
         return view('checkout.success', $viewData);

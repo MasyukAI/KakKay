@@ -10,6 +10,7 @@ use AIArmada\Vouchers\Facades\Voucher;
 use App\Models\Product;
 use Exception;
 use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
@@ -51,12 +52,25 @@ final class Cart extends Component
     public function getSuggestedProductsProperty()
     {
         $cartProductIds = collect($this->cartItems)->pluck('id')->toArray();
+        $cartId = (string) CartFacade::getId();
+        $cacheKey = sprintf(
+            'cart.suggestions.%s.%s',
+            $cartId,
+            sha1(implode('|', $cartProductIds))
+        );
 
-        return Product::where('status', ProductStatus::Active)
-            ->whereNotIn('id', $cartProductIds)
-            ->inRandomOrder()
-            ->limit(3)
-            ->get();
+        return Cache::remember($cacheKey, now()->addMinutes(10), function () use ($cartProductIds) {
+            return Product::query()
+                ->select(['id', 'name', 'slug', 'description', 'price'])
+                ->where('status', ProductStatus::Active)
+                ->when(
+                    ! empty($cartProductIds),
+                    fn ($query) => $query->whereNotIn('id', $cartProductIds)
+                )
+                ->inRandomOrder()
+                ->limit(3)
+                ->get();
+        });
     }
 
     public function loadCartItems(): void

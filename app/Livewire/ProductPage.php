@@ -19,13 +19,11 @@ final class ProductPage extends Component
 
     public function mount(string $slug): void
     {
-        $product = Product::where('slug', $slug)->first();
-
-        if (! $product) {
-            abort(404);
-        }
-
-        $this->product = $product;
+        $this->product = Product::query()
+            ->select(['id', 'name', 'slug', 'description', 'price'])
+            ->with(['categories:id,name'])
+            ->where('slug', $slug)
+            ->firstOrFail();
     }
 
     public function addToCart(): void

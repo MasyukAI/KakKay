@@ -428,7 +428,7 @@
                     <!-- Footer Section - Enhanced -->
                     <div class="mt-16 flex flex-col gap-8 sm:flex-row sm:items-center sm:justify-between">
                         <div class="slide-up flex flex-col gap-3 sm:flex-row sm:items-center" style="animation-delay: 0.1s;">
-                            <a href="{{ route('home') }}" wire:navigate class="cart-button-primary flex items-center gap-3 rounded-full px-8 py-3 text-base font-semibold"
+                            <a href="{{ route('home') }}" wire:navigate.hover class="cart-button-primary flex items-center gap-3 rounded-full px-8 py-3 text-base font-semibold"
                                style="transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease; transform: translateY(0px) scale(1); filter: brightness(1);"
                                onmouseover="this.style.transform='translateY(-3px) scale(1.05)'; this.style.boxShadow='0 15px 35px rgba(255,105,180,0.4), 0 5px 15px rgba(0,0,0,0.3)'; this.style.filter='brightness(1.1)';"
                                onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow=''; this.style.filter='brightness(1)';">

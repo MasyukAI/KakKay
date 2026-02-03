@@ -15,11 +15,10 @@ final class PageController extends Controller
      */
     public function show(string $slug)
     {
-        $product = Product::where('slug', $slug)->first();
-
-        if (! $product) {
-            abort(404);
-        }
+        $product = Product::query()
+            ->select(['id', 'name', 'slug', 'description', 'price'])
+            ->where('slug', $slug)
+            ->firstOrFail();
 
         /** @var view-string $view */
         $view = 'products.show';

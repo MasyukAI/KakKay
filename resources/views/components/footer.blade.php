@@ -53,9 +53,9 @@
         <div style="text-align: center; max-width: 800px; margin: 0 auto;">
           <h4 style="color: #e7ebff; font-size: 1.1rem; margin-bottom: 1rem; font-weight: 600;">Dasar & Polisi</h4>
           <div class="flex flex-wrap justify-center items-center gap-2 text-sm">
-  <a href="/privacy-policy" wire:navigate class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 hover:-translate-y-0.5 no-underline">Dasar Privasi</a>
+  <a href="/privacy-policy" wire:navigate.hover class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 hover:-translate-y-0.5 no-underline data-current:text-pink-300 data-current:font-semibold">Dasar Privasi</a>
   <span class="text-pink-100/30">•</span>
-  <a href="/refund-policy" wire:navigate class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 hover:-translate-y-0.5 no-underline">Dasar Pemulangan</a>
+  <a href="/refund-policy" wire:navigate.hover class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 hover:-translate-y-0.5 no-underline data-current:text-pink-300 data-current:font-semibold">Dasar Pemulangan</a>
 
   <!-- hide this dot on mobile, show on sm+ -->
   <span class="text-pink-100/30 hidden sm:inline">•</span>
@@ -63,9 +63,9 @@
   <!-- force line break only on mobile -->
   <span class="basis-full sm:hidden"></span>
 
-  <a href="/shipping-policy" wire:navigate class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 hover:-translate-y-0.5 no-underline">Dasar Penghantaran</a>
+  <a href="/shipping-policy" wire:navigate.hover class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 hover:-translate-y-0.5 no-underline data-current:text-pink-300 data-current:font-semibold">Dasar Penghantaran</a>
   <span class="text-pink-100/30">•</span>
-  <a href="/terms-of-service" wire:navigate class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 hover:-translate-y-0.5 no-underline">Terma & Syarat</a>
+  <a href="/terms-of-service" wire:navigate.hover class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 hover:-translate-y-0.5 no-underline data-current:text-pink-300 data-current:font-semibold">Terma & Syarat</a>
 </div>
 
         </div>

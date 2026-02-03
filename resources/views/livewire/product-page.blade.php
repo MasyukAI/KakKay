@@ -31,7 +31,7 @@
                   <span wire:loading.remove wire:target="addToCart">Beli Hari Ini — RM{{ number_format($product->price / 100, 2) }}</span>
                   <span wire:loading wire:target="addToCart">Menambah...</span>
                 </button>
-                <a href="{{ route('home') }}" class="rounded-full border border-white/30 px-8 py-4 text-base font-semibold backdrop-blur-sm transition-all duration-300 hover:border-white/60 hover:bg-white/10">
+                <a href="{{ route('home') }}" wire:navigate.hover class="rounded-full border border-white/30 px-8 py-4 text-base font-semibold backdrop-blur-sm transition-all duration-300 hover:border-white/60 hover:bg-white/10">
                   Lihat Semua Buku
                 </a>
               </div>

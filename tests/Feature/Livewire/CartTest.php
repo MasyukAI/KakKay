@@ -6,6 +6,7 @@ use AIArmada\Cart\Facades\Cart as CartFacade;
 use App\Livewire\Cart;
 use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Livewire;
 
 uses(RefreshDatabase::class);
@@ -156,4 +157,35 @@ it('can remove items from cart', function () {
     $cart->call('removeItem', $itemId);
 
     expect(CartFacade::getItems())->toHaveCount(0);
+});
+
+it('caches suggested products and excludes cart items', function () {
+    $inCart = Product::factory()->create([
+        'status' => 'active',
+    ]);
+    Product::factory()->count(3)->create([
+        'status' => 'active',
+    ]);
+
+    Livewire::test(Cart::class)
+        ->call('addToCart', $inCart, 1)
+        ->assertHasNoErrors();
+
+    $cartItems = CartFacade::getItems();
+    expect($cartItems)->toHaveCount(1);
+
+    $component = Livewire::test(Cart::class);
+    $suggested = $component->get('suggestedProducts');
+
+    $suggestedIds = $suggested->pluck('id')->map(fn ($id) => (string) $id)->toArray();
+    expect($suggestedIds)->not->toContain((string) $inCart->id);
+
+    $cartId = (string) CartFacade::getId();
+    $cacheKey = sprintf(
+        'cart.suggestions.%s.%s',
+        $cartId,
+        sha1(implode('|', [(string) $inCart->id]))
+    );
+
+    expect(Cache::has($cacheKey))->toBeTrue();
 });
