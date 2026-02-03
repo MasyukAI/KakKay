@@ -54,9 +54,9 @@ class extends Component {
 } ?>
 
 <div class="relative isolate overflow-hidden bg-[#0f0218] text-white">
-  <div class="pointer-events-none absolute -top-40 -left-32 h-[480px] w-[480px] rounded-full bg-gradient-to-br from-pink-500/40 via-purple-500/30 to-rose-500/40 blur-3xl"></div>
-  <div class="pointer-events-none absolute top-1/3 -right-24 h-[520px] w-[520px] rounded-full bg-gradient-to-br from-fuchsia-500/30 via-rose-500/20 to-orange-400/30 blur-3xl"></div>
-  <div class="pointer-events-none absolute bottom-[-240px] left-1/2 h-[460px] w-[460px] -translate-x-1/2 rounded-full bg-gradient-to-br from-purple-600/30 via-indigo-500/20 to-pink-400/40 blur-3xl"></div>
+  <div class="pointer-events-none absolute -top-40 -left-32 h-[480px] w-[480px] rounded-full bg-gradient-to-br from-pink-500/40 via-purple-500/30 to-rose-500/40 blur-2xl"></div>
+  <div class="pointer-events-none absolute top-1/3 -right-24 h-[520px] w-[520px] rounded-full bg-gradient-to-br from-fuchsia-500/30 via-rose-500/20 to-orange-400/30 blur-2xl"></div>
+  <div class="pointer-events-none absolute bottom-[-240px] left-1/2 h-[460px] w-[460px] -translate-x-1/2 rounded-full bg-gradient-to-br from-purple-600/30 via-indigo-500/20 to-pink-400/40 blur-2xl"></div>
 
   @php
       $cartQuantity = Cart::getTotalQuantity();
@@ -82,7 +82,7 @@ class extends Component {
               <strong class="text-pink-200">34 Teknik Bercinta Dengan Pasangan</strong> oleh <strong class="text-pink-100">Kamalia Kamal (Kak Kay)</strong> ialah panduan praktikal untuk hidupkan kembali rasa — tanpa bajet besar dan tanpa drama. Hanya usaha kecil yang manis, konsisten, dan halal.
             </p>
             <div class="flex flex-wrap items-center gap-4">
-              <button wire:click="addToCart" class="rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 px-8 py-4 text-base font-semibold shadow-[0_20px_45px_rgba(236,72,153,0.35)] transition-all duration-300 hover:scale-105 hover:shadow-[0_25px_60px_rgba(236,72,153,0.45)]">
+              <button wire:click="addToCart" class="rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 px-8 py-4 text-base font-semibold shadow-[0_8px_20px_rgba(236,72,153,0.35)] transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_16px_36px_rgba(236,72,153,0.45)]">
                 Beli Hari Ini
               </button>
               <a href="#learn" class="rounded-full border border-white/30 px-8 py-4 text-base font-semibold backdrop-blur-sm transition-all duration-300 hover:border-white/60 hover:bg-white/10">
@@ -100,7 +100,7 @@ class extends Component {
                 ['text' => 'Sesuai Pasangan Sibuk', 'icon' => '⏰'],
                 ['text' => '34 Teknik Praktikal', 'icon' => '📖'],
               ] as $feature)
-                <div class="relative overflow-hidden rounded-2xl border border-white/15 bg-white/5 px-4 py-5 shadow-[0_12px_28px_rgba(7,5,15,0.25)] transition-all duration-300 hover:-translate-y-1 hover:bg-white/10 hover:shadow-[0_20px_40px_rgba(236,72,153,0.3)]">
+                <div class="relative overflow-hidden rounded-2xl border border-white/15 bg-white/5 px-4 py-5 shadow-[0_8px_20px_rgba(7,5,15,0.25)] transition-all duration-300 hover:-translate-y-1 hover:bg-white/10 hover:shadow-[0_14px_28px_rgba(236,72,153,0.28)]">
                   <div class="absolute -top-10 right-2 h-20 w-20 rounded-full bg-gradient-to-br from-pink-400/20 to-purple-400/20 blur-lg"></div>
                   <div class="relative flex flex-col gap-2">
                     <span class="text-2xl">{{ $feature['icon'] }}</span>
@@ -112,15 +112,15 @@ class extends Component {
           </div>
           <div class="relative flex justify-center lg:justify-end">
             <div class="group relative">
-              <div class="absolute -inset-6 rounded-[36px] bg-gradient-to-br from-pink-400/40 via-fuchsia-500/30 to-purple-500/40 opacity-75 blur-3xl transition-all duration-700 group-hover:opacity-100"></div>
-              <div class="relative overflow-hidden rounded-[32px] border border-white/15 bg-white/10 p-6 backdrop-blur-xl shadow-[0_30px_80px_rgba(15,3,37,0.45)] transition-all duration-500 group-hover:-translate-y-1 group-hover:shadow-[0_40px_120px_rgba(236,72,153,0.35)]">
+              <div class="absolute -inset-6 rounded-[36px] bg-gradient-to-br from-pink-400/40 via-fuchsia-500/30 to-purple-500/40 opacity-75 blur-2xl transition-all duration-300 group-hover:opacity-100"></div>
+              <div class="relative overflow-hidden rounded-[32px] border border-white/15 bg-white/10 p-6 backdrop-blur-sm shadow-[0_18px_48px_rgba(15,3,37,0.45)] transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_22px_64px_rgba(236,72,153,0.35)]">
                 <div class="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold text-white/80">
                   <span class="h-1.5 w-1.5 rounded-full bg-pink-300"></span>
                   Special Edition Cover
                 </div>
                 <div class="relative mx-auto flex justify-center">
                   <div class="absolute inset-0 rounded-[28px] border border-white/20"></div>
-                  <img src="{{ asset('storage/images/cover/cara-bercinta.webp') }}" alt="34 Teknik Bercinta" class="relative w-full max-w-xs rounded-[26px] object-cover shadow-[0_25px_60px_rgba(17,0,34,0.55)]">
+                  <img src="{{ asset('storage/images/cover/cara-bercinta.webp') }}" alt="34 Teknik Bercinta" class="relative w-full max-w-xs rounded-[26px] object-cover shadow-[0_16px_36px_rgba(17,0,34,0.55)]">
                 </div>
                 <div class="mt-6 flex flex-col gap-3 rounded-2xl bg-white/10 p-4 text-sm text-white/80">
                   <div class="flex items-center gap-3">
@@ -133,7 +133,7 @@ class extends Component {
                   </div>
                 </div>
               </div>
-              <div class="absolute -right-16 -bottom-10 hidden w-44 rotate-12 rounded-2xl border border-white/10 bg-white/10 p-4 text-xs text-white/80 shadow-[0_18px_45px_rgba(15,3,37,0.35)] backdrop-blur-xl lg:block">
+              <div class="absolute -right-16 -bottom-10 hidden w-44 rotate-12 rounded-2xl border border-white/10 bg-white/10 p-4 text-xs text-white/80 shadow-[0_12px_30px_rgba(15,3,37,0.35)] backdrop-blur-sm lg:block">
                 <div class="font-semibold text-white">💬 Kak Kay tips</div>
                 <p class="mt-1 leading-snug">“Usaha kecil. Hati besar. Cuba satu teknik malam ini dan rasa beza esok pagi.”</p>
               </div>
@@ -146,7 +146,7 @@ class extends Component {
     <!-- WHY IT WORKS -->
     <section id="learn" class="relative pb-20">
       <div class="max-w-6xl mx-auto px-4">
-        <div class="overflow-hidden rounded-[36px] border border-white/10 bg-white/5 p-10 backdrop-blur-xl shadow-[0_30px_80px_rgba(12,5,24,0.4)]">
+        <div class="overflow-hidden rounded-[36px] border border-white/10 bg-white/5 p-10 backdrop-blur-sm shadow-[0_18px_48px_rgba(12,5,24,0.4)]">
           <div class="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
             <div class="space-y-6">
               <h2 class="font-display text-3xl sm:text-4xl text-white">Kalau ikut perasaan, cinta surut. Kalau ikut <span class="bg-gradient-to-r from-pink-300 via-rose-400 to-orange-200 bg-clip-text text-transparent">usaha</span>, cinta subur.</h2>
@@ -175,7 +175,7 @@ class extends Component {
               </div>
             </div>
             <div class="space-y-5">
-              <div class="rounded-[28px] border border-white/10 bg-gradient-to-br from-white/15 via-rose-200/10 to-purple-200/10 p-6 text-sm text-white/85 shadow-[0_18px_50px_rgba(15,3,37,0.4)]">
+              <div class="rounded-[28px] border border-white/10 bg-gradient-to-br from-white/15 via-rose-200/10 to-purple-200/10 p-6 text-sm text-white/85 shadow-[0_10px_24px_rgba(15,3,37,0.4)]">
                 <h3 class="text-lg font-semibold text-white">Struktur 3 Langkah</h3>
                 <p class="mt-2 text-white/75">Setiap teknik disusun supaya anda boleh:</p>
                 <ol class="mt-4 space-y-3">
@@ -232,7 +232,7 @@ class extends Component {
                 ['title' => 'Kejutan Murah Bermakna', 'desc' => 'Sticky note cinta, nota di bekal, voice note kelakar — kos rendah, kesan tinggi.', 'items' => ['Sticky Note Cinta', 'Voice Note 30 Saat', 'Hadiah RM10 Yang Ikhlas']],
                 ['title' => 'Audit Halus & Rutin', 'desc' => 'Jejak tarikh, refleksi tiga baris dan kalendar “Kita” untuk cinta konsisten.', 'items' => ['Audit Halus 3 Baris', 'Kalendar Kita', 'Hadiah Diri: Teruskan 7 Hari']],
               ] as $chapter)
-                <div class="group relative overflow-hidden rounded-[28px] border border-rose-200/60 bg-white/80 p-6 shadow-[0_25px_40px_rgba(244,114,182,0.15)] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_30px_65px_rgba(244,114,182,0.24)]">
+                <div class="group relative overflow-hidden rounded-[28px] border border-rose-200/60 bg-white/80 p-6 shadow-[0_14px_28px_rgba(244,114,182,0.15)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(244,114,182,0.2)]">
                   <div class="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-gradient-to-br from-rose-300/30 via-fuchsia-200/30 to-orange-200/30 blur-2xl"></div>
                   <div class="relative">
                     <h3 class="font-semibold text-maroon text-xl">{{ $chapter['title'] }}</h3>
@@ -247,7 +247,7 @@ class extends Component {
               @endforeach
             </div>
             <div class="mt-12 flex flex-col items-center gap-3">
-              <button wire:click="addToCart" class="rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 px-10 py-4 text-lg font-semibold text-white shadow-[0_25px_55px_rgba(236,72,153,0.35)] transition-transform duration-300 hover:scale-105">
+              <button wire:click="addToCart" class="rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 px-10 py-4 text-lg font-semibold text-white shadow-[0_16px_36px_rgba(236,72,153,0.35)] transition-transform duration-300 hover:scale-[1.02]">
                 Beli Sekarang — Mulakan Ritual Cinta
               </button>
               <p class="text-sm text-slate-500">✨ Mulakan perjalanan cinta yang lebih bermakna</p>
@@ -261,8 +261,8 @@ class extends Component {
     <section class="relative pb-20">
       <div class="max-w-6xl mx-auto px-4">
         <div class="grid gap-10 lg:grid-cols-[0.65fr_0.35fr]">
-          <div class="relative overflow-hidden rounded-[36px] border border-white/10 bg-white/10 p-10 backdrop-blur-xl shadow-[0_30px_80px_rgba(17,6,34,0.45)]">
-            <div class="absolute -top-20 -right-24 h-60 w-60 rounded-full bg-gradient-to-br from-rose-400/20 via-purple-500/20 to-indigo-400/20 blur-3xl"></div>
+          <div class="relative overflow-hidden rounded-[36px] border border-white/10 bg-white/10 p-10 backdrop-blur-sm shadow-[0_18px_48px_rgba(17,6,34,0.45)]">
+            <div class="absolute -top-20 -right-24 h-60 w-60 rounded-full bg-gradient-to-br from-rose-400/20 via-purple-500/20 to-indigo-400/20 blur-2xl"></div>
             <div class="relative">
               <h2 class="font-display text-4xl text-white">Ditulis dengan hati oleh <span class="bg-gradient-to-r from-pink-300 via-rose-400 to-purple-400 bg-clip-text text-transparent">Kamalia Kamal</span> (Kak Kay)</h2>
               <p class="mt-6 text-lg leading-relaxed text-white/80">Kak Kay pernah berada di fasa <em class="text-pink-200">letih menunggu rasa</em>. Jadi beliau pilih jalan mudah: <strong class="text-pink-100 font-semibold">buat dulu</strong> walau kecil. Buku ini menceritakan pengalaman sebenar itu supaya pasangan lain dapat rasa lega yang sama: bahagia itu boleh diusahakan.</p>
@@ -287,8 +287,8 @@ class extends Component {
           </div>
           <div class="relative flex items-center justify-center">
             <div class="group relative w-full max-w-xs">
-              <div class="absolute -inset-4 rounded-[32px] bg-gradient-to-br from-rose-400/40 via-fuchsia-400/30 to-purple-500/40 blur-3xl opacity-80 transition duration-500 group-hover:opacity-100"></div>
-              <div class="relative rounded-[32px] border border-white/15 bg-white/10 p-10 text-center backdrop-blur-xl shadow-[0_25px_60px_rgba(15,3,37,0.45)]">
+              <div class="absolute -inset-4 rounded-[32px] bg-gradient-to-br from-rose-400/40 via-fuchsia-400/30 to-purple-500/40 blur-2xl opacity-80 transition duration-300 group-hover:opacity-100"></div>
+              <div class="relative rounded-[32px] border border-white/15 bg-white/10 p-10 text-center backdrop-blur-sm shadow-[0_16px_36px_rgba(15,3,37,0.45)]">
                 <div class="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-purple-600 via-rose-500 to-orange-400 text-2xl font-bold">KK</div>
                 <h3 class="mt-6 text-xl font-semibold text-white">Kamalia Kamal</h3>
                 <p class="text-sm uppercase tracking-[0.24em] text-white/60">Kaunselor & Penulis</p>
@@ -303,7 +303,7 @@ class extends Component {
     <!-- TESTIMONIALS -->
     <section class="relative pb-20">
       <div class="max-w-6xl mx-auto px-4">
-        <div class="overflow-hidden rounded-[36px] border border-white/10 bg-white/10 p-10 backdrop-blur-xl shadow-[0_30px_80px_rgba(12,5,24,0.4)]">
+        <div class="overflow-hidden rounded-[36px] border border-white/10 bg-white/10 p-10 backdrop-blur-sm shadow-[0_18px_48px_rgba(12,5,24,0.4)]">
           <div class="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <h2 class="font-display text-3xl text-white">Apa kata pasangan yang mencuba</h2>
@@ -321,7 +321,7 @@ class extends Component {
               ['quote' => 'Sticky note cinta nampak remeh tapi pasangan saya senyum panjang. Buku ni ajar disiplin sayang yang kecil-kecil.', 'name' => 'Aisyah & Fathi'],
               ['quote' => 'Audit halus tu power, kami boleh sembang tanpa defensive. Rasanya macam ada coach cinta dalam rumah.', 'name' => 'Farhan & Mira'],
             ] as $testimonial)
-              <figure class="rounded-[28px] border border-white/15 bg-white/10 p-6 text-white/80 shadow-[0_20px_50px_rgba(12,5,24,0.35)]">
+              <figure class="rounded-[28px] border border-white/15 bg-white/10 p-6 text-white/80 shadow-[0_14px_32px_rgba(12,5,24,0.35)]">
                 <blockquote class="text-lg leading-relaxed text-white/85">“{{ $testimonial['quote'] }}”</blockquote>
                 <figcaption class="mt-4 text-sm text-white/60">— {{ $testimonial['name'] }}</figcaption>
               </figure>
@@ -338,7 +338,7 @@ class extends Component {
           <h2 class="font-display text-3xl text-white">Soalan Lazim</h2>
           <p class="mt-3 text-white/70">Masih ragu? Ini jawapan kepada soalan paling kerap kami terima.</p>
         </div>
-        <div class="mt-10 divide-y divide-white/10 rounded-[32px] border border-white/10 bg-white/5 p-6 backdrop-blur-xl shadow-[0_30px_70px_rgba(12,5,24,0.35)]">
+        <div class="mt-10 divide-y divide-white/10 rounded-[32px] border border-white/10 bg-white/5 p-6 backdrop-blur-sm shadow-[0_18px_42px_rgba(12,5,24,0.35)]">
           @foreach ([
             ['q' => 'Adakah tekniknya mahal?', 'a' => 'Tidak. Fokus pada usaha kecil yang jujur — nota cinta, genggam tangan, picnic dalam bilik — bukan kejutan mewah.'],
             ['q' => 'Sesuai untuk pasangan sibuk?', 'a' => 'Ya. Banyak teknik siap dalam 15–30 minit, mudah diselit dalam rutin harian tanpa menambah stres.'],
@@ -355,7 +355,7 @@ class extends Component {
           @endforeach
         </div>
         <div class="mt-10 flex flex-col items-center gap-3">
-          <button wire:click="addToCart" class="rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 px-10 py-4 text-base font-semibold shadow-[0_25px_55px_rgba(236,72,153,0.35)] transition-transform duration-300 hover:scale-105">
+          <button wire:click="addToCart" class="rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 px-10 py-4 text-base font-semibold shadow-[0_16px_36px_rgba(236,72,153,0.35)] transition-transform duration-300 hover:scale-[1.02]">
             Tambah Ke Troli — Bahagia Diusahakan
           </button>
           <p class="text-xs uppercase tracking-[0.3em] text-white/50">Cinta jadi budaya, bukan projek sekali-sekala</p>

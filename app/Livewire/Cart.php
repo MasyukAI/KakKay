@@ -298,6 +298,9 @@ final class Cart extends Component
             ]
         );
 
+        $this->loadCartItems();
+        $this->loadAppliedVoucher();
+
         // Dispatch consistent event for UI feedback (event handler will reload cart items)
         $this->dispatch('cart-updated', [
             'product' => $product->name,

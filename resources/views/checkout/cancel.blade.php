@@ -8,7 +8,7 @@
 </head>
 <body class="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-pink-900">
     <div class="min-h-screen flex items-center justify-center p-4">
-        <div class="max-w-md w-full bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 p-8 text-center">
+        <div class="max-w-md w-full bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 p-8 text-center">
             <div class="mb-6">
                 <div class="mx-auto w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mb-4">
                     <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

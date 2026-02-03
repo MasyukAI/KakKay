@@ -6,8 +6,8 @@
 ])
 
 <section {{ $attributes->merge(['class' => 'relative pt-20']) }}>
-    <div class="pointer-events-none absolute -top-10 left-1/4 h-48 w-48 rounded-full bg-gradient-to-br from-pink-400/25 via-rose-500/20 to-purple-500/20 blur-3xl"></div>
-    <div class="pointer-events-none absolute top-12 right-1/4 h-60 w-60 rounded-full bg-gradient-to-br from-fuchsia-400/25 via-purple-500/20 to-indigo-400/20 blur-3xl"></div>
+    <div class="pointer-events-none absolute -top-10 left-1/4 h-48 w-48 rounded-full bg-gradient-to-br from-pink-400/25 via-rose-500/20 to-purple-500/20 blur-2xl"></div>
+    <div class="pointer-events-none absolute top-12 right-1/4 h-60 w-60 rounded-full bg-gradient-to-br from-fuchsia-400/25 via-purple-500/20 to-indigo-400/20 blur-2xl"></div>
 
     <div class="relative mx-auto max-w-7xl px-6 sm:px-8">
         <div class="mx-auto max-w-4xl text-center space-y-6">

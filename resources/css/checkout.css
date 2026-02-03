@@ -20,19 +20,18 @@
 .checkout-container .fi-section {
     position: relative;
     border-radius: calc(var(--radius) * 1.6);
-    border: 1px solid rgba(255, 95, 162, 0.45);
+    border: 1px solid rgba(109, 92, 255, 0.28);
     background:
-        radial-gradient(140% 120% at 0% 0%, rgba(255, 255, 255, 0.16) 0%, transparent 55%),
-        linear-gradient(135deg, rgba(255, 95, 162, 0.15), rgba(106, 0, 244, 0.12));
+        radial-gradient(140% 120% at 0% 0%, rgba(255, 255, 255, 0.14) 0%, transparent 55%),
+        linear-gradient(135deg, rgba(109, 92, 255, 0.14), rgba(255, 122, 217, 0.1));
     box-shadow:
-        0 28px 70px rgba(12, 5, 24, 0.45),
+        0 20px 48px rgba(6, 10, 22, 0.45),
         inset 0 0 0 1px rgba(255, 255, 255, 0.08);
     overflow: hidden;
     transition:
-        transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-        box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-        border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-    backdrop-filter: blur(18px);
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
     margin-bottom: 2.5rem;
     padding: clamp(1.5rem, 2vw + 1rem, 2rem);
 }
@@ -42,9 +41,9 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background: radial-gradient(120% 120% at 80% 0%, rgba(236, 72, 153, 0.25) 0%, transparent 60%);
-    opacity: 0.45;
-    transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    background: radial-gradient(120% 120% at 80% 0%, rgba(109, 92, 255, 0.18) 0%, transparent 60%);
+    opacity: 0.3;
+    transition: opacity 0.2s ease;
 }
 
 .checkout-container .fi-section::after {
@@ -54,16 +53,16 @@
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, var(--purple), var(--pink), var(--magenta), var(--ruby));
-    opacity: 0.9;
+    background: linear-gradient(90deg, var(--purple), var(--pink));
+    opacity: 0.75;
     pointer-events: none;
 }
 
 .checkout-container .fi-section:hover {
-    transform: translateY(-6px);
-    border-color: rgba(255, 95, 162, 0.65);
+    transform: translateY(-4px);
+    border-color: rgba(109, 92, 255, 0.45);
     box-shadow:
-        0 38px 100px rgba(12, 5, 24, 0.55),
+        0 26px 64px rgba(6, 10, 22, 0.55),
         inset 0 0 0 1px rgba(255, 255, 255, 0.12);
 }
 
@@ -104,48 +103,33 @@
     justify-content: center !important;
     gap: 0.75rem !important;
     border-radius: 9999px !important;
-    border: 1px solid rgba(255, 95, 162, 0.4) !important;
-    background: linear-gradient(135deg, rgba(255, 95, 162, 0.15), rgba(106, 0, 244, 0.12)) !important;
+    border: 1px solid rgba(109, 92, 255, 0.35) !important;
+    background: linear-gradient(135deg, rgba(109, 92, 255, 0.16), rgba(255, 122, 217, 0.12)) !important;
     padding: 1rem 2rem !important;
     font-size: 0.75rem !important;
     font-weight: 700 !important;
     text-transform: uppercase !important;
     letter-spacing: 0.15em !important;
     color: rgba(255, 255, 255, 0.95) !important;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+    text-shadow: none !important;
     font-family: 'Montserrat', system-ui, sans-serif !important;
-    backdrop-filter: blur(20px) !important;
+    backdrop-filter: none !important;
     width: auto !important;
     max-width: fit-content !important;
-    box-shadow: 
-        0 8px 32px rgba(255, 95, 162, 0.25),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 0 10px 24px rgba(6, 10, 22, 0.35) !important;
     position: relative !important;
     overflow: hidden !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
 }
 
 .checkout-container .fi-section-header-heading::before {
-    content: '' !important;
-    position: absolute !important;
-    top: 0 !important;
-    left: -100% !important;
-    width: 100% !important;
-    height: 100% !important;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent) !important;
-    transition: left 0.6s ease !important;
-}
-
-.checkout-container .fi-section-header-heading:hover::before {
-    left: 100% !important;
+    content: none !important;
 }
 
 .checkout-container .fi-section-header-heading:hover {
     transform: translateY(-1px) !important;
-    border-color: rgba(255, 95, 162, 0.6) !important;
-    box-shadow: 
-        0 12px 40px rgba(255, 95, 162, 0.35),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+    border-color: rgba(109, 92, 255, 0.5) !important;
+    box-shadow: 0 14px 30px rgba(109, 92, 255, 0.28) !important;
 }
 
 .checkout-container .fi-section-header-description {
@@ -379,7 +363,7 @@
 
 /* Clean payment button */
 .checkout-container button[type="submit"] {
-    background: linear-gradient(135deg, #6a00f4, #ff5fa2) !important;
+    background: linear-gradient(135deg, #6d5cff, #ff7ad9) !important;
     border: none !important;
     border-radius: 12px !important;
     color: white !important;
@@ -387,15 +371,25 @@
     font-weight: 700 !important;
     font-size: 1.1rem !important;
     padding: 1.25rem 2rem !important;
-    transition: all 0.3s ease !important;
-    box-shadow: 0 4px 20px rgba(255, 95, 162, 0.3) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease !important;
+    box-shadow: 0 10px 24px rgba(109, 92, 255, 0.25) !important;
     cursor: pointer !important;
     width: 100% !important;
 }
 
 .checkout-container button[type="submit"]:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 8px 30px rgba(255, 95, 162, 0.4) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 16px 32px rgba(109, 92, 255, 0.3) !important;
+    filter: brightness(1.03) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .checkout-container .fi-section,
+    .checkout-container .fi-section-header-heading,
+    .checkout-container button[type="submit"] {
+        transition: none !important;
+        transform: none !important;
+    }
 }
 
 .checkout-container button[type="submit"]:disabled {

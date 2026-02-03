@@ -1,6 +1,6 @@
 <footer id="contact" class="">
     <div>
-      <div style="display:flex; flex-wrap:wrap; gap:24px; align-items:flex-start; justify-content:space-between; padding: 2rem 0;">
+      <div style="display:flex; flex-wrap:wrap; gap:24px; align-items:flex-start; justify-content:space-between; padding: 2rem 0; color: rgba(231,235,255,0.9);">
         <div class="text-center sm:text-left w-full sm:w-auto">
           <strong style="font-family:Montserrat, system-ui, sans-serif;">Let's collaborate</strong>
           <div class="mt-2">Speaking • Workshops • Consulting • Media</div>
@@ -8,7 +8,7 @@
         <div class="w-full sm:w-auto flex flex-col items-center sm:items-end gap-4">
           <div style="display: flex; gap: 16px; align-items: center;">
             <a href="https://instagram.com/kamaliakamal" target="_blank" rel="noopener"
-               style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #E1306C, #F77737); color: white; text-decoration: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);"
+               style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #E1306C, #F77737); color: white; text-decoration: none; transition: transform 0.2s ease, box-shadow 0.2s ease;"
                onmouseover="this.style.transform='translateY(-2px) scale(1.1)'; this.style.boxShadow='0 8px 25px rgba(225,48,108,0.4)';"
                onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='none';">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -16,7 +16,7 @@
               </svg>
             </a>
             <a href="https://facebook.com/kamaliakamal" target="_blank" rel="noopener"
-               style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: #1877F2; color: white; text-decoration: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);"
+               style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: #1877F2; color: white; text-decoration: none; transition: transform 0.2s ease, box-shadow 0.2s ease;"
                onmouseover="this.style.transform='translateY(-2px) scale(1.1)'; this.style.boxShadow='0 8px 25px rgba(24,119,242,0.4)';"
                onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='none';">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -24,7 +24,7 @@
               </svg>
             </a>
             <a href="https://tiktok.com/@kakkayloveme" target="_blank" rel="noopener"
-               style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: #000; color: white; text-decoration: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);"
+               style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: #000; color: white; text-decoration: none; transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;"
                onmouseover="this.style.transform='translateY(-2px) scale(1.1)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.4)'; this.style.background='linear-gradient(135deg, #ff0050, #00f2ea)';"
                onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='none'; this.style.background='#000';">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -41,7 +41,7 @@
             </a> --}}
           </div>
           <a class="btn primary" href="mailto:kakkaylovesme@gmail.com"
-             style="transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);"
+             style="transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;"
              onmouseover="this.style.transform='translateY(-3px) scale(1.05)'; this.style.boxShadow='0 15px 35px rgba(255,105,180,0.4), 0 5px 15px rgba(0,0,0,0.3)'; this.style.filter='brightness(1.1)';"
              onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow=''; this.style.filter='brightness(1)';">kakkaylovesme@gmail.com
           </a>
@@ -49,9 +49,9 @@
       </div>
       
       <!-- Policy Links Section - Centered Below -->
-      <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1);">
+      <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(207,214,245,0.18);">
         <div style="text-align: center; max-width: 800px; margin: 0 auto;">
-          <h4 style="color: #ffe9f5; font-size: 1.1rem; margin-bottom: 1rem; font-weight: 600;">Dasar & Polisi</h4>
+          <h4 style="color: #e7ebff; font-size: 1.1rem; margin-bottom: 1rem; font-weight: 600;">Dasar & Polisi</h4>
           <div class="flex flex-wrap justify-center items-center gap-2 text-sm">
   <a href="/privacy-policy" wire:navigate class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 hover:-translate-y-0.5 no-underline">Dasar Privasi</a>
   <span class="text-pink-100/30">•</span>
@@ -71,7 +71,7 @@
         </div>
         
         <!-- Contact Info Footer -->
-        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; color: rgba(255,233,245,0.6); font-size: 0.8rem;">
+        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(207,214,245,0.12); text-align: center; color: rgba(207,214,245,0.7); font-size: 0.8rem;">
           <div class="flex flex-col sm:flex-row flex-wrap gap-4 justify-center items-center mt-2 text-sm">
             <div class="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2">
                 <div class="flex items-center gap-1.5">
@@ -85,7 +85,7 @@
                 <a href="https://wa.me/60138846594" class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 no-underline">+60 13-884 6594</a>
             </span>
           </div>
-          <p style="margin: 1rem 0;">&copy; 2025 Kamalia Kamal Research International (Kak Kay)</p>
+          <p style="margin: 1rem 0; color: rgba(207,214,245,0.8);">&copy; 2025 Kamalia Kamal Research International (Kak Kay)</p>
         </div>
       </div>
     </div>

@@ -15,21 +15,21 @@
             100% { background-position: 1000px 0; }
         }
         @keyframes glow-pulse {
-            0%, 100% { opacity: 1; box-shadow: 0 0 40px rgba(236, 72, 153, 0.4), 0 0 80px rgba(139, 92, 246, 0.3); }
-            50% { opacity: 0.8; box-shadow: 0 0 60px rgba(236, 72, 153, 0.6), 0 0 120px rgba(139, 92, 246, 0.5); }
+            0%, 100% { opacity: 0.9; box-shadow: 0 0 24px rgba(236, 72, 153, 0.3), 0 0 48px rgba(139, 92, 246, 0.2); }
+            50% { opacity: 0.75; box-shadow: 0 0 32px rgba(236, 72, 153, 0.4), 0 0 64px rgba(139, 92, 246, 0.3); }
         }
         @keyframes slide-up {
             from { transform: translateY(30px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
-        .animate-float { animation: float 6s ease-in-out infinite; }
-        .animate-shimmer { animation: shimmer 3s linear infinite; }
-        .animate-glow-pulse { animation: glow-pulse 3s ease-in-out infinite; }
-        .animate-slide-up { animation: slide-up 0.6s ease-out forwards; }
+        .animate-float { animation: float 8s ease-in-out infinite; }
+        .animate-shimmer { animation: shimmer 6s linear infinite; }
+        .animate-glow-pulse { animation: glow-pulse 5s ease-in-out infinite; }
+        .animate-slide-up { animation: slide-up 0.5s ease-out forwards; }
         .glass-morphism {
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.05) 100%);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            backdrop-filter: blur(10px) saturate(120%);
+            -webkit-backdrop-filter: blur(10px) saturate(120%);
         }
         .text-shimmer {
             background: linear-gradient(90deg, #fbbf24 0%, #f472b6 25%, #a78bfa 50%, #60a5fa 75%, #fbbf24 100%);
@@ -40,7 +40,7 @@
             animation: shimmer 3s linear infinite;
         }
         .slide-up {
-            animation: slide-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: slide-up 0.5s ease-out forwards;
             opacity: 0;
             transform: translateY(30px);
         }
@@ -52,24 +52,24 @@
 <body class="min-h-screen overflow-x-hidden bg-[#0f0218] text-white">
     <!-- Enhanced Background Effects -->
     <div class="pointer-events-none fixed inset-0 overflow-hidden">
-        <div class="absolute -top-48 -left-32 h-[520px] w-[520px] rounded-full bg-gradient-to-br from-pink-500/40 via-purple-500/25 to-rose-500/35 blur-3xl"></div>
-        <div class="absolute top-1/4 -right-36 h-[540px] w-[540px] rounded-full bg-gradient-to-br from-fuchsia-500/25 via-rose-500/25 to-orange-400/35 blur-3xl"></div>
-        <div class="absolute bottom-0 left-1/2 h-[320px] w-[520px] -translate-x-1/2 rounded-full bg-gradient-to-br from-purple-600/30 via-indigo-500/20 to-pink-400/30 blur-3xl"></div>
+        <div class="absolute -top-48 -left-32 h-[520px] w-[520px] rounded-full bg-gradient-to-br from-pink-500/40 via-purple-500/25 to-rose-500/35 blur-2xl"></div>
+        <div class="absolute top-1/4 -right-36 h-[540px] w-[540px] rounded-full bg-gradient-to-br from-fuchsia-500/25 via-rose-500/25 to-orange-400/35 blur-2xl"></div>
+        <div class="absolute bottom-0 left-1/2 h-[320px] w-[520px] -translate-x-1/2 rounded-full bg-gradient-to-br from-purple-600/30 via-indigo-500/20 to-pink-400/30 blur-2xl"></div>
     </div>
     <div class="fixed inset-0 -z-40 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.05\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM36 6V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
     
     <div class="relative min-h-screen flex items-center justify-center px-4 py-16 overflow-y-auto">
         <div class="pointer-events-none absolute inset-0 overflow-hidden">
-            <div class="absolute -top-40 -right-24 h-72 w-72 rounded-full bg-gradient-to-br from-pink-500/35 via-fuchsia-500/20 to-purple-500/30 blur-3xl"></div>
-            <div class="absolute -bottom-48 -left-16 h-80 w-80 rounded-full bg-gradient-to-br from-purple-500/25 via-indigo-500/20 to-pink-500/20 blur-3xl"></div>
+            <div class="absolute -top-40 -right-24 h-72 w-72 rounded-full bg-gradient-to-br from-pink-500/35 via-fuchsia-500/20 to-purple-500/30 blur-2xl"></div>
+            <div class="absolute -bottom-48 -left-16 h-80 w-80 rounded-full bg-gradient-to-br from-purple-500/25 via-indigo-500/20 to-pink-500/20 blur-2xl"></div>
         </div>
 
         <div class="relative w-full max-w-6xl animate-slide-up px-4 sm:px-6 lg:px-8">
-            <div class="relative overflow-hidden rounded-[36px] border border-white/15 bg-white/10 shadow-[0_30px_90px_rgba(12,5,24,0.45)] backdrop-blur-[28px]">
+            <div class="relative overflow-hidden rounded-[36px] border border-white/15 bg-white/10 shadow-[0_18px_48px_rgba(12,5,24,0.45)] backdrop-blur-sm">
                 <!-- Success Badge (Top Right) -->
-                <div class="absolute top-6 right-6 hidden sm:flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-white/70 backdrop-blur-xl">
+                <div class="absolute top-6 right-6 hidden sm:flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-white/70 backdrop-blur-sm">
                     <span class="relative flex h-2.5 w-2.5">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="animate-pulse absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60"></span>
                         <span class="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-lg shadow-emerald-400/40"></span>
                     </span>
                     Pembayaran Berjaya
@@ -100,8 +100,8 @@
                         <!-- Enhanced Success Icon -->
                         <div class="relative mb-10">
                             <!-- Outer Ring Pulse -->
-                            <div class="absolute inset-0 rounded-full bg-gradient-to-r from-emerald-400/40 to-green-400/40 animate-ping"></div>
-                            <div class="absolute inset-0 rounded-full bg-gradient-to-r from-emerald-400/20 to-green-400/20 animate-pulse"></div>
+                            <div class="absolute inset-0 rounded-full bg-gradient-to-r from-emerald-400/40 to-green-400/40 animate-pulse"></div>
+                            <div class="absolute inset-0 rounded-full bg-gradient-to-r from-emerald-400/20 to-green-400/20 animate-none"></div>
                             
                             <!-- Main Icon Container -->
                             <div class="relative mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 via-green-400 to-emerald-500 shadow-2xl shadow-emerald-500/50 ring-4 ring-emerald-400/30">
@@ -115,9 +115,9 @@
                             </div>
                             
                             <!-- Sparkle Effects -->
-                            <div class="absolute -top-2 -right-2 h-3 w-3 rounded-full bg-yellow-300 animate-ping"></div>
-                            <div class="absolute -bottom-1 -left-2 h-2 w-2 rounded-full bg-pink-300 animate-ping" style="animation-delay: 0.5s;"></div>
-                            <div class="absolute top-0 left-0 h-2 w-2 rounded-full bg-blue-300 animate-ping" style="animation-delay: 1s;"></div>
+                            <div class="absolute -top-2 -right-2 h-3 w-3 rounded-full bg-yellow-300 animate-none"></div>
+                            <div class="absolute -bottom-1 -left-2 h-2 w-2 rounded-full bg-pink-300 animate-none"></div>
+                            <div class="absolute top-0 left-0 h-2 w-2 rounded-full bg-blue-300 animate-none"></div>
                         </div>
                         
                         <!-- Enhanced Title with Shimmer Effect -->
@@ -137,12 +137,12 @@
                     <div class="mt-12 grid gap-6 items-start lg:items-start lg:[grid-template-columns:minmax(0,1.05fr)_minmax(0,1fr)]">
                         @if(isset($order) && $order)
                             <!-- Order Status Card - Enhanced -->
-                            <div class="group flex h-full flex-col rounded-[28px] border border-white/12 bg-white/10 p-6 shadow-[0_25px_70px_rgba(12,5,24,0.45)] backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_35px_90px_rgba(236,72,153,0.25)]">
+                            <div class="group flex h-full flex-col rounded-[28px] border border-white/12 bg-white/10 p-6 shadow-[0_16px_40px_rgba(12,5,24,0.45)] backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_14px_32px_rgba(236,72,153,0.25)]">
                                 <div class="mb-6 flex items-center justify-between text-sm text-white/60">
                                     <span class="font-medium">Status Pesanan</span>
                                     <span class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-white/70 backdrop-blur">
                                         <span class="relative flex h-2 w-2">
-                                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                            <span class="animate-pulse absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60"></span>
                                             <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
                                         </span>
                                         {{ ucfirst($order->status) }}
@@ -255,7 +255,7 @@
                             </div>
 
                             <!-- Shipping Information Card - Enhanced -->
-                            <div class="group relative flex h-full flex-col rounded-[28px] border border-white/12 bg-white/10 p-6 shadow-[0_25px_70px_rgba(12,5,24,0.45)] backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_35px_90px_rgba(236,72,153,0.25)]">
+                            <div class="group relative flex h-full flex-col rounded-[28px] border border-white/12 bg-white/10 p-6 shadow-[0_16px_40px_rgba(12,5,24,0.45)] backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_14px_32px_rgba(236,72,153,0.25)]">
                                 <h2 class="text-sm font-bold uppercase tracking-[0.25em] text-white/70 mb-6 flex items-center gap-2">
                                     <svg class="h-4 w-4 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -310,7 +310,7 @@
                             </div>
 
                             <!-- Order Summary Card - Enhanced -->
-                            <div class="group flex h-full flex-col rounded-[28px] border border-white/12 bg-white/10 p-6 shadow-[0_25px_70px_rgba(12,5,24,0.45)] backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_35px_90px_rgba(96,165,250,0.25)] lg:col-span-2">
+                            <div class="group flex h-full flex-col rounded-[28px] border border-white/12 bg-white/10 p-6 shadow-[0_16px_40px_rgba(12,5,24,0.45)] backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_14px_32px_rgba(96,165,250,0.25)] lg:col-span-2">
                                 <h2 class="text-sm font-bold uppercase tracking-[0.25em] text-white/70 mb-6 flex items-center gap-2">
                                     <svg class="h-4 w-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -330,7 +330,7 @@
                                                     $totalPriceCents = $isModel ? $item->total : (($item['price'] ?? 0) * $quantity);
                                                     $totalPrice = 'RM '.number_format($totalPriceCents / 100, 2);
                                                 @endphp
-                                                <li class="group/item relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-4 transition-all duration-300 hover:border-white/20 hover:shadow-[0_20px_50px_rgba(236,72,153,0.2)]">
+                                                <li class="group/item relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-4 transition-all duration-300 hover:border-white/20 hover:shadow-[0_14px_32px_rgba(236,72,153,0.2)]">
                                                     <div class="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-pink-500/5 to-purple-500/0 opacity-0 transition-opacity duration-300 group-hover/item:opacity-100"></div>
 
                                                     <div class="relative flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -357,7 +357,7 @@
                             </div>
 
                             <!-- Next Steps Card - Enhanced -->
-                            <div class="relative rounded-[32px] border border-white/12 bg-white/10 p-8 shadow-[0_25px_70px_rgba(12,5,24,0.45)] backdrop-blur-xl lg:col-span-2">
+                            <div class="relative rounded-[32px] border border-white/12 bg-white/10 p-8 shadow-[0_16px_40px_rgba(12,5,24,0.45)] backdrop-blur-sm lg:col-span-2">
                                 <div class="absolute inset-0 rounded-[32px] bg-gradient-to-br from-violet-500/5 via-transparent to-fuchsia-500/5"></div>
                                 <div class="relative">
                                     <h2 class="text-sm font-bold uppercase tracking-[0.25em] text-white/70 mb-8 flex items-center gap-2">
@@ -381,7 +381,7 @@
                                                 </div>
                                             </div>
                                         </li>
-                                        <li class="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/10 p-5 transition-all duration-300 hover:scale-[1.03] hover:border-white/20 hover:shadow-[0_25px_60px_rgba(96,165,250,0.2)]">
+                                        <li class="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/10 p-5 transition-all duration-300 hover:scale-[1.03] hover:border-white/20 hover:shadow-[0_16px_36px_rgba(96,165,250,0.2)]">
                                             <div class="absolute inset-0 bg-gradient-to-br from-blue-400/0 via-blue-400/5 to-blue-400/0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
                                             <div class="relative flex items-start gap-3">
                                                 <div class="flex-shrink-0 rounded-full bg-blue-400/15 p-2 ring-2 ring-blue-400/30">
@@ -395,7 +395,7 @@
                                                 </div>
                                             </div>
                                         </li>
-                                        <li class="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/10 p-5 transition-all duration-300 hover:scale-[1.03] hover:border-white/20 hover:shadow-[0_25px_60px_rgba(244,114,182,0.2)]">
+                                        <li class="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/10 p-5 transition-all duration-300 hover:scale-[1.03] hover:border-white/20 hover:shadow-[0_16px_36px_rgba(244,114,182,0.2)]">
                                             <div class="absolute inset-0 bg-gradient-to-br from-pink-400/0 via-pink-400/5 to-pink-400/0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
                                             <div class="relative flex items-start gap-3">
                                                 <div class="flex-shrink-0 rounded-full bg-pink-400/15 p-2 ring-2 ring-pink-400/30">
@@ -429,7 +429,7 @@
                     <div class="mt-16 flex flex-col gap-8 sm:flex-row sm:items-center sm:justify-between">
                         <div class="slide-up flex flex-col gap-3 sm:flex-row sm:items-center" style="animation-delay: 0.1s;">
                             <a href="{{ route('home') }}" wire:navigate class="cart-button-primary flex items-center gap-3 rounded-full px-8 py-3 text-base font-semibold"
-                               style="transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); transform: translateY(0px) scale(1); filter: brightness(1);"
+                               style="transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease; transform: translateY(0px) scale(1); filter: brightness(1);"
                                onmouseover="this.style.transform='translateY(-3px) scale(1.05)'; this.style.boxShadow='0 15px 35px rgba(255,105,180,0.4), 0 5px 15px rgba(0,0,0,0.3)'; this.style.filter='brightness(1.1)';"
                                onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow=''; this.style.filter='brightness(1)';">
                                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -439,7 +439,7 @@
                                 <flux:icon.arrow-up-right class="h-4 w-4" />
                             </a>
                             <a href="mailto:support@kakkay.my" class="btn ghost inline-flex items-center justify-center gap-2 rounded-full border border-white/30 px-8 py-3 text-base font-semibold text-white/80 backdrop-blur-sm transition"
-                               style="transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); transform: translateY(0px);"
+                               style="transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease; transform: translateY(0px);"
                                onmouseover="this.style.transform='translateY(-2px)'; this.style.backgroundColor='rgba(255,255,255,0.08)'; this.style.borderColor='rgba(255,255,255,0.5)'; this.style.color='#ffffff';"
                                onmouseout="this.style.transform='translateY(0)'; this.style.backgroundColor=''; this.style.borderColor=''; this.style.color='';">
                                 <svg class="h-5 w-5 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
