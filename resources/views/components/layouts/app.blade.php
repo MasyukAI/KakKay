@@ -25,11 +25,7 @@
             {{ $slot }}
             @livewire('notifications')
         </div>
-        {{-- Load Filament scripts in correct order for standalone form/schema usage --}}
-        <script src="{{ asset('js/filament/support/support.js') }}"></script>
-        <script src="{{ asset('js/filament/schemas/schemas.js') }}"></script>
-        <script src="{{ asset('js/filament/forms/components/select.js') }}"></script>
-        <script src="{{ asset('js/ysfkaya/filament-phone-input/components/filament-phone-input.js') }}"></script>
+        {{-- Filament scripts (includes all required schema/form assets) --}}
         @filamentScripts
     </body>
 </html>
