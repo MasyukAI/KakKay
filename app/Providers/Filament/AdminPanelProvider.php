@@ -11,6 +11,7 @@ use AIArmada\FilamentOrders\FilamentOrdersPlugin;
 use AIArmada\FilamentPricing\FilamentPricingPlugin;
 use AIArmada\FilamentProducts\FilamentProductsPlugin;
 use AIArmada\FilamentPromotions\FilamentPromotionsPlugin;
+use AIArmada\FilamentShipping\FilamentShippingPlugin;
 use AIArmada\FilamentVouchers\FilamentVouchersPlugin;
 use App\Filament\Pages\Auth\Login;
 use Asmit\ResizedColumn\ResizedColumnPlugin;
@@ -82,6 +83,7 @@ final class AdminPanelProvider extends PanelProvider
                 FilamentOrdersPlugin::make(),
                 FilamentPricingPlugin::make(),
                 FilamentPromotionsPlugin::make(),
+                FilamentShippingPlugin::make(),
             ])
             ->spa(hasPrefetching: true)
             ->authMiddleware([

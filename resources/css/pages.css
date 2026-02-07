@@ -1,6 +1,20 @@
 @import 'tailwindcss';
+@import './fonts.css';
 
 @source '../views/livewire/pages/cara-bercinta.blade.php';
+
+/* Montserrat font utility */
+.font-montserrat {
+    font-family: 'Montserrat', system-ui, sans-serif;
+}
+
+/* Ambient glow for cara-bercinta page */
+.ambient-glow-pages {
+    background-image:
+        radial-gradient(ellipse 480px 380px at 0% 0%, rgba(236, 72, 153, 0.22), transparent 70%),
+        radial-gradient(ellipse 500px 400px at 100% 33%, rgba(217, 70, 239, 0.18), transparent 70%),
+        radial-gradient(ellipse 460px 360px at 50% 100%, rgba(147, 51, 234, 0.2), transparent 70%);
+}
 
 /* Custom theme for pages layout */
 @theme {

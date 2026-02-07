@@ -1,10 +1,24 @@
 @import 'tailwindcss';
+@import './fonts.css';
 @import './checkout.css';
 
 @source '../views/livewire/cart.blade.php';
 @source '../views/livewire/checkout.blade.php';
 @source '../views/components/footer.blade.php';
 @source '../views/components/layouts/frontend.blade.php';
+
+/* Montserrat font utility */
+.font-montserrat {
+    font-family: 'Montserrat', system-ui, sans-serif;
+}
+
+/* Ambient glow — replaces blur-orb DOM elements with a single background layer */
+.ambient-glow {
+    background-image:
+        radial-gradient(ellipse 500px 400px at 0% 0%, rgba(236, 72, 153, 0.18), transparent 70%),
+        radial-gradient(ellipse 500px 400px at 100% 25%, rgba(217, 70, 239, 0.14), transparent 70%),
+        radial-gradient(ellipse 500px 350px at 50% 100%, rgba(147, 51, 234, 0.16), transparent 70%);
+}
 
 :root {
     /* Theme palette: purple, magenta, ruby, pink, maroon & white */

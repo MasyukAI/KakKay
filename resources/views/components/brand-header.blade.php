@@ -21,8 +21,8 @@
     <header class="brand-header {{ $headerClass }}">
         <a href="/" wire:navigate.hover class="brand flex items-center gap-4 data-current:text-pink-200">
             <div class="space-y-0.5">
-                <h1 class="text-xl tracking-tight" style="font-family:'Montserrat',system-ui,sans-serif;font-weight:900;letter-spacing:.3px;">Kak Kay</h1>
-                <div class="tagline text-xs sm:text-base" style="font-family:'Poppins','Montserrat',system-ui,sans-serif;opacity:.9;">Counsellor • Therapist • KKDI Creator</div>
+                <h1 class="text-xl tracking-tight font-montserrat font-black">Kak Kay</h1>
+                <div class="tagline text-xs sm:text-base opacity-90">Counsellor • Therapist • KKDI Creator</div>
             </div>
         </a>
 

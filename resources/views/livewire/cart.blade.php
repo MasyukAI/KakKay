@@ -1,8 +1,4 @@
-<div class="relative min-h-screen overflow-hidden bg-[#0f0218] text-white">
-    <div class="pointer-events-none absolute -top-48 -left-40 h-[520px] w-[520px] rounded-full bg-gradient-to-br from-pink-500/35 via-purple-500/25 to-rose-500/40 blur-2xl"></div>
-
-    <div class="pointer-events-none absolute top-1/4 -right-36 h-[540px] w-[540px] rounded-full bg-gradient-to-br from-fuchsia-500/25 via-rose-500/25 to-orange-400/35 blur-2xl"></div>
-    <div class="pointer-events-none absolute -bottom-64 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-gradient-to-br from-purple-600/30 via-indigo-500/20 to-pink-400/30 blur-2xl"></div>
+<div class="relative min-h-screen overflow-hidden bg-[#0f0218] text-white ambient-glow">
 
     <div class="relative z-10">
         <x-brand-header>
@@ -390,16 +386,5 @@
                 </div>
         </div>
 
-        <div style="background: rgba(11,15,26,0.6); border-top: 1px solid rgba(207,214,245,0.18); padding: 0.6rem 1rem; font-size: 0.8rem; color: rgba(207,214,245,0.75); text-align: center; margin-top: 1rem;">
-            <strong style="color: #ff8edc;">DEBUG:</strong>
-            @auth
-                <span style="color: #34d399;">✓ Authenticated User</span> -
-                <span>{{ auth()->user()->name ?? 'No Name' }}</span>
-                (<span>{{ auth()->user()->email ?? 'No Email' }}</span>)
-            @else
-                <span style="color: #fb7185;">✗ Guest User</span> - Not logged in
-            @endauth
-            | Role: {{ auth()->user()->role ?? 'guest' }}
-        </div>
     </div>
 </div>

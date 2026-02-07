@@ -441,17 +441,23 @@ final class Checkout extends Component implements HasSchemas
                 'company' => $formData['company'] ?? null,
             ];
 
+            // Set shipping address on cart so ShippingConditionProvider can calculate rates
+            CartFacade::setMetadata('shipping_address', $shippingData);
+
             $session = CheckoutFacade::startCheckout($cartId);
 
             // Transfer voucher codes from cart to checkout session
             /** @var array<string> $voucherCodes */
             $voucherCodes = $cart->getMetadata('voucher_codes', []);
 
-            // Calculate totals with proper discount extraction
+            // Calculate totals — cart conditions (including shipping) are the source of truth
             $originalSubtotal = (int) $cart->subtotalWithoutConditions()->getAmount();
             $subtotalAfterDiscount = (int) $cart->subtotal()->getAmount();
             $discountTotal = max(0, $originalSubtotal - $subtotalAfterDiscount);
-            $shippingTotal = 0; // Free shipping for now
+
+            $shippingCondition = CartFacade::getCondition('shipping');
+            $shippingTotal = $shippingCondition !== null ? (int) $shippingCondition->getValue() : 0;
+
             $grandTotal = $originalSubtotal - $discountTotal + $shippingTotal;
 
             $session->update([

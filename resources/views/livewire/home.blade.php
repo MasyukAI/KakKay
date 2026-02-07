@@ -1,7 +1,4 @@
-<div class="relative min-h-screen bg-[#0f0218] text-white">
-    <div class="pointer-events-none absolute -top-48 -left-32 h-[520px] w-[520px] rounded-full bg-gradient-to-br from-pink-500/40 via-purple-500/25 to-rose-500/35 blur-2xl"></div>
-    <div class="pointer-events-none absolute top-1/4 -right-36 h-[540px] w-[540px] rounded-full bg-gradient-to-br from-fuchsia-500/25 via-rose-500/25 to-orange-400/35 blur-2xl"></div>
-    <div class="pointer-events-none absolute bottom-0 left-1/2 h-[320px] w-[520px] -translate-x-1/2 rounded-full bg-gradient-to-br from-purple-600/30 via-indigo-500/20 to-pink-400/30 blur-2xl"></div>
+<div class="relative min-h-screen bg-[#0f0218] text-white ambient-glow">
 
     <div class="relative z-10">
         <x-brand-header :cart-quantity="$cartQuantity ?? null" />
@@ -12,22 +9,18 @@
                 <div class="mx-auto flex max-w-7xl flex-col gap-16 px-6 pt-12 sm:px-8 lg:grid lg:grid-cols-[1.3fr_0.7fr] lg:items-center">
                     <div class="order-2 space-y-8 lg:order-1">
                         <span class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-5 py-2 text-xs font-semibold uppercase tracking-[0.32em] text-white/70">Memperkasakan Wanita Zaman Moden</span>
-                        <h1 style="font-family:'Caveat Brush'" 
-                            class="font-display text-[4rem] leading-[0.92] tracking-tight sm:text-[4.5rem] lg:text-[5rem]">
+                        <h1 class="font-caveat-brush font-display text-[4rem] leading-[0.92] tracking-tight sm:text-[4.5rem] lg:text-[5rem]">
                             Kak Kay bantu you <span class="bg-gradient-to-r from-pink-300 via-rose-400 to-orange-200 bg-clip-text text-transparent">berdamai</span> dengan Parents & Masa Lalu
                         </h1>
                         <p class="max-w-2xl text-lg leading-relaxed text-white/85 sm:text-xl">
                             Kau tahu tak, wanita ni bukan sekadar pelengkap je… tapi dia boleh jadi punca perubahan. Suara dia mampu bergema, langkah dia boleh bukak jalan. Dalam yakin tu ada kekuatan, dalam lembut tu ada keberanian. Dan setiap wanita sebenarnya layak berdiri bangga, bina dunia dengan jiwa dia sendiri.</p>
                         <div class="flex flex-wrap items-center gap-4">
-                            <a href="#featured" class="btn primary cart-button-primary flex items-center gap-3 rounded-full px-7 py-3 text-base font-semibold"
-                                style="transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease; transform: translateY(0px) scale(1); filter: brightness(1);" onmouseover="this.style.transform='translateY(-3px) scale(1.05)'; this.style.boxShadow='0 15px 35px rgba(255,105,180,0.4), 0 5px 15px rgba(0,0,0,0.3)'; this.style.filter='brightness(1.1)';" onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow=''; this.style.filter='brightness(1)';"
+                            <a href="#featured" class="btn primary cart-button-primary flex items-center gap-3 rounded-full px-7 py-3 text-base font-semibold transition-all duration-200 hover:-translate-y-0.5 hover:scale-105 hover:brightness-110 hover:shadow-[0_15px_35px_rgba(255,105,180,0.4)]"
                             >
                                 <span>Buku Panas Dari Oven</span>
                                 <flux:icon.arrow-up-right class="h-4 w-4" />
                             </a>
-                            <a href="#library" class="btn ghost rounded-full border border-white/30 px-7 py-3 text-base font-semibold text-white/80 backdrop-blur-sm transition hover:border-white/60 hover:text-white"
-                                style="transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease; transform: translateY(0px);" onmouseover="this.style.transform='translateY(-2px)'; this.style.backgroundColor='rgba(255,255,255,0.1)'; this.style.borderColor='rgba(255,105,180,0.8)'; this.style.color='#ffffff';" onmouseout="this.style.transform='translateY(0)'; this.style.backgroundColor=''; this.style.borderColor=''; this.style.color='';"
-                            >
+                            <a href="#library" class="btn ghost rounded-full border border-white/30 px-7 py-3 text-base font-semibold text-white/80 backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-pink-400/80 hover:bg-white/10 hover:text-white">
                                 Karya Kak Kay
                             </a>
                         </div>
@@ -54,7 +47,7 @@
                                     <span>Real-time</span>
                                 </div> --}}
                                 <div class="relative overflow-hidden rounded-[28px]">
-                                    <img src="{{ asset('storage/images/kakkay.webp') }}" alt="Kak Kay" class="w-full rounded-[28px] object-cover shadow-[0_16px_36px_rgba(17,0,34,0.55)]">
+                                    <img src="{{ asset('storage/images/kakkay.webp') }}" alt="Kak Kay" loading="lazy" class="w-full rounded-[28px] object-cover shadow-[0_16px_36px_rgba(17,0,34,0.55)]">
                                     <div class="pointer-events-none absolute inset-0 border border-white/20"></div>
                                 </div>
                                 <div class="mt-6 grid gap-3 text-sm text-white/80">
@@ -138,7 +131,7 @@
                         <div class="relative overflow-hidden rounded-[36px] border border-white/15 bg-white/10 p-8 backdrop-blur-sm shadow-[0_14px_32px_rgba(15,3,37,0.55)]">
                             <div class="relative mx-auto w-full max-w-sm">
                                 <div class="absolute inset-0 rounded-[30px] border border-white/20"></div>
-                                <img src="{{ asset('storage/images/cover/' . $featuredProduct->slug . '.webp') }}" alt="{{ $featuredProduct->name }}" loading="lazy" class="relative w-full rounded-[30px] border border-white/20 object-cover shadow-[0_18px_48px_rgba(17,0,34,0.55)]">
+                                <img src="{{ asset('storage/images/cover/' . $featuredProduct->slug . '.webp') }}" alt="{{ $featuredProduct->name }}" fetchpriority="high" class="relative w-full rounded-[30px] border border-white/20 object-cover shadow-[0_18px_48px_rgba(17,0,34,0.55)]">
                             </div>
                             {{-- <div class="mt-6 grid gap-3 text-sm text-white/80">
                                 <div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-pink-200">Hot pick minggu ini</div>
@@ -161,9 +154,7 @@
                                 <div class="text-xs uppercase tracking-[0.3em] text-white/60">Harga manja</div>
                                 <div class="text-3xl font-semibold text-white">{{ \Akaunting\Money\Money::MYR($featuredProduct->price)->format() }}</div>
                             </div>
-                            <a href="/{{ $featuredProduct->slug }}" wire:navigate.hover class="btn primary cart-button-primary flex items-center gap-3 rounded-full px-8 py-3 text-base font-semibold"
-                               style="transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease; transform: translateY(0px) scale(1); filter: brightness(1);" onmouseover="this.style.transform='translateY(-3px) scale(1.05)'; this.style.boxShadow='0 15px 35px rgba(255,105,180,0.4), 0 5px 15px rgba(0,0,0,0.3)'; this.style.filter='brightness(1.1)';" onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow=''; this.style.filter='brightness(1)';"
-                            >
+                            <a href="/{{ $featuredProduct->slug }}" wire:navigate.hover class="btn primary cart-button-primary flex items-center gap-3 rounded-full px-8 py-3 text-base font-semibold transition-all duration-200 hover:-translate-y-0.5 hover:scale-105 hover:brightness-110 hover:shadow-[0_15px_35px_rgba(255,105,180,0.4)]">
                                 <flux:icon.arrow-right class="h-5 w-5" />
                                 Jom usha detail
                             </a>
