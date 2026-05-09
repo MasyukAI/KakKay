@@ -3,259 +3,188 @@
     <div class="relative z-10">
         <x-brand-header :cart-quantity="$cartQuantity ?? null" />
 
-        <main class="space-y-24 pb-24 sm:space-y-32">
+        <main class="pb-24">
             <!-- HERO -->
-            <section class="relative">
-                <div class="mx-auto flex max-w-7xl flex-col gap-16 px-6 pt-12 sm:px-8 lg:grid lg:grid-cols-[1.3fr_0.7fr] lg:items-center">
-                    <div class="order-2 space-y-8 lg:order-1">
-                        <span class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-5 py-2 text-xs font-semibold uppercase tracking-[0.32em] text-white/70">Memperkasakan Wanita Zaman Moden</span>
-                        <h1 class="font-caveat-brush font-display text-[4rem] leading-[0.92] tracking-tight sm:text-[4.5rem] lg:text-[5rem]">
-                            Kak Kay bantu you <span class="bg-gradient-to-r from-pink-300 via-rose-400 to-orange-200 bg-clip-text text-transparent">berdamai</span> dengan Parents & Masa Lalu
-                        </h1>
-                        <p class="max-w-2xl text-lg leading-relaxed text-white/85 sm:text-xl">
-                            Kau tahu tak, wanita ni bukan sekadar pelengkap je… tapi dia boleh jadi punca perubahan. Suara dia mampu bergema, langkah dia boleh bukak jalan. Dalam yakin tu ada kekuatan, dalam lembut tu ada keberanian. Dan setiap wanita sebenarnya layak berdiri bangga, bina dunia dengan jiwa dia sendiri.</p>
-                        <div class="flex flex-wrap items-center gap-4">
-                            <a href="#featured" class="btn primary cart-button-primary flex items-center gap-3 rounded-full px-7 py-3 text-base font-semibold transition-all duration-200 hover:-translate-y-0.5 hover:scale-105 hover:brightness-110 hover:shadow-[0_15px_35px_rgba(255,105,180,0.4)]"
-                            >
-                                <span>Buku Panas Dari Oven</span>
-                                <flux:icon.arrow-up-right class="h-4 w-4" />
-                            </a>
-                            <a href="#library" class="btn ghost rounded-full border border-white/30 px-7 py-3 text-base font-semibold text-white/80 backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-pink-400/80 hover:bg-white/10 hover:text-white">
-                                Karya Kak Kay
-                            </a>
-                        </div>
-                        <div class="grid gap-4 sm:grid-cols-3">
-                            @php($heroStats = [
-                                ['label' => 'Sesi One to One', 'value' => '1K+'],
-                                ['label' => 'Acara Berkumpulan', 'value' => '300+'],
-                                ['label' => 'Ujian Karakter KKDI', 'value' => '250K+'],
-                            ])
-                            @foreach ($heroStats as $index => $stat)
-                                <div wire:key="hero-stat-{{ $index }}" class="rounded-2xl border border-white/10 bg-white/10 p-4 text-sm text-white/80 shadow-[0_10px_24px_rgba(12,5,24,0.35)]">
-                                    <div class="text-2xl font-semibold text-white">{{ $stat['value'] }}</div>
-                                    <div class="mt-1 text-xs uppercase tracking-[0.28em] text-white/60">{{ $stat['label'] }}</div>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                    <div class="order-1 relative flex justify-center lg:order-2 lg:justify-end">
-                        <div class="group relative">
-                            <div class="absolute -inset-6 rounded-[40px] bg-gradient-to-br from-pink-400/40 via-fuchsia-400/25 to-purple-500/35 opacity-80 blur-2xl transition duration-300 group-hover:opacity-100"></div>
-                            <div class="relative overflow-hidden rounded-[36px] border border-white/15 bg-white/10 p-6 backdrop-blur-sm shadow-[0_14px_32px_rgba(15,3,37,0.55)] transition duration-300 group-hover:-translate-y-1">
-                                {{-- <div class="flex items-center justify-between text-xs uppercase tracking-[0.28em] text-white/60">
-                                    <span>Sesi manja</span>
-                                    <span>Real-time</span>
-                                </div> --}}
-                                <div class="relative overflow-hidden rounded-[28px]">
-                                    <img src="{{ asset('storage/images/kakkay.webp') }}" alt="Kak Kay" loading="lazy" class="w-full rounded-[28px] object-cover shadow-[0_16px_36px_rgba(17,0,34,0.55)]">
-                                    <div class="pointer-events-none absolute inset-0 border border-white/20"></div>
-                                </div>
-                                <div class="mt-6 grid gap-3 text-sm text-white/80">
-                                    <div class="flex items-center gap-3">
-                                        <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-lg">💬</span>
-                                        <div>
-                                            <div class="font-semibold text-white sm:w-8/12">“Biar usaha kita kecil, tapi hati kita besar.”</div>
-                                            <div class="text-xs text-white/60">– Kak Kay</div>
-                                        </div>
-                                    </div>
-                                    {{-- <div class="rounded-2xl border border-white/10 bg-white/5 p-4 text-xs uppercase tracking-[0.3em] text-white/60">Ritual cinta • terapi lembut • jaga jiwa</div> --}}
-                                </div>
+            <section class="relative pt-16 pb-20">
+                <div class="mx-auto max-w-7xl px-6 sm:px-8">
+                    <div class="grid items-center gap-12 lg:grid-cols-2">
+                        <div class="order-2 space-y-8 lg:order-1">
+                            <span class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-5 py-2 text-xs font-semibold uppercase tracking-[0.32em] text-white/70">Counsellor · Therapist · Pencipta KKDI</span>
+                            <h1 class="font-caveat-brush font-display text-5xl leading-[0.92] tracking-tight sm:text-6xl lg:text-7xl">
+                                Berani kenal diri.<br>
+                                <span class="bg-gradient-to-r from-pink-300 via-rose-400 to-orange-200 bg-clip-text text-transparent">Berani pulih.</span>
+                            </h1>
+                            <p class="max-w-xl text-lg leading-relaxed text-white/85">
+                                Kak Kay bantu wanita yang dah penat tahan sorang-sorang untuk mula faham diri, lepaskan luka lama, dan hidup dengan lebih jujur. Melalui buku, sesi peribadi, dan komuniti KKDI.
+                            </p>
+                            <div class="flex flex-wrap items-center gap-4">
+                                <a href="#featured" class="btn primary cart-button-primary flex items-center gap-3 rounded-full px-7 py-3 text-base font-semibold transition-all duration-200 hover:-translate-y-0.5 hover:scale-105 hover:brightness-110 hover:shadow-[0_15px_35px_rgba(255,105,180,0.4)]">
+                                    <span>Tengok Buku Terbaru</span>
+                                    <flux:icon.arrow-down class="h-4 w-4" />
+                                </a>
+                                <a href="#library" class="rounded-full border border-white/30 px-7 py-3 text-base font-semibold text-white/80 backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-pink-400/80 hover:bg-white/10 hover:text-white">
+                                    Semua Karya
+                                </a>
                             </div>
-                            <div class="absolute -right-16 -bottom-12 hidden w-48 rotate-12 rounded-3xl border border-white/10 bg-white/10 p-5 text-xs text-white/80 shadow-[0_14px_32px_rgba(15,3,37,0.4)] backdrop-blur-sm lg:block">
-                                <div class="font-semibold text-white">Nota geng KKDI</div>
-                                <p class="mt-2 leading-snug">“Setiap sesi Kak Kay rasa macam pelukan untuk hati. Terima kasih.”</p>
+                        </div>
+                        <div class="order-1 relative flex justify-center lg:order-2 lg:justify-end">
+                            <div class="group relative max-w-[260px] lg:max-w-[300px]">
+                                <div class="absolute -inset-4 rounded-[28px] bg-gradient-to-br from-pink-400/40 via-fuchsia-400/25 to-purple-500/35 opacity-80 blur-2xl transition duration-300 group-hover:opacity-100"></div>
+                                <div class="relative overflow-hidden rounded-[24px] border border-white/15 bg-white/10 p-3 backdrop-blur-sm shadow-[0_14px_32px_rgba(15,3,37,0.55)] transition duration-300 group-hover:-translate-y-1">
+                                    <div class="relative overflow-hidden rounded-[20px]">
+                                        <img src="{{ asset('storage/images/kakkay.webp') }}" alt="Kak Kay" loading="lazy" class="w-full rounded-[20px] object-cover shadow-[0_16px_36px_rgba(17,0,34,0.55)]">
+                                    </div>
+                                    <div class="mt-2.5 flex items-center gap-2 px-1">
+                                        <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/10 text-xs">💬</span>
+                                        <p class="text-xs italic text-white/70">&ldquo;Healing bukan tanda lemah. Itu tanda kau dah cukup berani.&rdquo;</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- RITUAL HIGHLIGHTS -->
-            <section id="ritual">
-                <div class="mx-auto grid max-w-6xl gap-6 rounded-[34px] border border-white/10 bg-white/5 px-6 py-10 backdrop-blur-sm shadow-[0_18px_48px_rgba(12,5,24,0.4)] sm:px-10 lg:grid-cols-[1.1fr_0.9fr]">
-                    <div class="space-y-6">
-                        <h2 class="font-display text-3xl text-white sm:text-4xl">Usaha kecil, impak besar.</h2>
-                        <p class="text-base leading-relaxed text-white/80">
-                            Pagi, petang, malam — ada skrip manja untuk setiap mood. Buku dan bengkel Kak Kay tolong pasangan kekal chill, patuh syariah, dan tak bosan urus kerja cinta hari-hari.
-                        </p>
-                        <div class="grid gap-4 sm:grid-cols-2">
-                            <div class="rounded-2xl border border-white/10 bg-white/10 p-4 text-sm text-white/80">
-                                <div class="text-lg font-semibold text-white">Ritual comel harian</div>
-                                <p class="mt-2 text-white/70">3 gerak kecil yang jaga mood sayang.</p>
+            <!-- SOCIAL PROOF STRIP -->
+            <section class="pb-20">
+                <div class="mx-auto max-w-4xl px-6">
+                    <div class="flex flex-wrap items-center justify-center gap-x-12 gap-y-4 rounded-full border border-white/10 bg-white/5 px-8 py-5 backdrop-blur-sm">
+                        @php($heroStats = [
+                            ['value' => '1K+', 'label' => 'Sesi Peribadi'],
+                            ['value' => '300+', 'label' => 'Program & Bengkel'],
+                            ['value' => '250K+', 'label' => 'Peserta KKDI'],
+                        ])
+                        @foreach ($heroStats as $index => $stat)
+                            <div wire:key="hero-stat-{{ $index }}" class="flex items-center gap-3">
+                                <span class="text-2xl font-bold text-white">{{ $stat['value'] }}</span>
+                                <span class="text-xs uppercase tracking-[0.2em] text-white/50">{{ $stat['label'] }}</span>
                             </div>
-                            <div class="rounded-2xl border border-white/10 bg-white/10 p-4 text-sm text-white/80">
-                                <div class="text-lg font-semibold text-white">Bahasa jiwa</div>
-                                <p class="mt-2 text-white/70">Skrip puji, minta maaf & boost semangat.</p>
-                            </div>
-                            <div class="rounded-2xl border border-white/10 bg-white/10 p-4 text-sm text-white/80">
-                                <div class="text-lg font-semibold text-white">Geng KKDI</div>
-                                <p class="mt-2 text-white/70">Sokongan sis-sis seluruh Malaysia & Nusantara.</p>
-                            </div>
-                            <div class="rounded-2xl border border-white/10 bg-white/10 p-4 text-sm text-white/80">
-                                <div class="text-lg font-semibold text-white">Sesi premium</div>
-                                <p class="mt-2 text-white/70">Live coaching & bengkel pasangan fun tiap bulan.</p>
-                            </div>
-                        </div>
+                        @endforeach
                     </div>
-                    <div class="space-y-6">
-                        <div class="rounded-[28px] border border-white/10 bg-gradient-to-br from-white/20 via-pink-200/10 to-purple-200/10 p-6 text-sm text-white/80 shadow-[0_16px_40px_rgba(15,3,37,0.4)]">
-                            <h3 class="text-xl font-semibold text-white">Ritual malam 15 minit (versi manja)</h3>
-                            <ul class="mt-3 space-y-2 text-white/75">
-                                <li class="flex gap-3"><span class="mt-1 h-2 w-2 rounded-full bg-pink-300"></span>Picnic kecil depan TV.</li>
-                                <li class="flex gap-3"><span class="mt-1 h-2 w-2 rounded-full bg-pink-300"></span>Soalan lembut: “Apa highlight manis harini?”</li>
-                                <li class="flex gap-3"><span class="mt-1 h-2 w-2 rounded-full bg-pink-300"></span>3 pujian jujur sebelum tidur.</li>
-                            </ul>
-                            <p class="mt-4 text-xs uppercase tracking-[0.3em] text-white/60">Dari buku 34 Teknik Bercinta</p>
-                        </div>
-                        <div class="rounded-[28px] border border-white/10 bg-white/10 p-6 text-sm text-white/75">
-                            <div class="flex items-center gap-3">
-                                <span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-lg">🎧</span>
-                                <div>
-                                    <div class="font-semibold text-white">Playlist nostalgia</div>
-                                    <p class="text-xs text-white/60">Lagu nostalgia curated Kak Kay untuk mood cuddles.</p>
-                                </div>
+                </div>
+            </section>
+
+            <!-- HOW KAK KAY HELPS -->
+            <section id="help" class="pb-24">
+                <div class="mx-auto max-w-6xl px-6 sm:px-8">
+                    <div class="text-center">
+                        <h2 class="font-display text-3xl text-white sm:text-4xl">Tiga cara Kak Kay boleh bantu</h2>
+                        <p class="mx-auto mt-3 max-w-xl text-lg text-white/70">Pilih mana yang sesuai dengan rentak kau. Boleh mula dari mana-mana.</p>
+                    </div>
+                    <div class="mt-10 grid gap-6 md:grid-cols-3">
+                        @foreach ([
+                            ['icon' => '📖', 'title' => 'Buku & Panduan', 'desc' => 'Baca bila-bila, refleksi sorang-sorang atau dengan pasangan. Ditulis dari pengalaman sebenar — bukan teori.', 'link' => '#library', 'cta' => 'Lihat buku'],
+                            ['icon' => '💬', 'title' => 'Sesi 1-to-1', 'desc' => 'Ruang selamat untuk cerita apa yang selama ni kau pendam. Kak Kay dengar, bimbing, dan bantu kau nampak jalan.', 'link' => '#', 'cta' => 'Tempah sesi'],
+                            ['icon' => '👥', 'title' => 'KKDI Circle', 'desc' => 'Komuniti wanita yang faham tanpa judge. Doa, diskusi, accountability — jalan sama-sama.', 'link' => '#', 'cta' => 'Sertai komuniti'],
+                        ] as $pillar)
+                            <div class="group rounded-[28px] border border-white/10 bg-white/5 p-8 transition duration-300 hover:-translate-y-1 hover:bg-white/10 hover:shadow-[0_14px_32px_rgba(236,72,153,0.15)]">
+                                <span class="text-3xl">{{ $pillar['icon'] }}</span>
+                                <h3 class="mt-4 text-xl font-semibold text-white">{{ $pillar['title'] }}</h3>
+                                <p class="mt-3 text-sm leading-relaxed text-white/70">{{ $pillar['desc'] }}</p>
+                                <a href="{{ $pillar['link'] }}" class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-pink-200 transition hover:text-pink-100">
+                                    {{ $pillar['cta'] }}
+                                    <flux:icon.arrow-right class="h-3.5 w-3.5" />
+                                </a>
                             </div>
-                            <div class="mt-5 rounded-2xl border border-white/10 bg-white/5 p-4 text-xs text-white/65">
-                                “Kami repeat picnic + playlist ni tiap Jumaat. Rumah terus wangi bahagia.” – Hani & Zikri
-                            </div>
-                        </div>
+                        @endforeach
                     </div>
                 </div>
             </section>
 
             <!-- FEATURED BOOK -->
-            <section id="featured" class="scroll-mt-10">
+            <section id="featured" class="scroll-mt-10 pb-24">
                 <div class="mx-auto flex max-w-6xl flex-col gap-12 px-6 sm:px-8 lg:flex-row lg:items-center">
                     <div class="relative flex-1">
                         <div class="absolute -inset-8 rounded-[40px] bg-gradient-to-br from-pink-400/35 via-rose-500/25 to-purple-500/35 blur-2xl"></div>
                         <div class="relative overflow-hidden rounded-[36px] border border-white/15 bg-white/10 p-8 backdrop-blur-sm shadow-[0_14px_32px_rgba(15,3,37,0.55)]">
                             <div class="relative mx-auto w-full max-w-sm">
-                                <div class="absolute inset-0 rounded-[30px] border border-white/20"></div>
                                 <img src="{{ asset('storage/images/cover/' . $featuredProduct->slug . '.webp') }}" alt="{{ $featuredProduct->name }}" fetchpriority="high" class="relative w-full rounded-[30px] border border-white/20 object-cover shadow-[0_18px_48px_rgba(17,0,34,0.55)]">
                             </div>
-                            {{-- <div class="mt-6 grid gap-3 text-sm text-white/80">
-                                <div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-pink-200">Hot pick minggu ini</div>
-                                <div class="rounded-2xl border border-white/10 bg-white/5 p-4 text-xs text-white/60">
-                                    Bonus: Template love note + soalan refleksi fun untuk pasangan.
-                                </div>
-                            </div> --}}
                         </div>
                     </div>
                     <div class="flex-1 space-y-6">
+                        <div class="flex flex-wrap items-center gap-3 text-sm uppercase tracking-[0.28em] text-white/60">
+                            <span class="rounded-full border border-white/20 bg-white/10 px-4 py-1">Bestseller</span>
+                            <span class="rounded-full border border-white/20 bg-white/10 px-4 py-1">Terbaru</span>
+                        </div>
                         <h2 class="font-display text-3xl text-white sm:text-4xl">{{ $featuredProduct->name }}</h2>
                         <p class="text-lg leading-relaxed text-white/80">{{ $featuredProduct->description }}</p>
-                        <div class="flex flex-wrap items-center gap-3 text-sm uppercase tracking-[0.28em] text-white/60">
-                            <span class="rounded-full border border-white/20 bg-white/10 px-4 py-1">Pilihan Top</span>
-                            <span class="rounded-full border border-white/20 bg-white/10 px-4 py-1">Segar Dari Ladang</span>
-                            <span class="rounded-full border border-white/20 bg-white/10 px-4 py-1">Versi Fizikal</span>
-                        </div>
                         <div class="flex items-center gap-6">
                             <div>
-                                <div class="text-xs uppercase tracking-[0.3em] text-white/60">Harga manja</div>
+                                <div class="text-xs uppercase tracking-[0.3em] text-white/60">Harga</div>
                                 <div class="text-3xl font-semibold text-white">{{ \Akaunting\Money\Money::MYR($featuredProduct->price)->format() }}</div>
                             </div>
                             <a href="/{{ $featuredProduct->slug }}" wire:navigate.hover class="btn primary cart-button-primary flex items-center gap-3 rounded-full px-8 py-3 text-base font-semibold transition-all duration-200 hover:-translate-y-0.5 hover:scale-105 hover:brightness-110 hover:shadow-[0_15px_35px_rgba(255,105,180,0.4)]">
                                 <flux:icon.arrow-right class="h-5 w-5" />
-                                Jom usha detail
+                                Lihat selanjutnya
                             </a>
-                        </div>
-                        <div class="grid gap-4 text-sm text-white/75 sm:grid-cols-2">
-                            <div class="rounded-2xl border border-white/10 bg-white/10 p-4">
-                                <div class="font-semibold text-white">Apa awak bakal rasa</div>
-                                <p class="mt-2 text-white/70">Lebih tenang, yakin dan tahu cara mulakan borak manja setiap hari.</p>
-                            </div>
-                            <div class="rounded-2xl border border-white/10 bg-white/10 p-4">
-                                <div class="font-semibold text-white">Paling ngam untuk</div>
-                                <p class="mt-2 text-white/70">Pasangan sibuk yang nak spark balik tanpa drama atau bajet besar.</p>
-                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
+            <!-- TESTIMONIALS -->
+            <section id="community" class="pb-24">
+                <div class="mx-auto max-w-5xl px-6 sm:px-8">
+                    <div class="text-center">
+                        <h2 class="font-display text-3xl text-white sm:text-4xl">Suara mereka yang dah mula berubah</h2>
+                        <p class="mt-3 text-lg text-white/70">Bukan motivasi kosong. Ini cerita betul.</p>
+                    </div>
+                    @php($testimonials = [
+                        ['quote' => 'Saya ingat saya dah okay. Lepas sesi dengan Kak Kay, baru sedar betapa lama saya pendam semuanya. Sekarang saya tahu cara nak lepaskan.', 'name' => 'Aina, Kuala Lumpur'],
+                        ['quote' => 'Buku dia buat saya nangis bukan sebab sedih, tapi sebab akhirnya ada orang cakap apa yang saya rasa selama ni tapi tak tahu nak explain.', 'name' => 'Hannah, Melaka'],
+                        ['quote' => 'KKDI bagi saya jawapan yang saya cari bertahun. Sekarang saya faham kenapa saya react macam tu, dan saya dah boleh pilih untuk berbeza.', 'name' => 'Siti, Brunei'],
+                    ])
+                    <div class="mt-10 grid gap-6 md:grid-cols-3">
+                        @foreach ($testimonials as $index => $testimonial)
+                            <figure wire:key="testimonial-{{ $index }}" class="rounded-[26px] border border-white/10 bg-white/5 p-6 transition duration-300 hover:bg-white/10">
+                                <blockquote class="text-base leading-relaxed text-white/85">&ldquo;{{ $testimonial['quote'] }}&rdquo;</blockquote>
+                                <figcaption class="mt-5 text-sm text-white/50">&mdash; {{ $testimonial['name'] }}</figcaption>
+                            </figure>
+                        @endforeach
+                    </div>
+                </div>
+            </section>
+
             <!-- LIBRARY -->
-            <section id="library" class="scroll-mt-10">
+            <section id="library" class="scroll-mt-10 pb-24">
                 <div class="mx-auto max-w-7xl px-6 sm:px-8">
-                    <div class="mx-auto max-w-3xl text-center">
-                        <h2 class="font-display text-3xl text-white sm:text-4xl">Rak cinta Kak Kay</h2>
-                        <p class="mt-3 text-lg leading-relaxed text-white/80">Buku dan modul pilihan untuk topup rasa mesra, confident dan berani bersayang setiap hari.</p>
+                    <div class="text-center">
+                        <h2 class="font-display text-3xl text-white sm:text-4xl">Karya Kak Kay</h2>
+                        <p class="mt-3 text-lg text-white/70">Setiap buku ditulis dari pengalaman sebenar &mdash; bukan teori. Ini panduan hidup.</p>
                     </div>
                     <div class="mt-10 flex flex-wrap justify-center gap-6 max-w-6xl mx-auto">
                         @foreach ($products as $product)
                             <a wire:key="product-{{ $product->id }}" href="/{{ $product->slug }}" wire:navigate.hover class="group relative flex h-full flex-col overflow-hidden rounded-[30px] border border-white/15 bg-white/5 p-5 text-left text-white/80 shadow-[0_16px_40px_rgba(12,5,24,0.4)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_14px_32px_rgba(236,72,153,0.3)] w-full max-w-sm sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
                                 <div class="relative overflow-hidden rounded-[22px]">
                                     <img src="{{ asset('storage/images/cover/' . $product->slug . '.webp') }}" alt="{{ $product->name }}" loading="lazy" class="w-full rounded-[22px] border border-white/20 object-cover shadow-[0_14px_32px_rgba(17,0,34,0.45)]">
-                                    {{-- <div class="absolute inset-0 bg-gradient-to-t from-[#0f0218]/80 via-transparent to-transparent opacity-0 transition group-hover:opacity-100"></div> --}}
-                                    {{-- <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between text-xs uppercase tracking-[0.28em] text-white/80">
-                                        <span>{{ $product->category->name ?? 'Buku Kak Kay' }}</span>
-                                        <span>{{ \Akaunting\Money\Money::MYR($product->price)->format() }}</span>
-                                    </div> --}}
                                 </div>
                                 <div class="mt-5 space-y-3">
                                     <h3 class="text-xl font-semibold text-white">{{ $product->name }}</h3>
                                     <p class="line-clamp-3 text-sm text-white/70">{{ $product->description }}</p>
                                     <div class="inline-flex items-center gap-2 text-sm font-semibold text-pink-200">
-                                        Selak detail
+                                        Baca lagi
                                         <flux:icon.arrow-right class="h-4 w-4" />
                                     </div>
                                 </div>
                             </a>
                         @endforeach
                     </div>
-                    {{-- <div class="mt-10 flex justify-center">
-                        <a href="{{ route('cart') }}" wire:navigate.hover class="rounded-full border border-white/25 px-8 py-3 text-sm font-semibold uppercase tracking-[0.28em] text-white/70 transition hover:border-white/60 hover:text-white">Masuk troli & plan date night</a>
-                    </div> --}}
-                </div>
-            </section>
-
-            <!-- COMMUNITY -->
-            <section id="community">
-                <div class="mx-auto max-w-6xl rounded-[34px] border border-white/10 bg-white/5 px-6 py-12 backdrop-blur-sm shadow-[0_18px_48px_rgba(12,5,24,0.4)] sm:px-10">
-                    <div class="mx-auto max-w-3xl text-center">
-                        <h2 class="font-display text-3xl text-white sm:text-4xl">Cerita geng Kak Kay</h2>
-                        <p class="mt-3 text-lg text-white/80">Pasangan dan sis yang decide untuk usaha bahagia dengan cara paling chill tapi penuh makna.</p>
-                    </div>
-                    @php($testimonials = [
-                        ['quote' => 'Setiap ritual santai tapi power. Kami makin senang borak pasal hati tanpa beku.', 'name' => 'Aina & Firdaus, Kuala Lumpur'],
-                        ['quote' => 'Buku Kak Kay ni macam kompas. Bila rasa jauh, selak satu teknik terus cuba malam tu.', 'name' => 'Hannah, Melaka'],
-                        ['quote' => 'Komuniti KKDI buat saya rasa tak keseorangan. Sis-sis semua sokong dengan ikhlas.', 'name' => 'Siti, Brunei'],
-                    ])
-                    <div class="mt-10 grid gap-6 md:grid-cols-3">
-                        @foreach ($testimonials as $index => $testimonial)
-                            <figure wire:key="testimonial-{{ $index }}" class="flex h-full flex-col justify-between rounded-[26px] border border-white/10 bg-white/10 p-6 text-white/80 shadow-[0_14px_32px_rgba(12,5,24,0.35)]">
-                                <blockquote class="text-lg leading-relaxed text-white/85">“{{ $testimonial['quote'] }}”</blockquote>
-                                <figcaption class="mt-6 text-sm uppercase tracking-[0.28em] text-white/60">— {{ $testimonial['name'] }}</figcaption>
-                            </figure>
-                        @endforeach
-                    </div>
-                    <div class="mt-12 grid gap-6 sm:grid-cols-3">
-                        <div class="rounded-[26px] border border-white/10 bg-white/10 p-5 text-sm text-white/75">
-                            <div class="text-lg font-semibold text-white">Workshop live</div>
-                            <p class="mt-2 text-white/65">Bengkel santai untuk pasangan — modul latihan & sesi soal jawab.</p>
-                        </div>
-                        <div class="rounded-[26px] border border-white/10 bg-white/10 p-5 text-sm text-white/75">
-                            <div class="text-lg font-semibold text-white">KKDI Circle</div>
-                            <p class="mt-2 text-white/65">Komuniti tertutup untuk diskusi, doa bersama & accountability manis.</p>
-                        </div>
-                        <div class="rounded-[26px] border border-white/10 bg-white/10 p-5 text-sm text-white/75">
-                            <div class="text-lg font-semibold text-white">Freebies manja</div>
-                            <p class="mt-2 text-white/65">Nota doa, checklist date night & template sticky note cinta.</p>
-                        </div>
-                    </div>
                 </div>
             </section>
 
             <!-- CTA -->
             <section>
-                <div class="mx-auto flex max-w-5xl flex-col gap-6 rounded-[34px] border border-white/10 bg-gradient-to-br from-pink-500/15 via-rose-500/10 to-purple-500/15 px-6 py-10 text-center backdrop-blur-sm shadow-[0_18px_48px_rgba(15,3,37,0.4)] sm:px-12">
-                    <h2 class="font-display text-3xl text-white sm:text-4xl">Jom mula ritual malam ni.</h2>
-                    <p class="text-lg text-white/80">Pilih satu teknik, baca 5 minit, dan rasa perubahan lembut dalam rumah. Bahagia bukan nasib — kita usahakan sama-sama dengan Kak Kay.</p>
-                    <div class="flex flex-wrap items-center justify-center gap-4">
+                <div class="mx-auto max-w-3xl px-6 text-center">
+                    <h2 class="font-display text-3xl text-white sm:text-4xl">Kau tak perlu tunggu ready.<br>Mula je dulu.</h2>
+                    <p class="mx-auto mt-4 max-w-lg text-lg text-white/70">Ambil satu buku, baca satu bab malam ni. Perjalanan seribu langkah bermula dari keberanian untuk mengaku: &ldquo;Aku perlukan perubahan.&rdquo;</p>
+                    <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
                         <a href="/{{ $featuredProduct->slug }}" wire:navigate.hover class="cart-button-primary flex items-center gap-3 rounded-full px-8 py-3 text-base font-semibold">
                             <flux:icon.book-open class="h-5 w-5" />
-                            Grab buku</a>
+                            Dapatkan buku
+                        </a>
                         <a href="{{ route('checkout') }}" wire:navigate.hover class="rounded-full border border-white/30 px-8 py-3 text-base font-semibold text-white/80 backdrop-blur-sm transition hover:border-white/60 hover:text-white">
-                            Join KKDI Circle
+                            Sertai KKDI Circle
                         </a>
                     </div>
                 </div>
