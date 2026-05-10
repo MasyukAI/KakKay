@@ -13,7 +13,5 @@ final class Role extends SpatieRole
 
     public $incrementing = false;
 
-    protected $primaryKey = 'uuid';
-
     protected $keyType = 'string';
 }

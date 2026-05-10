@@ -1,7 +1,8 @@
 @props([
     'cartQuantity' => null,
-    'containerClass' => 'mx-auto max-w-7xl px-6 pt-10 sm:px-8',
-    'headerClass' => 'flex items-center justify-between gap-4',
+    'containerClass' => 'storefront-container pt-6 sm:pt-8',
+    'actionLabel' => null,
+    'actionHref' => null,
 ])
 
 @php
@@ -14,34 +15,112 @@
         }
     }
     $quantity ??= 0;
-    $hasCartItems = $quantity > 0;
+
+    $actionLabel ??= request()->routeIs('cart', 'checkout') ? 'Akaun Saya' : 'Ambil Ujian KKDI';
+    $actionHref ??= request()->routeIs('cart', 'checkout')
+        ? route('dashboard')
+        : (\Illuminate\Support\Facades\Route::has('kkdi') ? route('kkdi') : '#');
+
+    $navItems = [
+        [
+            'label' => 'Utama',
+            'href' => route('home'),
+            'active' => request()->routeIs('home'),
+        ],
+        [
+            'label' => 'Ujian KKDI',
+            'href' => \Illuminate\Support\Facades\Route::has('kkdi') ? route('kkdi') : '#',
+            'active' => request()->routeIs('kkdi'),
+        ],
+        [
+            'label' => 'Buku',
+            'href' => \Illuminate\Support\Facades\Route::has('books') ? route('books') : '#',
+            'active' => request()->routeIs('books', 'page.show', 'pages.cara-bercinta'),
+        ],
+        [
+            'label' => 'Konsultasi',
+            'href' => \Illuminate\Support\Facades\Route::has('consultation') ? route('consultation') : '#',
+            'active' => request()->routeIs('consultation'),
+        ],
+        [
+            'label' => 'Tentang',
+            'href' => route('home').'#tentang',
+            'active' => false,
+        ],
+        [
+            'label' => 'Sumber',
+            'href' => route('home').'#sumber',
+            'active' => false,
+        ],
+    ];
 @endphp
 
 <div {{ $attributes->merge(['class' => $containerClass]) }}>
-    <header class="brand-header {{ $headerClass }}">
-        <a href="/" wire:navigate.hover class="brand flex items-center gap-4 data-current:text-pink-200">
-            <div class="space-y-0.5">
-                <h1 class="text-xl tracking-tight font-montserrat font-black">Kak Kay</h1>
-                <div class="tagline text-xs sm:text-base opacity-90">Counsellor • Therapist • KKDI Creator</div>
-            </div>
-        </a>
+    <header class="storefront-card rounded-[2rem] px-5 py-4 sm:px-7 sm:py-5">
+        <div class="flex items-center justify-between gap-4">
+            <a href="{{ route('home') }}" wire:navigate.hover class="flex items-center gap-3 text-[var(--store-text)] no-underline">
+                <div class="space-y-1">
+                    <div class="font-brand text-3xl font-black tracking-[-0.04em] text-[var(--store-rose-dark)] sm:text-[2.15rem]">Kak Kay</div>
+                    <div class="text-[0.7rem] uppercase tracking-[0.28em] text-[var(--store-text-soft)] sm:text-[0.72rem]">Counsellor • Penulis • Pencipta KKDI</div>
+                </div>
+            </a>
 
-        <div class="flex items-center gap-4">
-            @if(isset($slot) && method_exists($slot, 'isEmpty') && ! $slot->isEmpty())
-                {{ $slot }}
-            @else
-                <flux:button href="{{ route('cart') }}" wire:navigate.hover
-                    class="group relative flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f0218]
-                        {{ $hasCartItems ? 'bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 text-white shadow-[0_16px_36px_rgba(236,72,153,0.45)] ring-1 ring-white/20 data-current:ring-2 data-current:ring-pink-300/50' : 'border border-white/20 bg-white/10 text-white/80 shadow-[0_10px_24px_rgba(12,5,24,0.35)] hover:border-white/40 hover:text-white data-current:border-pink-300/50 data-current:text-white' }}">
-                    <span class="pointer-events-none absolute inset-0 rounded-full opacity-0 transition duration-300 group-hover:opacity-50 {{ $hasCartItems ? 'bg-white/20' : 'bg-gradient-to-r from-pink-400/20 via-rose-400/10 to-purple-500/20' }}"></span>
-                    <span class="pointer-events-none absolute -inset-1 rounded-full blur-lg opacity-0 transition duration-300 group-hover:opacity-60 {{ $hasCartItems ? 'bg-pink-500/30' : 'bg-white/15' }}"></span>
-                    <flux:icon.shopping-bag class="relative z-10 h-5 w-5 {{ $hasCartItems ? 'text-white' : 'text-white/80' }}" />
-                    <span class="relative z-10 hidden sm:inline text-white">Troli</span>
-                    <span class="absolute -top-2 -right-2 z-20">
-                        <livewire:cart-counter defer />
-                    </span>
-                </flux:button>
-            @endif
+            <nav class="hidden items-center gap-7 lg:flex">
+                @foreach ($navItems as $item)
+                    <a
+                        href="{{ $item['href'] }}"
+                        wire:navigate.hover
+                        class="storefront-nav-link text-sm font-medium {{ $item['active'] ? 'is-active' : '' }}"
+                    >
+                        {{ $item['label'] }}
+                    </a>
+                @endforeach
+            </nav>
+
+            <div class="flex items-center gap-2 sm:gap-3">
+                @if (isset($slot) && method_exists($slot, 'isEmpty') && ! $slot->isEmpty())
+                    <div class="hidden xl:block">
+                        {{ $slot }}
+                    </div>
+                @endif
+
+                <button type="button" class="storefront-icon-button hidden sm:inline-flex" aria-label="Cari">
+                    <flux:icon.magnifying-glass class="h-5 w-5" />
+                </button>
+
+                <a href="{{ route('cart') }}" wire:navigate.hover class="storefront-icon-button relative" aria-label="Troli">
+                    <flux:icon.shopping-bag class="h-5 w-5" />
+                    @if ($quantity > 0)
+                        <span class="absolute -right-1.5 -top-1.5 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full bg-[var(--store-rose)] px-1 text-[0.65rem] font-semibold text-white">
+                            {{ $quantity }}
+                        </span>
+                    @endif
+                </a>
+
+                <a href="{{ $actionHref }}" wire:navigate.hover class="storefront-button-primary hidden sm:inline-flex">
+                    {{ $actionLabel }}
+                </a>
+            </div>
         </div>
+
+        <nav class="mt-4 flex gap-2 overflow-x-auto pb-1 lg:hidden">
+            @foreach ($navItems as $item)
+                <a
+                    href="{{ $item['href'] }}"
+                    wire:navigate.hover
+                    class="whitespace-nowrap rounded-full border px-4 py-2 text-sm font-medium no-underline transition {{ $item['active'] ? 'border-[color:var(--store-border-strong)] bg-[#fff1ea] text-[var(--store-rose)]' : 'border-[color:var(--store-border)] bg-white/70 text-[var(--store-text-soft)]' }}"
+                >
+                    {{ $item['label'] }}
+                </a>
+            @endforeach
+            <a href="{{ $actionHref }}" wire:navigate.hover class="storefront-button-primary whitespace-nowrap sm:hidden">
+                {{ $actionLabel }}
+            </a>
+        </nav>
+        @if (isset($slot) && method_exists($slot, 'isEmpty') && ! $slot->isEmpty())
+            <div class="mt-4 xl:hidden">
+                {{ $slot }}
+            </div>
+        @endif
     </header>
-</div>
+ </div>

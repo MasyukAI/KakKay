@@ -13,7 +13,5 @@ final class Permission extends SpatiePermission
 
     public $incrementing = false;
 
-    protected $primaryKey = 'uuid';
-
     protected $keyType = 'string';
 }

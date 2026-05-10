@@ -1,84 +1,89 @@
-<footer id="contact">
-    <div>
-      <div class="flex flex-wrap gap-6 items-start justify-between py-8 text-[#e7ebff]/90">
-        <div class="text-center sm:text-left w-full sm:w-auto">
-          <strong class="font-montserrat">Let's collaborate</strong>
-          <div class="mt-2">Speaking • Workshops • Consulting • Media</div>
-        </div>
-        <div class="w-full sm:w-auto flex flex-col items-center sm:items-end gap-4">
-          <div class="flex gap-4 items-center">
-            <a href="https://instagram.com/kamaliakamal" target="_blank" rel="noopener"
-               class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-[#E1306C] to-[#F77737] text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-110 hover:shadow-[0_8px_25px_rgba(225,48,108,0.4)]">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-              </svg>
-            </a>
-            <a href="https://facebook.com/kamaliakamal" target="_blank" rel="noopener"
-               class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-[#1877F2] text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-110 hover:shadow-[0_8px_25px_rgba(24,119,242,0.4)]">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-              </svg>
-            </a>
-            <a href="https://tiktok.com/@kakkayloveme" target="_blank" rel="noopener"
-               class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-black text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-110 hover:shadow-[0_8px_25px_rgba(0,0,0,0.4)] hover:bg-gradient-to-br hover:from-[#ff0050] hover:to-[#00f2ea]">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>
-              </svg>
-            </a>
-            {{-- <a href="https://youtube.com/@kakkaylovesme" target="_blank" rel="noopener"
-               style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: #FF0000; color: white; text-decoration: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);"
-               onmouseover="this.style.transform='translateY(-2px) scale(1.1)'; this.style.boxShadow='0 8px 25px rgba(255,0,0,0.4)';"
-               onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='none';">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-              </svg>
-            </a> --}}
-          </div>
-          <a class="btn primary transition-all duration-200 hover:-translate-y-0.5 hover:scale-105 hover:brightness-110 hover:shadow-[0_15px_35px_rgba(255,105,180,0.4)]" href="mailto:kakkaylovesme@gmail.com">kakkaylovesme@gmail.com
-          </a>
-        </div>
-      </div>
-      
-      <!-- Policy Links Section - Centered Below -->
-      <div class="mt-8 pt-8 border-t border-[#cfd6f5]/[0.18]">
-        <div class="text-center max-w-[800px] mx-auto">
-          <h4 class="text-[#e7ebff] text-lg mb-4 font-semibold">Dasar & Polisi</h4>
-          <div class="flex flex-wrap justify-center items-center gap-2 text-sm">
-  <a href="/privacy-policy" wire:navigate.hover class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 hover:-translate-y-0.5 no-underline data-current:text-pink-300 data-current:font-semibold">Dasar Privasi</a>
-  <span class="text-pink-100/30">•</span>
-  <a href="/refund-policy" wire:navigate.hover class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 hover:-translate-y-0.5 no-underline data-current:text-pink-300 data-current:font-semibold">Dasar Pemulangan</a>
-
-  <!-- hide this dot on mobile, show on sm+ -->
-  <span class="text-pink-100/30 hidden sm:inline">•</span>
-
-  <!-- force line break only on mobile -->
-  <span class="basis-full sm:hidden"></span>
-
-  <a href="/shipping-policy" wire:navigate.hover class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 hover:-translate-y-0.5 no-underline data-current:text-pink-300 data-current:font-semibold">Dasar Penghantaran</a>
-  <span class="text-pink-100/30">•</span>
-  <a href="/terms-of-service" wire:navigate.hover class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 hover:-translate-y-0.5 no-underline data-current:text-pink-300 data-current:font-semibold">Terma & Syarat</a>
-</div>
-
-        </div>
-        
-        <!-- Contact Info Footer -->
-        <div class="mt-8 pt-6 border-t border-[#cfd6f5]/[0.12] text-center text-[#cfd6f5]/70 text-xs">
-          <div class="flex flex-col sm:flex-row flex-wrap gap-4 justify-center items-center mt-2 text-sm">
-            <div class="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2">
-                <div class="flex items-center gap-1.5">
-                    <span class="text-pink-400">📍</span>
-                    <span class="text-pink-100/80">24, Jalan Pakis 1, Taman Fern Grove<span class="hidden sm:inline">,</span></span>
+<footer id="contact" class="pb-10 pt-8">
+    <div class="storefront-card overflow-hidden rounded-[2.2rem]">
+        <div class="grid gap-10 px-6 py-8 lg:grid-cols-[1.2fr_repeat(4,minmax(0,1fr))] lg:px-10 lg:py-10">
+            <div class="space-y-5">
+                <div>
+                    <div class="font-brand text-4xl font-black tracking-[-0.05em] text-[var(--store-rose-dark)]">Kak Kay</div>
+                    <p class="mt-3 max-w-sm text-sm text-[var(--store-text-soft)]">
+                        Ruang selamat untuk wanita yang mahu pulih, kenal diri, dan membina cinta yang lebih tenang dengan ilmu dan bimbingan yang lembut.
+                    </p>
                 </div>
-                <span class="text-pink-100/80"> 43200 Cheras, Selangor</span>
+
+                <div class="flex items-center gap-3">
+                    <a href="https://instagram.com/kamaliakamal" target="_blank" rel="noopener" class="storefront-icon-button !h-10 !w-10">
+                        <span class="text-xs font-semibold">IG</span>
+                    </a>
+                    <a href="https://facebook.com/kamaliakamal" target="_blank" rel="noopener" class="storefront-icon-button !h-10 !w-10">
+                        <span class="text-xs font-semibold">FB</span>
+                    </a>
+                    <a href="https://tiktok.com/@kakkayloveme" target="_blank" rel="noopener" class="storefront-icon-button !h-10 !w-10">
+                        <span class="text-xs font-semibold">TT</span>
+                    </a>
+                    <a href="mailto:hello@kakkay.my" class="storefront-icon-button !h-10 !w-10">
+                        <span class="text-xs font-semibold">✉</span>
+                    </a>
+                </div>
+
+                <div class="rounded-[1.5rem] border border-[color:var(--store-border)] bg-white/70 p-4">
+                    <div class="text-sm font-semibold text-[var(--store-text)]">Terima inspirasi dari Kak Kay</div>
+                    <p class="mt-1 text-sm text-[var(--store-text-soft)]">Masukkan e-mel anda untuk nota hati, tips refleksi, dan info buku terbaru.</p>
+                    <div class="mt-4 flex flex-col gap-3 sm:flex-row">
+                        <input type="email" placeholder="Masukkan e-mel anda" class="storefront-input min-w-0 flex-1 px-4 py-3 text-sm" />
+                        <a href="mailto:hello@kakkay.my?subject=Langgan%20Inspirasi%20Kak%20Kay" class="storefront-button-primary whitespace-nowrap px-5 py-3 text-sm">Langgan</a>
+                    </div>
+                </div>
             </div>
-            <span class="flex items-center gap-1.5">
-                <span class="text-pink-400">📱</span>
-                <a href="https://wa.me/60138846594" class="text-pink-100/80 hover:text-pink-400 transition-all duration-300 no-underline">+60 13-884 6594</a>
-            </span>
-          </div>
-          <p class="my-4 text-[#cfd6f5]/80">&copy; 2025 Kamalia Kamal Research International (Kak Kay)</p>
+
+            <div>
+                <h3 class="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--store-text)]">Pautan</h3>
+                <ul class="mt-4 space-y-3 text-sm text-[var(--store-text-soft)]">
+                    <li><a href="{{ route('home') }}" wire:navigate.hover class="transition hover:text-[var(--store-rose)]">Utama</a></li>
+                    <li><a href="{{ route('kkdi') }}" wire:navigate.hover class="transition hover:text-[var(--store-rose)]">Ujian KKDI</a></li>
+                    <li><a href="{{ route('books') }}" wire:navigate.hover class="transition hover:text-[var(--store-rose)]">Buku</a></li>
+                    <li><a href="{{ route('consultation') }}" wire:navigate.hover class="transition hover:text-[var(--store-rose)]">Konsultasi</a></li>
+                    <li><a href="{{ route('home') }}#tentang" class="transition hover:text-[var(--store-rose)]">Tentang</a></li>
+                    <li><a href="{{ route('home') }}#sumber" class="transition hover:text-[var(--store-rose)]">Sumber</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h3 class="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--store-text)]">Buku Popular</h3>
+                <ul class="mt-4 space-y-3 text-sm text-[var(--store-text-soft)]">
+                    <li><a href="/cara-bercinta" wire:navigate.hover class="transition hover:text-[var(--store-rose)]">Macam Ni Rupanya Cara Nak Bercinta</a></li>
+                    <li><a href="/diari-healing" wire:navigate.hover class="transition hover:text-[var(--store-rose)]">Diari Healing</a></li>
+                    <li><a href="/kasihi-puteri" wire:navigate.hover class="transition hover:text-[var(--store-rose)]">Kasihi Puteri</a></li>
+                    <li><a href="/kitab-kkdi" wire:navigate.hover class="transition hover:text-[var(--store-rose)]">Kitab KKDI</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h3 class="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--store-text)]">Bantuan</h3>
+                <ul class="mt-4 space-y-3 text-sm text-[var(--store-text-soft)]">
+                    <li><a href="{{ route('consultation') }}#soalan-lazim" class="transition hover:text-[var(--store-rose)]">Soalan Lazim</a></li>
+                    <li><a href="/shipping-policy" wire:navigate.hover class="transition hover:text-[var(--store-rose)]">Penghantaran</a></li>
+                    <li><a href="/refund-policy" wire:navigate.hover class="transition hover:text-[var(--store-rose)]">Pemulangan</a></li>
+                    <li><a href="/terms-of-service" wire:navigate.hover class="transition hover:text-[var(--store-rose)]">Terma &amp; Syarat</a></li>
+                    <li><a href="/privacy-policy" wire:navigate.hover class="transition hover:text-[var(--store-rose)]">Dasar Privasi</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h3 class="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--store-text)]">Hubungi</h3>
+                <ul class="mt-4 space-y-3 text-sm text-[var(--store-text-soft)]">
+                    <li><a href="mailto:hello@kakkay.my" class="transition hover:text-[var(--store-rose)]">hello@kakkay.my</a></li>
+                    <li><a href="https://wa.me/60138846594" class="transition hover:text-[var(--store-rose)]">+60 13-884 6594</a></li>
+                    <li>Cheras, Selangor</li>
+                    <li>Isnin — Jumaat (10am — 6pm)</li>
+                </ul>
+            </div>
         </div>
-      </div>
+
+        <div class="border-t border-[color:var(--store-border)] px-6 py-4 text-xs text-[var(--store-text-soft)] lg:px-10">
+            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <p>© 2026 Kak Kay. Hak cipta terpelihara.</p>
+                <p>Dibina dengan hati untuk ruang yang lebih tenang, jelas, dan bermakna.</p>
+            </div>
+        </div>
     </div>
-  </footer>
-  
+</footer>
+

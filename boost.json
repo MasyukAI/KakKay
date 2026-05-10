@@ -4,6 +4,7 @@
         "copilot",
         "opencode"
     ],
+    "cloud": false,
     "guidelines": true,
     "herd_mcp": true,
     "mcp": true,
@@ -13,6 +14,7 @@
     ],
     "sail": false,
     "skills": [
+        "laravel-best-practices",
         "fluxui-development",
         "pest-testing",
         "tailwindcss-development"

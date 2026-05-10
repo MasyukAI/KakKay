@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use AIArmada\CommerceSupport\Support\OwnerContext;
 use AIArmada\Products\Enums\ProductStatus;
 use AIArmada\Products\Models\Category;
 use AIArmada\Products\Models\Product;
@@ -15,6 +16,13 @@ final class BookSeeder extends Seeder
      * Run the database seeder.
      */
     public function run(): void
+    {
+        OwnerContext::withOwner(null, function (): void {
+            $this->seedBooks();
+        });
+    }
+
+    private function seedBooks(): void
     {
         // Create Books category using commerce package model
         $bookCategory = Category::firstOrCreate(

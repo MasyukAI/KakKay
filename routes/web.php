@@ -3,9 +3,10 @@
 declare(strict_types=1);
 
 use Akaunting\Money\Money;
-use App\Http\Controllers\PageController;
+use App\Http\Controllers\StorefrontController;
 use App\Livewire\Cart;
 use App\Livewire\Home;
+use App\Livewire\ProductPage;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', Home::class)->name('home');
@@ -43,6 +44,10 @@ Route::middleware(['auth'])->group(function () {
 
 require __DIR__.'/auth.php';
 
+Route::get('/buku', [StorefrontController::class, 'books'])->name('books');
+Route::get('/konsultasi', [StorefrontController::class, 'consultation'])->name('consultation');
+Route::get('/ujian-kkdi', [StorefrontController::class, 'kkdi'])->name('kkdi');
+
 // Product pages
 Route::livewire('/cara-bercinta', 'pages::cara-bercinta')->name('pages.cara-bercinta');
 
@@ -53,7 +58,7 @@ Route::livewire('/shipping-policy', 'pages::shipping-policy');
 Route::livewire('/terms-of-service', 'pages::terms-of-service');
 
 // Catch-all route for dynamic pages - must be last
-Route::get('/{slug}', [PageController::class, 'show'])
+Route::get('/{slug}', ProductPage::class)
     ->where('slug', '[a-z0-9\-]+')
     ->name('page.show');
 

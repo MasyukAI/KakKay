@@ -1,138 +1,101 @@
-<div class="checkout-container relative overflow-hidden min-h-screen bg-[#0f0218] text-white ambient-glow">
-
+<div class="checkout-container storefront-shell storefront-shell-bottom relative overflow-hidden pb-16">
     <div class="relative z-10">
-        <!-- Header Navigation -->
-        <x-brand-header :cart-quantity="$cartQuantity ?? null" />
+        <x-brand-header :cart-quantity="$cartQuantity ?? null" action-label="Akaun Saya" :action-href="auth()->check() ? route('dashboard') : route('login')" />
 
-        <!-- Checkout Content -->
-        <section class="pt-20">
-            <div class="mx-auto max-w-7xl px-6 sm:px-8">
-                <div class="relative mx-auto max-w-3xl">
-                    <div class="absolute left-6 right-6 top-6 block h-px bg-white/15"></div>
-                    <ol class="relative flex items-center justify-between gap-6 text-xs font-semibold uppercase tracking-[0.28em] text-white/60">
-                        <li class="flex flex-col items-center gap-3">
-                            <a href="{{ route('cart') }}" wire:navigate.hover class="group flex h-12 w-12 items-center justify-center rounded-full border border-white/25 bg-white/10 text-pink-200 shadow-[0_8px_20px_rgba(236,72,153,0.28)] transition hover:border-white/50 hover:text-white">
-                                <flux:icon.check-circle class="h-5 w-5" />
-                            </a>
-                            <span>Troli</span>
+        <main class="space-y-12 pb-14 pt-6 sm:space-y-16 sm:pt-8">
+            <section class="storefront-container">
+                <ol class="mx-auto flex max-w-3xl items-start justify-between gap-4 text-center text-sm text-store-soft">
+                    @foreach ([['label' => 'Troli', 'active' => false], ['label' => 'Penghantaran & Bayaran', 'active' => true], ['label' => 'Selesai', 'active' => false]] as $step)
+                        <li class="storefront-step flex-1" data-active="{{ $step['active'] ? 'true' : 'false' }}">
+                            <div class="storefront-step-dot mx-auto">{{ $loop->iteration }}</div>
+                            <div class="mt-3 font-medium {{ $step['active'] ? 'text-store-rose' : 'text-store-soft' }}">{{ $step['label'] }}</div>
                         </li>
-                        <li class="flex flex-col items-center gap-3">
-                            <div class="flex h-12 w-12 items-center justify-center rounded-full border border-white/40 bg-gradient-to-br from-pink-500 via-rose-500 to-purple-500 text-white shadow-[0_10px_28px_rgba(236,72,153,0.45)]">
-                                <flux:icon.credit-card class="h-5 w-5" />
-                            </div>
-                            <span class="text-white">Bayaran</span>
-                        </li>
-                        <li class="flex flex-col items-center gap-3">
-                            <div class="flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white/60">
-                                <flux:icon.clock class="h-5 w-5" />
-                            </div>
-                            <span>Pesanan</span>
-                        </li>
-                    </ol>
-                </div>
-            </div>
-        </section>
+                    @endforeach
+                </ol>
+            </section>
 
-        <section id="form" class="mt-14 pb-24">
-            <div class="mx-auto max-w-7xl px-6 sm:px-8">
-                <div class="relative grid gap-10 lg:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[minmax(0,1fr)_400px]">
+            <section class="storefront-container">
+                <div class="grid gap-8 xl:grid-cols-[1.08fr_0.92fr]">
+                    <div class="min-w-0 space-y-5">
+                        <div class="storefront-card rounded-[2.2rem] p-6 sm:p-8">
+                            <span class="storefront-eyebrow">Maklumat penghantaran</span>
+                            <h1 class="mt-2 font-display text-3xl text-store sm:text-4xl">Lengkapkan butiran anda</h1>
+                            <p class="mt-3 text-store-soft">Semua maklumat digunakan untuk penghantaran dan kemas kini pesanan sahaja. Ia disimpan dengan selamat.</p>
+                        </div>
+
                         <div class="min-w-0">
                             {{ $this->form }}
                         </div>
-
-                        <!-- Order Summary Sidebar -->
-                        <aside class="mt-10 space-y-6 lg:mt-0">
-                            <div class="cart-summary-card sticky p-6 sm:p-6.5">
-                                <div class="absolute -top-20 right-0 h-48 w-48 rounded-full bg-gradient-to-br from-pink-400/30 via-purple-400/20 to-orange-300/30 blur-2xl"></div>
-                                <div class="relative space-y-6">
-                                    <div class="space-y-3">
-                                        {{-- <span class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.32em] text-white/70">
-                                            Langkah Bayaran
-                                        </span> --}}
-                                        <h3 class="font-display text-3xl text-white">Ringkasan Pesanan</h3>
-                                        {{-- <p class="text-sm leading-relaxed text-white/70">Semua harga dalam Ringgit Malaysia (RM). Semak jumlah sebelum lengkapkan bayaran.</p> --}}
-                                    </div>
-
-                                    @if (! empty($cartItems))
-                                        <ul class="space-y-3 text-sm text-white/80">
-                                            @foreach ($cartItems as $item)
-                                                <li class="flex flex-col gap-1 rounded-2xl border border-white/15 bg-white/10 px-4 py-3">
-                                                    <div class="flex items-start justify-between gap-3">
-                                                        <div class="font-semibold text-white">{{ $item['name'] }}</div>
-                                                        <span class="text-white">{{ \Akaunting\Money\Money::MYR($item['price'])->format() }}</span>
-                                                    </div>
-                                                    <div class="w-full text-xs uppercase tracking-[0.28em] text-white/50 text-right">Qty {{ $item['quantity'] }}</div>
-                                                </li>
-                                            @endforeach
-                                        </ul>
-                                    @else
-                                        <div class="rounded-2xl border border-white/15 bg-white/10 p-4 text-sm text-white/70">
-                                            Troli kosong. Sila kembali ke halaman produk untuk menambah item.
-                                        </div>
-                                    @endif
-
-                                    <div class="space-y-3 text-sm text-white/80">
-                                        <div class="flex items-center justify-between">
-                                            <span>Jumlah Harga</span>
-                                            <span class="font-medium text-white">{{ $this->getSubtotal()->format() }}</span>
-                                        </div>
-                                        @if($this->getSavings()->getAmount() > 0)
-                                            <div class="flex items-center justify-between text-green-400">
-                                                <span class="flex items-center gap-1.5">
-                                                    <flux:icon.tag class="h-4 w-4" />
-                                                    Jimat
-                                                </span>
-                                                <span class="font-medium">-{{ $this->getSavings()->format() }}</span>
-                                            </div>
-                                        @endif
-                                        <div class="flex items-center justify-between">
-                                            <span>Penghantaran</span>
-                                            <span class="font-medium text-white">{{ $this->getShipping()->format() }}</span>
-                                        </div>
-                                        <hr class="border-white/15">
-                                        <div class="flex items-center justify-between text-lg font-bold">
-                                            <span>Jumlah</span>
-                                            <span class="bg-gradient-to-r from-pink-400 via-rose-500 to-purple-500 bg-clip-text text-transparent">{{ $this->getTotal()->format() }}</span>
-                                        </div>
-                                    </div>
-
-                                    <flux:button type="button" variant="primary" class="cart-button-primary flex w-full items-center justify-center gap-2 px-6 py-4 text-lg font-semibold" wire:click="submitCheckout" wire:loading.attr="disabled">
-                                        <div wire:loading.remove wire:target="submitCheckout" class="flex flex-row items-center justify-center gap-2 min-w-0">
-                                            <span class="flex flex-row items-center gap-2 min-w-0">
-                                                <flux:icon.credit-card class="h-5 w-5 flex-shrink-0" />
-                                                <span class="truncate">Bayar Sekarang</span>
-                                            </span>
-                                        </div>
-                                        <div wire:loading wire:target="submitCheckout" class="flex items-center justify-center gap-3">
-                                            <svg class="h-5 w-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                            </svg>
-                                        </div>
-                                    </flux:button>
-
-                                    {{-- <div class="mt-4 rounded-2xl border border-white/15 bg-white/5 p-4 text-xs text-white/70">
-                                        Pastikan maklumat alamat tepat. Jika perlu ubah selepas pembayaran, hubungi kami segera melalui WhatsApp: <span class="text-pink-200 font-medium">+60 11-1234 5678</span>.
-                                    </div> --}}
-                                </div>
-                            </div>
-
-                            <div class="rounded-[32px] border border-white/10 bg-white/5 p-6 backdrop-blur-sm text-sm text-white/75">
-                                {{-- <div class="flex items-center gap-3">
-                                    <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-lg">✅</span>
-                                    <div>Sokongan selepas jualan tersedia 7 hari seminggu. Kami bantu sehingga buku selamat di tangan anda.</div>
-                                </div> --}}
-                                <div class="mt-6 flex items-center justify-center rounded-2xl border border-white/10 bg-white/5 p-4">
-                                    <img src="{{ asset('storage/images/fpx.webp') }}" alt="Payment methods" class="h-10 object-contain " />
-                                </div>
-                            </div>
-                        </aside>
                     </div>
-                </div>
-            </div>
-        </section>
 
-        <div class="container">
+                    <aside class="space-y-5">
+                        <div class="storefront-soft-card storefront-summary-card rounded-[2.2rem] p-6 sm:p-8">
+                            <div>
+                                <span class="storefront-eyebrow">Ringkasan pesanan</span>
+                                <h2 class="mt-2 font-display text-3xl text-store">Pesanan anda</h2>
+                            </div>
+
+                            @if (! empty($cartItems))
+                                <ul class="mt-6 space-y-3 text-sm text-store-soft">
+                                    @foreach ($cartItems as $item)
+                                        <li class="rounded-[1.4rem] border border-store bg-white px-4 py-4">
+                                            <div class="flex items-start justify-between gap-3">
+                                                <div>
+                                                    <div class="font-semibold text-store">{{ $item['name'] }}</div>
+                                                    <div class="mt-1 text-xs uppercase tracking-[0.2em] text-store-soft">Kuantiti {{ $item['quantity'] }}</div>
+                                                </div>
+                                                <span class="font-semibold text-store">{{ \Akaunting\Money\Money::MYR($item['price'])->format() }}</span>
+                                            </div>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            @else
+                                <div class="mt-6 rounded-[1.4rem] border border-store bg-white px-4 py-4 text-sm text-store-soft">
+                                    Troli kosong. Sila kembali ke halaman buku untuk menambah item.
+                                </div>
+                            @endif
+
+                            <div class="mt-6 space-y-4 rounded-[1.6rem] border border-store bg-white px-5 py-5 text-sm text-store-soft">
+                                <div class="flex items-center justify-between">
+                                    <span>Jumlah harga</span>
+                                    <span class="font-semibold text-store">{{ $this->getSubtotal()->format() }}</span>
+                                </div>
+                                @if ($this->getSavings()->getAmount() > 0)
+                                    <div class="flex items-center justify-between text-[#6f9f55]">
+                                        <span>Anda jimat</span>
+                                        <span class="font-semibold">-{{ $this->getSavings()->format() }}</span>
+                                    </div>
+                                @endif
+                                <div class="flex items-center justify-between">
+                                    <span>Penghantaran</span>
+                                    <span class="font-semibold text-store">{{ $this->getShipping()->format() }}</span>
+                                </div>
+                                <div class="border-t border-store pt-4">
+                                    <div class="flex items-center justify-between text-xl font-semibold text-store">
+                                        <span>Jumlah</span>
+                                        <span class="text-store-rose">{{ $this->getTotal()->format() }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="button" wire:click="submitCheckout" wire:loading.attr="disabled" class="storefront-button-primary mt-6 w-full">
+                                <span wire:loading.remove wire:target="submitCheckout">Bayar Sekarang</span>
+                                <span wire:loading wire:target="submitCheckout">Memproses pembayaran...</span>
+                            </button>
+
+                            <div class="mt-6 rounded-[1.6rem] border border-store bg-white px-5 py-5 text-sm text-store-soft">
+                                <div class="font-semibold text-store">Pembayaran selamat &amp; dipercayai</div>
+                                <div class="mt-4 flex items-center justify-center rounded-[1.2rem] bg-[#fff8f2] p-4">
+                                    <img src="{{ asset('storage/images/fpx.webp') }}" alt="Payment methods" class="h-10 object-contain" />
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </section>
+        </main>
+
+        <div class="storefront-container">
             <x-footer />
         </div>
     </div>

@@ -1,14 +1,17 @@
 <!DOCTYPE html>
-    <html lang="en" class="h-full">
-    <head>
-      <meta charset="utf-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <meta name="csrf-token" content="{{ csrf_token() }}">
-      <title>Kak Kay - Counsellor • Therapist • KKDI Creator</title>
+<html lang="ms" class="h-full">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>{{ $title ?? 'Kak Kay — Counsellor • Penulis • Pencipta KKDI' }}</title>
 
-      @vite('resources/css/home.css')
-    </head>
-    <body class="h-full bg-[#1a0d1a] bg-[image:var(--grad-hero)] text-white font-serif leading-[1.5] antialiased">
-        {{ $slot }}
-    </body>
+  @vite(['resources/css/storefront.css', 'resources/js/app.js'])
+  @livewireStyles
+</head>
+<body class="storefront-body h-full">
+  {{ $slot }}
+
+  @livewireScripts
+</body>
 </html>
